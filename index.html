@@ -1,13 +1,94 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FDF8EC"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="WozzaWorld"><title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script></head><body>
-<div id="app"><header class="topbar"><div class="brand-wrap"><div class="brand-logo" aria-label="WozzaWorld logo"><svg viewBox="0 0 96 58"><circle cx="34" cy="29" r="19"/><path d="M16 29h36M34 10c-9 10-9 28 0 38M34 10c9 10 9 28 0 38"/><path class="orbit" d="M7 40C25 55 65 52 84 30"/><path class="plane" d="M78 23l13 3-12 4-4 8-3-1 2-8-8-2 1-3 9 1z"/><path class="ship" d="M4 42h17l-4 6H9zM10 37h7v5h-7z"/><path class="train" d="M52 7h12v14H52zM55 10h6v5h-6z"/><circle class="wheel" cx="55" cy="23" r="2"/><circle class="wheel" cx="62" cy="23" r="2"/></svg></div><div><div class="brand-name">WOZZAWORLD</div><div class="brand-tag">YOUR WORLD. YOUR JOURNEYS.</div></div></div><button class="icon-btn" id="resetBtn" aria-label="Reset demo">↻</button></header>
-<main><section class="screen active" data-screen="map"><div class="screen-heading"><div><div class="eyebrow">MY WORLD</div><h1>Explore</h1></div><button class="install-btn" id="installBtn"><span>↓</span> Add WozzaWorld to mobile</button></div>
-<div class="map-card"><div class="map-stage" id="mapStage"><svg id="worldMap" viewBox="0 0 1000 520" role="img" aria-label="Interactive Equal Earth world map"><path id="sphere" class="ocean"></path><g id="countries"></g></svg><div class="map-loading" id="mapLoading">Loading your world…</div><div class="map-hint">Tap a country · hold to mark visited</div></div><div class="legend"><span><i class="dot visited"></i>Visited</span><span><i class="dot going"></i>Visiting</span><span><i class="dot neutral"></i>Not visited / bucket list</span></div><div class="map-summary"><div><strong id="visitedCount">0</strong><span>visited</span></div><div><strong id="goingCount">0</strong><span>visiting</span></div><div><strong id="wishCount">0</strong><span>bucket list</span></div></div></div></section>
-<section class="screen" data-screen="trips"><div class="section-head"><h2>My trips</h2><button class="pill" id="newTripBtn">＋ New trip</button></div><div id="tripList" class="stack"></div></section>
-<section class="screen" data-screen="me"><div class="hero-card accent-card"><div class="eyebrow">TRAVEL SNAPSHOT</div><h2>Your world, one place.</h2><p>Everywhere you've been, everywhere you're going and everywhere still on the bucket list.</p></div><div class="stats-grid"><div class="stat green"><strong id="meVisited">0</strong><span>Countries visited</span></div><div class="stat blue"><strong id="meTrips">0</strong><span>Trips</span></div><div class="stat amber"><strong id="meGoing">0</strong><span>Upcoming</span></div><div class="stat coral"><strong id="meWishlist">0</strong><span>Bucket list</span></div></div></section></main>
-<nav class="bottom-nav"><button class="nav-item active" data-target="map"><span>◎</span>Map</button><button class="nav-item" data-target="trips"><span>✈</span>Trips</button><button class="nav-item" data-target="me"><span>○</span>Me</button></nav></div>
-<div class="sheet-backdrop" id="sheetBackdrop"></div><aside class="sheet" id="countrySheet" aria-hidden="true"><div class="grabber"></div><button class="sheet-close" id="sheetClose">×</button><div class="flag" id="countryFlag">🌍</div><h2 id="countryName">Country</h2><p class="muted" id="countryStatus">Not marked yet</p><div class="choice-grid"><button data-status="visited">✓<span>I've been here</span></button><button data-status="going">✈<span>I'm visiting</span></button><button data-status="bucket">♡<span>Bucket list</span></button></div><div class="divider"></div><h3>Trips & plans</h3><div id="countryTrips" class="stack compact"></div><button class="full-btn" id="addCountryTrip">＋ Add a trip</button><h3 class="space-top">Bucket list / saved places</h3><div id="savedPlaces" class="chips"></div><form id="placeForm" class="inline-form"><input id="placeInput" placeholder="Add a restaurant or place" maxlength="50"><button>＋</button></form></aside>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02BCD6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WozzaWorld">
+<title>WozzaWorld</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+</head>
+<body>
+<div class="sky-clouds" aria-hidden="true">
+  <span class="cloud c1"></span>
+  <span class="cloud c2"></span>
+  <span class="cloud c3"></span>
+  <span class="cloud c4"></span>
+  <span class="cloud c5"></span>
+</div>
+<div id="app">
+<header class="topbar">
+  <div class="brand-wrap">
+    <div class="brand-logo" aria-label="WozzaWorld logo">
+      <svg viewBox="0 0 96 58" aria-hidden="true">
+        <circle cx="34" cy="29" r="19"/>
+        <path d="M16 29h36M34 10c-9 10-9 28 0 38M34 10c9 10 9 28 0 38"/>
+        <path class="orbit" d="M7 40C25 55 65 52 84 30"/>
+        <path class="plane" d="M78 23l13 3-12 4-4 8-3-1 2-8-8-2 1-3 9 1z"/>
+        <path class="ship" d="M4 42h17l-4 6H9zM10 37h7v5h-7z"/>
+        <path class="train" d="M52 7h12v14H52zM55 10h6v5h-6z"/>
+        <circle class="wheel" cx="55" cy="23" r="2"/><circle class="wheel" cx="62" cy="23" r="2"/>
+      </svg>
+    </div>
+    <div class="brand-name">WOZZAWORLD</div>
+  </div>
+  <button class="install-btn" id="installBtn"><span>↓</span> Add to mobile</button>
+</header>
+
+<main>
+<section class="screen active" data-screen="map">
+  <div class="map-card">
+    <div class="map-stage" id="mapStage">
+      <svg id="worldMap" viewBox="0 0 1000 520" role="img" aria-label="Interactive Equal Earth world map">
+        <path id="sphere" class="ocean"></path><g id="countries"></g>
+      </svg>
+      <div class="map-loading" id="mapLoading">Loading your world…</div>
+    </div>
+    <div class="map-summary">
+      <div class="summary visited"><strong id="visitedCount">0</strong><span>Visited</span><i></i></div>
+      <div class="summary going"><strong id="goingCount">0</strong><span>Visiting</span><i></i></div>
+      <div class="summary bucket"><strong id="wishCount">0</strong><span>Bucket list</span><i></i></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" data-screen="trips">
+  <div class="section-head"><h2>My trips</h2><button class="pill" id="newTripBtn">＋ New trip</button></div>
+  <div id="tripList" class="stack"></div>
+</section>
+
+<section class="screen" data-screen="me">
+  <div class="hero-card accent-card"><div class="eyebrow">TRAVEL SNAPSHOT</div><h2>Your world, one place.</h2><p>Everywhere you've been, everywhere you're going and everywhere still on the bucket list.</p></div>
+  <div class="stats-grid"><div class="stat green"><strong id="meVisited">0</strong><span>Countries visited</span></div><div class="stat blue"><strong id="meTrips">0</strong><span>Trips</span></div><div class="stat amber"><strong id="meGoing">0</strong><span>Upcoming</span></div><div class="stat coral"><strong id="meWishlist">0</strong><span>Bucket list</span></div></div>
+</section>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" data-target="map"><span>◎</span>Map</button>
+  <button class="nav-item" data-target="trips"><span>✈</span>Trips</button>
+  <button class="nav-item" data-target="me"><span>○</span>Me</button>
+</nav>
+</div>
+
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<aside class="sheet" id="countrySheet" aria-hidden="true">
+  <div class="grabber"></div><button class="sheet-close" id="sheetClose">×</button>
+  <div class="flag" id="countryFlag">🌍</div><h2 id="countryName">Country</h2><p class="muted" id="countryStatus">Not marked yet</p>
+  <div class="choice-grid"><button data-status="visited">✓<span>I've been here</span></button><button data-status="going">✈<span>I'm visiting</span></button><button data-status="bucket">♡<span>Bucket list</span></button></div>
+  <div class="divider"></div><h3>Trips & plans</h3><div id="countryTrips" class="stack compact"></div><button class="full-btn" id="addCountryTrip">＋ Add a trip</button>
+  <h3 class="space-top">Bucket list / saved places</h3><div id="savedPlaces" class="chips"></div><form id="placeForm" class="inline-form"><input id="placeInput" placeholder="Add a restaurant or place" maxlength="50"><button>＋</button></form>
+</aside>
+
 <dialog id="tripDialog"><form method="dialog" id="tripForm"><h2>Create trip</h2><label>Country<input id="tripCountry" required placeholder="Italy"></label><label>Trip name<input id="tripName" required placeholder="Rome"></label><div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div><label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label><div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create</button></div></form></dialog>
-<div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div><div class="toast" id="toast"></div><script src="app.js"></script></body></html>
+
+<div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body></html>
