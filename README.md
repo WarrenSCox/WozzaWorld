@@ -1,12 +1,10 @@
-# WozzaWorld v0.6
-Visual hotfix build.
+# WozzaWorld v0.7
 
-- Compact WozzaWatch-family header using Archivo Black + Inter
-- Proper stacked WOZZA / WORLD brand
-- Geometric SVG globe/orbit logo
-- Much smaller, consistent outline Map / Trips / Me navigation
-- Tighter map card with dead space removed
-- Brighter WozzaWorld palette and softer drifting clouds
-- Cache-busted CSS/JS/service worker so GitHub Pages does not keep serving the old layout
+Visual update:
+- New vibrant Essential Color-inspired palette sampled from the supplied reference: blue, orange, green and yellow.
+- Blue remains the sky/background.
+- Green = visited; orange = visiting; yellow = playful UI accents.
+- Trips navigation icon redrawn as a recognisable outlined aeroplane with the same 2.35px rounded stroke weight as Map and Me.
+- Cache version bumped to v0.7.
 
-Upload every file in this ZIP to the repository root, replacing the existing versions.
+Flat-file build for GitHub Pages.

@@ -115,3 +115,27 @@ html,body{background:var(--cyan)!important;color:var(--navy)}
   .install-btn{font-size:10px;padding:7px 8px}
   .map-summary strong{font-size:27px!important}
 }
+
+
+/* v0.7 — Essential Color palette + refined Trips icon */
+:root{
+  --blue:#0783C2;
+  --orange:#FF8A00;
+  --green:#009867;
+  --yellow:#FFC400;
+  --cream:#F4E5C8;
+  --navy:#17213D;
+  --cyan:#0783C2;
+  --lime:#009867;
+  --amber:#FF8A00;
+  --visited:#009867;
+  --going:#FF8A00;
+}
+html,body{background:var(--blue)!important}
+.topbar{background:rgba(7,131,194,.94)!important}
+.full-btn{background:var(--yellow)!important;color:var(--navy)!important}
+.pill{background:var(--yellow)!important;color:var(--navy)!important}
+.badge{background:var(--orange)!important}
+.map-summary .summary:nth-child(1) i{background:var(--green)!important}
+.map-summary .summary:nth-child(2) i{background:var(--orange)!important}
+.nav-item .plane-icon{stroke-width:2.35!important;fill:none!important}
