@@ -373,3 +373,59 @@ body.map-view .map-loading{background:var(--blue)!important;color:#fff}
   .header-nav-item{width:29px!important;height:33px!important}
   .header-slogan{font-size:11.2px!important}
 }
+
+
+/* v0.13.2 interaction + header refinement hotfix */
+:root{--header-edge:rgba(105,123,136,.88)}
+
+/* Keep the enlarged header artwork, but remove the excess vertical air. */
+.topbar{
+  min-height:0!important;
+  padding-top:max(1px,env(safe-area-inset-top))!important;
+  padding-bottom:1px!important;
+}
+@media(max-width:560px){
+  .topbar{min-height:0!important;padding-top:max(1px,env(safe-area-inset-top))!important;padding-bottom:1px!important}
+}
+
+/* No capsule behind the three navigation icons. */
+.header-nav{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+}
+
+/* Crisp white icons and slogan, sharing the same subtle grey edge treatment. */
+.header-nav-item{
+  color:#fff!important;
+  filter:drop-shadow(.55px 0 0 var(--header-edge)) drop-shadow(-.55px 0 0 var(--header-edge)) drop-shadow(0 .55px 0 var(--header-edge)) drop-shadow(0 -.55px 0 var(--header-edge));
+}
+.header-nav-item.active{
+  background:rgba(255,255,255,.92)!important;
+  color:var(--navy)!important;
+  filter:none;
+}
+.header-slogan{
+  -webkit-text-stroke:.45px var(--header-edge);
+  text-shadow:.45px 0 0 var(--header-edge),-.45px 0 0 var(--header-edge),0 .45px 0 var(--header-edge),0 -.45px 0 var(--header-edge);
+}
+
+/* Header title and + control share one line. */
+.country-list-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+}
+.country-list-head h2{min-width:0}
+.list-add{margin-left:auto!important;flex:0 0 auto}
+
+/* Summary tiles are also direct navigation controls for the swipe panels. */
+.map-summary .summary{cursor:pointer;touch-action:manipulation;border-radius:14px}
+.map-summary .summary:active{background:rgba(23,33,61,.045)}
+
+/* Home overview map only: a slightly finer country edge. Dedicated map mode stays unchanged. */
+body:not(.map-view) #worldMap .country{stroke-width:.56!important}
+body.map-view #worldMap .country{stroke-width:.72!important}

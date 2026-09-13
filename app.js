@@ -34,9 +34,19 @@ function renderCountryLists(){
 function attachListRowEvents(){
   document.querySelectorAll('.country-row').forEach(row=>{
     let timer=null,held=false;const c=row.dataset.openCountry;
-    row.addEventListener('pointerdown',e=>{if(e.target.closest('.country-people'))return;held=false;timer=setTimeout(()=>{held=true;openRemoveDialog(c)},650)});
-    row.addEventListener('pointerup',e=>{clearTimeout(timer);if(!held&&!e.target.closest('.country-people'))openCountry(c)});
-    row.addEventListener('pointerleave',()=>clearTimeout(timer));row.addEventListener('pointercancel',()=>clearTimeout(timer));
+    row.addEventListener('pointerdown',e=>{
+      if(e.target.closest('.country-people'))return;
+      held=false;
+      timer=setTimeout(()=>{held=true;row.dataset.suppressTap='1';openRemoveDialog(c)},650)
+    });
+    row.addEventListener('pointerup',()=>clearTimeout(timer));
+    row.addEventListener('pointerleave',()=>clearTimeout(timer));
+    row.addEventListener('pointercancel',()=>clearTimeout(timer));
+    row.addEventListener('click',e=>{
+      if(e.target.closest('.country-people'))return;
+      if(row.dataset.suppressTap==='1'){delete row.dataset.suppressTap;return}
+      openCountry(c)
+    });
     row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openCountry(c)}})
   });
   document.querySelectorAll('.country-people').forEach(b=>b.onclick=e=>{e.stopPropagation();showPeople(b.dataset.peopleCountry)});
@@ -107,7 +117,7 @@ if(installBtn){installBtn.onclick=async()=>{if(isStandalone()){syncInstallButton
 const installHelpClose=$('#installHelpClose');if(installHelpClose)installHelpClose.onclick=()=>$('#installHelp')?.classList.remove('show');
 window.addEventListener('appinstalled',()=>{localStorage.setItem('wozzaworld-installed','1');syncInstallButton();toast('WozzaWorld added to your mobile ✓')});
 window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);syncInstallButton();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.13.0',{updateViaCache:'none'}));
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.13.2',{updateViaCache:'none'}));
 const carousel=document.getElementById('countryCarousel');
 if(carousel){
   let sx=0,sy=0,drag=false;
@@ -116,6 +126,19 @@ if(carousel){
   carousel.addEventListener('pointercancel',()=>drag=false);
 }
 setCountrySlide(0,false);
+// The summary counts are shortcuts to the matching swipe panel as well as status totals.
+[['.map-summary .summary.visited',0],['.map-summary .summary.going',1],['.map-summary .summary.bucket',2]].forEach(([selector,index])=>{
+  const el=document.querySelector(selector);
+  if(!el)return;
+  el.setAttribute('role','button');
+  el.setAttribute('tabindex','0');
+  const jump=()=>{
+    setCountrySlide(index,true,index>=countrySlide?'next':'prev');
+    document.getElementById('countryCarousel')?.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  el.addEventListener('click',jump);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump()}});
+});
 setupCountrySearch();
 buildMap();render();
 
