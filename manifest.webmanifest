@@ -1,7 +1,7 @@
 {
   "name": "WozzaWorld",
   "short_name": "WozzaWorld",
-  "description": "Your world. Your journeys.",
+  "description": "Your world. One place.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -20,5 +20,9 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "orientation": "any",
+  "display_override": [
+    "standalone"
   ]
 }

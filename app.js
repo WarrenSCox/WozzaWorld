@@ -33,9 +33,37 @@ $$('.choice-grid button').forEach(b=>b.onclick=()=>{
   if(state.statuses[currentCountry]===b.dataset.status){delete state.statuses[currentCountry]}
   else {state.statuses[currentCountry]=b.dataset.status;if(b.dataset.status==='visited'){state.visitHistory=state.visitHistory.filter(c=>c!==currentCountry);state.visitHistory.push(currentCountry)}}
   save()
-});function showHome(){document.body.classList.remove('map-view');$$('.header-nav-item').forEach(x=>x.classList.remove('active'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));try{screen.orientation?.unlock?.()}catch(e){}window.scrollTo({top:0,behavior:'smooth'})}
-function showMap(){document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='map'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));window.scrollTo({top:0,behavior:'smooth'});try{screen.orientation?.lock?.('landscape').catch(()=>{})}catch(e){}}
-$$('.header-nav-item').forEach(b=>b.onclick=()=>{if(b.dataset.target==='map'){showMap();return}document.body.classList.remove('map-view');$$('.header-nav-item').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen===b.dataset.target));try{screen.orientation?.unlock?.()}catch(e){}window.scrollTo({top:0,behavior:'smooth'})});$('#homeLogo').onclick=showHome;$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
+});async function leaveMapMode(){
+  document.body.classList.remove('map-view');
+  try{screen.orientation?.unlock?.()}catch(e){}
+  try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}
+}
+async function showHome(){
+  await leaveMapMode();
+  $$('.header-nav-item').forEach(x=>x.classList.remove('active'));
+  $$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function showMap(){
+  document.body.classList.add('map-view');
+  $$('.header-nav-item').forEach(x=>x.classList.remove('active'));
+  $$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));
+  window.scrollTo({top:0});
+  try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen({navigationUI:'hide'})}catch(e){}
+  try{await screen.orientation?.lock?.('landscape')}catch(e){}
+}
+$$('.header-nav-item').forEach(b=>b.onclick=async()=>{
+  if(b.dataset.target==='map'){await showMap();return}
+  await leaveMapMode();
+  $$('.header-nav-item').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  $$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen===b.dataset.target));
+  window.scrollTo({top:0,behavior:'smooth'})
+});
+$('#homeLogo').onclick=showHome;
+$('#mapClose').onclick=showHome;
+$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&document.body.classList.contains('map-view')){try{screen.orientation?.unlock?.()}catch(e){}}});
 function openTrip(country=''){$('#tripCountry').value=country;$('#tripName').value='';$('#tripStart').value='';$('#tripEnd').value='';$('#tripPlan').value='';$('#tripDialog').showModal()}$('#newTripBtn').onclick=()=>openTrip();$('#addCountryTrip').onclick=()=>openTrip(currentCountry);$('#cancelTrip').onclick=()=>$('#tripDialog').close();$('#tripForm').onsubmit=e=>{e.preventDefault();const t={country:$('#tripCountry').value.trim(),name:$('#tripName').value.trim(),start:$('#tripStart').value,end:$('#tripEnd').value,plan:$('#tripPlan').value.trim(),status:'upcoming'};if(!t.country||!t.name)return;state.trips.push(t);if(!state.statuses[t.country])state.statuses[t.country]='going';save();$('#tripDialog').close();toast('Trip created ✈')};$('#placeForm').onsubmit=e=>{e.preventDefault();const v=$('#placeInput').value.trim();if(!v)return;(state.places[currentCountry]??=[]).push(v);$('#placeInput').value='';save()};
 function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
 function syncInstallButton(){const b=$('#installBtn');if(!b)return;b.classList.toggle('hidden',isStandalone()||localStorage.getItem('wozzaworld-installed')==='1')}
@@ -45,7 +73,7 @@ if(installBtn){installBtn.onclick=async()=>{if(isStandalone()){syncInstallButton
 const installHelpClose=$('#installHelpClose');if(installHelpClose)installHelpClose.onclick=()=>$('#installHelp')?.classList.remove('show');
 window.addEventListener('appinstalled',()=>{localStorage.setItem('wozzaworld-installed','1');syncInstallButton();toast('WozzaWorld added to your mobile ✓')});
 window.matchMedia('(display-mode: standalone)').addEventListener?.('change',syncInstallButton);syncInstallButton();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.10.0',{updateViaCache:'none'}));
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.12.0',{updateViaCache:'none'}));
 const carousel=document.getElementById('countryCarousel');
 if(carousel){
   let sx=0,sy=0,drag=false;
