@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f5f0" />
+  <title>My World</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">MY WORLD</div>
+        <h1 id="screenTitle">Explore</h1>
+      </div>
+      <button class="icon-btn" id="resetBtn" aria-label="Reset demo">↻</button>
+    </header>
+
+    <main>
+      <section class="screen active" data-screen="map">
+        <div class="map-card">
+          <div class="map-stage" id="mapStage" aria-label="Interactive Equal Earth style world map demo">
+            <svg id="worldMap" viewBox="0 0 1000 520" role="img" aria-label="World map">
+              <defs>
+                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity=".08"/></filter>
+              </defs>
+              <path class="ocean" d="M86 260C86 126 259 39 500 39s414 87 414 221S741 481 500 481 86 394 86 260Z"/>
+              <g id="countries" filter="url(#shadow)">
+                <path data-country="Canada" d="M166 139l48-42 90 1 42 30-26 47-72 10-40 34-51-20z"/>
+                <path data-country="United States" d="M186 220l59-31 78 3 30 39-27 42-82 9-56-28z"/>
+                <path data-country="Mexico" d="M238 285l64-3 27 31-26 31-41-15z"/>
+                <path data-country="Brazil" d="M368 315l58-28 57 35-5 75-48 55-48-44z"/>
+                <path data-country="Argentina" d="M406 412l39 12-8 70-24-4-18-52z"/>
+                <path data-country="United Kingdom" d="M474 181l14-19 14 18-9 28-18-6z"/>
+                <path data-country="France" d="M486 216l31-9 21 25-15 32-35-8z"/>
+                <path data-country="Spain" d="M461 251l29-2 12 25-30 17-24-15z"/>
+                <path data-country="Italy" d="M530 250l20 9 8 34 17 18-10 10-24-24-17-35z"/>
+                <path data-country="Norway" d="M514 108l24-36 17 11-11 63-18 28-14-15z"/>
+                <path data-country="Egypt" d="M543 301l38-3 15 37-31 27-28-25z"/>
+                <path data-country="South Africa" d="M540 417l50-5 24 32-31 30-40-9-14-28z"/>
+                <path data-country="India" d="M649 278l43-17 39 30-18 65-30 38-29-58z"/>
+                <path data-country="China" d="M660 188l87-29 71 33-5 66-67 26-67-22-34-39z"/>
+                <path data-country="Japan" d="M830 205l16-23 9 11-8 31-14 22-8-10z"/>
+                <path data-country="Indonesia" d="M710 382l44-12 35 18 45-4 13 17-54 11-49-9-37 4z"/>
+                <path data-country="Australia" d="M754 416l83-23 63 36-17 55-70 16-62-37z"/>
+              </g>
+              <text x="500" y="505" text-anchor="middle" class="map-note">Equal Earth-inspired interactive prototype • simplified country geometry</text>
+            </svg>
+            <div class="map-hint">Tap a country • hold to mark visited</div>
+          </div>
+          <div class="map-summary">
+            <div><strong id="visitedCount">0</strong><span>visited</span></div>
+            <div><strong id="goingCount">0</strong><span>going</span></div>
+            <div><strong id="wishCount">0</strong><span>wishlist</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="trips">
+        <div class="section-head"><h2>My trips</h2><button class="pill" id="newTripBtn">＋ New trip</button></div>
+        <div id="tripList" class="stack"></div>
+      </section>
+
+      <section class="screen" data-screen="me">
+        <div class="hero-card"><div class="eyebrow">TRAVEL SNAPSHOT</div><h2>Your world, one place.</h2><p>A minimal home for everywhere you've been and everywhere you're planning next.</p></div>
+        <div class="stats-grid">
+          <div class="stat"><strong id="meVisited">0</strong><span>Countries visited</span></div>
+          <div class="stat"><strong id="meTrips">0</strong><span>Trips</span></div>
+          <div class="stat"><strong id="meGoing">0</strong><span>Upcoming</span></div>
+          <div class="stat"><strong id="meWishlist">0</strong><span>Wishlist</span></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-target="map"><span>◎</span>Map</button>
+      <button class="nav-item" data-target="trips"><span>✈</span>Trips</button>
+      <button class="nav-item" data-target="me"><span>○</span>Me</button>
+    </nav>
+  </div>
+
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <aside class="sheet" id="countrySheet" aria-hidden="true">
+    <div class="grabber"></div>
+    <button class="sheet-close" id="sheetClose">×</button>
+    <div class="flag" id="countryFlag">🌍</div>
+    <h2 id="countryName">Country</h2>
+    <p class="muted" id="countryStatus">Not marked yet</p>
+    <div class="choice-grid">
+      <button data-status="visited">✓<span>I've been here</span></button>
+      <button data-status="going">✈<span>I'm going here</span></button>
+      <button data-status="wishlist">♡<span>I want to go</span></button>
+    </div>
+    <div class="divider"></div>
+    <h3>Trips & plans</h3>
+    <div id="countryTrips" class="stack compact"></div>
+    <button class="full-btn" id="addCountryTrip">＋ Add a trip</button>
+    <h3 class="space-top">Wishlist / saved places</h3>
+    <div id="savedPlaces" class="chips"></div>
+    <form id="placeForm" class="inline-form"><input id="placeInput" placeholder="Add a restaurant or place" maxlength="50"><button>＋</button></form>
+  </aside>
+
+  <dialog id="tripDialog">
+    <form method="dialog" id="tripForm">
+      <h2>Create trip</h2>
+      <label>Country<input id="tripCountry" required placeholder="Italy"></label>
+      <label>Trip name<input id="tripName" required placeholder="Rome"></label>
+      <div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div>
+      <label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label>
+      <div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
