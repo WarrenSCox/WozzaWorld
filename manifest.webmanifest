@@ -1,0 +1,13 @@
+{
+  "name": "WozzaWorld",
+  "short_name": "WozzaWorld",
+  "description": "Your world, your trips, your bucket list.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FDF8EC",
+  "theme_color": "#FDF8EC",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

@@ -3,18 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#f7f5f0" />
-  <title>My World</title>
+  <meta name="theme-color" content="#FDF8EC" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="WozzaWorld" />
+  <title>WozzaWorld</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="app">
     <header class="topbar">
-      <div>
-        <div class="eyebrow">MY WORLD</div>
-        <h1 id="screenTitle">Explore</h1>
+      <div class="brand-wrap">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="brand-globe">◎</span><span class="brand-plane">✈</span><span class="brand-ship">⌁</span><span class="brand-train">▣</span>
+        </div>
+        <div>
+          <div class="eyebrow">WOZZAWORLD</div>
+          <h1 id="screenTitle">Explore</h1>
+        </div>
       </div>
-      <button class="icon-btn" id="resetBtn" aria-label="Reset demo">↻</button>
+      <div class="top-actions">
+        <button class="install-btn" id="installBtn" hidden>＋ Add app to mobile</button>
+        <button class="icon-btn" id="resetBtn" aria-label="Reset demo">↻</button>
+      </div>
     </header>
 
     <main>
@@ -52,7 +65,7 @@
           <div class="map-summary">
             <div><strong id="visitedCount">0</strong><span>visited</span></div>
             <div><strong id="goingCount">0</strong><span>going</span></div>
-            <div><strong id="wishCount">0</strong><span>wishlist</span></div>
+            <div><strong id="wishCount">0</strong><span>bucket list</span></div>
           </div>
         </div>
       </section>
@@ -68,7 +81,7 @@
           <div class="stat"><strong id="meVisited">0</strong><span>Countries visited</span></div>
           <div class="stat"><strong id="meTrips">0</strong><span>Trips</span></div>
           <div class="stat"><strong id="meGoing">0</strong><span>Upcoming</span></div>
-          <div class="stat"><strong id="meWishlist">0</strong><span>Wishlist</span></div>
+          <div class="stat"><strong id="meWishlist">0</strong><span>Bucket list</span></div>
         </div>
       </section>
     </main>
@@ -90,13 +103,13 @@
     <div class="choice-grid">
       <button data-status="visited">✓<span>I've been here</span></button>
       <button data-status="going">✈<span>I'm going here</span></button>
-      <button data-status="wishlist">♡<span>I want to go</span></button>
+      <button data-status="bucket">♡<span>Bucket list</span></button>
     </div>
     <div class="divider"></div>
     <h3>Trips & plans</h3>
     <div id="countryTrips" class="stack compact"></div>
     <button class="full-btn" id="addCountryTrip">＋ Add a trip</button>
-    <h3 class="space-top">Wishlist / saved places</h3>
+    <h3 class="space-top">Bucket list / saved places</h3>
     <div id="savedPlaces" class="chips"></div>
     <form id="placeForm" class="inline-form"><input id="placeInput" placeholder="Add a restaurant or place" maxlength="50"><button>＋</button></form>
   </aside>
