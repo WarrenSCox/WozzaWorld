@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#02BCD6">
+<meta name="theme-color" content="#00C9E6">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WozzaWorld">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest?v=0.6">
+<link rel="icon" href="icon.svg?v=0.6" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.6">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=0.6">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -27,20 +27,7 @@
 <div id="app">
 <header class="topbar">
   <div class="brand">
-    <div class="brand-logo" aria-hidden="true">
-      <svg viewBox="0 0 100 70">
-        <circle class="logo-globe" cx="50" cy="35" r="22"/>
-        <path class="logo-land" d="M34 25l8-7 9 3 2 7-6 5-2 8-8-2-5-7zM54 19l10 2 7 7-2 8-8 1-4-5-5-2zM47 41l8-3 7 4-2 10-8 5-5-7z"/>
-        <ellipse class="logo-orbit back" cx="50" cy="35" rx="42" ry="22" transform="rotate(-18 50 35)"/>
-        <ellipse class="logo-orbit front" cx="50" cy="35" rx="42" ry="22" transform="rotate(-18 50 35)"/>
-        <g class="logo-vehicles">
-          <path d="M77 12l12 3-10 4-3 6-2-.7 1.5-6-7-2 1-2.5 7.5 1z"/>
-          <path d="M8 41h15l-3 5H12zM12 37h7v4h-7z"/>
-          <path d="M29 57h14l3 5H27zM31 54h10l2 3H30z"/>
-          <path d="M74 49h13v8H74zM76 51h4v3h-4zM82 51h3v3h-3z"/>
-        </g>
-      </svg>
-    </div>
+    <img src="icon.svg?v=0.6" alt="" class="brand-icon">
     <h1>WOZZA<span>WORLD</span></h1>
   </div>
   <button class="install-btn" id="installBtn"><span>↓</span> Add to mobile</button>
@@ -94,5 +81,5 @@
 
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js"></script>
+<script src="app.js?v=0.6"></script>
 </body></html>

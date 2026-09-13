@@ -1,1 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#FDF8EC"/><circle cx="245" cy="255" r="135" fill="none" stroke="#1f211e" stroke-width="22"/><path d="M110 255h270M245 120c-62 71-62 199 0 270M245 120c62 71 62 199 0 270" fill="none" stroke="#1f211e" stroke-width="16" stroke-linecap="round"/><path d="M75 345c112 103 294 74 366-31" fill="none" stroke="#02BCD6" stroke-width="16" stroke-dasharray="18 20" stroke-linecap="round"/><path d="M408 267l78 18-70 24-28 49-18-8 10-49-48-14 8-17 51 5z" fill="#1f211e"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="WozzaWorld">
+  <defs>
+    <clipPath id="globeClip"><circle cx="128" cy="128" r="60"/></clipPath>
+  </defs>
+  <!-- mathematically clean orbit -->
+  <ellipse cx="128" cy="128" rx="106" ry="54" transform="rotate(-18 128 128)" fill="none" stroke="#17213D" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <!-- globe -->
+  <circle cx="128" cy="128" r="60" fill="#00D4F0"/>
+  <g clip-path="url(#globeClip)" fill="#BFFF00">
+    <path d="M81 95l15-15 21-5 13 6-4 12-12 5-3 12-13 2-11-7z"/>
+    <path d="M139 77l17 2 17 10 8 13-8 8-17-2-7-10-11-4z"/>
+    <path d="M133 119l14-5 18 7 5 16-7 17-16 17-9-9-2-18-10-9z"/>
+    <path d="M87 122l13-5 12 8 2 14-8 15-9 12-7-12 4-11-8-8z"/>
+  </g>
+  <!-- transport icons sit directly on the orbit -->
+  <g fill="#17213D">
+    <!-- plane: upper-right -->
+    <g transform="translate(202 67) rotate(17) scale(.72)">
+      <path d="M-30 2L4-5 18-25h8l-8 21 25 6v7L18 15l8 21h-8L4 16l-34-7-11 8h-6l7-12-7-12h6z"/>
+    </g>
+    <!-- cruise ship: left -->
+    <g transform="translate(31 119) rotate(-5)">
+      <path d="M-17 3h35l-6 11c-7 5-20 5-27 0z"/>
+      <path d="M-9-8h18v11H-9zM-4-15h8v7h-8z"/>
+      <path d="M-20 18c7 5 14 5 21 0 7 5 14 5 21 0" fill="none" stroke="#17213D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <!-- train: lower-left -->
+    <g transform="translate(72 190) rotate(11)">
+      <path d="M-22-9h35c7 0 12 5 15 11l4 8H-25z"/>
+      <rect x="-16" y="-5" width="9" height="6" rx="1" fill="#FFF9EE"/>
+      <rect x="-4" y="-5" width="9" height="6" rx="1" fill="#FFF9EE"/>
+      <path d="M-25 13h56" fill="none" stroke="#17213D" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <!-- bus: lower-right -->
+    <g transform="translate(207 174) rotate(-9)">
+      <rect x="-24" y="-13" width="48" height="26" rx="7"/>
+      <rect x="-17" y="-8" width="9" height="8" rx="1" fill="#FFF9EE"/>
+      <rect x="-5" y="-8" width="9" height="8" rx="1" fill="#FFF9EE"/>
+      <rect x="7" y="-8" width="10" height="8" rx="1" fill="#FFF9EE"/>
+      <circle cx="-13" cy="14" r="5"/><circle cx="14" cy="14" r="5"/>
+    </g>
+  </g>
+</svg>
