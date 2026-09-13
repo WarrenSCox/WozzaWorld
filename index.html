@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#00C9E6">
+<meta name="theme-color" content="#0783C2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WozzaWorld">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.8">
-<link rel="icon" href="icon.svg?v=0.8" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png?v=0.8">
+<link rel="manifest" href="manifest.webmanifest?v=0.9">
+<link rel="icon" href="icon.svg?v=0.9" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.9">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.8">
+<link rel="stylesheet" href="styles.css?v=0.9">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -24,13 +24,23 @@
   <span class="cloud c4"></span>
   <span class="cloud c5"></span>
 </div>
+<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.9" alt=""></div>
 <div id="app">
 <header class="topbar">
   <div class="brand">
-    <img src="icon.svg?v=0.8" alt="" class="brand-icon">
-    <h1>WOZZA<span>WORLD</span></h1>
+    <img src="wozzaworld-logo.png?v=0.9" alt="WozzaWorld" class="brand-main-logo">
   </div>
-  <button class="install-btn" id="installBtn"><span>↓</span> Add to mobile</button>
+  <nav class="header-nav" aria-label="Main navigation">
+    <button class="header-nav-item active" data-target="map" aria-label="Map">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg>
+    </button>
+    <button class="header-nav-item" data-target="trips" aria-label="Trips">
+      <svg class="proper-plane" viewBox="0 0 32 32" aria-hidden="true"><path d="M28.3 14.6 19.7 11 18 3.8c-.2-.8-.9-1.3-1.7-1.3h-.6c-.8 0-1.5.5-1.7 1.3L12.3 11l-8.6 3.6c-.7.3-1.2 1-1.2 1.8v1.1l10.2-1.4.7 7-3.7 2.5v1.5l6.3-1.4 6.3 1.4v-1.5l-3.7-2.5.7-7 10.2 1.4v-1.1c0-.8-.5-1.5-1.2-1.8Z"/></svg>
+    </button>
+    <button class="header-nav-item" data-target="me" aria-label="Me">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="9" r="5"/><path d="M5 28v-3c0-5.2 4.9-8.5 11-8.5s11 3.3 11 8.5v3z"/></svg>
+    </button>
+  </nav>
 </header>
 
 <main>
@@ -51,19 +61,18 @@
   <div class="country-carousel" id="countryCarousel" aria-label="Country lists">
     <div class="carousel-track" id="carouselTrack">
       <section class="country-list-panel" data-list="visited">
-        <div class="country-list-head"><h2>Visited</h2><span id="visitedPanelCount">0</span></div>
+        <div class="country-list-head"><h2>Visited</h2></div>
         <div class="country-list" id="visitedCountries"></div>
       </section>
       <section class="country-list-panel" data-list="going">
-        <div class="country-list-head"><h2>Visiting</h2><span id="goingPanelCount">0</span></div>
+        <div class="country-list-head"><h2>Visiting</h2></div>
         <div class="country-list" id="goingCountries"></div>
       </section>
       <section class="country-list-panel" data-list="bucket">
-        <div class="country-list-head"><h2>Bucket list</h2><span id="bucketPanelCount">0</span></div>
+        <div class="country-list-head"><h2>Bucket list</h2></div>
         <div class="country-list" id="bucketCountries"></div>
       </section>
     </div>
-    <div class="carousel-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
   </div>
 </section>
 
@@ -77,12 +86,6 @@
   <div class="stats-grid"><div class="stat green"><strong id="meVisited">0</strong><span>Countries visited</span></div><div class="stat blue"><strong id="meTrips">0</strong><span>Trips</span></div><div class="stat amber"><strong id="meGoing">0</strong><span>Upcoming</span></div><div class="stat coral"><strong id="meWishlist">0</strong><span>Bucket list</span></div></div>
 </section>
 </main>
-
-<nav class="bottom-nav">
-  <button class="nav-item active" data-target="map"><svg class="nav-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span></button>
-  <button class="nav-item" data-target="trips"><svg class="nav-icon plane-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 17.1 13 14l5.8-9.2h3.1l-2.5 9.1 7.7 2.4c1.1.35 1.1 1.9 0 2.25l-7.7 2.4 2.5 6.25h-3.1L13 21.9l-9.5-3.1z"/></svg><span>Trips</span></button>
-  <button class="nav-item" data-target="me"><svg class="nav-icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="9" r="5"/><path d="M5 28v-3c0-5.2 4.9-8.5 11-8.5s11 3.3 11 8.5v3z"/></svg><span>Me</span></button>
-</nav>
 </div>
 
 <div class="sheet-backdrop" id="sheetBackdrop"></div>
@@ -98,5 +101,5 @@
 
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.8"></script>
+<script src="app.js?v=0.9"></script>
 </body></html>
