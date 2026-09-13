@@ -8,11 +8,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WozzaWorld">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.7">
-<link rel="icon" href="icon.svg?v=0.7" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png?v=0.7">
+<link rel="manifest" href="manifest.webmanifest?v=0.8">
+<link rel="icon" href="icon.svg?v=0.8" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.8">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.7">
+<link rel="stylesheet" href="styles.css?v=0.8">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -27,7 +27,7 @@
 <div id="app">
 <header class="topbar">
   <div class="brand">
-    <img src="icon.svg?v=0.7" alt="" class="brand-icon">
+    <img src="icon.svg?v=0.8" alt="" class="brand-icon">
     <h1>WOZZA<span>WORLD</span></h1>
   </div>
   <button class="install-btn" id="installBtn"><span>↓</span> Add to mobile</button>
@@ -47,6 +47,23 @@
       <div class="summary going"><strong id="goingCount">0</strong><span>Visiting</span><i></i></div>
       <div class="summary bucket"><strong id="wishCount">0</strong><span>Bucket list</span><i></i></div>
     </div>
+  </div>
+  <div class="country-carousel" id="countryCarousel" aria-label="Country lists">
+    <div class="carousel-track" id="carouselTrack">
+      <section class="country-list-panel" data-list="visited">
+        <div class="country-list-head"><h2>Visited</h2><span id="visitedPanelCount">0</span></div>
+        <div class="country-list" id="visitedCountries"></div>
+      </section>
+      <section class="country-list-panel" data-list="going">
+        <div class="country-list-head"><h2>Visiting</h2><span id="goingPanelCount">0</span></div>
+        <div class="country-list" id="goingCountries"></div>
+      </section>
+      <section class="country-list-panel" data-list="bucket">
+        <div class="country-list-head"><h2>Bucket list</h2><span id="bucketPanelCount">0</span></div>
+        <div class="country-list" id="bucketCountries"></div>
+      </section>
+    </div>
+    <div class="carousel-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
   </div>
 </section>
 
@@ -81,5 +98,5 @@
 
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.7"></script>
+<script src="app.js?v=0.8"></script>
 </body></html>

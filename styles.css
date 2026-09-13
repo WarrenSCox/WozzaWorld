@@ -139,3 +139,19 @@ html,body{background:var(--blue)!important}
 .map-summary .summary:nth-child(1) i{background:var(--green)!important}
 .map-summary .summary:nth-child(2) i{background:var(--orange)!important}
 .nav-item .plane-icon{stroke-width:2.35!important;fill:none!important}
+
+/* v0.8 — swipeable country lists */
+.country-carousel{margin-top:18px;overflow:hidden;border-radius:30px;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.carousel-track{display:flex;width:300%;transform:translateX(0);transition:transform .34s cubic-bezier(.22,.75,.24,1)}
+.country-list-panel{width:33.333333%;flex:0 0 33.333333%;min-height:330px;background:rgba(255,255,255,.96);border:1px solid rgba(255,255,255,.55);border-radius:30px;padding:22px 22px 18px;box-shadow:var(--shadow)}
+.country-list-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.country-list-head h2{font-family:"Archivo Black",Inter,sans-serif;font-size:22px;letter-spacing:-.035em;margin:0;color:var(--navy)}
+.country-list-head span{display:grid;place-items:center;min-width:34px;height:34px;padding:0 10px;border-radius:999px;background:#f1f2ef;color:var(--navy);font-weight:800;font-size:13px}
+.country-list{display:flex;flex-direction:column}
+.country-row{display:flex;align-items:center;gap:12px;min-height:49px;border-bottom:1px solid #eceeea;padding:8px 2px;color:var(--navy)}
+.country-row:last-child{border-bottom:0}.country-row .country-flag{font-size:23px;width:31px;text-align:center}.country-row strong{font-size:15px;font-weight:800}.country-row small{display:block;color:#8a8f91;font-size:11px;margin-top:2px}.country-empty{display:grid;place-items:center;min-height:190px;text-align:center;color:#8a8f91;font-weight:650;font-size:14px}
+.carousel-dots{height:26px;display:flex;align-items:center;justify-content:center;gap:7px}.carousel-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.48);transition:.2s}.carousel-dots i.active{width:18px;border-radius:99px;background:#fff}
+.country-list-panel[data-list="visited"] .country-list-head span{background:color-mix(in srgb,var(--green) 16%,white);color:var(--green)}
+.country-list-panel[data-list="going"] .country-list-head span{background:color-mix(in srgb,var(--orange) 16%,white);color:#d66d00}
+.country-list-panel[data-list="bucket"] .country-list-head span{background:color-mix(in srgb,var(--yellow) 23%,white);color:#8b6c00}
+@media(max-width:560px){.country-carousel{margin-top:14px;border-radius:27px}.country-list-panel{min-height:310px;border-radius:27px;padding:18px 18px 14px}.country-list-head h2{font-size:20px}}

@@ -1,10 +1,12 @@
-# WozzaWorld v0.7
+# WozzaWorld v0.8
 
-Visual update:
-- New vibrant Essential Color-inspired palette sampled from the supplied reference: blue, orange, green and yellow.
-- Blue remains the sky/background.
-- Green = visited; orange = visiting; yellow = playful UI accents.
-- Trips navigation icon redrawn as a recognisable outlined aeroplane with the same 2.35px rounded stroke weight as Map and Me.
-- Cache version bumped to v0.7.
+Skeleton update adding the swipeable country list block beneath the map.
 
-Flat-file build for GitHub Pages.
+- Starts on **Visited**, showing visited countries with latest visited first.
+- Swipe left/right through **Visiting** and **Bucket list**.
+- Carousel loops continuously in either direction.
+- Tapping a country in a list opens its country sheet.
+- New visit-history tracking records the order of future visited actions.
+- Existing saved visited countries are given an initial stable order because older versions did not store visit dates.
+
+Flat-file GitHub Pages build.
