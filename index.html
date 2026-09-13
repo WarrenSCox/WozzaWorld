@@ -13,11 +13,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WozzaWorld">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.12.0">
-<link rel="icon" href="icon.svg?v=0.12.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png?v=0.12.0">
+<link rel="manifest" href="manifest.webmanifest?v=0.13.0">
+<link rel="icon" href="icon.svg?v=0.13.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.13.0">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.12.0">
+<link rel="stylesheet" href="styles.css?v=0.13.0">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -29,12 +29,12 @@
   <span class="cloud c4"></span>
   <span class="cloud c5"></span>
 </div>
-<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.12.0" alt=""></div>
+<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.13.0" alt=""></div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),1800)</script>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link" id="homeLogo" aria-label="WozzaWorld home"><img src="wozzaworld-logo.png?v=0.12.0" alt="WozzaWorld" class="brand-main-logo"></button>
+  <button class="brand home-link" id="homeLogo" aria-label="WozzaWorld home"><img src="wozzaworld-logo.png?v=0.13.0" alt="WozzaWorld" class="brand-main-logo"></button>
   <nav class="header-nav" aria-label="Main navigation">
     <button class="header-nav-item" data-target="map" aria-label="Map">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg>
@@ -67,15 +67,18 @@
   <div class="country-carousel" id="countryCarousel" aria-label="Country lists">
     <div class="carousel-track" id="carouselTrack">
       <section class="country-list-panel" data-list="visited">
-        <div class="country-list-head"><h2>Visited</h2></div>
+        <div class="country-list-head"><h2>Visited</h2><button class="list-add" data-add-status="visited" aria-label="Add visited country">＋</button></div>
+        <div class="country-search" data-search-for="visited" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="visitedCountries"></div>
       </section>
       <section class="country-list-panel" data-list="going">
-        <div class="country-list-head"><h2>Visiting</h2></div>
+        <div class="country-list-head"><h2>Visiting</h2><button class="list-add" data-add-status="going" aria-label="Add visiting country">＋</button></div>
+        <div class="country-search" data-search-for="going" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="goingCountries"></div>
       </section>
       <section class="country-list-panel" data-list="bucket">
-        <div class="country-list-head"><h2>Bucket list</h2></div>
+        <div class="country-list-head"><h2>Bucket list</h2><button class="list-add" data-add-status="bucket" aria-label="Add bucket-list country">＋</button></div>
+        <div class="country-search" data-search-for="bucket" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="bucketCountries"></div>
       </section>
     </div>
@@ -90,6 +93,7 @@
 <section class="screen" data-screen="me">
   <div class="hero-card accent-card"><div class="eyebrow">TRAVEL SNAPSHOT</div><h2>Your world, one place.</h2><p>Everywhere you've been, everywhere you're going and everywhere still on the bucket list.</p></div>
   <div class="stats-grid"><div class="stat green"><strong id="meVisited">0</strong><span>Countries visited</span></div><div class="stat blue"><strong id="meTrips">0</strong><span>Trips</span></div><div class="stat amber"><strong id="meGoing">0</strong><span>Upcoming</span></div><div class="stat coral"><strong id="meWishlist">0</strong><span>Bucket list</span></div></div>
+  <div class="hero-card recycle-card"><div class="recycle-head"><h3>Country recycle bin</h3><span>Removed countries stay here until you restore or delete them.</span></div><div id="recycleList" class="recycle-list"></div></div>
 </section>
 </main>
 </div>
@@ -100,12 +104,17 @@
   <div class="flag" id="countryFlag">🌍</div><h2 id="countryName">Country</h2><p class="muted" id="countryStatus">Not marked yet</p>
   <div class="choice-grid"><button data-status="visited">✓<span>I've been here</span></button><button data-status="going">✈<span>I'm visiting</span></button><button data-status="bucket">♡<span>Bucket list</span></button></div>
   <div class="divider"></div><h3>Trips & plans</h3><div id="countryTrips" class="stack compact"></div><button class="full-btn" id="addCountryTrip">＋ Add a trip</button>
+  <h3 class="space-top">Travel companions</h3><div id="companionChips" class="chips"></div><form id="companionForm" class="inline-form"><input id="companionInput" placeholder="Add a person" maxlength="40"><button>＋</button></form>
+  <h3 class="space-top">Memories</h3><textarea id="memoryNotes" class="memory-notes" placeholder="Write down the moments you never want to forget…"></textarea><div class="autosave-note">Auto-saves as you type</div>
   <h3 class="space-top">Bucket list / saved places</h3><div id="savedPlaces" class="chips"></div><form id="placeForm" class="inline-form"><input id="placeInput" placeholder="Add a restaurant or place" maxlength="50"><button>＋</button></form>
 </aside>
 
 <dialog id="tripDialog"><form method="dialog" id="tripForm"><h2>Create trip</h2><label>Country<input id="tripCountry" required placeholder="Italy"></label><label>Trip name<input id="tripName" required placeholder="Rome"></label><div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div><label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label><div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create</button></div></form></dialog>
 
+
+<dialog id="removeDialog" class="action-dialog"><form method="dialog"><h3 id="removeDialogTitle">Remove country?</h3><p>It will move to your country recycle bin, so you can restore it later.</p><div class="dialog-actions"><button value="cancel">Cancel</button><button value="remove" class="danger" id="confirmRemove">Remove from list</button></div></form></dialog>
+<dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.12.0"></script>
+<script src="app.js?v=0.13.0"></script>
 </body></html>
