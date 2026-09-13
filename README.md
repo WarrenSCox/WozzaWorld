@@ -1,3 +1,3 @@
-# WozzaWorld v0.9
+WozzaWorld v0.9.1 hotfix
 
-Visual refinement release: WozzaWatch-style top navigation and list styling, improved swipe transition, approved WozzaWorld logo and launch splash, softer blue map oceans, yellow Bucket List status, redundant list counts/indicator removed, and updated Trips plane icon.
+Fixes launch splash getting stuck when the install button is absent, and adds a fail-safe so the splash always clears. Upload/replace all files in the repo root.
