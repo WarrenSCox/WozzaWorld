@@ -285,3 +285,91 @@ body.map-view .map-loading{background:var(--blue)!important;color:#fff}
 .action-dialog{border:0;border-radius:22px;padding:0;max-width:min(92vw,420px);box-shadow:0 24px 70px rgba(0,0,0,.25)}.action-dialog::backdrop{background:rgba(23,33,61,.36)}.action-dialog form{padding:22px}.action-dialog h3{margin:0 0 8px;font-family:"Archivo Black",Inter,sans-serif;color:var(--navy)}.action-dialog p{color:var(--muted);font-size:14px}.danger{background:#f55849!important;color:white!important}.people-dialog-list{display:grid;gap:8px;margin:14px 0}.people-dialog-list span{padding:9px 11px;border-radius:12px;background:#f4f5f3;color:var(--navy);font-weight:700}
 @media(max-width:560px){.topbar{min-height:82px!important;gap:4px!important;padding-left:8px!important;padding-right:8px!important}.brand-main-logo{width:112px!important;height:70px!important;max-width:27vw}.header-nav{grid-template-columns:repeat(3,34px)!important;gap:1px!important;padding:3px!important}.header-nav-item{width:34px!important;height:36px!important;padding:5px!important}.header-nav-item svg{width:23px!important;height:23px!important}.header-slogan{font-size:11.7px!important;min-width:91px!important;max-width:98px!important;line-height:.84!important}.list-add{width:36px;height:36px;font-size:24px}}
 @media(max-width:390px){.brand-main-logo{width:98px!important;height:64px!important}.header-nav{grid-template-columns:repeat(3,31px)!important}.header-nav-item{width:31px!important;height:34px!important}.header-slogan{font-size:10px!important;min-width:76px!important;max-width:82px!important}}
+
+/* v0.13.1 HOTFIX — mobile header sizing/alignment (must stay last) */
+.topbar{
+  display:grid!important;
+  grid-template-columns:max-content max-content 1fr!important;
+  align-items:center!important;
+  justify-content:stretch!important;
+  column-gap:10px!important;
+  min-height:108px!important;
+}
+.brand{
+  justify-self:start!important;
+  width:auto!important;
+  flex:none!important;
+}
+.brand-main-logo{
+  width:176px!important;
+  height:98px!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+}
+.header-nav{
+  justify-self:start!important;
+  margin:0!important;
+  flex:none!important;
+}
+.header-slogan{
+  justify-self:end!important;
+  margin:0!important;
+  color:#fff!important;
+  font-size:21px!important;
+  line-height:.84!important;
+  min-width:0!important;
+  max-width:none!important;
+  width:max-content!important;
+  white-space:nowrap!important;
+  text-align:right!important;
+}
+
+@media(max-width:560px){
+  .topbar{
+    grid-template-columns:max-content max-content 1fr!important;
+    column-gap:5px!important;
+    min-height:96px!important;
+    padding-left:8px!important;
+    padding-right:8px!important;
+  }
+  .brand-main-logo{
+    width:132px!important;
+    height:82px!important;
+    max-width:none!important;
+  }
+  .header-nav{
+    justify-self:start!important;
+    margin:0!important;
+    grid-template-columns:repeat(3,34px)!important;
+    gap:1px!important;
+    padding:3px!important;
+  }
+  .header-nav-item{width:34px!important;height:38px!important;padding:5px!important}
+  .header-nav-item svg{width:24px!important;height:24px!important}
+  .header-slogan{
+    justify-self:end!important;
+    margin:0!important;
+    font-size:14px!important;
+    line-height:.82!important;
+    min-width:0!important;
+    max-width:none!important;
+    width:max-content!important;
+  }
+}
+
+@media(max-width:390px){
+  .topbar{column-gap:3px!important;padding-left:6px!important;padding-right:6px!important}
+  .brand-main-logo{width:120px!important;height:76px!important;max-width:none!important}
+  .header-nav{grid-template-columns:repeat(3,31px)!important;gap:1px!important;padding:2px!important}
+  .header-nav-item{width:31px!important;height:35px!important;padding:4px!important}
+  .header-nav-item svg{width:23px!important;height:23px!important}
+  .header-slogan{font-size:12.6px!important;line-height:.82!important}
+}
+
+@media(max-width:350px){
+  .brand-main-logo{width:108px!important;height:70px!important}
+  .header-nav{grid-template-columns:repeat(3,29px)!important}
+  .header-nav-item{width:29px!important;height:33px!important}
+  .header-slogan{font-size:11.2px!important}
+}
