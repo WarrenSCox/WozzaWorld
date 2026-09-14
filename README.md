@@ -43,3 +43,7 @@ Android status bar handling now mirrors WozzaWatch: one static theme-color, matc
 
 ## v0.15.0
 Slim sticky translucent gradient header; Passport nav; restored WozzaWorld logo; map overlay/reset cleanup; country rows show month/year only; slow random plane contrails and ocean cruise animation on home map.
+
+
+## v0.15.1
+Visited filter/sort control, unified header/status-bar colour, increased header translucency, and shorter dissipating plane contrails.

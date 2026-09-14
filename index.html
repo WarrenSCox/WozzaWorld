@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#075E78">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.14.8">
+<link rel="manifest" href="manifest.webmanifest?v=0.15.1">
 <link rel="icon" href="icon.svg?v=0.14.8" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png?v=0.14.8">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.15.0">
+<link rel="stylesheet" href="styles.css?v=0.15.1">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -21,12 +21,12 @@
   <span class="cloud c4"></span>
   <span class="cloud c5"></span>
 </div>
-<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.15.0" alt=""></div>
+<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.15.1" alt=""></div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),1800)</script>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.15.0" alt="WozzaWorld"></button>
+  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.15.1" alt="WozzaWorld"></button>
   <nav class="header-nav" aria-label="Main navigation">
     <button class="header-nav-item" data-target="map" aria-label="Map">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span>
@@ -62,7 +62,7 @@
   <div class="country-carousel" id="countryCarousel" aria-label="Country lists">
     <div class="carousel-track" id="carouselTrack">
       <section class="country-list-panel" data-list="visited">
-        <div class="country-list-head"><div><h2>Visited</h2><p>Countries explored so far</p></div><button class="list-add" data-add-status="visited" aria-label="Add visited country">＋</button></div>
+        <div class="country-list-head"><div><h2>Visited</h2><p>Countries explored so far</p></div><div class="list-head-actions"><button class="list-filter" id="visitedFilterBtn" aria-label="Filter and sort visited countries" title="Filter and sort"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><i class="filter-active-dot" aria-hidden="true"></i></button><button class="list-add" data-add-status="visited" aria-label="Add visited country">＋</button></div></div>
         <div class="country-search" data-search-for="visited" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="visitedCountries"></div>
       </section>
@@ -107,10 +107,12 @@
 <dialog id="tripDialog" class="trip-dialog"><form method="dialog" id="tripForm"><h2>Create trip</h2><p class="muted">One journey can include several countries. They will still appear separately in your country lists.</p><label>Trip name<input id="tripName" required placeholder="European summer trip"></label><div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div><label>Countries <span class="field-note">comma separated</span><input id="tripCountries" required placeholder="Italy, France, Spain"></label><label>Cities <span class="field-note">Country: City, City; …</span><textarea id="tripCities" placeholder="Italy: Rome, Florence; France: Paris"></textarea></label><label>Travel companions <span class="field-note">comma separated</span><input id="tripCompanions" placeholder="Anthony, Mel"></label><label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label><div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create trip</button></div></form></dialog>
 
 
+
+<dialog id="visitedFilterDialog" class="action-dialog filter-dialog"><form method="dialog"><h3>Filter &amp; sort</h3><p>Choose how your visited countries are shown.</p><label>Sort by<select id="visitedSort"><option value="default">Current order</option><option value="az">Alphabetical A–Z</option><option value="za">Alphabetical Z–A</option><option value="added-new">Date added — newest first</option><option value="added-old">Date added — oldest first</option><option value="trip-new">Trip date — newest first</option><option value="trip-old">Trip date — oldest first</option></select></label><label>Year<select id="visitedYear"><option value="all">All years</option></select></label><small class="filter-note">Countries without a known trip/visit date stay visible when sorting by trip date and are placed after dated countries. A year filter only shows countries with a recorded visit in that year.</small><div class="dialog-actions filter-actions"><button value="cancel" type="button" id="resetVisitedFilters">Reset</button><button value="default" class="primary" type="submit">Apply</button></div></form></dialog>
 <dialog id="removeDialog" class="action-dialog"><form method="dialog"><h3 id="removeDialogTitle">Remove country?</h3><p>It will move to your country recycle bin, so you can restore it later.</p><div class="dialog-actions"><button value="cancel">Cancel</button><button value="remove" class="danger" id="confirmRemove">Remove from list</button></div></form></dialog>
 <dialog id="citiesDialog" class="action-dialog"><form method="dialog"><h3 id="citiesDialogTitle">Cities visited</h3><div id="citiesDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.15.0"></script>
+<script src="app.js?v=0.15.1"></script>
 </body></html>

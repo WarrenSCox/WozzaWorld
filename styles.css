@@ -735,3 +735,22 @@ body.map-view .travel-animations{display:none!important}
   .header-nav-item span{font-size:8px!important}
   .header-slogan{font-size:7.8px!important}
 }
+
+/* v0.15.1 — filter/sort + header continuity + softer contrails */
+:root{--system-header:#075E78}
+html,body{background-color:var(--system-header)!important}
+.topbar{
+  background:linear-gradient(115deg,rgba(7,94,120,.82),rgba(7,111,132,.76))!important;
+  -webkit-backdrop-filter:blur(15px) saturate(115%)!important;backdrop-filter:blur(15px) saturate(115%)!important;
+}
+.country-list-head{display:flex!important;align-items:center!important;justify-content:space-between!important}
+.list-head-actions{display:flex;align-items:center;gap:7px;margin-left:auto;flex:0 0 auto}
+.list-filter,.list-head-actions .list-add{width:40px!important;height:40px!important;border:0!important;border-radius:50%!important;display:grid!important;place-items:center!important;background:var(--atlas-cyan,#1aa9c2)!important;color:#fff!important;position:relative;box-shadow:none!important}
+.list-filter svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.filter-active-dot{display:none;position:absolute;width:7px;height:7px;border-radius:50%;right:4px;top:4px;background:#ffd34e;border:1px solid rgba(255,255,255,.9)}
+.list-filter.is-active .filter-active-dot{display:block}
+.filter-dialog label{display:grid;gap:6px;margin:14px 0;color:var(--ink);font-weight:800;font-size:12px}
+.filter-dialog select{width:100%;min-height:44px;border:1px solid var(--premium-line);border-radius:12px;background:#fff;padding:9px 12px;color:var(--ink);font:inherit}
+.filter-note{display:block;color:var(--soft-ink);line-height:1.45;margin-top:4px}.filter-actions{justify-content:space-between!important}
+.travel-contrail{stroke:rgba(255,255,255,.54)!important;filter:none!important}
+@media(max-width:560px){.list-filter,.list-head-actions .list-add{width:36px!important;height:36px!important}.list-filter svg{width:20px;height:20px}}
