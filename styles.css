@@ -761,28 +761,27 @@ html,body{background-color:var(--system-header)!important}
 .contrail-segment{stroke:rgba(255,255,255,.78);stroke-width:3.6;stroke-linecap:round;filter:none}
 body.map-view .map-stage{inset:0!important;width:100vw!important;height:100dvh!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important}
 body.map-view #worldMap{width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;object-fit:fill!important}
-
-
-/* v0.15.3 — personalised World View + unified map */
-.premium-country-row{padding-right:16px!important}
-.premium-country-row:after{content:none!important;display:none!important}
-
-.home-world-view{position:absolute;z-index:6;right:4.2%;top:5.5%;width:25%;text-align:center;transform:rotate(-7deg);pointer-events:none;display:flex;flex-direction:column;align-items:center;line-height:1}
-.home-world-name{font-family:"Brush Script MT","Segoe Script","Lucida Handwriting",cursive;font-size:clamp(18px,3.3vw,43px);font-weight:700;color:#ff4fc8;text-shadow:0 0 3px #fff,0 0 7px #ff55cc,0 0 15px rgba(255,40,190,.9),0 0 25px rgba(255,40,190,.6);white-space:nowrap}
-.home-world-view b{margin-top:5px;font-family:"Archivo Black",Inter,sans-serif;font-size:clamp(8px,1.25vw,16px);letter-spacing:.18em;color:#17333f;white-space:nowrap}
-.map-world-view{display:none}
-.name-setup-dialog label{display:grid;gap:7px;margin-top:16px;font-weight:800;font-size:12px;color:var(--ink)}
-.name-setup-dialog input{min-height:46px;border:1px solid var(--premium-line,#dce4e7);border-radius:12px;padding:10px 12px;font:inherit;background:#fff;color:var(--ink)}
-
-/* Full map uses the same visual language as Home, with a dedicated title band. */
-body.map-view{background:linear-gradient(155deg,#075E78 0%,#08748b 48%,#07566e 100%)!important}
-body.map-view .map-card{background:transparent!important}
-body.map-view .map-stage{inset:0!important;width:100vw!important;height:100dvh!important;padding:0!important;background:linear-gradient(155deg,#075E78 0%,#08748b 48%,#07566e 100%)!important;display:block!important;overflow:hidden!important}
-body.map-view #worldMap{position:absolute!important;left:0!important;right:0!important;bottom:0!important;top:13dvh!important;width:100vw!important;height:87dvh!important;max-width:none!important;max-height:none!important;margin:0!important;object-fit:contain!important;transform:none!important}
-body.map-view .map-world-view{display:flex!important;position:absolute;z-index:8;left:0;right:0;top:max(10px,env(safe-area-inset-top));height:11dvh;align-items:center;justify-content:center;gap:.34em;font-family:"Archivo Black",Inter,sans-serif;color:#fff;text-transform:uppercase;letter-spacing:.08em;font-size:clamp(20px,3vw,38px);pointer-events:none;text-shadow:0 2px 8px rgba(0,35,50,.22)}
-body.map-view .map-world-name{font:inherit;color:inherit}
-body.map-view .home-world-view{display:none!important}
-body.map-view .ocean{fill:#dff3f6!important;stroke:#d7eaed!important}
-body.map-view #worldMap .country{stroke:#fff!important}
-body.map-view .map-close{z-index:12!important}
-@media(max-width:620px){.home-world-view{right:3.2%;top:4.5%;width:27%}.premium-country-row{padding-right:10px!important}}
+\n\n/* v0.15.4 — World View personalization + centred map + launch polish */
+.topbar{background:linear-gradient(115deg,rgba(7,94,120,.68),rgba(7,111,132,.62))!important;-webkit-backdrop-filter:blur(15px) saturate(115%)!important;backdrop-filter:blur(15px) saturate(115%)!important}
+.header-slogan{font-size:12px!important;line-height:1.12!important;letter-spacing:.12em!important;text-align:right!important;white-space:normal!important}
+.header-slogan strong{display:block!important}
+.premium-country-row:after{display:none!important;content:none!important}
+.world-view-signature{position:absolute;z-index:7;right:5.5%;top:5.5%;width:34%;max-width:280px;display:flex;flex-direction:column;align-items:center;pointer-events:none;transform:rotate(7deg);transform-origin:center;color:#111827}
+.world-view-signature .world-view-name{font-family:"Brush Script MT","Segoe Script","Bradley Hand",cursive;font-size:clamp(30px,5.2vw,64px);font-weight:600;line-height:.82;white-space:nowrap;color:#111827;text-shadow:none}
+.world-view-signature b{font-family:"Archivo Black",Impact,sans-serif;font-size:clamp(12px,2.15vw,25px);line-height:1;letter-spacing:.08em;white-space:nowrap;color:#111827;margin-top:7px}
+.map-view-title{display:none}
+body.map-view .world-view-signature{display:none!important}
+body.map-view .map-view-title{display:block;position:fixed;z-index:115;left:50%;top:max(18px,env(safe-area-inset-top));transform:translateX(-50%);color:#fff;font-family:"Archivo Black",Impact,sans-serif;font-size:clamp(20px,3vw,34px);letter-spacing:.08em;white-space:nowrap;text-align:center;pointer-events:none}
+body.map-view .map-card,body.map-view .map-stage{background:linear-gradient(155deg,#075E78 0%,#08748b 48%,#07566e 100%)!important}
+body.map-view .map-stage{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;padding:72px 18px 18px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important}
+body.map-view #worldMap{width:100%!important;height:100%!important;max-width:calc((100dvh - 90px) * 1.923)!important;max-height:calc(100dvh - 90px)!important;margin:auto!important;object-fit:contain!important;transform:none!important}
+body.map-view .ocean{fill:#dceff3!important}.map-close{top:max(14px,env(safe-area-inset-top))!important}
+@media(orientation:landscape){body.map-view .map-stage{padding:54px 74px 12px!important}body.map-view #worldMap{max-width:calc((100dvh - 66px) * 1.923)!important;max-height:calc(100dvh - 66px)!important}body.map-view .map-view-title{top:max(10px,env(safe-area-inset-top));font-size:clamp(18px,2.4vw,28px)}}
+@media(max-width:620px){.header-slogan{font-size:8.2px!important;line-height:1.12!important;letter-spacing:.08em!important}.world-view-signature{right:4%;top:4%;width:38%}.world-view-signature .world-view-name{font-size:clamp(27px,8vw,48px)}.world-view-signature b{font-size:clamp(10px,3.2vw,17px)}}
+/* Cloud-opening launch reveal */
+.launch-splash{overflow:hidden!important;background:linear-gradient(180deg,#58c9e8 0%,#9de4f3 100%)!important;transition:opacity .42s ease,visibility .42s ease!important}
+.launch-splash img{position:relative;z-index:2;width:min(76vw,360px)!important;opacity:0;transform:scale(.82);animation:wwLogoReveal 1.45s .42s cubic-bezier(.2,.8,.2,1) forwards}
+.splash-cloud{position:absolute;z-index:3;top:-15%;bottom:-15%;width:68%;background:radial-gradient(ellipse at 40% 25%,#fff 0 18%,transparent 19%),radial-gradient(ellipse at 68% 40%,#f7fbfc 0 24%,transparent 25%),radial-gradient(ellipse at 36% 67%,#fff 0 27%,transparent 28%),radial-gradient(ellipse at 72% 78%,#edf7f9 0 24%,transparent 25%);filter:drop-shadow(0 8px 20px rgba(7,94,120,.12));animation-duration:1.45s;animation-delay:.22s;animation-fill-mode:forwards;animation-timing-function:cubic-bezier(.55,.02,.35,1)}
+.splash-cloud-left{left:-8%;animation-name:wwCloudLeft}.splash-cloud-right{right:-8%;transform:scaleX(-1);animation-name:wwCloudRight}
+@keyframes wwCloudLeft{to{transform:translateX(-92%);opacity:.35}}@keyframes wwCloudRight{to{transform:scaleX(-1) translateX(-92%);opacity:.35}}@keyframes wwLogoReveal{55%{opacity:1;transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.splash-cloud{display:none}.launch-splash img{animation:none;opacity:1;transform:none}}
