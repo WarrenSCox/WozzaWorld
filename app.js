@@ -116,7 +116,7 @@ $('#visitedFilterDialog')?.addEventListener('submit',e=>{e.preventDefault();stat
 $('#resetVisitedFilters')?.addEventListener('click',()=>{state.visitedListPrefs={sort:'default',year:'all'};localStorage.setItem('wozzaworld-state',JSON.stringify(state));$('#visitedFilterDialog').close();render();refreshVisitedFilterUI()});
 
 setupCountrySearch();buildMap();render();refreshVisitedFilterUI();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.16.2',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,2850),{once:true});setTimeout(hide,3350);
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.16.4',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,2850),{once:true});setTimeout(hide,3350);
 
 
 // v0.14.9 — web-only install button, matching WozzaWatch behaviour.

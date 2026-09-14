@@ -84,3 +84,9 @@ Dynamic personalised passport-stamp World View mark on the home map.
 - Nudged the World View stamp up by 2px.
 - Made the immersive map title ribbon substantially more transparent.
 - Added a subtle glossy teal app-wide background gradient while preserving the Android/PWA system colour.
+
+
+## v0.16.4 hotfix
+- Removed the stray/light divider line from the My World View header.
+- Replaced the ribbon gradient with one consistent translucent teal.
+- Balanced the title vertically with equal space above and below in portrait and landscape.

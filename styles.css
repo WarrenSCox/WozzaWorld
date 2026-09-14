@@ -1029,3 +1029,40 @@ body.map-view .departure-board{display:none!important}
 body.map-view .map-card{top:0!important}
 body.map-view .map-stage{padding-top:50px!important}
 @media(max-width:620px){body:not(.map-view) .departure-board{width:calc(100% - 24px)!important;margin:12px auto 18px!important}}
+
+/* v0.16.4 HOTFIX — My World View ribbon: clean translucent block, no divider, balanced vertical spacing. */
+body.map-view .map-view-title{
+  top:0!important;
+  height:48px!important;
+  min-height:48px!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:1!important;
+  background:rgba(7,94,120,.24)!important;
+  background-image:none!important;
+  border:0!important;
+  border-bottom:0!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:blur(5px) saturate(108%)!important;
+  backdrop-filter:blur(5px) saturate(108%)!important;
+}
+body.map-view .map-stage{padding-top:48px!important}
+body.map-view #worldMap{height:calc(100dvh - 48px)!important}
+@media(orientation:landscape){
+  body.map-view .map-view-title{
+    height:40px!important;
+    min-height:40px!important;
+    padding:0!important;
+    line-height:1!important;
+    border:0!important;
+    border-bottom:0!important;
+    background:rgba(7,94,120,.24)!important;
+    background-image:none!important;
+    box-shadow:none!important;
+  }
+  body.map-view .map-stage{padding-top:40px!important}
+  body.map-view #worldMap{height:calc(100dvh - 40px)!important}
+}
