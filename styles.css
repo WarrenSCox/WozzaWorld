@@ -531,10 +531,10 @@ body:not(.map-view) #worldMap{width:100%!important;height:auto!important;aspect-
   .premium-country-row{grid-template-columns:86px minmax(0,1fr) max-content!important}.flag-wash{width:101px!important}.country-row-copy strong{font-size:15px!important}
 }
 
-/* v0.14.3 — atmospheric atlas background + resilient flags/date metadata */
+/* v0.14.4 — atmospheric atlas background + resilient flags/date metadata */
 body::before{
   content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background-image:linear-gradient(180deg,rgba(2,43,61,.20),rgba(7,91,116,.08) 45%,rgba(237,246,247,.12)),url("mountain-bg.svg?v=0.14.3");
+  background-image:linear-gradient(180deg,rgba(2,43,61,.20),rgba(7,91,116,.08) 45%,rgba(237,246,247,.12)),url("mountain-bg.svg?v=0.14.4");
   background-size:cover;background-position:center top;background-repeat:no-repeat;
 }
 body{background:transparent!important}
@@ -543,3 +543,84 @@ body{background:transparent!important}
 .sky-clouds{z-index:0!important}.topbar,.screen{position:relative;z-index:1}
 .flag-wash .flag-fallback{background:linear-gradient(90deg,rgba(215,226,230,.82),rgba(255,255,255,0))!important}
 .country-row-year{display:block!important}
+
+
+/* v0.14.4 — mountain photo background, visit metadata visibility, pinch/pan map */
+html{
+  background:#063f57!important;
+  min-height:100%!important;
+}
+body{
+  min-height:100%!important;
+  background:
+    linear-gradient(180deg,rgba(2,39,58,.20) 0%,rgba(5,75,96,.20) 42%,rgba(2,55,76,.36) 100%),
+    url("mountain-bg.jpg?v=0.14.4") center top / cover fixed no-repeat!important;
+}
+body::before{display:none!important}
+#app{background:transparent!important}
+.screen[data-screen="home"]{background:transparent!important}
+.sky-clouds{
+  z-index:0!important;
+  opacity:.48!important;
+  mix-blend-mode:screen;
+}
+.topbar,.screen{position:relative;z-index:1}
+
+/* Older WozzaWorld rules hid all <small> elements in rows; force metadata back on. */
+.country-row .country-row-year,
+.country-row .trip-countdown{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  height:auto!important;
+  overflow:visible!important;
+  white-space:normal!important;
+}
+.country-row-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  min-width:0!important;
+}
+.country-row-year{
+  margin-top:5px!important;
+  color:#718093!important;
+  font-weight:700!important;
+  line-height:1.15!important;
+}
+
+/* Dedicated map behaves like a proper touch map. Home preview stays fixed. */
+body.map-view #worldMap{
+  touch-action:none!important;
+  cursor:grab;
+  user-select:none;
+  -webkit-user-select:none;
+}
+body.map-view #worldMap:active{cursor:grabbing}
+body:not(.map-view) #worldMap{touch-action:pan-y!important}
+.map-reset{
+  display:none;
+  position:fixed;
+  z-index:121;
+  top:max(12px,env(safe-area-inset-top));
+  left:max(12px,env(safe-area-inset-left));
+  min-width:64px;
+  height:44px;
+  padding:0 14px;
+  border:1px solid rgba(23,33,61,.14);
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:var(--navy);
+  font:700 13px/1 Inter,sans-serif;
+  box-shadow:0 8px 26px rgba(23,33,61,.18);
+}
+body.map-view .map-reset{display:block}
+body.map-view .sky-clouds{display:none!important}
+body.map-view{background:#075e78!important}
+
+@media(max-width:620px){
+  body{
+    background-position:center top!important;
+    background-size:auto 100%!important;
+  }
+}
