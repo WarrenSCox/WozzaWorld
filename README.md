@@ -35,7 +35,11 @@ Atmospheric blue mountain background, expanded ISO flag mapping/fallbacks, and v
 Android status bar handling now mirrors WozzaWatch: one static theme-color, matching html/body top colour, and safe-area topbar padding.
 
 
-## v0.14.9
+## v0.15.0
 - Restored the Add WozzaWorld to phone control on the browser version.
 - Uses the native beforeinstallprompt flow when available, with manual install guidance as fallback.
 - Automatically hides the install control in the installed standalone PWA, matching WozzaWatch behaviour.
+
+
+## v0.15.0
+Slim sticky translucent gradient header; Passport nav; restored WozzaWorld logo; map overlay/reset cleanup; country rows show month/year only; slow random plane contrails and ocean cruise animation on home map.

@@ -687,3 +687,51 @@ body{
 @media (display-mode: standalone){#installBtn{display:none!important}}
 #installBtn.install-btn{position:fixed;right:14px;bottom:max(16px,env(safe-area-inset-bottom));z-index:35}
 body.map-view #installBtn{display:none!important}
+
+
+/* v0.15.0 — requested polish/fix pass */
+html,body{background:#075E78!important}
+body{background:linear-gradient(155deg,#075E78 0%,#08748b 48%,#07566e 100%)!important;background-attachment:fixed!important}
+.topbar{
+  position:sticky!important;top:0!important;z-index:80!important;
+  min-height:0!important;
+  padding-top:max(5px,env(safe-area-inset-top))!important;
+  padding-bottom:5px!important;
+  background:linear-gradient(115deg,rgba(5,70,92,.94),rgba(7,101,124,.90))!important;
+  -webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;
+  border-bottom:1px solid rgba(255,255,255,.13)!important;
+  box-shadow:0 6px 20px rgba(1,38,52,.08)!important;
+}
+.premium-brand{overflow:visible!important}
+.restored-logo{display:block!important;width:126px!important;height:82px!important;object-fit:contain!important;max-width:none!important}
+.header-nav-item span{white-space:nowrap!important}
+body:not(.map-view) #worldMap{touch-action:pan-y!important;-webkit-tap-highlight-color:transparent!important}
+#worldMap .country:focus,#worldMap .country:focus-visible{outline:none!important;filter:none!important}
+.map-reset{display:none!important}
+body.map-view .map-reset{display:none!important}
+/* Animated planes and cruise ship live only on the small home overview. */
+.map-stage{position:relative!important}
+.travel-animations{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;overflow:hidden}
+body.map-view .travel-animations{display:none!important}
+.travel-contrail{fill:none;stroke:rgba(255,255,255,.72);stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 1px 2px rgba(3,59,75,.16))}
+.ship-route{fill:none;stroke:rgba(255,255,255,.38);stroke-width:2;stroke-dasharray:7 10;stroke-linecap:round}
+.travel-icon{font-family:Arial,sans-serif;paint-order:stroke;stroke:rgba(5,65,85,.32);stroke-width:3px;stroke-linejoin:round;filter:drop-shadow(0 2px 3px rgba(0,40,55,.25))}
+.plane-icon{font-size:30px;fill:#fff}
+.ship-icon{font-size:28px;fill:#fff}
+@media(max-width:620px){
+  .topbar{grid-template-columns:118px minmax(150px,1fr) 94px!important;gap:5px!important;padding-left:8px!important;padding-right:8px!important;padding-top:max(3px,env(safe-area-inset-top))!important;padding-bottom:3px!important}
+  .restored-logo{width:112px!important;height:68px!important}
+  .header-nav{grid-template-columns:repeat(3,minmax(44px,1fr))!important;gap:2px!important}
+  .header-nav-item{width:auto!important;height:57px!important;padding:3px!important}
+  .header-nav-item svg{width:26px!important;height:26px!important}
+  .header-nav-item span{font-size:8.5px!important}
+  .header-slogan{font-size:8.7px!important;letter-spacing:.13em!important;max-width:none!important;min-width:0!important}
+  .travel-contrail{stroke-width:3}
+  .plane-icon{font-size:26px}.ship-icon{font-size:25px}
+}
+@media(max-width:390px){
+  .topbar{grid-template-columns:106px minmax(139px,1fr) 82px!important;gap:3px!important;padding-left:5px!important;padding-right:5px!important}
+  .restored-logo{width:102px!important;height:64px!important}
+  .header-nav-item span{font-size:8px!important}
+  .header-slogan{font-size:7.8px!important}
+}

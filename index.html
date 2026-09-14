@@ -9,7 +9,7 @@
 <link rel="icon" href="icon.svg?v=0.14.8" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png?v=0.14.8">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.14.9">
+<link rel="stylesheet" href="styles.css?v=0.15.0">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -21,12 +21,12 @@
   <span class="cloud c4"></span>
   <span class="cloud c5"></span>
 </div>
-<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.14.9" alt=""></div>
+<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.15.0" alt=""></div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),1800)</script>
-<button class="map-close" id="mapClose" aria-label="Close map">×</button><button class="map-reset" id="mapReset" aria-label="Reset map zoom">Reset</button>
+<button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><span class="premium-brand-mark" aria-hidden="true"><span class="brand-globe">◒</span><span class="brand-orbit"></span><span class="brand-plane">✦</span></span><span class="premium-brand-name"><b>WOZZA</b><b>WORLD</b></span></button>
+  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.15.0" alt="WozzaWorld"></button>
   <nav class="header-nav" aria-label="Main navigation">
     <button class="header-nav-item" data-target="map" aria-label="Map">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span>
@@ -34,8 +34,8 @@
     <button class="header-nav-item" data-target="trips" aria-label="Trips">
       <svg class="proper-plane" viewBox="0 0 32 32" aria-hidden="true"><path d="M28.3 14.6 19.7 11 18 3.8c-.2-.8-.9-1.3-1.7-1.3h-.6c-.8 0-1.5.5-1.7 1.3L12.3 11l-8.6 3.6c-.7.3-1.2 1-1.2 1.8v1.1l10.2-1.4.7 7-3.7 2.5v1.5l6.3-1.4 6.3 1.4v-1.5l-3.7-2.5.7-7 10.2 1.4v-1.1c0-.8-.5-1.5-1.2-1.8Z"/></svg><span>Trips</span>
     </button>
-    <button class="header-nav-item" data-target="me" aria-label="Me">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="9" r="5"/><path d="M5 28v-3c0-5.2 4.9-8.5 11-8.5s11 3.3 11 8.5v3z"/></svg><span>Me</span>
+    <button class="header-nav-item" data-target="me" aria-label="Passport">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="9" r="5"/><path d="M5 28v-3c0-5.2 4.9-8.5 11-8.5s11 3.3 11 8.5v3z"/></svg><span>Passport</span>
     </button>
   </nav>
   <div class="header-slogan"><strong>YOUR WORLD.</strong><strong>ONE PLACE.</strong></div>
@@ -50,6 +50,7 @@
       <svg id="worldMap" viewBox="0 0 1000 520" role="img" aria-label="Interactive Equal Earth world map">
         <path id="sphere" class="ocean"></path><g id="countries"></g>
       </svg>
+      <svg class="travel-animations" id="travelAnimations" viewBox="0 0 1000 520" aria-hidden="true"></svg>
       <div class="map-loading" id="mapLoading">Loading your world…</div>
     </div>
     <div class="map-summary">
@@ -111,5 +112,5 @@
 <dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.14.9"></script>
+<script src="app.js?v=0.15.0"></script>
 </body></html>
