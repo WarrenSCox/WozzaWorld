@@ -13,11 +13,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WozzaWorld">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.14.0">
-<link rel="icon" href="icon.svg?v=0.14.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png?v=0.14.0">
+<link rel="manifest" href="manifest.webmanifest?v=0.14.1">
+<link rel="icon" href="icon.svg?v=0.14.1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.14.1">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.14.0">
+<link rel="stylesheet" href="styles.css?v=0.14.1">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -29,21 +29,21 @@
   <span class="cloud c4"></span>
   <span class="cloud c5"></span>
 </div>
-<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.14.0" alt=""></div>
+<div class="launch-splash" id="launchSplash" aria-hidden="true"><img src="wozzaworld-logo.png?v=0.14.1" alt=""></div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),1800)</script>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link" id="homeLogo" aria-label="WozzaWorld home"><img src="wozzaworld-logo.png?v=0.14.0" alt="WozzaWorld" class="brand-main-logo"></button>
+  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><span class="premium-brand-mark" aria-hidden="true"><span class="brand-globe">◒</span><span class="brand-orbit"></span><span class="brand-plane">✦</span></span><span class="premium-brand-name"><b>WOZZA</b><b>WORLD</b></span></button>
   <nav class="header-nav" aria-label="Main navigation">
     <button class="header-nav-item" data-target="map" aria-label="Map">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg>
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span>
     </button>
     <button class="header-nav-item" data-target="trips" aria-label="Trips">
-      <svg class="proper-plane" viewBox="0 0 32 32" aria-hidden="true"><path d="M28.3 14.6 19.7 11 18 3.8c-.2-.8-.9-1.3-1.7-1.3h-.6c-.8 0-1.5.5-1.7 1.3L12.3 11l-8.6 3.6c-.7.3-1.2 1-1.2 1.8v1.1l10.2-1.4.7 7-3.7 2.5v1.5l6.3-1.4 6.3 1.4v-1.5l-3.7-2.5.7-7 10.2 1.4v-1.1c0-.8-.5-1.5-1.2-1.8Z"/></svg>
+      <svg class="proper-plane" viewBox="0 0 32 32" aria-hidden="true"><path d="M28.3 14.6 19.7 11 18 3.8c-.2-.8-.9-1.3-1.7-1.3h-.6c-.8 0-1.5.5-1.7 1.3L12.3 11l-8.6 3.6c-.7.3-1.2 1-1.2 1.8v1.1l10.2-1.4.7 7-3.7 2.5v1.5l6.3-1.4 6.3 1.4v-1.5l-3.7-2.5.7-7 10.2 1.4v-1.1c0-.8-.5-1.5-1.2-1.8Z"/></svg><span>Trips</span>
     </button>
     <button class="header-nav-item" data-target="me" aria-label="Me">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="9" r="5"/><path d="M5 28v-3c0-5.2 4.9-8.5 11-8.5s11 3.3 11 8.5v3z"/></svg>
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="9" r="5"/><path d="M5 28v-3c0-5.2 4.9-8.5 11-8.5s11 3.3 11 8.5v3z"/></svg><span>Me</span>
     </button>
   </nav>
   <div class="header-slogan"><strong>YOUR WORLD.</strong><strong>ONE PLACE.</strong></div>
@@ -67,17 +67,17 @@
   <div class="country-carousel" id="countryCarousel" aria-label="Country lists">
     <div class="carousel-track" id="carouselTrack">
       <section class="country-list-panel" data-list="visited">
-        <div class="country-list-head"><h2>Visited</h2><button class="list-add" data-add-status="visited" aria-label="Add visited country">＋</button></div>
+        <div class="country-list-head"><div><h2>Visited</h2><p>Countries explored so far</p></div><button class="list-add" data-add-status="visited" aria-label="Add visited country">＋</button></div>
         <div class="country-search" data-search-for="visited" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="visitedCountries"></div>
       </section>
       <section class="country-list-panel" data-list="going">
-        <div class="country-list-head"><h2>Visiting</h2><button class="list-add" data-add-status="going" aria-label="Add visiting country">＋</button></div>
+        <div class="country-list-head"><div><h2>Visiting</h2><p>Your next adventures</p></div><button class="list-add" data-add-status="going" aria-label="Add visiting country">＋</button></div>
         <div class="country-search" data-search-for="going" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="goingCountries"></div>
       </section>
       <section class="country-list-panel" data-list="bucket">
-        <div class="country-list-head"><h2>Bucket list</h2><button class="list-add" data-add-status="bucket" aria-label="Add bucket-list country">＋</button></div>
+        <div class="country-list-head"><div><h2>Bucket list</h2><p>Places still calling</p></div><button class="list-add" data-add-status="bucket" aria-label="Add bucket-list country">＋</button></div>
         <div class="country-search" data-search-for="bucket" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="bucketCountries"></div>
       </section>
@@ -117,5 +117,5 @@
 <dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.14.0"></script>
+<script src="app.js?v=0.14.1"></script>
 </body></html>
