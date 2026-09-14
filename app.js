@@ -46,15 +46,14 @@ function renderCitiesSheet(){const a=state.cities[currentCountry]||[];$('#cityLi
 function renderSheet(){const s=state.statuses[currentCountry],u=flagUrl(currentCountry);$('#countryFlag').innerHTML=u?`<img src="${u}" alt="">`:'◉';$('#countryName').textContent=currentCountry;$('#countryStatus').textContent=s?({visited:'Visited ✓',going:'Visiting / upcoming ✈',bucket:'On your bucket list ♡'}[s]):'Not marked yet';$$('.choice-grid button').forEach(b=>b.classList.toggle('selected',b.dataset.status===s));const trips=countryTrips(currentCountry);$('#countryTrips').innerHTML=trips.length?trips.map(tripCard).join(''):'<p class="muted">No trips for this country yet.</p>';$('#savedPlaces').innerHTML=(state.places[currentCountry]||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join('')||'<span class="muted">Nothing saved yet.</span>';$('#companionChips').innerHTML=(state.companions[currentCountry]||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join('')||'<span class="muted">No companions added — your count still includes you.</span>';$('#memoryNotes').value=state.memories[currentCountry]||'';renderCitiesSheet()}
 function toast(t,action=null){const el=$('#toast');el.textContent=t;el.classList.add('show');el.onclick=action?()=>{action();el.classList.remove('show')}:null;clearTimeout(el._timer);el._timer=setTimeout(()=>{el.classList.remove('show');el.onclick=null},action?4200:1800)}
 $$('.choice-grid button').forEach(b=>b.onclick=()=>{if(state.statuses[currentCountry]===b.dataset.status)delete state.statuses[currentCountry];else{state.statuses[currentCountry]=b.dataset.status;if(b.dataset.status==='visited'){state.visitHistory=state.visitHistory.filter(c=>c!==currentCountry);state.visitHistory.push(currentCountry)}}save()});
-async function leaveMapMode(){document.body.classList.remove('map-view');resetMapZoom(false);try{screen.orientation?.unlock?.()}catch(e){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}}async function showHome(){await leaveMapMode();$$('.header-nav-item').forEach(x=>x.classList.remove('active'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));window.scrollTo({top:0,behavior:'smooth'})}async function showMap(){document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.remove('active'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));window.scrollTo({top:0});try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen({navigationUI:'hide'})}catch(e){}try{await screen.orientation?.lock?.('landscape')}catch(e){}}
+async function leaveMapMode(){document.body.classList.remove('map-view');resetMapZoom(false);try{screen.orientation?.unlock?.()}catch(e){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}}async function showHome(){await leaveMapMode();$$('.header-nav-item').forEach(x=>x.classList.remove('active'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));window.scrollTo({top:0,behavior:'smooth'})}async function showMap(){document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.remove('active'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));window.scrollTo({top:0});try{await screen.orientation?.lock?.('landscape')}catch(e){}}
 $$('.header-nav-item').forEach(b=>b.onclick=async()=>{if(b.dataset.target==='map'){await showMap();return}await leaveMapMode();$$('.header-nav-item').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen===b.dataset.target));window.scrollTo({top:0,behavior:'smooth'})});$('#homeLogo').onclick=showHome;$('#mapClose').onclick=showHome;$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 function openTrip(country=''){$('#tripName').value='';$('#tripStart').value='';$('#tripEnd').value='';$('#tripCountries').value=country;$('#tripCities').value='';$('#tripCompanions').value='';$('#tripPlan').value='';$('#tripDialog').showModal()}$('#newTripBtn').onclick=()=>openTrip();$('#addCountryTrip').onclick=()=>openTrip(currentCountry);$('#cancelTrip').onclick=()=>$('#tripDialog').close();
 function parseCities(raw){const out={};raw.split(';').forEach(group=>{const [country,...rest]=group.split(':');if(!country||!rest.length)return;out[country.trim()]=rest.join(':').split(',').map(x=>x.trim()).filter(Boolean)});return out}
 $('#tripForm').onsubmit=e=>{e.preventDefault();const countries=$('#tripCountries').value.split(',').map(x=>x.trim()).filter(Boolean),name=$('#tripName').value.trim();if(!countries.length||!name)return;const cities=parseCities($('#tripCities').value),companions=$('#tripCompanions').value.split(',').map(x=>x.trim()).filter(Boolean),t={id:crypto.randomUUID?.()||String(Date.now()),name,start:$('#tripStart').value,end:$('#tripEnd').value,countries,cities,plan:$('#tripPlan').value.trim(),status:'upcoming'};state.trips.push(t);countries.forEach(c=>{if(!state.statuses[c])state.statuses[c]=countdownDays(t.start)>=0?'going':'visited';if(companions.length)state.companions[c]=[...new Set([...(state.companions[c]||[]),...companions])];for(const city of cities[c]||[]){state.cities[c]??=[];let rec=state.cities[c].find(x=>x.name.toLowerCase()===city.toLowerCase());if(!rec){rec={name:city,visits:[]};state.cities[c].push(rec)}const m=t.start?t.start.slice(0,7):'';if(m&&!rec.visits.includes(m))rec.visits.push(m)}});save();$('#tripDialog').close();toast('Multi-country trip created ✈')};
 $('#cityForm').onsubmit=e=>{e.preventDefault();const name=$('#cityInput').value.trim(),month=$('#cityMonth').value;if(!name||!currentCountry)return;state.cities[currentCountry]??=[];let rec=state.cities[currentCountry].find(x=>x.name.toLowerCase()===name.toLowerCase());if(!rec){rec={name,visits:[]};state.cities[currentCountry].push(rec)}if(month&&!rec.visits.includes(month))rec.visits.push(month);$('#cityInput').value='';$('#cityMonth').value='';save()};$('#placeForm').onsubmit=e=>{e.preventDefault();const v=$('#placeInput').value.trim();if(v){(state.places[currentCountry]??=[]).push(v);$('#placeInput').value='';save()}};$('#companionForm').onsubmit=e=>{e.preventDefault();const v=$('#companionInput').value.trim();if(v){(state.companions[currentCountry]??=[]).push(v);$('#companionInput').value='';save()}};let memoryTimer;$('#memoryNotes').oninput=e=>{clearTimeout(memoryTimer);memoryTimer=setTimeout(()=>{state.memories[currentCountry]=e.target.value;localStorage.setItem('wozzaworld-state',JSON.stringify(state));renderCountryLists()},250)};$('#confirmRemove').onclick=e=>{e.preventDefault();if(pendingRemoveCountry)removeCountry(pendingRemoveCountry);pendingRemoveCountry=null;$('#removeDialog').close()};
 const carousel=$('#countryCarousel');if(carousel){let sx=0,sy=0,drag=false;carousel.onpointerdown=e=>{if(e.target.closest('button,input'))return;sx=e.clientX;sy=e.clientY;drag=true};carousel.onpointerup=e=>{if(!drag)return;drag=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2)setCountrySlide(countrySlide+(dx<0?1:-1),true,dx<0?'next':'prev')};carousel.onpointercancel=()=>drag=false}setCountrySlide(0,false);[['.summary.visited',0],['.summary.going',1],['.summary.bucket',2]].forEach(([sel,i])=>{const el=$(sel);el.setAttribute('role','button');el.setAttribute('tabindex','0');const jump=()=>{setCountrySlide(i,true,i>=countrySlide?'next':'prev');$('#countryCarousel').scrollIntoView({behavior:'smooth',block:'start'})};el.onclick=jump;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump()}}});
-// v0.15.0 — quiet travel animation layer on the HOME map overview only.
-// Routes are deliberately ocean-heavy/pre-vetted so the cruise ship does not sail across land.
+// v0.15.2 — quiet plane animation layer on the HOME map overview only.
 const travelAnim=$('#travelAnimations');
 const NS='http://www.w3.org/2000/svg';
 const planeRoutes=[
@@ -63,40 +62,31 @@ const planeRoutes=[
   'M 110 390 C 260 330 390 230 520 175 C 665 115 800 125 925 190',
   'M 900 115 C 760 160 650 215 525 230 C 365 250 245 190 95 105'
 ];
-const shipRoutes=[
-  'M 120 365 C 230 410 350 420 465 385 C 590 345 700 365 850 405',
-  'M 115 245 C 190 285 245 330 315 365 C 390 402 455 400 520 380',
-  'M 635 365 C 710 345 785 325 900 330',
-  'M 690 180 C 760 205 825 245 900 285'
-];
 function svgEl(tag,attrs={}){const e=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));return e}
-function runTravelVehicle(kind){
-  if(!travelAnim||document.hidden)return scheduleTravel(kind,4000);
-  const routes=kind==='plane'?planeRoutes:shipRoutes;
-  const d=routes[Math.floor(Math.random()*routes.length)];
-  const g=svgEl('g',{'class':'travel-vehicle '+kind});
-  const route=svgEl('path',{d,'class':kind==='plane'?'travel-contrail':'ship-route'});
+function runTravelVehicle(){
+  if(!travelAnim||document.hidden)return scheduleTravel(4000);
+  const d=planeRoutes[Math.floor(Math.random()*planeRoutes.length)];
+  const g=svgEl('g',{'class':'travel-vehicle plane'});
   const ghost=svgEl('path',{d,fill:'none',stroke:'transparent'});
-  const icon=svgEl('text',{'class':'travel-icon '+kind+'-icon','text-anchor':'middle','dominant-baseline':'central'});
-  icon.textContent=kind==='plane'?'✈':'⛴';
-  g.append(route,ghost,icon);travelAnim.appendChild(g);
-  const len=ghost.getTotalLength();
-  if(kind==='plane'){route.style.strokeDasharray=`0 ${len}`;route.style.strokeDashoffset='0';}
-  const duration=kind==='plane'?(22000+Math.random()*9000):(42000+Math.random()*14000);
-  const start=performance.now();
+  const trail=svgEl('g',{'class':'gradient-contrail'});
+  const segs=[];
+  for(let i=0;i<8;i++){const s=svgEl('line',{'class':'contrail-segment'});trail.appendChild(s);segs.push(s)}
+  const icon=svgEl('text',{'class':'travel-icon plane-icon','text-anchor':'middle','dominant-baseline':'central'});icon.textContent='✈';
+  g.append(ghost,trail,icon);travelAnim.appendChild(g);
+  const len=ghost.getTotalLength(),duration=22000+Math.random()*9000,start=performance.now();
   function frame(now){
     if(!g.isConnected)return;
-    const t=Math.min(1,(now-start)/duration),pt=ghost.getPointAtLength(len*t),pt2=ghost.getPointAtLength(Math.min(len,len*t+2));
-    const angle=Math.atan2(pt2.y-pt.y,pt2.x-pt.x)*180/Math.PI;
-    icon.setAttribute('transform',`translate(${pt.x} ${pt.y}) rotate(${angle})`);
-    if(kind==='plane'){const head=len*t,tail=Math.min(82,Math.max(0,head));route.style.strokeDasharray=`${tail} ${Math.max(1,len-tail)}`;route.style.strokeDashoffset=String(-Math.max(0,head-tail));route.style.opacity=String(.18+.34*(1-t*.25));}
-    if(t<1)requestAnimationFrame(frame);else{g.animate([{opacity:1},{opacity:0}],{duration:1200,fill:'forwards'}).onfinish=()=>g.remove();scheduleTravel(kind,kind==='plane'?5000+Math.random()*10000:10000+Math.random()*18000)}
+    const t=Math.min(1,(now-start)/duration),head=len*t,pt=ghost.getPointAtLength(head),pt2=ghost.getPointAtLength(Math.min(len,head+2));
+    icon.setAttribute('transform',`translate(${pt.x} ${pt.y}) rotate(${Math.atan2(pt2.y-pt.y,pt2.x-pt.x)*180/Math.PI})`);
+    const tailLen=Math.min(88,head),step=tailLen/segs.length;
+    segs.forEach((s,i)=>{const a=Math.max(0,head-step*(i+1)),b=Math.max(0,head-step*i),p1=ghost.getPointAtLength(a),p2=ghost.getPointAtLength(b);s.setAttribute('x1',p1.x);s.setAttribute('y1',p1.y);s.setAttribute('x2',p2.x);s.setAttribute('y2',p2.y);s.style.opacity=String(.08+.72*((segs.length-i)/segs.length)**2)});
+    if(t<1)requestAnimationFrame(frame);else{g.animate([{opacity:1},{opacity:0}],{duration:900,fill:'forwards'}).onfinish=()=>g.remove();scheduleTravel(5000+Math.random()*10000)}
   }
   requestAnimationFrame(frame);
 }
-function scheduleTravel(kind,delay){setTimeout(()=>{if(kind==='plane'){const active=travelAnim?.querySelectorAll('.travel-vehicle.plane').length||0;if(active>=2)return scheduleTravel('plane',5000)}runTravelVehicle(kind)},delay)}
-// two independent plane streams = never more than two planes; one slow ship stream.
-scheduleTravel('plane',1800);scheduleTravel('plane',9000);scheduleTravel('ship',4500);
+function scheduleTravel(delay){setTimeout(()=>{const active=travelAnim?.querySelectorAll('.travel-vehicle.plane').length||0;if(active>=3)return scheduleTravel(4500);runTravelVehicle()},delay)}
+// Three independent, slow plane streams; never more than three planes at once.
+scheduleTravel(1800);scheduleTravel(7000);scheduleTravel(12500);
 
 
 function refreshVisitedFilterUI(){const prefs=state.visitedListPrefs||{sort:'default',year:'all'},btn=$('#visitedFilterBtn');if(btn)btn.classList.toggle('is-active',prefs.sort!=='default'||prefs.year!=='all')}
@@ -104,7 +94,7 @@ function openVisitedFilters(){const dlg=$('#visitedFilterDialog'),sort=$('#visit
 $('#visitedFilterBtn')?.addEventListener('click',openVisitedFilters);$('#visitedFilterDialog')?.addEventListener('submit',e=>{e.preventDefault();state.visitedListPrefs={sort:$('#visitedSort').value,year:$('#visitedYear').value};localStorage.setItem('wozzaworld-state',JSON.stringify(state));$('#visitedFilterDialog').close();render();refreshVisitedFilterUI()});$('#resetVisitedFilters')?.addEventListener('click',()=>{state.visitedListPrefs={sort:'default',year:'all'};localStorage.setItem('wozzaworld-state',JSON.stringify(state));$('#visitedFilterDialog').close();render();refreshVisitedFilterUI()});
 
 setupCountrySearch();buildMap();render();refreshVisitedFilterUI();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.15.1',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,350),{once:true});setTimeout(hide,1800);
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.15.2',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,350),{once:true});setTimeout(hide,1800);
 
 
 // v0.14.9 — web-only install button, matching WozzaWatch behaviour.

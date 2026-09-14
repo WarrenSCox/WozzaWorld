@@ -754,3 +754,10 @@ html,body{background-color:var(--system-header)!important}
 .filter-note{display:block;color:var(--soft-ink);line-height:1.45;margin-top:4px}.filter-actions{justify-content:space-between!important}
 .travel-contrail{stroke:rgba(255,255,255,.54)!important;filter:none!important}
 @media(max-width:560px){.list-filter,.list-head-actions .list-add{width:36px!important;height:36px!important}.list-filter svg{width:20px;height:20px}}
+
+/* v0.15.2 map + travel polish */
+.filter-active-dot,.list-filter.is-active .filter-active-dot{display:none!important}
+.ship-route,.ship-icon,.travel-vehicle.ship{display:none!important}
+.contrail-segment{stroke:rgba(255,255,255,.78);stroke-width:3.6;stroke-linecap:round;filter:none}
+body.map-view .map-stage{inset:0!important;width:100vw!important;height:100dvh!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important}
+body.map-view #worldMap{width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;object-fit:fill!important}
