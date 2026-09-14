@@ -530,3 +530,16 @@ body:not(.map-view) #worldMap{width:100%!important;height:auto!important;aspect-
   .premium-brand-name{font-size:11.5px!important}.header-nav-item svg{width:24px!important;height:24px!important}.header-slogan{font-size:7.7px!important;letter-spacing:.09em!important}
   .premium-country-row{grid-template-columns:86px minmax(0,1fr) max-content!important}.flag-wash{width:101px!important}.country-row-copy strong{font-size:15px!important}
 }
+
+/* v0.14.3 — atmospheric atlas background + resilient flags/date metadata */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:linear-gradient(180deg,rgba(2,43,61,.20),rgba(7,91,116,.08) 45%,rgba(237,246,247,.12)),url("mountain-bg.svg?v=0.14.3");
+  background-size:cover;background-position:center top;background-repeat:no-repeat;
+}
+body{background:transparent!important}
+#app{background:transparent!important}
+.screen[data-screen="home"]{background:transparent!important}
+.sky-clouds{z-index:0!important}.topbar,.screen{position:relative;z-index:1}
+.flag-wash .flag-fallback{background:linear-gradient(90deg,rgba(215,226,230,.82),rgba(255,255,255,0))!important}
+.country-row-year{display:block!important}
