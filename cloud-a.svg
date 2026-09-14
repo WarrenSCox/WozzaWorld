@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet">
- <path fill="#fff" d="M-35 250C-28 205 8 177 55 177c9-48 48-84 98-84 17 0 34 4 49 12 22-52 72-88 132-88 67 0 123 46 137 108 13-7 29-11 45-11 48 0 88 33 98 77 42 4 74 36 74 76 0 48-43 87-96 87H42c-53 0-87-42-77-104Z"/>
- <path fill="#eef8fb" opacity=".68" d="M-12 268c10-33 38-54 74-54 12-35 44-59 84-59 17 0 33 4 47 12 19-38 58-63 104-63 55 0 101 36 113 86 12-6 25-9 39-9 37 0 69 22 81 55 46 0 82 31 82 72 0 18-7 34-18 46H22c-30-17-43-50-34-86Z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420"><g fill="#fff"><ellipse cx="150" cy="285" rx="120" ry="72"/><ellipse cx="270" cy="235" rx="135" ry="112"/><ellipse cx="405" cy="205" rx="155" ry="145"/><ellipse cx="550" cy="250" rx="145" ry="105"/><ellipse cx="635" cy="300" rx="95" ry="65"/><ellipse cx="355" cy="315" rx="310" ry="75"/></g><g fill="#eef8fb" opacity=".72"><ellipse cx="235" cy="315" rx="155" ry="60"/><ellipse cx="405" cy="300" rx="190" ry="72"/><ellipse cx="555" cy="320" rx="125" ry="52"/></g></svg>
