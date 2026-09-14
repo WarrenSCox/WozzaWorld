@@ -1075,3 +1075,15 @@ body.map-view .map-view-title{
   border:0!important;
   box-shadow:none!important;
 }
+
+/* v0.16.6 — requested map ribbon + Trips background cleanup */
+body.map-view .map-view-title{
+  background:rgba(7,94,120,.50)!important;
+  background-image:none!important;
+  opacity:1!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+body.trips-view .sky-clouds{display:none!important}
