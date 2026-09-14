@@ -937,7 +937,7 @@ body.map-view #worldMap{width:100vw!important;height:calc(100dvh - 48px)!importa
 .launch-splash{background:linear-gradient(180deg,#279fba 0%,#3eafc5 52%,#65c2d3 100%)!important}.splash-cloud-img{filter:drop-shadow(0 8px 18px rgba(7,94,120,.08))!important}.splash-cloud-bank-left,.splash-cloud-bank-right{animation-duration:2.8s!important;animation-delay:.2s!important}.cloud-l1{left:-35%!important;top:-10%!important;width:94vw!important}.cloud-l2{left:-42%!important;top:18%!important;width:88vw!important}.cloud-l3{left:-38%!important;bottom:17%!important;width:92vw!important}.cloud-l4{left:-40%!important;bottom:-12%!important;width:86vw!important}.cloud-r1{right:-38%!important;top:-12%!important;width:92vw!important}.cloud-r2{right:-43%!important;top:20%!important;width:88vw!important}.cloud-r3{right:-39%!important;bottom:15%!important;width:94vw!important}.cloud-r4{right:-40%!important;bottom:-13%!important;width:87vw!important}@keyframes wwSvgCloudLeft{0%{transform:translateX(0);opacity:1}88%{opacity:1}100%{transform:translateX(-78vw);opacity:.82}}@keyframes wwSvgCloudRight{0%{transform:translateX(0);opacity:1}88%{opacity:1}100%{transform:translateX(78vw);opacity:.82}}@media(max-width:620px){.cloud-l1{left:-53%!important;top:-8%!important;width:116vw!important}.cloud-l2{left:-56%!important;top:19%!important;width:108vw!important}.cloud-l3{left:-52%!important;bottom:18%!important;width:114vw!important}.cloud-l4{left:-54%!important;bottom:-10%!important;width:108vw!important}.cloud-r1{right:-55%!important;top:-9%!important;width:114vw!important}.cloud-r2{right:-57%!important;top:20%!important;width:108vw!important}.cloud-r3{right:-53%!important;bottom:17%!important;width:115vw!important}.cloud-r4{right:-55%!important;bottom:-11%!important;width:109vw!important}}
 
 
-/* v0.16.2 — filter polish, organic cloud timing, map header, stamp alignment */
+/* v0.16.3 — filter polish, organic cloud timing, map header, stamp alignment */
 /* Country list: clean edge with no outer white outline. */
 .country-carousel,.country-list-panel{border:0!important;outline:0!important}
 
@@ -994,7 +994,7 @@ body.map-view #worldMap{height:calc(100dvh - 50px)!important}
 @keyframes wwCloudR4{0%{translate:0 0;opacity:1}87%{opacity:1}100%{translate:93vw -6vh;opacity:.84}}
 @media(prefers-reduced-motion:reduce){.splash-cloud-img{animation:none!important;display:none!important}}
 
-/* v0.16.2 — glossy app shell, departure board, trip ratings and lighter map ribbon. */
+/* v0.16.3 — glossy app shell, departure board, trip ratings and lighter map ribbon. */
 html,body{background-color:#075E78!important}
 body{
   background:
@@ -1004,7 +1004,7 @@ body{
 }
 .topbar{background:linear-gradient(115deg,rgba(7,94,120,.64),rgba(10,119,139,.55))!important;-webkit-backdrop-filter:blur(15px) saturate(120%)!important;backdrop-filter:blur(15px) saturate(120%)!important}
 
-/* Requested minute stamp nudge: two pixels upward from v0.16.2. */
+/* Requested minute stamp nudge: two pixels upward from v0.16.3. */
 .world-view-signature{top:-9px!important}
 @media(max-width:620px){.world-view-signature{top:-7px!important}}
 
@@ -1022,3 +1022,10 @@ body.map-view .map-view-title{background:linear-gradient(180deg,rgba(7,94,120,.2
 
 .trip-stars{display:flex;align-items:center;gap:1px;margin-top:7px;width:max-content}.trip-stars button,.trip-rating-input button{border:0;background:transparent;color:#e3b83e;padding:0 1px;font-size:22px;line-height:1;cursor:pointer}.trip-stars button:active,.trip-rating-input button:active{transform:scale(.9)}
 .trip-rating-input{display:flex;gap:3px;margin-top:7px}.trip-rating-input button{font-size:30px}.country-rating{display:block;margin-top:3px;color:#d5a72b!important;font-size:11px!important;letter-spacing:.02em;font-weight:800}.country-rating b{color:#7c8793;font-size:9px;margin-left:2px}
+
+/* v0.16.3 — unified trip/country data views and final home/map spacing polish. */
+body:not(.map-view) .departure-board{width:calc(100% - 24px)!important;max-width:none!important;margin:12px auto 18px!important}
+body.map-view .departure-board{display:none!important}
+body.map-view .map-card{top:0!important}
+body.map-view .map-stage{padding-top:50px!important}
+@media(max-width:620px){body:not(.map-view) .departure-board{width:calc(100% - 24px)!important;margin:12px auto 18px!important}}
