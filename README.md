@@ -49,5 +49,5 @@ Slim sticky translucent gradient header; Passport nav; restored WozzaWorld logo;
 Visited filter/sort control, unified header/status-bar colour, increased header translucency, and shorter dissipating plane contrails.
 
 
-## v0.15.2
+## v0.15.3
 Removed ship, added third plane with fading segmented contrails, removed filter badge, improved map fill/PWA map behavior, and refreshed all app icon branding.

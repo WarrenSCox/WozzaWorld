@@ -761,3 +761,28 @@ html,body{background-color:var(--system-header)!important}
 .contrail-segment{stroke:rgba(255,255,255,.78);stroke-width:3.6;stroke-linecap:round;filter:none}
 body.map-view .map-stage{inset:0!important;width:100vw!important;height:100dvh!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important}
 body.map-view #worldMap{width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;object-fit:fill!important}
+
+
+/* v0.15.3 — personalised World View + unified map */
+.premium-country-row{padding-right:16px!important}
+.premium-country-row:after{content:none!important;display:none!important}
+
+.home-world-view{position:absolute;z-index:6;right:4.2%;top:5.5%;width:25%;text-align:center;transform:rotate(-7deg);pointer-events:none;display:flex;flex-direction:column;align-items:center;line-height:1}
+.home-world-name{font-family:"Brush Script MT","Segoe Script","Lucida Handwriting",cursive;font-size:clamp(18px,3.3vw,43px);font-weight:700;color:#ff4fc8;text-shadow:0 0 3px #fff,0 0 7px #ff55cc,0 0 15px rgba(255,40,190,.9),0 0 25px rgba(255,40,190,.6);white-space:nowrap}
+.home-world-view b{margin-top:5px;font-family:"Archivo Black",Inter,sans-serif;font-size:clamp(8px,1.25vw,16px);letter-spacing:.18em;color:#17333f;white-space:nowrap}
+.map-world-view{display:none}
+.name-setup-dialog label{display:grid;gap:7px;margin-top:16px;font-weight:800;font-size:12px;color:var(--ink)}
+.name-setup-dialog input{min-height:46px;border:1px solid var(--premium-line,#dce4e7);border-radius:12px;padding:10px 12px;font:inherit;background:#fff;color:var(--ink)}
+
+/* Full map uses the same visual language as Home, with a dedicated title band. */
+body.map-view{background:linear-gradient(155deg,#075E78 0%,#08748b 48%,#07566e 100%)!important}
+body.map-view .map-card{background:transparent!important}
+body.map-view .map-stage{inset:0!important;width:100vw!important;height:100dvh!important;padding:0!important;background:linear-gradient(155deg,#075E78 0%,#08748b 48%,#07566e 100%)!important;display:block!important;overflow:hidden!important}
+body.map-view #worldMap{position:absolute!important;left:0!important;right:0!important;bottom:0!important;top:13dvh!important;width:100vw!important;height:87dvh!important;max-width:none!important;max-height:none!important;margin:0!important;object-fit:contain!important;transform:none!important}
+body.map-view .map-world-view{display:flex!important;position:absolute;z-index:8;left:0;right:0;top:max(10px,env(safe-area-inset-top));height:11dvh;align-items:center;justify-content:center;gap:.34em;font-family:"Archivo Black",Inter,sans-serif;color:#fff;text-transform:uppercase;letter-spacing:.08em;font-size:clamp(20px,3vw,38px);pointer-events:none;text-shadow:0 2px 8px rgba(0,35,50,.22)}
+body.map-view .map-world-name{font:inherit;color:inherit}
+body.map-view .home-world-view{display:none!important}
+body.map-view .ocean{fill:#dff3f6!important;stroke:#d7eaed!important}
+body.map-view #worldMap .country{stroke:#fff!important}
+body.map-view .map-close{z-index:12!important}
+@media(max-width:620px){.home-world-view{right:3.2%;top:4.5%;width:27%}.premium-country-row{padding-right:10px!important}}
