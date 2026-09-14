@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#075E78">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.16.1">
-<link rel="icon" href="icon-192.png?v=0.16.1" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png?v=0.16.1">
+<link rel="manifest" href="manifest.webmanifest?v=0.16.2">
+<link rel="icon" href="icon-192.png?v=0.16.2" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.16.2">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.16.1">
+<link rel="stylesheet" href="styles.css?v=0.16.2">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -23,25 +23,25 @@
 </div>
 <div class="launch-splash" id="launchSplash" aria-hidden="true">
   <div class="splash-cloud-bank splash-cloud-bank-left" aria-hidden="true">
-    <img class="splash-cloud-img cloud-l1" src="cloud-a.svg?v=0.16.1" alt="">
-    <img class="splash-cloud-img cloud-l2" src="cloud-b.svg?v=0.16.1" alt="">
-    <img class="splash-cloud-img cloud-l3" src="cloud-a.svg?v=0.16.1" alt="">
-    <img class="splash-cloud-img cloud-l4" src="cloud-b.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-l1" src="cloud-a.svg?v=0.16.2" alt="">
+    <img class="splash-cloud-img cloud-l2" src="cloud-b.svg?v=0.16.2" alt="">
+    <img class="splash-cloud-img cloud-l3" src="cloud-a.svg?v=0.16.2" alt="">
+    <img class="splash-cloud-img cloud-l4" src="cloud-b.svg?v=0.16.2" alt="">
   </div>
   <div class="splash-cloud-bank splash-cloud-bank-right" aria-hidden="true">
-    <img class="splash-cloud-img cloud-r1" src="cloud-b.svg?v=0.16.1" alt="">
-    <img class="splash-cloud-img cloud-r2" src="cloud-a.svg?v=0.16.1" alt="">
-    <img class="splash-cloud-img cloud-r3" src="cloud-b.svg?v=0.16.1" alt="">
-    <img class="splash-cloud-img cloud-r4" src="cloud-a.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-r1" src="cloud-b.svg?v=0.16.2" alt="">
+    <img class="splash-cloud-img cloud-r2" src="cloud-a.svg?v=0.16.2" alt="">
+    <img class="splash-cloud-img cloud-r3" src="cloud-b.svg?v=0.16.2" alt="">
+    <img class="splash-cloud-img cloud-r4" src="cloud-a.svg?v=0.16.2" alt="">
   </div>
-  <img class="launch-logo" src="wozzaworld-logo.png?v=0.16.1" alt="">
+  <img class="launch-logo" src="wozzaworld-logo.png?v=0.16.2" alt="">
 </div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),2700)</script>
 <div class="map-view-title" id="mapViewTitle">MY WORLD VIEW</div>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.16.1" alt="WozzaWorld"></button>
+  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.16.2" alt="WozzaWorld"></button>
   <nav class="header-nav" aria-label="Main navigation">
     <button class="header-nav-item" data-target="map" aria-label="Map">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span>
@@ -60,6 +60,7 @@
 
 <main>
 <section class="screen active" data-screen="home">
+  <div class="departure-board" id="departureBoard" hidden aria-live="polite"><div class="departure-track"><span class="departure-label">NEXT DEPARTURE</span><span id="departureText"></span></div></div>
   <div class="map-card">
       <div class="world-view-signature" id="worldViewSignature" aria-hidden="true">
         <div class="world-view-stamp">
@@ -134,7 +135,7 @@
   <h3 class="space-top">Bucket list / saved places</h3><div id="savedPlaces" class="chips"></div><form id="placeForm" class="inline-form"><input id="placeInput" placeholder="Add a restaurant or place" maxlength="50"><button>＋</button></form>
 </aside>
 
-<dialog id="tripDialog" class="trip-dialog"><form method="dialog" id="tripForm"><h2>Create trip</h2><p class="muted">One journey can include several countries. They will still appear separately in your country lists.</p><label>Trip name<input id="tripName" required placeholder="European summer trip"></label><div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div><label>Countries <span class="field-note">comma separated</span><input id="tripCountries" required placeholder="Italy, France, Spain"></label><label>Cities <span class="field-note">Country: City, City; …</span><textarea id="tripCities" placeholder="Italy: Rome, Florence; France: Paris"></textarea></label><label>Travel companions</label><div id="tripCompanionBank" class="companion-bank"></div><input id="tripCompanions" placeholder="Add new names, comma separated"><label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label><div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create trip</button></div></form></dialog>
+<dialog id="tripDialog" class="trip-dialog"><form method="dialog" id="tripForm"><h2>Create trip</h2><p class="muted">One journey can include several countries. They will still appear separately in your country lists.</p><label>Trip name<input id="tripName" required placeholder="European summer trip"></label><div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div><label>Countries <span class="field-note">comma separated</span><input id="tripCountries" required placeholder="Italy, France, Spain"></label><label>Cities <span class="field-note">Country: City, City; …</span><textarea id="tripCities" placeholder="Italy: Rome, Florence; France: Paris"></textarea></label><label>Travel companions</label><div id="tripCompanionBank" class="companion-bank"></div><input id="tripCompanions" placeholder="Add new names, comma separated"><label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label><label>Trip rating <span class="field-note">optional — you can change it later</span><div class="trip-rating-input" id="tripRatingInput" role="radiogroup" aria-label="Trip rating"><button type="button" data-rating="1">☆</button><button type="button" data-rating="2">☆</button><button type="button" data-rating="3">☆</button><button type="button" data-rating="4">☆</button><button type="button" data-rating="5">☆</button></div><input id="tripRating" type="hidden" value="0"></label><div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create trip</button></div></form></dialog>
 
 
 
@@ -144,5 +145,5 @@
 <dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.16.1"></script>
+<script src="app.js?v=0.16.2"></script>
 </body></html>
