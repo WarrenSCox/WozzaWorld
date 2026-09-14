@@ -1131,3 +1131,58 @@ body.map-view .map-close{z-index:130!important}
 .trip-dialog form{position:relative}.trip-dialog-close{position:absolute;right:0;top:-2px;width:34px!important;height:34px;border:0;border-radius:50%;background:#ecebe5;font-size:23px;line-height:1;display:grid;place-items:center}.trip-delete-wrap{margin-top:16px}.trip-delete{width:100%!important;border:1px solid rgba(181,55,55,.28)!important;background:rgba(181,55,55,.08)!important;color:#9c2d2d!important;border-radius:14px!important;padding:11px!important;font-weight:850!important}.trip-delete[hidden]{display:none!important}
 .recycle-row{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto auto!important}.recycle-row small{grid-column:2;color:var(--soft-ink);font-size:10px}.recycle-trip-icon{width:30px;text-align:center;font-size:20px}
 body.trips-view .sky-clouds{display:none!important}
+
+/* v0.17.1 — complete consolidated follow-up */
+/* Hide every visible page scrollbar while preserving touch/keyboard scrolling. */
+html,body,#app,main,.screen,.country-list,.country-carousel,.carousel-track{scrollbar-width:none!important;-ms-overflow-style:none!important}
+html::-webkit-scrollbar,body::-webkit-scrollbar,#app::-webkit-scrollbar,main::-webkit-scrollbar,.screen::-webkit-scrollbar,.country-list::-webkit-scrollbar,.country-carousel::-webkit-scrollbar,.carousel-track::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;background:transparent!important}
+
+/* Requested small Passport/recycle-bin style flags on Home overview lists. */
+.premium-country-row{grid-template-columns:64px minmax(0,1fr) max-content!important;min-height:88px!important;padding:0 18px!important;gap:12px!important}
+.overview-flag{display:flex!important;align-items:center!important;justify-content:center!important;width:54px!important;height:38px!important;border-radius:7px!important;overflow:hidden!important;box-shadow:0 1px 3px rgba(14,40,50,.15)!important;background:#eef3f4!important;align-self:center!important}
+.overview-flag-img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;filter:none!important;opacity:1!important}
+.overview-flag .flag-fallback{display:grid!important;place-items:center!important;width:100%!important;height:100%!important;background:#eef3f4!important;color:#78909a!important;font-size:15px!important}
+.flag-wash{display:none!important}
+.country-row-copy{padding-left:0!important}
+/* Existing generic rule hid ALL small elements; explicitly restore agreed metadata. */
+.premium-country-row .country-row-year,.premium-country-row .trip-countdown,.premium-country-row .country-rating,.premium-country-row .visit-repeat{display:block!important}
+.premium-country-row .country-rating{color:#e0a326!important;font-size:15px!important;letter-spacing:.045em!important;margin-top:5px!important;white-space:nowrap!important}
+.premium-country-row .country-rating b{display:none!important}
+.premium-country-row .visit-repeat{font-size:10px!important;letter-spacing:.08em!important;text-transform:uppercase!important;margin-top:3px!important}
+@media(max-width:620px){.premium-country-row{grid-template-columns:58px minmax(0,1fr) max-content!important;min-height:86px!important;padding:0 14px!important;gap:10px!important}.overview-flag{width:50px!important;height:34px!important}.country-row-copy strong{font-size:18px!important}.row-metrics{gap:2px!important}}
+
+/* Move the whole Home stamp up four pixels from the approved position. */
+.world-view-signature{top:-13px!important}
+@media(max-width:620px){.world-view-signature{top:-11px!important}}
+
+/* Passport: one consistent rhythm, clickable tiles and editable stamp name. */
+.screen[data-screen="me"]{display:none;gap:0!important}
+.screen[data-screen="me"].active{display:block!important}
+.screen[data-screen="me"]>.hero-card,.screen[data-screen="me"]>.stats-grid{margin:0 0 18px!important}
+.screen[data-screen="me"]>.hero-card{padding:24px!important}
+.screen[data-screen="me"] .stats-grid{gap:14px!important}
+.screen[data-screen="me"] .stat{min-height:128px!important;padding:22px!important;text-align:left!important;font:inherit!important;color:inherit!important;cursor:pointer!important;appearance:none!important}
+.screen[data-screen="me"] .stat:active{transform:scale(.985)}
+.passport-name-card label{display:flex;flex-direction:column;gap:5px;color:var(--ink)}
+.passport-name-card label strong{font-size:18px}.passport-name-card .eyebrow{font-size:10px;letter-spacing:.18em;color:var(--brand-deep);font-weight:900}
+.passport-name-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-top:14px}.passport-name-row input{min-width:0;width:100%;height:48px;border:1px solid rgba(18,56,70,.16);border-radius:14px;padding:0 14px;background:#fff;font:inherit;font-weight:700;color:var(--ink)}.passport-name-row button{border:0;border-radius:14px;padding:0 18px;background:var(--brand-deep);color:white;font-weight:850}.passport-name-card small{display:block;margin-top:9px;color:var(--soft-ink);line-height:1.4}
+.companion-stats-card,.recycle-card{margin-top:0!important}
+
+/* Passport detail pop-up lists. */
+.passport-stat-dialog form{position:relative;min-width:min(88vw,430px);max-height:min(78dvh,650px);overflow:auto}.passport-stat-list{display:flex;flex-direction:column;margin-top:10px}.passport-stat-row{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(22,48,58,.10)}.passport-stat-row:last-child{border-bottom:0}.passport-stat-row .flag-img{width:40px;height:28px;object-fit:cover;border-radius:5px}.passport-stat-row span{min-width:0}.passport-stat-row strong{display:block;color:var(--ink)}.passport-stat-row small{display:block;margin-top:3px;color:var(--soft-ink);font-size:11px}.passport-stat-row .stat-plane{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:rgba(7,94,120,.09);font-size:20px;color:var(--brand-deep)}
+
+/* Companion chart must remain legible even with legacy country-level companion data. */
+.companion-stats{margin-top:12px}.companion-stat-row{display:grid;grid-template-columns:minmax(90px,auto) minmax(70px,1fr) auto;align-items:center;gap:10px;padding:9px 0}.companion-stat-row>span{font-weight:800;color:var(--ink);overflow:hidden;text-overflow:ellipsis}.companion-stat-row>div{height:8px;background:rgba(7,94,120,.10);border-radius:999px;overflow:hidden}.companion-stat-row>div i{display:block;height:100%;border-radius:inherit;background:var(--brand-deep)}.companion-stat-row>strong{font-size:11px;color:var(--soft-ink);white-space:nowrap}
+
+/* Recycle bin mobile layout: no text/actions spilling outside the card. */
+.recycle-row{grid-template-columns:42px minmax(0,1fr)!important;gap:8px 12px!important;align-items:center!important;padding:14px 0!important}.recycle-row>.flag-img,.recycle-row>.recycle-trip-icon{grid-column:1;grid-row:1 / span 2;width:40px!important;height:28px;object-fit:cover;border-radius:5px}.recycle-row>strong{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere}.recycle-row>small{grid-column:2!important;grid-row:2}.recycle-row>.restore-btn,.recycle-row>.delete-btn{grid-row:3;width:100%!important;min-width:0!important;padding:10px 8px!important}.recycle-row>.restore-btn{grid-column:1 / 2}.recycle-row>.delete-btn{grid-column:2 / 3}
+
+/* Trip cards: card opens country detail, pencil edits the canonical trip. */
+.editable-trip{padding-right:78px!important}.trip-card-copy{min-width:0}.trip-card-edit{position:absolute;right:38px;top:50%;transform:translateY(-50%);width:34px!important;height:34px!important;border-radius:50%!important;border:1px solid rgba(7,94,120,.15)!important;background:rgba(255,255,255,.84)!important;color:var(--brand-deep)!important;font-size:18px!important;font-weight:900!important;display:grid!important;place-items:center!important;padding:0!important;z-index:3}.trip-open-chevron{right:13px!important}.trip-dialog-heading{display:flex;align-items:center;gap:10px;padding-right:42px}.trip-dialog-heading h2{margin:0}.trip-dialog-plane{width:30px;height:30px;fill:var(--brand-deep);flex:0 0 auto}
+
+/* Trips page should not carry the blurred decorative page clouds. */
+body.trips-view .sky-clouds{display:none!important}
+
+/* Departure board width/spacing aligned with the Home cards. */
+.screen[data-screen="home"]>.departure-board{box-sizing:border-box!important;width:100%!important;margin:0 0 22px!important}
+.screen[data-screen="home"]>.map-card{margin-top:0!important}
