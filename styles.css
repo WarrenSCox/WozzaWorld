@@ -1087,3 +1087,19 @@ body.map-view .map-view-title{
   box-shadow:none!important;
 }
 body.trips-view .sky-clouds{display:none!important}
+
+/* v0.16.7 — uniform home spacing + clickable/editable unified trip records. */
+body:not(.map-view) .screen[data-screen="home"] .departure-board{
+  width:100%!important;
+  max-width:none!important;
+  margin:0 0 26px!important;
+}
+.editable-trip{position:relative!important;cursor:pointer!important;padding-right:46px!important;transition:transform .16s ease,box-shadow .16s ease!important}
+.editable-trip:active{transform:scale(.992)}
+.editable-trip:focus-visible{outline:3px solid rgba(7,94,120,.24)!important;outline-offset:3px!important}
+.trip-open-chevron{position:absolute;right:17px;top:50%;transform:translateY(-50%);font-size:31px;line-height:1;color:#80909f;font-weight:300;pointer-events:none}
+@media(max-width:620px){
+  body:not(.map-view) .screen[data-screen="home"]{padding-top:22px!important}
+  body:not(.map-view) .screen[data-screen="home"] .departure-board{width:100%!important;margin:0 0 22px!important}
+  .editable-trip{padding-right:39px!important}.trip-open-chevron{right:13px;font-size:27px}
+}
