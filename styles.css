@@ -848,7 +848,7 @@ body.map-view .ocean{fill:#dceff3!important}.map-close{top:max(14px,env(safe-are
   .stamp-stars{font-size:6px!important;margin-top:1px!important}
 }
 
-/* v0.15.7 — smaller raised passport stamp + SVG cloud launch reveal */
+/* v0.15.8 — smaller raised passport stamp + SVG cloud launch reveal */
 .map-card{overflow:visible!important}
 .map-stage{overflow:hidden!important}
 .world-view-signature{
@@ -879,21 +879,23 @@ body.map-view .ocean{fill:#dceff3!important}.map-close{top:max(14px,env(safe-are
 .launch-splash>.launch-logo{position:relative!important;z-index:2!important;width:min(76vw,360px)!important;height:auto!important;opacity:0;transform:scale(.84);animation:wwLogoReveal 1.45s .36s cubic-bezier(.2,.8,.2,1) forwards}
 .splash-cloud-bank{position:absolute;inset:0;z-index:3;pointer-events:none;will-change:transform,opacity}
 .splash-cloud-img{position:absolute;display:block;width:min(72vw,620px);height:auto;filter:drop-shadow(0 10px 22px rgba(7,94,120,.10));will-change:transform,opacity}
-.splash-cloud-bank-left{animation:wwSvgCloudLeft 1.55s .18s cubic-bezier(.55,.02,.35,1) forwards}
-.splash-cloud-bank-right{animation:wwSvgCloudRight 1.55s .18s cubic-bezier(.55,.02,.35,1) forwards}
+.splash-cloud-bank-left{animation:wwSvgCloudLeft 2.15s .18s cubic-bezier(.55,.02,.35,1) forwards}
+.splash-cloud-bank-right{animation:wwSvgCloudRight 2.15s .18s cubic-bezier(.55,.02,.35,1) forwards}
 .cloud-l1{left:-18%;top:-4%;width:min(80vw,680px);transform:rotate(2deg)}
-.cloud-l2{left:-28%;top:27%;width:min(72vw,610px);opacity:.96;transform:rotate(-3deg) scale(.96)}
-.cloud-l3{left:-20%;bottom:-8%;width:min(76vw,650px);opacity:.93;transform:rotate(4deg) scale(1.03)}
+.cloud-l2{left:-28%;top:27%;width:min(72vw,610px);opacity:.99;transform:rotate(-3deg) scale(.96)}
+.cloud-l3{left:-20%;bottom:-8%;width:min(76vw,650px);opacity:.98;transform:rotate(4deg) scale(1.03)}
 .cloud-r1{right:-24%;top:-7%;width:min(77vw,650px);transform:scaleX(-1) rotate(-2deg)}
-.cloud-r2{right:-28%;top:29%;width:min(70vw,590px);opacity:.96;transform:scaleX(-1) rotate(3deg) scale(.96)}
-.cloud-r3{right:-21%;bottom:-10%;width:min(78vw,660px);opacity:.92;transform:scaleX(-1) rotate(-4deg)}
-@keyframes wwSvgCloudLeft{0%{transform:translateX(0);opacity:1}72%{opacity:1}100%{transform:translateX(-68vw);opacity:.22}}
-@keyframes wwSvgCloudRight{0%{transform:translateX(0);opacity:1}72%{opacity:1}100%{transform:translateX(68vw);opacity:.22}}
+.cloud-r2{right:-28%;top:29%;width:min(70vw,590px);opacity:.99;transform:scaleX(-1) rotate(3deg) scale(.96)}
+.cloud-r3{right:-21%;bottom:-10%;width:min(78vw,660px);opacity:.98;transform:scaleX(-1) rotate(-4deg)}
+@keyframes wwSvgCloudLeft{0%{transform:translateX(0);opacity:1}82%{opacity:1}100%{transform:translateX(-68vw);opacity:.42}}
+@keyframes wwSvgCloudRight{0%{transform:translateX(0);opacity:1}82%{opacity:1}100%{transform:translateX(68vw);opacity:.42}}
 @media(max-width:620px){
   .splash-cloud-img{width:94vw}
   .cloud-l1{left:-37%;top:1%;width:102vw}.cloud-l2{left:-43%;top:31%;width:94vw}.cloud-l3{left:-39%;bottom:-4%;width:98vw}
   .cloud-r1{right:-41%;top:-2%;width:99vw}.cloud-r2{right:-44%;top:33%;width:93vw}.cloud-r3{right:-40%;bottom:-5%;width:100vw}
-  @keyframes wwSvgCloudLeft{to{transform:translateX(-86vw);opacity:.18}}
-  @keyframes wwSvgCloudRight{to{transform:translateX(86vw);opacity:.18}}
+  @keyframes wwSvgCloudLeft{0%{transform:translateX(0);opacity:1}82%{opacity:1}100%{transform:translateX(-86vw);opacity:.38}}
+  @keyframes wwSvgCloudRight{0%{transform:translateX(0);opacity:1}82%{opacity:1}100%{transform:translateX(86vw);opacity:.38}}
 }
 @media(prefers-reduced-motion:reduce){.splash-cloud-bank{animation:none!important;display:none!important}.launch-splash>.launch-logo{animation:none!important;opacity:1!important;transform:none!important}}
+
+/* v0.15.8 — slower, more opaque SVG cloud reveal */

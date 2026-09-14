@@ -53,10 +53,10 @@ Visited filter/sort control, unified header/status-bar colour, increased header 
 Removed ship, added third plane with fading segmented contrails, removed filter badge, improved map fill/PWA map behavior, and refreshed all app icon branding.
 
 
-## v0.15.7
+## v0.15.8
 Dynamic personalised passport-stamp World View mark on the home map.
 
 
-## v0.15.7
+## v0.15.8
 - Replaced launch CSS blob clouds with layered SVG cloud assets.
 - Made the dynamic World View passport stamp smaller and raised it to overlap the map card edge without clipping.
