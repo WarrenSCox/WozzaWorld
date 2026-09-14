@@ -1186,3 +1186,22 @@ body.trips-view .sky-clouds{display:none!important}
 /* Departure board width/spacing aligned with the Home cards. */
 .screen[data-screen="home"]>.departure-board{box-sizing:border-box!important;width:100%!important;margin:0 0 22px!important}
 .screen[data-screen="home"]>.map-card{margin-top:0!important}
+
+/* v0.17.2 — final requested polish */
+/* In landscape My World View is pure map: no title ribbon or app header. */
+@media (orientation:landscape){
+  body.map-view .map-view-title,body.map-view .topbar{display:none!important}
+  body.map-view .map-stage{inset:0!important;padding:0!important}
+  body.map-view #worldMap{height:100dvh!important;width:100vw!important}
+  body.map-view .map-close{display:grid!important;top:max(10px,env(safe-area-inset-top))!important}
+}
+/* Portrait map stays exactly in the established presentation. */
+@media (orientation:portrait){body.map-view .map-view-title{display:flex!important}}
+/* Move ONLY the little plane higher inside the approved stamp. */
+.stamp-plane{transform:translateY(-6px) rotate(-7deg)!important}
+/* Force the glossy teal treatment onto the actual Home screen layer so it cannot be masked by an older flat background. */
+body:not(.map-view) main{position:relative;z-index:1;background:transparent!important}
+body:not(.map-view) .screen[data-screen="home"]{background:transparent!important}
+body:not(.map-view){background:radial-gradient(ellipse at 50% 32%,rgba(65,210,208,.62) 0%,rgba(25,167,176,.34) 26%,transparent 52%),linear-gradient(160deg,#064b68 0%,#076c84 27%,#0a9da4 51%,#08768a 72%,#054a66 100%)!important;background-attachment:fixed!important}
+/* Local autocomplete menus. */
+.local-autocomplete{position:relative}.local-autocomplete-menu{position:absolute;z-index:220;left:0;right:0;top:calc(100% + 5px);max-height:210px;overflow:auto;background:#fff;border:1px solid rgba(18,56,70,.14);border-radius:14px;box-shadow:0 14px 34px rgba(5,54,73,.18);padding:5px}.local-autocomplete-menu[hidden]{display:none!important}.local-autocomplete-option{display:block;width:100%;border:0;background:#fff;text-align:left;padding:10px 11px;border-radius:10px;color:var(--ink);font:inherit;font-weight:750}.local-autocomplete-option:active{background:#edf6f7}
