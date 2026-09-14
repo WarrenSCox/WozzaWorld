@@ -94,7 +94,7 @@ function openVisitedFilters(){const dlg=$('#visitedFilterDialog'),sort=$('#visit
 $('#visitedFilterBtn')?.addEventListener('click',openVisitedFilters);$('#visitedFilterDialog')?.addEventListener('submit',e=>{e.preventDefault();state.visitedListPrefs={sort:$('#visitedSort').value,year:$('#visitedYear').value};localStorage.setItem('wozzaworld-state',JSON.stringify(state));$('#visitedFilterDialog').close();render();refreshVisitedFilterUI()});$('#resetVisitedFilters')?.addEventListener('click',()=>{state.visitedListPrefs={sort:'default',year:'all'};localStorage.setItem('wozzaworld-state',JSON.stringify(state));$('#visitedFilterDialog').close();render();refreshVisitedFilterUI()});
 
 setupCountrySearch();buildMap();render();refreshVisitedFilterUI();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.15.5',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,2250),{once:true});setTimeout(hide,2700);
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.15.6',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,2250),{once:true});setTimeout(hide,2700);
 
 
 // v0.14.9 — web-only install button, matching WozzaWatch behaviour.
@@ -131,7 +131,7 @@ window.addEventListener('appinstalled', () => {
   installHelp?.classList.remove('show');
 });
 
-// v0.15.5 — dynamic passport-stamp World View name (installed app only) and responsive map title.
+// v0.15.6 — dynamic passport-stamp World View name (installed app only) and responsive map title.
 const isInstalledWozzaWorld=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
 function worldViewFirstName(){return (localStorage.getItem('wozzaworld-first-name')||'').trim()}
 function applyWorldViewName(){
