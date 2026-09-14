@@ -1,5 +1,5 @@
 
-// v0.14.8 — keep Android browser/PWA system status bar matched to the header.
+// v0.14.9 — WozzaWatch-style Android status bar + web-only install control.
 const syncSystemBarTheme=()=>{
   let meta=document.querySelector('meta[name="theme-color"]');
   if(!meta){meta=document.createElement('meta');meta.name='theme-color';document.head.appendChild(meta);}
@@ -53,4 +53,39 @@ function parseCities(raw){const out={};raw.split(';').forEach(group=>{const [cou
 $('#tripForm').onsubmit=e=>{e.preventDefault();const countries=$('#tripCountries').value.split(',').map(x=>x.trim()).filter(Boolean),name=$('#tripName').value.trim();if(!countries.length||!name)return;const cities=parseCities($('#tripCities').value),companions=$('#tripCompanions').value.split(',').map(x=>x.trim()).filter(Boolean),t={id:crypto.randomUUID?.()||String(Date.now()),name,start:$('#tripStart').value,end:$('#tripEnd').value,countries,cities,plan:$('#tripPlan').value.trim(),status:'upcoming'};state.trips.push(t);countries.forEach(c=>{if(!state.statuses[c])state.statuses[c]=countdownDays(t.start)>=0?'going':'visited';if(companions.length)state.companions[c]=[...new Set([...(state.companions[c]||[]),...companions])];for(const city of cities[c]||[]){state.cities[c]??=[];let rec=state.cities[c].find(x=>x.name.toLowerCase()===city.toLowerCase());if(!rec){rec={name:city,visits:[]};state.cities[c].push(rec)}const m=t.start?t.start.slice(0,7):'';if(m&&!rec.visits.includes(m))rec.visits.push(m)}});save();$('#tripDialog').close();toast('Multi-country trip created ✈')};
 $('#cityForm').onsubmit=e=>{e.preventDefault();const name=$('#cityInput').value.trim(),month=$('#cityMonth').value;if(!name||!currentCountry)return;state.cities[currentCountry]??=[];let rec=state.cities[currentCountry].find(x=>x.name.toLowerCase()===name.toLowerCase());if(!rec){rec={name,visits:[]};state.cities[currentCountry].push(rec)}if(month&&!rec.visits.includes(month))rec.visits.push(month);$('#cityInput').value='';$('#cityMonth').value='';save()};$('#placeForm').onsubmit=e=>{e.preventDefault();const v=$('#placeInput').value.trim();if(v){(state.places[currentCountry]??=[]).push(v);$('#placeInput').value='';save()}};$('#companionForm').onsubmit=e=>{e.preventDefault();const v=$('#companionInput').value.trim();if(v){(state.companions[currentCountry]??=[]).push(v);$('#companionInput').value='';save()}};let memoryTimer;$('#memoryNotes').oninput=e=>{clearTimeout(memoryTimer);memoryTimer=setTimeout(()=>{state.memories[currentCountry]=e.target.value;localStorage.setItem('wozzaworld-state',JSON.stringify(state));renderCountryLists()},250)};$('#confirmRemove').onclick=e=>{e.preventDefault();if(pendingRemoveCountry)removeCountry(pendingRemoveCountry);pendingRemoveCountry=null;$('#removeDialog').close()};
 const carousel=$('#countryCarousel');if(carousel){let sx=0,sy=0,drag=false;carousel.onpointerdown=e=>{if(e.target.closest('button,input'))return;sx=e.clientX;sy=e.clientY;drag=true};carousel.onpointerup=e=>{if(!drag)return;drag=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2)setCountrySlide(countrySlide+(dx<0?1:-1),true,dx<0?'next':'prev')};carousel.onpointercancel=()=>drag=false}setCountrySlide(0,false);[['.summary.visited',0],['.summary.going',1],['.summary.bucket',2]].forEach(([sel,i])=>{const el=$(sel);el.setAttribute('role','button');el.setAttribute('tabindex','0');const jump=()=>{setCountrySlide(i,true,i>=countrySlide?'next':'prev');$('#countryCarousel').scrollIntoView({behavior:'smooth',block:'start'})};el.onclick=jump;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump()}}});setupCountrySearch();buildMap();render();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.14.8',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,350),{once:true});setTimeout(hide,1800);
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.14.9',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,350),{once:true});setTimeout(hide,1800);
+
+
+// v0.14.9 — web-only install button, matching WozzaWatch behaviour.
+let deferredInstallPrompt = null;
+const installBtn = document.getElementById('installBtn');
+const installHelp = document.getElementById('installHelp');
+const installHelpClose = document.getElementById('installHelpClose');
+const isStandaloneApp = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+const syncInstallButton = () => {
+  if (!installBtn) return;
+  installBtn.classList.toggle('hidden', isStandaloneApp());
+};
+syncInstallButton();
+window.matchMedia('(display-mode: standalone)').addEventListener?.('change', syncInstallButton);
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  syncInstallButton();
+});
+installBtn?.addEventListener('click', async () => {
+  if (isStandaloneApp()) { syncInstallButton(); return; }
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    try { await deferredInstallPrompt.userChoice; } catch (e) {}
+    deferredInstallPrompt = null;
+    return;
+  }
+  installHelp?.classList.add('show');
+});
+installHelpClose?.addEventListener('click', () => installHelp?.classList.remove('show'));
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  installBtn?.classList.add('hidden');
+  installHelp?.classList.remove('show');
+});

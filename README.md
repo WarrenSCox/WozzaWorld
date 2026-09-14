@@ -33,3 +33,9 @@ Atmospheric blue mountain background, expanded ISO flag mapping/fallbacks, and v
 
 ## v0.14.8
 Android status bar handling now mirrors WozzaWatch: one static theme-color, matching html/body top colour, and safe-area topbar padding.
+
+
+## v0.14.9
+- Restored the Add WozzaWorld to phone control on the browser version.
+- Uses the native beforeinstallprompt flow when available, with manual install guidance as fallback.
+- Automatically hides the install control in the installed standalone PWA, matching WozzaWatch behaviour.

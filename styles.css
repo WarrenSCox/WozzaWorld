@@ -681,3 +681,9 @@ body{
 @media(max-width:560px){
   body{background:linear-gradient(180deg,#075E78 0 250px,#0b7590 515px,#0b5d74 100%)!important;}
 }
+
+
+/* v0.14.9 — install control appears in browser, never in installed PWA. */
+@media (display-mode: standalone){#installBtn{display:none!important}}
+#installBtn.install-btn{position:fixed;right:14px;bottom:max(16px,env(safe-area-inset-bottom));z-index:35}
+body.map-view #installBtn{display:none!important}
