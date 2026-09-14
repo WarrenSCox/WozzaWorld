@@ -29,3 +29,7 @@ Atmospheric blue mountain background, expanded ISO flag mapping/fallbacks, and v
 
 ### v0.14.7
 - Android/PWA system status-bar theme handling simplified to mirror the proven WozzaWatch approach: one theme-color, matching manifest colour, plus runtime refresh on resume.
+
+
+## v0.14.8
+Android status bar handling now mirrors WozzaWatch: one static theme-color, matching html/body top colour, and safe-area topbar padding.

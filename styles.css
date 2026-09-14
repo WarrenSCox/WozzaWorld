@@ -531,10 +531,10 @@ body:not(.map-view) #worldMap{width:100%!important;height:auto!important;aspect-
   .premium-country-row{grid-template-columns:86px minmax(0,1fr) max-content!important}.flag-wash{width:101px!important}.country-row-copy strong{font-size:15px!important}
 }
 
-/* v0.14.7 — atmospheric atlas background + resilient flags/date metadata */
+/* v0.14.8 — atmospheric atlas background + resilient flags/date metadata */
 body::before{
   content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background-image:linear-gradient(180deg,rgba(2,43,61,.20),rgba(7,91,116,.08) 45%,rgba(237,246,247,.12)),url("mountain-bg.svg?v=0.14.7");
+  background-image:linear-gradient(180deg,rgba(2,43,61,.20),rgba(7,91,116,.08) 45%,rgba(237,246,247,.12)),url("mountain-bg.svg?v=0.14.8");
   background-size:cover;background-position:center top;background-repeat:no-repeat;
 }
 body{background:transparent!important}
@@ -545,7 +545,7 @@ body{background:transparent!important}
 .country-row-year{display:block!important}
 
 
-/* v0.14.7 — mountain photo background, visit metadata visibility, pinch/pan map */
+/* v0.14.8 — mountain photo background, visit metadata visibility, pinch/pan map */
 html{
   background:#063f57!important;
   min-height:100%!important;
@@ -554,7 +554,7 @@ body{
   min-height:100%!important;
   background:
     linear-gradient(180deg,rgba(2,39,58,.20) 0%,rgba(5,75,96,.20) 42%,rgba(2,55,76,.36) 100%),
-    url("mountain-bg.jpg?v=0.14.7") center top / cover fixed no-repeat!important;
+    url("mountain-bg.jpg?v=0.14.8") center top / cover fixed no-repeat!important;
 }
 body::before{display:none!important}
 #app{background:transparent!important}
@@ -625,11 +625,11 @@ body.map-view{background:#075e78!important}
   }
 }
 
-/* v0.14.7 — regression repair: clean mountain backdrop + list/date rendering */
+/* v0.14.8 — regression repair: clean mountain backdrop + list/date rendering */
 body{
   background:
     linear-gradient(180deg,rgba(2,39,58,.10) 0%,rgba(5,75,96,.12) 46%,rgba(2,55,76,.28) 100%),
-    url("mountain-bg.svg?v=0.14.7") center top / cover fixed no-repeat!important;
+    url("mountain-bg.svg?v=0.14.8") center top / cover fixed no-repeat!important;
 }
 @media(max-width:620px){
   body{
@@ -640,7 +640,7 @@ body{
 .country-list{min-height:0!important}
 .country-row-year{display:block!important;visibility:visible!important;opacity:1!important}
 
-/* v0.14.7 — remove mountain artwork; return to clean premium blue backdrop */
+/* v0.14.8 — remove mountain artwork; return to clean premium blue backdrop */
 html, body {
   background: #075a72 !important;
 }
@@ -660,7 +660,24 @@ body::after,
 }
 /* retain any lightweight cloud animation only where it is a separate decorative layer */
 
-/* v0.14.7 — Android status-bar colour hardening */
+/* v0.14.8 — Android status-bar colour hardening */
 html{background-color:#075E78!important;}
 body{margin-top:0;background-color:#075E78!important;}
 .topbar{background-color:#075E78!important;}
+
+
+/* v0.14.8 — Android status bar: mirror the proven WozzaWatch setup */
+html{background:#075E78!important;}
+body{
+  margin:0!important;
+  min-height:100vh!important;
+  background:linear-gradient(180deg,#075E78 0 240px,#0b7590 510px,#0b5d74 100%)!important;
+  background-attachment:fixed!important;
+}
+.topbar{
+  padding-top:max(14px,env(safe-area-inset-top))!important;
+  background:#075E78!important;
+}
+@media(max-width:560px){
+  body{background:linear-gradient(180deg,#075E78 0 250px,#0b7590 515px,#0b5d74 100%)!important;}
+}
