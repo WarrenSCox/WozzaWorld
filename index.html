@@ -9,7 +9,7 @@
 <link rel="icon" href="icon-192.png?v=0.16.8" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png?v=0.16.8">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.16.8">
+<link rel="stylesheet" href="styles.css?v=0.17.0">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -66,7 +66,7 @@
         <div class="world-view-stamp">
           <div class="stamp-main">
             <span class="stamp-name"></span>
-            <svg class="stamp-plane" viewBox="0 0 72 42" aria-hidden="true"><path d="M69 19.2 44 13 34 2.5h-5.2l5.4 12.2-18.8-1.9-8.7-7H2.8l5.7 10.7-5.7 10.7h3.9l8.7-7 18.8-1.9-5.4 12.2H34L44 20l25-6.2c1.5-.4 2.5.7 2.5 2.7s-1 3.1-2.5 2.7z"/></svg>
+            <svg class="stamp-plane" viewBox="0 0 72 42" aria-hidden="true"><path d="M69 18.2 44.5 14 34 3h-5.4l5.2 12.5-18.2-1.4L7 7.5H2.8l5.4 10-5.4 10H7l8.6-6.6 18.2-1.4L28.6 32H34l10.5-11 24.5-4.2c1.7-.3 2.7-.1 2.7.7s-1 1.1-2.7.7z"/></svg>
           </div>
           <div class="stamp-bottom">
             <strong>WORLD VIEW</strong>
@@ -119,7 +119,7 @@
 <section class="screen" data-screen="me">
   <div class="hero-card accent-card"><div class="eyebrow">TRAVEL SNAPSHOT</div><h2>Your world, one place.</h2><p>Everywhere you've been, everywhere you're going and everywhere still on the bucket list.</p></div>
   <div class="stats-grid"><div class="stat green"><strong id="meVisited">0</strong><span>Countries visited</span></div><div class="stat blue"><strong id="meCities">0</strong><span>Cities visited</span></div><div class="stat amber"><strong id="meGoing">0</strong><span>Upcoming</span></div><div class="stat coral"><strong id="meTrips">0</strong><span>Trips</span></div></div><div class="hero-card companion-stats-card"><h3>Who you travel with</h3><p class="muted">Your most frequent travel companions, based on trips.</p><div id="companionStats" class="companion-stats"></div></div>
-  <div class="hero-card recycle-card"><div class="recycle-head"><h3>Country recycle bin</h3><span>Removed countries stay here until you restore or delete them.</span></div><div id="recycleList" class="recycle-list"></div></div>
+  <div class="hero-card recycle-card"><div class="recycle-head"><h3>Recycle bin</h3><span>Removed countries and trips stay here until you restore or permanently delete them.</span></div><div id="recycleList" class="recycle-list"></div></div>
 </section>
 </main>
 </div>
@@ -135,7 +135,7 @@
   <h3 class="space-top">Bucket list / saved places</h3><div id="savedPlaces" class="chips"></div><form id="placeForm" class="inline-form"><input id="placeInput" placeholder="Add a restaurant or place" maxlength="50"><button>＋</button></form>
 </aside>
 
-<dialog id="tripDialog" class="trip-dialog"><form method="dialog" id="tripForm"><h2>Create trip</h2><p class="muted">One journey can include several countries. They will still appear separately in your country lists.</p><label>Trip name<input id="tripName" required placeholder="European summer trip"></label><div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div><label>Countries <span class="field-note">comma separated</span><input id="tripCountries" required placeholder="Italy, France, Spain"></label><label>Cities <span class="field-note">Country: City, City; …</span><textarea id="tripCities" placeholder="Italy: Rome, Florence; France: Paris"></textarea></label><label>Travel companions</label><div id="tripCompanionBank" class="companion-bank"></div><input id="tripCompanions" placeholder="Add new names, comma separated"><label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label><label>Trip rating <span class="field-note">optional — you can change it later</span><div class="trip-rating-input" id="tripRatingInput" role="radiogroup" aria-label="Trip rating"><button type="button" data-rating="1">☆</button><button type="button" data-rating="2">☆</button><button type="button" data-rating="3">☆</button><button type="button" data-rating="4">☆</button><button type="button" data-rating="5">☆</button></div><input id="tripRating" type="hidden" value="0"></label><div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create trip</button></div></form></dialog>
+<dialog id="tripDialog" class="trip-dialog"><form method="dialog" id="tripForm"><button type="button" class="trip-dialog-close" id="closeTripDialog" aria-label="Close trip editor">×</button><h2>Create trip</h2><p class="muted">One journey can include several countries. They will still appear separately in your country lists.</p><label>Trip name<input id="tripName" required placeholder="European summer trip"></label><div class="two"><label>From<input id="tripStart" type="date"></label><label>To<input id="tripEnd" type="date"></label></div><label>Countries <span class="field-note">comma separated</span><input id="tripCountries" required placeholder="Italy, France, Spain"></label><label>Cities <span class="field-note">Country: City, City; …</span><textarea id="tripCities" placeholder="Italy: Rome, Florence; France: Paris"></textarea></label><label>Travel companions</label><div id="tripCompanionBank" class="companion-bank"></div><input id="tripCompanions" placeholder="Add new names, comma separated"><label>First plan<input id="tripPlan" placeholder="e.g. Dinner in Trastevere"></label><label>Trip rating <span class="field-note">optional — you can change it later</span><div class="trip-rating-input" id="tripRatingInput" role="radiogroup" aria-label="Trip rating"><button type="button" data-rating="1">☆</button><button type="button" data-rating="2">☆</button><button type="button" data-rating="3">☆</button><button type="button" data-rating="4">☆</button><button type="button" data-rating="5">☆</button></div><input id="tripRating" type="hidden" value="0"></label><div class="trip-delete-wrap"><button type="button" class="danger trip-delete" id="deleteTripBtn" hidden>Move trip to recycle bin</button></div><div class="dialog-actions"><button value="cancel" type="button" id="cancelTrip">Cancel</button><button value="default" class="primary" type="submit">Create trip</button></div></form></dialog>
 
 
 
@@ -145,5 +145,5 @@
 <dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.16.8"></script>
+<script src="app.js?v=0.17.0"></script>
 </body></html>

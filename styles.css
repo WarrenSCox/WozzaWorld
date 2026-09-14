@@ -1103,3 +1103,31 @@ body:not(.map-view) .screen[data-screen="home"] .departure-board{
   body:not(.map-view) .screen[data-screen="home"] .departure-board{width:100%!important;margin:0 0 22px!important}
   .editable-trip{padding-right:39px!important}.trip-open-chevron{right:13px;font-size:27px}
 }
+
+
+/* v0.17.0 consolidated UX release */
+html,body{overscroll-behavior-y:none}
+body:not(.map-view){background:
+ radial-gradient(circle at 52% 35%,rgba(41,191,196,.42) 0,rgba(41,191,196,.16) 28%,transparent 54%),
+ linear-gradient(145deg,#075e78 0%,#087f91 28%,#0a9ca5 52%,#087687 73%,#064f6b 100%)!important;
+ background-attachment:fixed!important}
+body:not(.map-view)::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(118deg,rgba(255,255,255,.07),transparent 34%,rgba(255,255,255,.035) 52%,transparent 72%)}
+body:not(.map-view){scrollbar-width:none}body:not(.map-view)::-webkit-scrollbar{display:none;width:0;height:0}
+body:not(.map-view) #worldMap .country{cursor:default!important;pointer-events:none!important}
+body:not(.map-view) .travel-animations{display:block!important}
+/* True overlay map header: map continues behind it; no framed/rounded teal layer. */
+body.map-view .map-card,body.map-view .map-stage{background:transparent!important;border-radius:0!important;overflow:visible!important}
+body.map-view .map-stage{inset:0!important;padding:0!important;height:100dvh!important}
+body.map-view #worldMap{height:100dvh!important;width:100vw!important;margin:0!important;object-fit:fill!important}
+body.map-view .map-view-title{position:fixed!important;z-index:120!important;left:0!important;right:0!important;top:0!important;width:100vw!important;height:48px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:rgba(7,94,120,.50)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;display:flex!important;align-items:center!important;justify-content:center!important;color:#fff!important;line-height:1!important}
+body.map-view .map-view-title::before,body.map-view .map-view-title::after{display:none!important;content:none!important}
+body.map-view .map-close{z-index:130!important}
+@media(orientation:landscape){body.map-view .map-view-title{height:42px!important}body.map-view .map-stage{padding:0!important}body.map-view #worldMap{height:100dvh!important}}
+/* Stamp internal artwork only: keep stamp position; raise stars/waves and improve plane silhouette. */
+.stamp-footer{transform:translateY(-3px)!important}.stamp-stars,.stamp-waves{transform:translateY(-2px)!important}.stamp-plane{width:24px!important;min-width:20px!important;max-width:27px!important;transform:rotate(-7deg)!important;filter:none!important}
+/* Country visit rating/repeat visit metadata */
+.country-rating{display:block;margin-top:2px;font-size:12px;line-height:1;color:#f2ad2e;letter-spacing:.03em}.country-rating b{font-size:9px;color:var(--soft-ink);font-weight:800}.visit-repeat{display:block;margin-top:3px;font-size:10px;color:var(--soft-ink);font-weight:800}
+/* Edit trip controls */
+.trip-dialog form{position:relative}.trip-dialog-close{position:absolute;right:0;top:-2px;width:34px!important;height:34px;border:0;border-radius:50%;background:#ecebe5;font-size:23px;line-height:1;display:grid;place-items:center}.trip-delete-wrap{margin-top:16px}.trip-delete{width:100%!important;border:1px solid rgba(181,55,55,.28)!important;background:rgba(181,55,55,.08)!important;color:#9c2d2d!important;border-radius:14px!important;padding:11px!important;font-weight:850!important}.trip-delete[hidden]{display:none!important}
+.recycle-row{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto auto!important}.recycle-row small{grid-column:2;color:var(--soft-ink);font-size:10px}.recycle-trip-icon{width:30px;text-align:center;font-size:20px}
+body.trips-view .sky-clouds{display:none!important}
