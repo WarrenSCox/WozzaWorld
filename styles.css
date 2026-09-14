@@ -1066,3 +1066,12 @@ body.map-view #worldMap{height:calc(100dvh - 48px)!important}
   body.map-view .map-stage{padding-top:40px!important}
   body.map-view #worldMap{height:calc(100dvh - 40px)!important}
 }
+
+/* v0.16.5 HOTFIX — make My World View ribbon substantially more transparent. */
+body.map-view .map-view-title{
+  background:rgba(7,94,120,.075)!important;
+  -webkit-backdrop-filter:blur(3px) saturate(104%)!important;
+  backdrop-filter:blur(3px) saturate(104%)!important;
+  border:0!important;
+  box-shadow:none!important;
+}
