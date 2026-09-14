@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#075E78">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.15.4">
-<link rel="icon" href="icon-192.png?v=0.15.4" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png?v=0.15.4">
+<link rel="manifest" href="manifest.webmanifest?v=0.15.5">
+<link rel="icon" href="icon-192.png?v=0.15.5" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.15.5">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.15.4">
+<link rel="stylesheet" href="styles.css?v=0.15.5">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -21,13 +21,13 @@
   <span class="cloud c4"></span>
   <span class="cloud c5"></span>
 </div>
-<div class="launch-splash" id="launchSplash" aria-hidden="true"><div class="splash-cloud splash-cloud-left"></div><div class="splash-cloud splash-cloud-right"></div><img src="wozzaworld-logo.png?v=0.15.4" alt=""></div>
+<div class="launch-splash" id="launchSplash" aria-hidden="true"><div class="splash-cloud splash-cloud-left"></div><div class="splash-cloud splash-cloud-right"></div><img src="wozzaworld-logo.png?v=0.15.5" alt=""></div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),2700)</script>
 <div class="map-view-title" id="mapViewTitle">WORLD VIEW</div>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.15.4" alt="WozzaWorld"></button>
+  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.15.5" alt="WozzaWorld"></button>
   <nav class="header-nav" aria-label="Main navigation">
     <button class="header-nav-item" data-target="map" aria-label="Map">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span>
@@ -48,7 +48,22 @@
 <section class="screen active" data-screen="home">
   <div class="map-card">
     <div class="map-stage" id="mapStage">
-      <div class="world-view-signature" id="worldViewSignature" aria-hidden="true"><span class="world-view-name"></span><b>WORLD VIEW</b></div>
+      <div class="world-view-signature" id="worldViewSignature" aria-hidden="true">
+        <div class="world-view-stamp">
+          <div class="stamp-main">
+            <span class="stamp-name"></span>
+            <svg class="stamp-plane" viewBox="0 0 64 32" aria-hidden="true"><path d="M58 14.5 38 8.5 30 1.5h-4l4 8-17-1-6-5H4l3 8-3 8h3l6-5 17-1-4 8h4l8-7 20-6z"/></svg>
+          </div>
+          <div class="stamp-rule"></div>
+          <div class="stamp-bottom">
+            <strong>WORLD VIEW</strong>
+            <span class="stamp-globe" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20"/><path d="M4 24h40M24 4c6 5 9 12 9 20s-3 15-9 20M24 4c-6 5-9 12-9 20s3 15 9 20M9 12c4 3 9 5 15 5s11-2 15-5M9 36c4-3 9-5 15-5s11 2 15 5"/></svg>
+            </span>
+          </div>
+          <div class="stamp-stars" aria-hidden="true">★ ★ ★</div>
+        </div>
+      </div>
       <svg id="worldMap" viewBox="0 0 1000 520" role="img" aria-label="Interactive Equal Earth world map">
         <path id="sphere" class="ocean"></path><g id="countries"></g>
       </svg>
@@ -116,5 +131,5 @@
 <dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.15.4"></script>
+<script src="app.js?v=0.15.5"></script>
 </body></html>
