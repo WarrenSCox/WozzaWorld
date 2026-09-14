@@ -62,7 +62,17 @@ Dynamic personalised passport-stamp World View mark on the home map.
 - Made the dynamic World View passport stamp smaller and raised it to overlap the map card edge without clipping.
 
 
-## v0.16.0
+## v0.16.1
 - Unified launch sky/app palette and denser organic SVG cloud banks with no straight cloud edges.
 - Compact solid-black dynamic passport stamp with tighter spacing, improved aircraft silhouette and postmark waves.
 - Header slogan changed to MAP IT. LIVE IT. LOVE IT. and resized to balance with navigation.
+
+
+## v0.16.1
+- App-styled custom Filter & sort picker with close X.
+- Added companion-count high/low sorting.
+- Larger, balanced MAP IT / LIVE IT / LOVE IT header lockup.
+- Stamp shifted lower and name lowered into white map-card area.
+- Launch clouds reveal independently with staggered timing and diagonal drift.
+- Full map title changed to MY WORLD VIEW with translucent ribbon.
+- Removed outer white outline around the country list block.

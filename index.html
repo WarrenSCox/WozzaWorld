@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#075E78">
 <title>WozzaWorld</title>
-<link rel="manifest" href="manifest.webmanifest?v=0.16.0">
-<link rel="icon" href="icon-192.png?v=0.16.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png?v=0.16.0">
+<link rel="manifest" href="manifest.webmanifest?v=0.16.1">
+<link rel="icon" href="icon-192.png?v=0.16.1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png?v=0.16.1">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.16.0">
+<link rel="stylesheet" href="styles.css?v=0.16.1">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -23,25 +23,25 @@
 </div>
 <div class="launch-splash" id="launchSplash" aria-hidden="true">
   <div class="splash-cloud-bank splash-cloud-bank-left" aria-hidden="true">
-    <img class="splash-cloud-img cloud-l1" src="cloud-a.svg?v=0.16.0" alt="">
-    <img class="splash-cloud-img cloud-l2" src="cloud-b.svg?v=0.16.0" alt="">
-    <img class="splash-cloud-img cloud-l3" src="cloud-a.svg?v=0.16.0" alt="">
-    <img class="splash-cloud-img cloud-l4" src="cloud-b.svg?v=0.16.0" alt="">
+    <img class="splash-cloud-img cloud-l1" src="cloud-a.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-l2" src="cloud-b.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-l3" src="cloud-a.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-l4" src="cloud-b.svg?v=0.16.1" alt="">
   </div>
   <div class="splash-cloud-bank splash-cloud-bank-right" aria-hidden="true">
-    <img class="splash-cloud-img cloud-r1" src="cloud-b.svg?v=0.16.0" alt="">
-    <img class="splash-cloud-img cloud-r2" src="cloud-a.svg?v=0.16.0" alt="">
-    <img class="splash-cloud-img cloud-r3" src="cloud-b.svg?v=0.16.0" alt="">
-    <img class="splash-cloud-img cloud-r4" src="cloud-a.svg?v=0.16.0" alt="">
+    <img class="splash-cloud-img cloud-r1" src="cloud-b.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-r2" src="cloud-a.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-r3" src="cloud-b.svg?v=0.16.1" alt="">
+    <img class="splash-cloud-img cloud-r4" src="cloud-a.svg?v=0.16.1" alt="">
   </div>
-  <img class="launch-logo" src="wozzaworld-logo.png?v=0.16.0" alt="">
+  <img class="launch-logo" src="wozzaworld-logo.png?v=0.16.1" alt="">
 </div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),2700)</script>
-<div class="map-view-title" id="mapViewTitle">YOUR WORLD VIEW</div>
+<div class="map-view-title" id="mapViewTitle">MY WORLD VIEW</div>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.16.0" alt="WozzaWorld"></button>
+  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.16.1" alt="WozzaWorld"></button>
   <nav class="header-nav" aria-label="Main navigation">
     <button class="header-nav-item" data-target="map" aria-label="Map">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span>
@@ -138,11 +138,11 @@
 
 
 
-<dialog id="visitedFilterDialog" class="action-dialog filter-dialog"><form method="dialog"><h3>Filter &amp; sort</h3><p>Choose how your visited countries are shown.</p><label>Sort by<select id="visitedSort"><option value="default">Current order</option><option value="az">Alphabetical A–Z</option><option value="za">Alphabetical Z–A</option><option value="added-new">Date added — newest first</option><option value="added-old">Date added — oldest first</option><option value="trip-new">Trip date — newest first</option><option value="trip-old">Trip date — oldest first</option></select></label><label>Year<select id="visitedYear"><option value="all">All years</option></select></label><small class="filter-note">Countries without a known trip/visit date stay visible when sorting by trip date and are placed after dated countries. A year filter only shows countries with a recorded visit in that year.</small><div class="dialog-actions filter-actions"><button value="cancel" type="button" id="resetVisitedFilters">Reset</button><button value="default" class="primary" type="submit">Apply</button></div></form></dialog>
+<dialog id="visitedFilterDialog" class="action-dialog filter-dialog"><form method="dialog"><button type="button" class="dialog-close-x" id="closeVisitedFilters" aria-label="Close filter and sort">×</button><h3>Filter &amp; sort</h3><p>Choose how your visited countries are shown.</p><label>Sort by<input id="visitedSort" type="hidden" value="default"><button type="button" class="filter-picker-trigger" id="visitedSortTrigger" aria-expanded="false"><span>Current order</span><b>⌄</b></button><div class="filter-picker-menu" id="visitedSortMenu" hidden></div></label><label>Year<input id="visitedYear" type="hidden" value="all"><button type="button" class="filter-picker-trigger" id="visitedYearTrigger" aria-expanded="false"><span>All years</span><b>⌄</b></button><div class="filter-picker-menu compact" id="visitedYearMenu" hidden></div></label><small class="filter-note">Countries without a known trip/visit date stay visible when sorting by trip date and are placed after dated countries. A year filter only shows countries with a recorded visit in that year.</small><div class="dialog-actions filter-actions"><button value="cancel" type="button" id="resetVisitedFilters">Reset</button><button value="default" class="primary" type="submit">Apply</button></div></form></dialog>
 <dialog id="removeDialog" class="action-dialog"><form method="dialog"><h3 id="removeDialogTitle">Remove country?</h3><p>It will move to your country recycle bin, so you can restore it later.</p><div class="dialog-actions"><button value="cancel">Cancel</button><button value="remove" class="danger" id="confirmRemove">Remove from list</button></div></form></dialog>
 <dialog id="citiesDialog" class="action-dialog"><form method="dialog"><h3 id="citiesDialogTitle">Cities visited</h3><div id="citiesDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <dialog id="peopleDialog" class="action-dialog"><form method="dialog"><h3 id="peopleDialogTitle">Travel companions</h3><div id="peopleDialogList" class="people-dialog-list"></div><div class="dialog-actions"><button value="cancel">Close</button></div></form></dialog>
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
-<script src="app.js?v=0.16.0"></script>
+<script src="app.js?v=0.16.1"></script>
 </body></html>
