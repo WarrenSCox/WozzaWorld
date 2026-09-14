@@ -1,4 +1,4 @@
-# WozzaWorld v0.14.1 — Premium Atlas
+# WozzaWorld v0.14.2 — Premium Atlas
 
 Premium visual redesign plus travel journal data model.
 

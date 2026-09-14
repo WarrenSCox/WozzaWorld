@@ -463,3 +463,70 @@ body:before{content:"";position:fixed;z-index:0;left:0;right:0;top:125px;height:
 .country-carousel{margin-top:26px!important;border-radius:36px!important;box-shadow:0 22px 55px rgba(5,54,73,.14)!important}.country-list-panel{border-radius:36px!important;background:rgba(255,255,255,.94)!important;border:0!important;overflow:hidden!important}.country-list-head{padding:27px 28px 20px!important;background:rgba(255,255,255,.9)!important}.country-list-head>div{min-width:0}.country-list-head h2{font-size:29px!important;letter-spacing:.12em!important;color:var(--atlas-ink)!important}.country-list-head p{display:block!important;margin:8px 0 0!important;text-transform:uppercase;font-size:10px;font-weight:700;letter-spacing:.28em;color:var(--atlas-muted)}.list-add{width:50px!important;height:50px!important;border-radius:50%!important;background:linear-gradient(135deg,#087b9b,#19b9d2)!important;color:white!important;font-size:30px!important;line-height:1!important}.premium-country-row{grid-template-columns:145px minmax(0,1fr) max-content!important;min-height:104px!important;padding-right:22px!important;background:rgba(255,255,255,.86)!important}.flag-wash{width:165px!important;height:104px!important}.flag-wash:after{background:linear-gradient(90deg,transparent 22%,rgba(255,255,255,.15) 48%,rgba(255,255,255,.98) 91%)!important}.flag-wash-img{filter:saturate(.72) contrast(.9)!important;opacity:.82!important}.flag-fallback{display:block;width:100%;height:100%;font-size:0;background:linear-gradient(90deg,#e9eef0,transparent)}.country-row-copy{padding-left:5px!important}.country-row-copy strong{font-family:Inter,sans-serif!important;text-transform:none!important;font-size:20px!important;font-weight:800!important;letter-spacing:-.02em!important;color:var(--atlas-ink)!important}.country-row-year,.trip-countdown{font-size:10px!important;letter-spacing:.18em!important;text-transform:uppercase!important;color:var(--atlas-muted)!important}.row-metrics{gap:4px!important}.country-people,.country-cities{font-size:13px!important;color:#526579!important}.country-people svg,.country-cities svg{width:20px!important;height:20px!important}.premium-country-row:after{content:"›";font-size:31px;font-weight:300;color:#8190a0;margin-left:7px;align-self:center}.row-metrics:empty+.premium-country-row:after{display:block}
 @media(max-width:620px){.topbar{grid-template-columns:122px 1fr 105px!important;gap:8px!important;min-height:112px!important;padding:12px 14px 10px!important}.premium-brand{gap:4px!important}.premium-brand-mark{width:43px;height:43px}.brand-globe{font-size:36px}.brand-orbit{width:45px;height:19px;border-width:3px}.brand-plane{font-size:13px}.premium-brand-name{font-size:14px}.header-nav{grid-template-columns:repeat(3,47px)!important;gap:3px!important}.header-nav-item{width:47px!important;height:64px!important}.header-nav-item svg{width:28px!important;height:28px!important}.header-nav-item span{font-size:9px}.header-nav-item.active:after{width:32px}.header-slogan{font-size:9.5px!important;letter-spacing:.16em!important}.screen[data-screen="home"]{padding:20px 12px 34px!important}.map-card{padding:12px 9px 0!important;border-radius:30px!important}.map-stage{min-height:290px!important}.map-summary strong{font-size:34px!important}.map-summary span{font-size:14px!important}.country-carousel,.country-list-panel{border-radius:30px!important}.country-list-head{padding:23px 20px 18px!important}.country-list-head h2{font-size:24px!important}.premium-country-row{grid-template-columns:115px minmax(0,1fr) max-content!important;min-height:94px!important;padding-right:12px!important}.flag-wash{width:132px!important;height:94px!important}.country-row-copy strong{font-size:17px!important}.country-people,.country-cities{padding:6px 2px!important}.premium-country-row:after{font-size:25px;margin-left:2px}}
 body.map-view #worldMap .country{stroke-width:.72!important}
+
+/* v0.14.2 — responsive concept-match polish */
+/* Header: keep all three brand zones inside the real mobile viewport. */
+.topbar{box-sizing:border-box!important;width:100%!important;overflow:hidden!important}
+.premium-brand,.header-nav,.header-slogan{min-width:0!important}
+.header-slogan{white-space:normal!important;overflow:visible!important}
+
+/* Home atlas: remove the artificial minimum height that left a large blank area. */
+body:not(.map-view) .map-stage{min-height:0!important;height:auto!important;aspect-ratio:auto!important;padding:4px!important}
+body:not(.map-view) #worldMap{width:100%!important;height:auto!important;aspect-ratio:1000/520!important;margin:0!important}
+
+/* Country rows: chevron is an overlay, not an accidental fourth grid item. */
+.premium-country-row{position:relative!important;padding-right:42px!important}
+.premium-country-row:after{position:absolute!important;right:15px!important;top:50%!important;transform:translateY(-50%)!important;margin:0!important;line-height:1!important}
+.row-metrics{padding-right:2px!important}
+
+@media(max-width:620px){
+  .topbar{
+    grid-template-columns:minmax(92px,1.02fr) minmax(138px,1.45fr) minmax(82px,.9fr)!important;
+    gap:4px!important;
+    min-height:96px!important;
+    padding:max(7px,env(safe-area-inset-top)) 9px 6px!important;
+  }
+  .premium-brand{gap:3px!important;overflow:hidden!important}
+  .premium-brand-mark{width:34px!important;height:38px!important;flex:0 0 34px!important}
+  .brand-globe{font-size:30px!important}
+  .brand-orbit{width:36px!important;height:16px!important;border-width:2.5px!important}
+  .brand-plane{font-size:11px!important;right:-1px!important}
+  .premium-brand-name{font-size:12.5px!important;line-height:.84!important;letter-spacing:0!important}
+  .header-nav{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:0!important;width:100%!important}
+  .header-nav-item{width:auto!important;min-width:0!important;height:58px!important;padding:2px!important}
+  .header-nav-item svg{width:26px!important;height:26px!important}
+  .header-nav-item span{font-size:8.5px!important}
+  .header-nav-item.active:after{width:27px!important}
+  .header-slogan{font-size:8.4px!important;line-height:1.13!important;letter-spacing:.12em!important;text-align:right!important;justify-self:stretch!important}
+
+  .screen[data-screen="home"]{padding:16px 12px 30px!important}
+  .map-card{padding:10px 8px 0!important;border-radius:28px!important}
+  body:not(.map-view) .map-stage{border-radius:22px!important;padding:2px!important}
+  .map-summary{padding:8px 0 10px!important}
+  .map-summary strong{font-size:32px!important}
+  .map-summary span{font-size:13px!important}
+  .map-summary i{height:6px!important}
+  .map-summary .summary+ .summary:before{top:7px!important;bottom:7px!important}
+  .country-carousel{margin-top:22px!important}
+
+  .country-list-head{padding:20px 18px 16px!important}
+  .country-list-head h2{font-size:23px!important}
+  .country-list-head p{font-size:9px!important;letter-spacing:.23em!important;margin-top:6px!important}
+  .list-add{width:44px!important;height:44px!important;font-size:27px!important}
+
+  .premium-country-row{grid-template-columns:96px minmax(0,1fr) max-content!important;min-height:82px!important;padding-right:36px!important}
+  .flag-wash{width:112px!important;height:82px!important}
+  .flag-wash:after{background:linear-gradient(90deg,transparent 18%,rgba(255,255,255,.18) 45%,rgba(255,255,255,.98) 88%)!important}
+  .country-row-copy{padding-left:3px!important}
+  .country-row-copy strong{font-size:16px!important;line-height:1.08!important}
+  .country-row-year,.trip-countdown{font-size:8.5px!important;letter-spacing:.12em!important;margin-top:4px!important}
+  .country-people,.country-cities{font-size:12px!important;padding:5px 1px!important}
+  .country-people svg,.country-cities svg{width:18px!important;height:18px!important}
+  .premium-country-row:after{right:10px!important;font-size:24px!important}
+}
+@media(max-width:370px){
+  .topbar{grid-template-columns:minmax(82px,1fr) minmax(126px,1.4fr) minmax(74px,.82fr)!important;padding-left:6px!important;padding-right:6px!important}
+  .premium-brand-mark{width:30px!important;flex-basis:30px!important}.brand-globe{font-size:27px!important}.brand-orbit{width:32px!important}
+  .premium-brand-name{font-size:11.5px!important}.header-nav-item svg{width:24px!important;height:24px!important}.header-slogan{font-size:7.7px!important;letter-spacing:.09em!important}
+  .premium-country-row{grid-template-columns:86px minmax(0,1fr) max-content!important}.flag-wash{width:101px!important}.country-row-copy strong{font-size:15px!important}
+}
