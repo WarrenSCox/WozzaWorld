@@ -1264,3 +1264,6 @@ body:not(.map-view){background:radial-gradient(ellipse at 50% 32%,rgba(65,210,20
 .recycle-row.selected{background:rgba(57,191,229,.12)!important;border-radius:14px;box-shadow:inset 0 0 0 2px var(--bucket-sky)}
 .recycle-bulkbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:8px;padding:10px 8px;margin-bottom:8px;background:#fff;border-radius:14px;box-shadow:0 8px 22px rgba(7,94,120,.12)}
 .recycle-bulkbar[hidden]{display:none!important}.recycle-bulkbar strong{margin-right:auto}.recycle-bulkbar button{padding:9px 11px;border-radius:10px;border:0;font-weight:800}.recycle-bulkbar [data-delete-selected]{background:#ffe5e1;color:#a92d21}
+
+/* v0.18.5 — restore country-row interactions + unified glossy list actions */
+.list-head-actions .list-filter,.list-head-actions .list-add{background:linear-gradient(135deg,#087b9b 0%,#11a9c2 48%,#22c5d8 100%)!important;color:#fff!important;box-shadow:0 5px 12px rgba(7,94,120,.18),inset 0 1px 0 rgba(255,255,255,.22)!important;border:0!important}

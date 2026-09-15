@@ -9,7 +9,7 @@
 <link rel="icon" href="icon-192.png?v=0.16.8" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png?v=0.16.8">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0.18.4-country-map">
+<link rel="stylesheet" href="styles.css?v=0.18.5-restorations">
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 </head>
@@ -93,7 +93,7 @@
   <div class="country-carousel" id="countryCarousel" aria-label="Country lists">
     <div class="carousel-track" id="carouselTrack">
       <section class="country-list-panel" data-list="visited">
-        <div class="country-list-head"><div><h2 id="visitedCountriesHeading">VISITED COUNTRIES: 0</h2><p id="worldExploredPercent">0% OF THE WORLD EXPLORED</p></div><div class="list-head-actions"><button class="list-filter" id="visitedFilterBtn" aria-label="Filter and sort visited countries" title="Filter and sort"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button><button class="list-add" data-add-status="visited" aria-label="Add visited country">＋</button></div></div>
+        <div class="country-list-head"><div><h2 id="visitedCountriesHeading">VISITED</h2><p id="worldExploredPercent">0% OF THE WORLD EXPLORED</p></div><div class="list-head-actions"><button class="list-filter" id="visitedFilterBtn" aria-label="Filter and sort visited countries" title="Filter and sort"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button><button class="list-add" data-add-status="visited" aria-label="Add visited country">＋</button></div></div>
         <div class="country-search" data-search-for="visited" hidden><input type="search" placeholder="Search countries" autocomplete="off"><div class="country-search-results"></div></div>
         <div class="country-list" id="visitedCountries"></div>
       </section>
@@ -152,5 +152,5 @@
 <div class="install-help" id="installHelp"><div><strong>Add WozzaWorld to your phone</strong><p id="installHelpText">Open your browser menu and choose “Add to Home screen” or “Install app”.</p></div><button id="installHelpClose">Got it</button></div>
 <div class="toast" id="toast"></div>
 <script src="cities-data.js?v=0.17.2"></script>
-<script src="app.js?v=0.18.4-country-map"></script>
+<script src="app.js?v=0.18.5-restorations"></script>
 </body></html>
