@@ -1381,3 +1381,37 @@ html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-web
   background:#159b70!important;
   border-color:rgba(104,119,129,.58)!important;
 }
+
+/* v0.18.13 — Batch 2: trip-card + recycle-bin UX polish, visited optical size */
+/* Optical correction only: the visited ring was still reading slightly smaller than the clock face. */
+.country-status-grid .status-tick::before{width:28px!important;height:28px!important}
+
+/* Trips — cleaner information hierarchy while preserving the existing card actions. */
+#tripList{gap:12px!important}
+#tripList .premium-trip{position:relative!important;min-height:92px!important;padding:16px 82px 15px 17px!important;border-radius:22px!important;background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(246,252,253,.94))!important;border:1px solid rgba(7,94,120,.11)!important;box-shadow:0 9px 24px rgba(21,55,66,.075)!important;align-items:flex-start!important}
+#tripList .trip-card-copy{width:100%!important}
+#tripList .trip-card-copy>strong{display:block!important;color:var(--navy)!important;font-size:17px!important;line-height:1.2!important;letter-spacing:-.15px!important;margin-bottom:6px!important}
+#tripList .trip-card-copy>p{margin:0 0 8px!important;color:#657983!important;font-size:11.5px!important;line-height:1.45!important}
+#tripList .trip-stars{display:flex!important;gap:1px!important;min-height:20px!important}
+#tripList .trip-stars button{font-size:18px!important;line-height:20px!important}
+#tripList .countdown-badge{position:static!important;display:inline-flex!important;margin-top:2px!important;padding:5px 8px!important;border-radius:999px!important;font-size:9px!important;letter-spacing:.3px!important}
+#tripList .trip-card-edit{right:38px!important;top:50%!important;width:32px!important;height:32px!important;background:#fff!important;border:1px solid rgba(7,94,120,.13)!important;box-shadow:0 4px 12px rgba(7,94,120,.07)!important}
+#tripList .trip-open-chevron{right:14px!important;top:50%!important;color:#7d929a!important;font-size:27px!important}
+
+/* Recycle bin — explicit selection mode replaces hidden long-press behaviour. */
+.recycle-select-head{display:flex;align-items:center;gap:10px;margin:12px 0 4px;padding:10px 0}
+.recycle-select-head span{flex:1;color:var(--soft-ink);font-size:11px;line-height:1.35}
+.recycle-select-head button{border:1px solid rgba(7,94,120,.16);background:#fff;color:var(--brand-deep);border-radius:999px;padding:8px 15px;font-weight:800}
+.recycle-bulkbar{position:sticky!important;top:8px!important;z-index:10!important;display:flex!important;align-items:center!important;gap:8px!important;margin:12px 0 8px!important;padding:10px 11px!important;background:rgba(255,255,255,.97)!important;border:1px solid rgba(7,94,120,.12)!important;border-radius:16px!important;box-shadow:0 8px 22px rgba(7,94,120,.12)!important}
+.recycle-bulkbar[hidden]{display:none!important}
+.recycle-bulkbar strong{margin-right:auto!important;color:var(--navy)!important;font-size:12px!important}
+.recycle-bulkbar button{border:0!important;border-radius:999px!important;padding:8px 11px!important;font-size:11px!important;font-weight:800!important}
+.recycle-bulkbar [data-delete-selected]{background:#ffe6e2!important;color:#a92d21!important}
+.recycle-bulkbar [data-delete-selected]:disabled{opacity:.42!important}
+.recycle-bulkbar [data-cancel-selected]{background:#edf5f6!important;color:var(--brand-deep)!important}
+.recycle-select-dot{display:none!important}
+.recycle-list.selection-mode .recycle-row{position:relative!important;cursor:pointer!important;padding-left:42px!important;background:rgba(255,255,255,.68)!important;border-radius:16px!important;margin:5px 0!important;border-top-color:transparent!important;box-shadow:inset 0 0 0 1px rgba(7,94,120,.08)!important}
+.recycle-list.selection-mode .recycle-select-dot{display:grid!important;place-items:center!important;position:absolute!important;left:9px!important;top:50%!important;transform:translateY(-50%)!important;width:24px!important;height:24px!important;border-radius:50%!important;border:2px solid #9aacb3!important;background:#fff!important;color:transparent!important;padding:0!important;font-size:14px!important;font-weight:900!important}
+.recycle-list.selection-mode .recycle-row.selected{background:rgba(57,191,229,.10)!important;box-shadow:inset 0 0 0 2px rgba(57,191,229,.62)!important}
+.recycle-list.selection-mode .recycle-row.selected .recycle-select-dot{background:var(--bucket-sky)!important;border-color:var(--bucket-sky)!important;color:#fff!important}
+.recycle-list.selection-mode .restore-btn,.recycle-list.selection-mode .delete-btn{display:none!important}
