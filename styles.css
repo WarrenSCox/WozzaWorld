@@ -1541,3 +1541,11 @@ html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-web
 .trip-dialog .dialog-actions{margin-top:18px!important;}
 .trip-dialog .companion-tag:not(.selected){background:#fff!important;}
 .trip-dialog .trip-rating-input button{filter:none;}
+
+/* v0.18.21 — minimal trip editor header + notes collapse polish */
+.trip-dialog-heading{display:none!important;}
+.trip-dialog-close{top:12px!important;right:0!important;z-index:5!important;}
+.trip-dialog form{padding-top:38px!important;}
+.trip-notes-head{display:flex!important;align-items:center!important;gap:10px!important;}
+.trip-notes-head .trip-section-title{flex:1!important;}
+#tripNotesToggle{display:grid!important;}
