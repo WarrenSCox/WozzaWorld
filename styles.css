@@ -1279,3 +1279,32 @@ body:not(.map-view){background:radial-gradient(ellipse at 50% 32%,rgba(65,210,20
 .status-bucket svg{width:36px!important;height:36px!important;display:block!important;fill:none!important;stroke:#687781!important;stroke-width:2.5!important;stroke-linecap:round!important;stroke-linejoin:round!important;transition:fill .16s ease,stroke .16s ease!important}
 .country-status-grid button.selected[data-status="bucket"] .status-bucket svg path:first-child{fill:var(--bucket-sky)!important;stroke:#168db4!important}
 .country-status-grid button.selected[data-status="bucket"] .status-bucket svg .bucket-handle{fill:none!important;stroke:#168db4!important}
+
+
+/* v0.18.8 — safe restoration batch (no map/startup changes) */
+:root{--bucket-sky:#39bfe5}
+/* Country status cards stay white; selection is icon-only. */
+.country-status-grid button,.country-status-grid button.selected,.country-status-grid button.selected[data-status="visited"],.country-status-grid button.selected[data-status="going"],.country-status-grid button.selected[data-status="bucket"]{background:#fff!important}
+.status-clock svg{width:37px;height:37px;display:block;fill:none;stroke:#687781;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.status-clock .clock-face{fill:transparent;transition:fill .16s ease,stroke .16s ease}
+.status-clock .clock-hands{fill:none;stroke:#687781;transition:stroke .16s ease}
+.country-status-grid button.selected[data-status="going"] .status-clock .clock-face{fill:#e1bd38;stroke:#b58d17}
+.country-status-grid button.selected[data-status="going"] .status-clock .clock-hands{stroke:#6f5611}
+.country-status-grid button.selected[data-status="bucket"] .status-bucket svg path:first-child{fill:var(--bucket-sky)!important;stroke:#168db4!important}
+.country-status-grid button.selected[data-status="bucket"] .status-bucket svg .bucket-handle{fill:none!important;stroke:#168db4!important}
+/* Country summary heading uses the app section-heading treatment. */
+.country-info-summary h3{margin:0 0 10px!important;color:var(--ink)!important;font-size:14px!important;font-weight:900!important;letter-spacing:.16em!important;text-transform:uppercase!important}
+/* Filter sheet matches the icy WozzaWorld card language. */
+.filter-dialog{background:linear-gradient(180deg,#eefafa 0%,#f8fbfa 100%)!important;color:var(--ink)!important;border:1px solid rgba(7,94,120,.10)!important;box-shadow:0 24px 60px rgba(5,54,73,.24)!important}
+.filter-dialog h3{color:var(--ink)!important;text-transform:uppercase;letter-spacing:.06em;font-weight:900!important}
+.filter-dialog p,.filter-note{color:var(--soft-ink)!important}
+.filter-picker-trigger{border:1px solid rgba(7,94,120,.10)!important;box-shadow:0 5px 14px rgba(7,94,120,.05)!important}
+.filter-actions .primary{background:linear-gradient(135deg,#087b9b,#11a9c2)!important;color:#fff!important}
+/* Stats carousel: exactly one clipped slide, no neighbour bleed. */
+.passport-stats-carousel{overflow:hidden!important;contain:paint!important}
+.passport-stats-track{display:flex!important;width:100%!important;max-width:100%!important;overflow:visible!important;box-sizing:border-box!important}
+.passport-stats-slide{flex:0 0 100%!important;width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important}
+.passport-stats-slide>*{max-width:100%!important;box-sizing:border-box!important}
+/* Long-press bucket rows can be reordered without browser text selection. */
+.bucket-rank-row{-webkit-user-select:none;user-select:none}
+.bucket-dragging{touch-action:none!important;cursor:grabbing;position:relative}
