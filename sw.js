@@ -1,4 +1,4 @@
-const CACHE='wozzaworld-v0.18.21';
+const CACHE='wozzaworld-0.18.22';
 const LOCAL=['./','./index.html','./styles.css?v=0.18.19-stop-controls','./cities-data.js?v=0.17.2','./app.js?v=0.18.19-stop-controls','./manifest.webmanifest?v=0.16.8','./icon-192.png?v=0.16.8','./icon-192.png?v=0.16.8','./icon-512.png?v=0.16.8','./wozzaworld-logo.png?v=0.16.8','./cloud-a.svg?v=0.16.8','./cloud-b.svg?v=0.16.8'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(LOCAL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
