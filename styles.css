@@ -1516,3 +1516,28 @@ html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-web
 .trip-companions-section.collapsed{margin-bottom:4px}
 #tripCompanionsBody[hidden]{display:none!important}
 .trip-dialog .trip-section-heading,.trip-dialog .trip-section-title{line-height:1.15}
+
+
+/* v0.18.20 — unified section headings, collapsible notes, stronger teal contrast */
+.trip-dialog{background:linear-gradient(160deg,#075e78 0%,#087c96 100%)!important;}
+.trip-dialog-heading h2,.trip-dialog-heading .trip-dialog-plane{color:#fff!important;fill:#fff!important;}
+.trip-dialog-close{background:#fff!important;color:#102f3b!important;}
+.trip-dialog .trip-section-title,.trip-dialog .trip-section-heading{font-family:"Archivo Black",Impact,sans-serif!important;text-transform:uppercase!important;letter-spacing:.055em!important;font-size:17px!important;font-weight:900!important;line-height:1.15!important;color:#fff!important;}
+.trip-dialog label.trip-section-heading{display:block!important;}
+.trip-dialog #tripName{margin-top:9px!important;}
+.trip-destination-stop{background:#edf5f4!important;}
+.trip-dialog .trip-destination-stop label,.trip-dialog .destination-type-field>span{color:#344852!important;font-size:12px!important;font-weight:750!important;}
+.destination-name-label{margin-top:15px!important;}
+.destination-name-label>.destination-autocomplete{margin-top:8px!important;}
+.destination-type-field>span{margin-bottom:8px!important;}
+.trip-stop-top label select{margin-top:8px!important;}
+.trip-stop-dates label input{margin-top:8px!important;}
+.trip-companions-head,.trip-notes-head{display:flex;align-items:center;gap:10px;margin-top:22px;margin-bottom:10px;}
+.trip-companions-head .trip-section-title,.trip-notes-head .trip-section-title{margin:0!important;flex:1;}
+.trip-notes-section .section-collapse-toggle,.trip-companions-section .section-collapse-toggle{flex:0 0 32px;}
+#tripNotesBody[hidden],#tripCompanionsBody[hidden]{display:none!important;}
+.trip-notes-section.collapsed{margin-bottom:4px;}
+.trip-dialog #tripNotes{display:block;width:100%;margin-top:0!important;}
+.trip-dialog .dialog-actions{margin-top:18px!important;}
+.trip-dialog .companion-tag:not(.selected){background:#fff!important;}
+.trip-dialog .trip-rating-input button{filter:none;}
