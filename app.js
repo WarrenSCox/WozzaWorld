@@ -151,7 +151,7 @@ setupCountrySearch();
 // Render saved travel data immediately. The remote world map enhances Home but must never block the app.
 try{render();refreshVisitedFilterUI()}catch(e){console.error('Initial WozzaWorld render failed:',e)}
 buildMap();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.17.2',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,2850),{once:true});setTimeout(hide,3350);
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=0.18.1.2',{updateViaCache:'none'}));const hide=()=>$('#launchSplash')?.classList.add('hide');window.addEventListener('load',()=>setTimeout(hide,2850),{once:true});setTimeout(hide,3350);
 
 
 // v0.14.9 — web-only install button, matching WozzaWatch behaviour.
