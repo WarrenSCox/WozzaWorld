@@ -1371,3 +1371,13 @@ html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-web
   background:#159b70!important;
   border-color:#687781!important;
 }
+
+/* v0.18.12 — visited circle optical weight + selected outline softness */
+.country-status-grid .status-tick::before{
+  border-width:2.6px!important;
+  border-color:#687781!important;
+}
+.country-status-grid button.selected[data-status="visited"] .status-tick::before{
+  background:#159b70!important;
+  border-color:rgba(104,119,129,.58)!important;
+}
