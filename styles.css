@@ -1424,3 +1424,49 @@ html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-web
 /* v0.18.16 — unified Trip > Stops > Country > Destination editor */
 .trip-dialog{background:#f7e8c7!important}.trip-dialog form{overflow:visible}.trip-dialog #tripName{font-weight:650}.trip-destination-stops{display:grid;gap:14px;margin:12px 0}.trip-destination-stop{position:relative;padding:15px!important;border:1px solid rgba(7,94,120,.14)!important;border-radius:20px!important;background:rgba(246,251,248,.82)!important;overflow:visible}.trip-stop-top{display:grid;grid-template-columns:minmax(0,1fr) 38px;gap:10px;align-items:end}.trip-stop-top label{margin:0!important}.trip-stop-country{width:100%!important}.destination-name-label{display:block;margin:13px 0 0!important}.destination-name-label>small{display:block;margin:3px 0 7px;color:var(--muted);font-size:10px;font-weight:550}.destination-autocomplete{position:relative}.destination-suggestions{position:absolute;z-index:50;top:calc(100% + 5px);left:0;right:0;padding:5px;background:#fff;border:1px solid rgba(7,94,120,.18);border-radius:15px;box-shadow:0 14px 30px rgba(3,45,58,.18);max-height:230px;overflow:auto}.destination-suggestions[hidden]{display:none!important}.destination-suggestions button{display:flex!important;width:100%!important;flex-direction:column;align-items:flex-start!important;gap:2px;padding:10px 12px!important;border:0!important;border-radius:10px!important;background:#fff!important;color:var(--ink)!important;text-align:left}.destination-suggestions button+button{border-top:1px solid rgba(7,94,120,.08)!important}.destination-suggestions button:active{background:#eef9fb!important}.destination-suggestions strong{font-size:13px}.destination-suggestions small{font-size:10px;color:var(--muted)}.destination-suggestions .add-custom-destination strong{color:var(--brand-deep)}.destination-type-field{margin-top:12px}.destination-type-field>span{display:block;font-size:12px;font-weight:800;margin-bottom:7px}.destination-type-chips{display:flex;flex-wrap:wrap;gap:6px}.destination-type-chip{width:auto!important;min-width:0!important;padding:8px 10px!important;border-radius:999px!important;border:1px solid rgba(7,94,120,.2)!important;background:#fff!important;color:#33434d!important;font-size:11px!important;font-weight:750!important}.destination-type-chip.selected{background:#075e78!important;border-color:#075e78!important;color:#fff!important}.trip-stop-dates{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-top:12px}.trip-stop-dates label{margin:0!important}.remove-destination-stop{align-self:end;width:38px!important;height:38px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#9c4a43!important;font-size:20px!important}.add-next-stop{margin-bottom:16px!important}.trip-new-companion{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin-bottom:12px}.trip-new-companion button{height:44px;padding:0 16px!important;border:0!important;border-radius:13px!important;background:#075e78!important;color:#fff!important;font-weight:850!important}.trip-dialog #tripNotes{min-height:112px!important}.ww-confirm-dialog form{text-align:center}.ww-confirm-icon{width:44px;height:44px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:rgba(173,55,48,.1);color:#a93630;font-size:22px;font-weight:900}.ww-confirm-dialog h3{margin-bottom:7px}.ww-confirm-dialog p{color:var(--muted);line-height:1.45}.ww-confirm-dialog .danger{background:#a93630!important;color:#fff!important;border-color:#a93630!important}
 @media(max-width:520px){.trip-dialog{width:min(94vw,680px)!important}.trip-destination-stop{padding:13px!important}.destination-type-chip{padding:7px 9px!important}.trip-stop-dates{grid-template-columns:1fr 1fr}}
+
+
+/* v0.18.17 — trip editor visual alignment + minimal form + reorderable stops */
+.trip-dialog{background:#eef8f8!important;border-radius:30px!important;color:var(--ink)!important}
+.trip-dialog form{padding:24px!important}
+.trip-dialog-heading h2,.trip-dialog label,.trip-dialog .destination-type-field>span{
+  font-family:"Archivo Black",Impact,sans-serif!important;
+  text-transform:uppercase!important;
+  letter-spacing:.035em!important;
+  color:var(--ink)!important;
+}
+.trip-dialog-heading h2{font-size:28px!important;letter-spacing:.055em!important}
+.trip-dialog>form>.muted{color:#667680!important;line-height:1.35}
+.trip-dialog label{font-size:12px!important}
+.trip-dialog input,.trip-dialog select,.trip-dialog textarea{
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;
+  text-transform:none!important;
+  letter-spacing:normal!important;
+  background:#fff!important;
+  border:1px solid rgba(7,94,120,.12)!important;
+  border-radius:18px!important;
+  color:var(--ink)!important;
+  box-shadow:none!important;
+}
+.trip-dialog select{appearance:none;-webkit-appearance:none;padding:13px 42px 13px 14px!important;background-color:#fff!important;background-image:linear-gradient(45deg,transparent 50%,#52636c 50%),linear-gradient(135deg,#52636c 50%,transparent 50%)!important;background-position:calc(100% - 19px) 50%,calc(100% - 14px) 50%!important;background-size:5px 5px,5px 5px!important;background-repeat:no-repeat!important}
+.trip-destination-stops{gap:14px!important}
+.trip-destination-stop{background:#fff!important;border:1px solid rgba(7,94,120,.08)!important;border-radius:24px!important;padding:16px!important;box-shadow:0 5px 14px rgba(5,65,85,.045)!important;transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;touch-action:pan-y}
+.trip-destination-stop.is-dragging{z-index:80;transform:scale(1.015);box-shadow:0 18px 34px rgba(5,65,85,.20)!important;opacity:.97;touch-action:none}
+.trip-destination-stop.is-dragging *{pointer-events:none}
+.destination-name-label{margin-top:13px!important}
+.destination-name-label>small{display:none!important}
+.destination-type-field>span{font-size:12px!important;margin-bottom:8px!important}
+.destination-type-chips{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;flex-wrap:nowrap!important}
+.destination-type-chip{width:100%!important;padding:8px 4px!important;font-size:10px!important;white-space:nowrap!important;border:1px solid rgba(7,94,120,.14)!important;background:#fff!important;color:#33434d!important}
+.destination-type-chip.selected{background:#087c96!important;border-color:#087c96!important;color:#fff!important}
+.remove-destination-stop{background:#f7f8f6!important;color:#a8554c!important;box-shadow:none!important}
+.add-next-stop{background:#fff!important;border:1px dashed rgba(7,94,120,.24)!important;border-radius:18px!important;color:#087c96!important;padding:13px!important}
+.trip-new-companion button{background:#087c96!important;border-radius:16px!important}
+.companion-tag{border-color:rgba(7,94,120,.12)!important}.companion-tag.selected{background:#087c96!important;border-color:#087c96!important}
+.trip-dialog #tripNotes{min-height:112px!important;border-radius:20px!important}
+.trip-rating-input button{color:#dfb72f!important}
+.trip-dialog .dialog-actions .primary{background:#dfb72f!important;color:var(--ink)!important;font-weight:850!important}
+.trip-dialog .dialog-actions #cancelTrip{background:#fff!important;color:var(--ink)!important;border:1px solid rgba(7,94,120,.08)!important}
+.trip-dialog-close{background:#fff!important}
+@media(max-width:420px){.destination-type-chip{font-size:9px!important;padding:8px 2px!important}.trip-dialog form{padding:20px!important}}
+.trip-dialog .field-note{font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;text-transform:none!important;letter-spacing:normal!important;color:var(--soft-ink)!important;font-weight:500!important}
