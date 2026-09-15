@@ -1308,3 +1308,20 @@ body:not(.map-view){background:radial-gradient(ellipse at 50% 32%,rgba(65,210,20
 /* Long-press bucket rows can be reordered without browser text selection. */
 .bucket-rank-row{-webkit-user-select:none;user-select:none}
 .bucket-dragging{touch-action:none!important;cursor:grabbing;position:relative}
+\n\n/* v0.18.9 — Batch 1: summary, uniform status icons, tap flash, neutral bucket map, carousel clipping */
+/* Keep touch taps clean without the Android/WebKit blue flash. Keyboard focus-visible rules remain available. */
+html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-webkit-tap-highlight-color:transparent!important}
+
+/* All three country-status symbols occupy the same 36px circle/footprint. */
+.country-status-grid .status-icon{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;box-sizing:border-box!important;margin:0!important;display:grid!important;place-items:center!important}
+.country-status-grid .status-tick{width:36px!important;height:36px!important;border-width:2px!important;font-size:21px!important;line-height:32px!important}
+.country-status-grid .status-clock svg,.country-status-grid .status-bucket svg{width:36px!important;height:36px!important;max-width:36px!important;max-height:36px!important}
+
+/* Bucket-list membership is intentionally not represented by map colour. */
+.country.bucket{fill:#d2d5d4!important}
+
+/* Stats: hard viewport clipping and a true one-viewport-per-slide track. */
+.passport-stats-carousel{overflow:hidden!important;overflow:clip!important;contain:layout paint!important;isolation:isolate!important}
+.passport-stats-track{display:flex!important;width:100%!important;max-width:100%!important;gap:0!important;overflow:visible!important;box-sizing:border-box!important;will-change:transform!important}
+.passport-stats-slide{flex:0 0 100%!important;width:100%!important;min-width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important}
+.passport-stats-slide>*{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
