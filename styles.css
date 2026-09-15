@@ -1217,3 +1217,21 @@ body:not(.map-view){background:radial-gradient(ellipse at 50% 32%,rgba(65,210,20
 .country-trip-list{gap:9px!important;margin-bottom:14px}.country-trip-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid rgba(7,94,120,.08);border-radius:20px;padding:15px 16px;box-shadow:0 8px 22px rgba(21,55,66,.06);cursor:pointer}.country-trip-card>div{min-width:0}.country-trip-card strong{font-size:16px}.country-trip-card p{margin:4px 0;color:var(--soft-ink);font-size:11px}.country-trip-card>span{font-size:30px;color:#82959d}.country-trip-rating{color:#dfb72f;font-size:19px;letter-spacing:1px;margin-top:5px}.country-no-trips{text-align:center;padding:8px 0 2px}.country-info-summary{border-top:1px solid rgba(22,48,58,.10);padding-top:14px}.country-info-summary:empty{display:none}.country-info-summary h3{margin:0 0 10px;font-size:14px!important;color:var(--brand-deep)}.country-info-summary>div{background:rgba(255,255,255,.72);border-radius:16px;padding:12px 14px;margin-top:8px}.country-info-summary strong{font-size:12px}.country-info-summary p{margin:5px 0 0;color:var(--soft-ink);font-size:12px;line-height:1.45}
 @media(max-width:430px){.country-hero-minimal{grid-template-columns:78px minmax(0,1fr);padding:20px 15px;gap:14px}.country-hero-minimal .flag img{width:78px;height:52px}.country-hero-copy h2{font-size:34px!important}.country-summary-pills{gap:5px}.country-summary-pills span{padding:6px 8px;font-size:10px}.country-status-grid{gap:6px!important}.country-status-grid button{min-height:98px!important;padding:10px 4px!important}}
 \n/* v0.18.2 — status icons, smart map labels */\n.country-status-grid button,.country-status-grid button.selected{background:#fff!important;box-shadow:none!important}\n.status-plane svg,.status-bucket svg{width:34px;height:34px;display:block;fill:none;stroke:#687781;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:fill .15s ease,color .15s ease,stroke .15s ease}\n.status-plane svg path:first-child{fill:transparent}\n.country-status-grid button.selected[data-status=going] .status-plane svg{fill:#d99b25;stroke:#d99b25}\n.country-status-grid button.selected[data-status=bucket] .status-bucket svg path:first-child{fill:#e1bd38;stroke:#b58d17}\n.country-status-grid button.selected[data-status=bucket] .status-bucket svg .bucket-handle{fill:none;stroke:#b58d17}\n.map-country-label{font-family:Inter,Arial,sans-serif;font-size:8px;font-weight:400;fill:#263b46;pointer-events:none;user-select:none}\nbody:not(.map-view) #countryLabels{display:none}\n
+/* v0.18.3 — regression restorations and compact country lists */
+.country-list-panel{min-height:0!important}
+.carousel-track{align-items:flex-start!important}
+.country-carousel{transition:height .2s ease!important}
+.passport-name-card label strong{display:none!important}
+.passport-stats-carousel{overflow:hidden!important}
+.passport-stats-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.passport-stats-head h3{margin:0;font-size:14px;letter-spacing:.18em;color:var(--brand-deep)}
+#passportStatsDots{font-size:11px;letter-spacing:4px;color:var(--brand-deep)}
+.passport-stats-track{display:flex;width:400%;transition:transform .28s ease;touch-action:pan-y}
+.passport-stats-slide{width:25%;flex:0 0 25%;padding:2px 1px 4px}
+.passport-stats-slide h4{margin:4px 0 6px;font-size:18px;color:var(--ink)}
+.passport-mini-stats{margin-top:12px}
+.passport-mini-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:9px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(22,48,58,.09)}
+.passport-mini-row:last-child{border-bottom:0}.passport-mini-row>b{color:var(--brand-deep)}.passport-mini-row>span{font-weight:750}.passport-mini-row>strong{font-size:11px;color:var(--soft-ink)}
+.status-plane svg{transform:rotate(45deg)}
+.country-status-grid button.selected[data-status=going] .status-plane svg{fill:#e1bd38!important;stroke:#b58d17!important}
+.country-status-grid button.selected[data-status=bucket] .status-bucket svg path:first-child{fill:#e1bd38!important;stroke:#b58d17!important}
