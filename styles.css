@@ -1267,3 +1267,15 @@ body:not(.map-view){background:radial-gradient(ellipse at 50% 32%,rgba(65,210,20
 
 /* v0.18.5 — restore country-row interactions + unified glossy list actions */
 .list-head-actions .list-filter,.list-head-actions .list-add{background:linear-gradient(135deg,#087b9b 0%,#11a9c2 48%,#22c5d8 100%)!important;color:#fff!important;box-shadow:0 5px 12px rgba(7,94,120,.18),inset 0 1px 0 rgba(255,255,255,.22)!important;border:0!important}
+
+/* v0.18.6 — proper SVG status icons; cards stay white */
+.country-status-grid button,
+.country-status-grid button.selected,
+.country-status-grid button.selected[data-status="visited"],
+.country-status-grid button.selected[data-status="going"],
+.country-status-grid button.selected[data-status="bucket"]{background:#fff!important;outline:none!important}
+.status-plane svg{width:38px!important;height:38px!important;display:block!important;transform:rotate(45deg)!important;overflow:visible;fill:transparent!important;stroke:#687781!important;stroke-width:2.2!important;stroke-linecap:round!important;stroke-linejoin:round!important;transition:fill .16s ease,stroke .16s ease!important}
+.country-status-grid button.selected[data-status="going"] .status-plane svg{fill:#e1bd38!important;stroke:#b58d17!important}
+.status-bucket svg{width:36px!important;height:36px!important;display:block!important;fill:none!important;stroke:#687781!important;stroke-width:2.5!important;stroke-linecap:round!important;stroke-linejoin:round!important;transition:fill .16s ease,stroke .16s ease!important}
+.country-status-grid button.selected[data-status="bucket"] .status-bucket svg path:first-child{fill:var(--bucket-sky)!important;stroke:#168db4!important}
+.country-status-grid button.selected[data-status="bucket"] .status-bucket svg .bucket-handle{fill:none!important;stroke:#168db4!important}
