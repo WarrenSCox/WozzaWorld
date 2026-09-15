@@ -1341,3 +1341,33 @@ html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-web
 .passport-stats-track{display:block!important;width:100%!important;max-width:100%!important;transform:none!important;overflow:hidden!important}
 .passport-stats-slide{display:none!important;width:100%!important;min-width:0!important;max-width:100%!important;overflow:hidden!important;box-sizing:border-box!important}
 .passport-stats-slide.is-active{display:block!important}
+
+/* v0.18.11 — visited status alignment/outline polish */
+/* Keep the visited control on the same 36px footprint as the clock so all three labels sit on one baseline. */
+.country-status-grid .status-tick{
+  position:relative!important;
+  width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
+  border:0!important;background:transparent!important;
+  display:grid!important;place-items:center!important;
+  color:#fff!important;font-size:16px!important;line-height:1!important;
+  box-sizing:border-box!important;
+  isolation:isolate!important;
+}
+.country-status-grid .status-tick::before{
+  content:"";
+  position:absolute;
+  width:25.5px;height:25.5px;
+  border:2px solid #687781;
+  border-radius:50%;
+  background:transparent;
+  box-sizing:border-box;
+  z-index:-1;
+}
+.country-status-grid button.selected[data-status="visited"] .status-tick{
+  background:transparent!important;
+  border:0!important;
+}
+.country-status-grid button.selected[data-status="visited"] .status-tick::before{
+  background:#159b70!important;
+  border-color:#687781!important;
+}
