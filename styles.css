@@ -2138,3 +2138,35 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 
 /* Only the rating star gets the WozzaWorld mustard accent. */
 .avg-rating-star{font-style:normal!important;color:#d6a62e!important}
+
+/* v0.18.61 — Stats +/- colour correction + rating star definition */
+
+/* Stats expand/collapse: teal translucent glass circle with white symbol.
+   Specificity intentionally beats the generic list-add styling. */
+.passport-stats-carousel .stats-show-more.list-add,
+.passport-stats-carousel .companion-more.list-add,
+#companionStats .stats-show-more.list-add{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  min-height:40px!important;
+  padding:0!important;
+  margin:18px auto 0!important;
+  border-radius:50%!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  background:rgba(0,103,126,.48)!important;
+  color:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:27px!important;
+  font-weight:400!important;
+  line-height:1!important;
+  box-shadow:0 5px 14px rgba(0,63,82,.14)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(115%)!important;
+  backdrop-filter:blur(10px) saturate(115%)!important;
+}
+
+/* Give the mustard star subtle definition against the frosted tile. */
+.avg-rating-star{
+  text-shadow:0 2px 3px rgba(0,70,90,.25)!important;
+}
