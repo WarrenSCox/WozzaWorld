@@ -2109,3 +2109,32 @@ body.wozza-select-open{overflow-y:hidden!important}
 #countryStats .passport-mini-row span:active,
 #cityStats .passport-mini-row span:active,
 #highestRatedStats .passport-mini-row span:active{opacity:.65}
+
+/* v0.18.60 — control regression + native text lookup + rating accent */
+
+/* Prevent Android/Chrome dictionary/search selection on ordinary app chrome.
+   Do not block pointer/long-press events; editable controls stay selectable. */
+#app, dialog, .topbar{
+  -webkit-user-select:none;
+  user-select:none;
+}
+input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selection{
+  -webkit-user-select:text!important;
+  user-select:text!important;
+}
+
+/* Stats +/- deliberately reuses the app's existing .list-add visual language. */
+.stats-show-more.list-add,.companion-more.list-add{
+  width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
+  margin:18px auto 0!important;padding:0!important;border:0!important;border-radius:50%!important;
+  display:grid!important;place-items:center!important;
+  background:rgba(255,255,255,.72)!important;color:var(--navy)!important;
+  font-size:27px!important;line-height:1!important;font-weight:500!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+@media(max-width:560px){
+  .stats-show-more.list-add,.companion-more.list-add{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;font-size:24px!important}
+}
+
+/* Only the rating star gets the WozzaWorld mustard accent. */
+.avg-rating-star{font-style:normal!important;color:#d6a62e!important}
