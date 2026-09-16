@@ -1988,3 +1988,12 @@ body.wozza-select-open{overflow-y:hidden!important}
 }
 @media(max-width:420px){.new-trip-name-arrow{left:-14px!important;}}
 @media(prefers-reduced-motion:reduce){.new-trip-name-arrow.show{animation:none!important;scale:1;}}
+
+
+/* v0.18.45 — supplied transport assets + arrow position */
+/* Exact user-supplied icon crops; no emoji fallback or AI-redrawn geometry. */
+.travel-mode-icon{display:block!important;width:24px!important;height:24px!important;object-fit:contain!important;}
+@media(max-width:420px){.travel-mode-icon{width:22px!important;height:22px!important;}}
+/* Preserve the approved horizontal position; only nudge the guidance arrow upward. */
+.new-trip-name-arrow{top:44px!important;}
+@media(max-width:420px){.new-trip-name-arrow{top:42px!important;}}
