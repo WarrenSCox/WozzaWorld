@@ -1579,3 +1579,34 @@ html,body,button,a,[role="button"],input,select,textarea,label,svg,.country{-web
 #tripList .trip-country-flag .flag-fallback{font-size:17px}
 #tripList .trip-country-flag:focus-visible{outline:2px solid var(--brand-aqua);outline-offset:2px}
 @media(max-width:420px){#tripList .editable-trip{padding-right:76px!important}#tripList .trip-card-flags{right:14px;gap:4px}.trip-category-title{font-size:17px}#tripList .trip-country-flag{width:31px;height:31px;padding:4px}}
+
+/* v0.18.24 — My Trips/date polish + compact trip editor */
+body.trips-view .trips-actions{justify-content:flex-end!important;margin:0 2px -42px!important;position:relative;z-index:5}
+body.trips-view #tripList{padding-top:0!important}
+.trip-category-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:0 4px}
+.trip-category-head .trip-category-title{margin:0!important}
+.rearview-toggle{flex:0 0 32px!important}
+.rearview-category.collapsed{margin-bottom:12px!important}
+#tripList .trip-card-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:0}
+#tripList .trip-card-title-row>strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0!important}
+#tripList .trip-card-title-row .countdown-badge{margin:0!important;white-space:nowrap!important;flex:0 0 auto!important}
+#tripList .trip-card-copy>p{white-space:nowrap!important;font-size:10.5px!important;letter-spacing:-.08px!important}
+#tripList .trip-card-flags{top:58%!important}
+
+.trip-dialog{background:linear-gradient(160deg,#08748b 0%,#0a8ca0 100%)!important}
+.trip-dialog::backdrop{background:rgba(10,35,43,.28);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.trip-name-head .trip-dialog-close{flex-basis:32px!important;width:32px!important;height:32px!important;min-width:32px!important;margin-right:4px!important;background:#fff7f5!important;border:1px solid rgba(169,54,48,.12)!important;color:#c83832!important;font-size:21px!important;font-weight:700!important}
+.trip-dialog #tripName{background:#e8bd2f!important;color:var(--navy)!important;border-color:rgba(23,33,61,.08)!important}
+.trip-destination-stop{padding-top:12px!important}
+.trip-stop-card-head{margin-bottom:8px!important}
+.trip-stop-top{margin:0 0 12px!important}
+.trip-stop-top .trip-stop-country{width:100%!important;margin:0!important}
+.destination-name-label{margin:0 0 12px!important}
+.destination-name-label>.destination-autocomplete{margin:0!important}
+.destination-type-field{margin-top:0!important}
+.trip-stop-dates label{text-align:center!important}
+.trip-stop-dates label input{text-align:center!important}
+.itinerary-swipe-prompt{margin-top:14px;border-radius:999px;background:#e8bd2f;color:var(--navy);padding:9px 12px;text-align:center;font-size:11px;font-weight:900;letter-spacing:.02em;text-transform:uppercase;pointer-events:none}
+.itinerary-swipe-prompt span{font-size:17px;vertical-align:-1px;margin-right:5px}
+#tripNotesBody{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important}
+#tripNotesBody #tripNotes{margin:0!important;background:#fff!important}
