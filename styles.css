@@ -1881,3 +1881,45 @@ body.wozza-select-open{overflow-y:hidden!important}
   border-radius:50%!important;
   object-fit:cover!important;
 }
+\n\n/* v0.18.41 — trip editor multi-stop layout + trip-name treatment */
+/* Trip name uses the display/header face only inside the create/edit trip dialog. */
+.trip-dialog #tripName{
+  font-family:"Archivo Black",Impact,sans-serif!important;
+  text-transform:uppercase!important;
+  letter-spacing:-.035em!important;
+  font-weight:900!important;
+}
+.trip-dialog #tripName::placeholder{
+  font-family:"Archivo Black",Impact,sans-serif!important;
+  text-transform:uppercase!important;
+}
+/* Give the multi-stop date range breathing room before the stop stack. */
+.trip-editor-date-range{
+  margin:16px 0 28px 12px!important;
+  padding:0!important;
+  line-height:1.35!important;
+}
+/* Collapsed stop order: flag -> Stop N -> destination -> controls. */
+.trip-destination-stop.collapsed .trip-stop-card-head{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+.trip-destination-stop.collapsed .trip-stop-summary-flag-slot{
+  order:0!important;
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 30px!important;
+  width:30px!important;
+  height:30px!important;
+  min-width:30px!important;
+  margin:0!important;
+}
+.trip-destination-stop.collapsed .trip-stop-number{order:1!important;flex:0 0 auto!important;margin:0!important;}
+.trip-destination-stop.collapsed .trip-stop-summary{order:2!important;flex:1 1 auto!important;min-width:0!important;margin:0!important;}
+.trip-destination-stop.collapsed .trip-stop-actions{order:3!important;flex:0 0 auto!important;margin-left:auto!important;}
+/* No placeholder summary text when a stop has not been named yet. */
+.trip-stop-summary:empty{display:none!important;}
+/* New-trip guidance arrow: further left, animated, and clear of Details. */
+.new-trip-name-arrow{top:48px!important;left:6px!important;width:86px!important;height:64px!important;}
+@media(max-width:420px){.new-trip-name-arrow{top:46px!important;left:2px!important;width:78px!important;height:58px!important;}}
