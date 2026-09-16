@@ -1940,3 +1940,26 @@ body.wozza-select-open{overflow-y:hidden!important}
 }
 .trip-editor-date-range[hidden]{display:none!important;}
 .trip-editor-date-range + #tripDestinationStops{margin-top:0!important;}
+
+
+/* v0.18.43 — unified trip-name prompt + slow attention arrow */
+/* Keep the same mustard/display-font title treatment for new, single-stop and multi-stop editors. */
+.trip-dialog #tripName::placeholder{
+  font-size:.88em!important;
+  letter-spacing:-.045em!important;
+}
+/* The arrow only exists while the trip-name field is empty. Its motion slowly extends toward the field, retracts, then rests. */
+.new-trip-name-arrow{
+  left:-2px!important;
+  transform-origin:82% 18%!important;
+}
+.new-trip-name-arrow.show{
+  animation:wozzaTripNameBreathe 5.2s ease-in-out infinite!important;
+}
+@keyframes wozzaTripNameBreathe{
+  0%,18%,100%{transform:rotate(-12deg) scale(.92)!important;opacity:.82}
+  34%,48%{transform:rotate(-12deg) scale(1.08)!important;opacity:.96}
+  64%,82%{transform:rotate(-12deg) scale(.92)!important;opacity:.82}
+}
+@media(max-width:420px){.new-trip-name-arrow{left:-6px!important;}}
+@media(prefers-reduced-motion:reduce){.new-trip-name-arrow.show{animation:none!important;transform:rotate(-12deg)!important;}}
