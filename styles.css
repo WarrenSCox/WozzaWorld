@@ -1923,3 +1923,20 @@ body.wozza-select-open{overflow-y:hidden!important}
 /* New-trip guidance arrow: further left, animated, and clear of Details. */
 .new-trip-name-arrow{top:48px!important;left:6px!important;width:86px!important;height:64px!important;}
 @media(max-width:420px){.new-trip-name-arrow{top:46px!important;left:2px!important;width:78px!important;height:58px!important;}}
+
+
+/* v0.18.42 — restore multi-stop date range as its own layout row. */
+.trip-editor-date-range{
+  display:block!important;
+  position:relative!important;
+  width:auto!important;
+  clear:both!important;
+  margin:18px 0 22px 12px!important;
+  padding:0!important;
+  color:rgba(255,255,255,.94)!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.35!important;
+}
+.trip-editor-date-range[hidden]{display:none!important;}
+.trip-editor-date-range + #tripDestinationStops{margin-top:0!important;}
