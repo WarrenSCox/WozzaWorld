@@ -1670,3 +1670,38 @@ body.trips-view .trips-actions{margin:0 4px -35px!important}body.trips-view .tri
 .wozza-select-wrap{position:relative;display:block;width:100%}.wozza-native-select{position:absolute!important;inset:0!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}.wozza-select-button{width:100%;min-height:46px;border:1px solid rgba(22,48,58,.13);border-radius:14px;background:#fff;color:var(--ink);padding:11px 42px 11px 14px;text-align:left;font:500 15px/1.25 Inter,ui-sans-serif,system-ui,sans-serif;position:relative}.wozza-select-button:after{content:'⌄';position:absolute;right:15px;top:50%;transform:translateY(-55%);font-size:18px;color:#52666f}.wozza-select-button.placeholder{color:#87979d}
 .wozza-select-overlay{position:fixed;inset:0;z-index:10050;display:flex;align-items:flex-end;justify-content:center;padding:18px;background:rgba(9,36,44,.34);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:0;transition:opacity .14s ease}.wozza-select-overlay.shown{opacity:1}.wozza-select-panel{width:min(520px,100%);max-height:min(72dvh,620px);overflow:auto;background:#f7f5ed;border:1px solid rgba(7,94,120,.13);border-radius:24px;padding:10px;box-shadow:0 22px 60px rgba(9,38,47,.28)}.wozza-select-title{padding:11px 13px 9px;color:#075e78;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.wozza-select-option{display:block;width:100%;border:0;border-top:1px solid rgba(22,48,58,.08);background:transparent;color:#16303a;padding:14px 14px;text-align:left;font:650 16px/1.25 Inter,ui-sans-serif,system-ui,sans-serif;border-radius:12px}.wozza-select-option:first-of-type{border-top:0}.wozza-select-option.selected{background:#e8bd2f;color:#17243a}.wozza-select-option.placeholder-option{color:#87979d;font-weight:550}.wozza-select-option:active{transform:scale(.99)}body.wozza-select-open{overflow:hidden}
 .wozza-alert-overlay{position:fixed;inset:0;z-index:10100;display:grid;place-items:center;padding:22px;background:rgba(9,36,44,.38);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.wozza-alert-card{width:min(420px,100%);background:#f7f5ed;border:1px solid rgba(7,94,120,.14);border-radius:24px;padding:22px;box-shadow:0 22px 60px rgba(9,38,47,.3);color:#16303a}.wozza-alert-card strong{display:block;color:#075e78;font-size:20px;font-weight:900;margin-bottom:8px}.wozza-alert-card p{margin:0 0 20px;font-size:15px;line-height:1.45}.wozza-alert-card button{display:block;margin-left:auto;border:0;border-radius:999px;background:#e8bd2f;color:#17243a;padding:11px 22px;font-weight:900;font-size:14px}
+
+
+/* v0.18.29 — trip editor regression + layout polish */
+/* Custom menus must live in the active modal top-layer, not behind it. */
+.trip-dialog .wozza-select-overlay,.trip-dialog .wozza-alert-overlay{z-index:2147483000!important}
+.trip-dialog .wozza-select-overlay{position:fixed!important;inset:0!important}
+.trip-dialog .wozza-alert-overlay{position:fixed!important;inset:0!important}
+
+/* Keep both date controls on one row while allowing a full UK date to fit. */
+.trip-stop-dates{grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr)!important;gap:5px!important}
+.trip-stop-dates .date-field,.trip-stop-dates input{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+.trip-stop-dates input[type="date"]{font-size:12px!important;letter-spacing:-.35px!important;padding:10px 25px 10px 8px!important;line-height:1.15!important}
+.trip-stop-dates input[type="date"]::-webkit-calendar-picker-indicator{position:absolute!important;right:7px!important;width:14px!important;height:14px!important;margin:0!important;padding:0!important}
+.date-to-word{text-align:center!important}
+
+/* Tourist-sign Add Stop: jaunty sticker overlapping the bottom-right of the stop card. */
+.add-next-stop.tourist-add-stop{position:relative!important;z-index:8!important;margin:-30px 10px 30px auto!important;transform:rotate(-5deg)!important;transform-origin:center!important;box-shadow:0 5px 10px rgba(0,0,0,.18)!important}
+.add-next-stop.tourist-add-stop:active{transform:rotate(-5deg) scale(.98)!important}
+
+/* Trip title and close control form one neat, equal-height row. */
+.trip-name-head{gap:10px!important}
+.trip-name-head .trip-name-field,.trip-name-head #tripName{height:38px!important;min-height:38px!important;max-height:38px!important;box-sizing:border-box!important}
+.trip-name-head #tripName{padding:0 14px!important;line-height:38px!important;font-size:15px!important}
+.trip-name-head .trip-dialog-close{flex:0 0 38px!important;width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;max-width:38px!important;max-height:38px!important;padding:0!important}
+
+/* Fixed-size overview cards, but keep their information together rather than stretching it. */
+#tripList .trip-card-copy{justify-content:flex-start!important}
+#tripList .trip-stars{margin-top:8px!important}
+#tripList .trip-card-country{margin-top:0!important}
+#tripList .trip-card-date{margin-top:3px!important}
+
+@media(max-width:420px){
+ .trip-stop-dates input[type="date"]{font-size:11px!important;letter-spacing:-.5px!important;padding-left:6px!important;padding-right:22px!important}
+ .add-next-stop.tourist-add-stop{margin:-27px 7px 28px auto!important;transform:rotate(-5deg)!important}
+}
