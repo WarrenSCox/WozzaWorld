@@ -2072,3 +2072,40 @@ body.wozza-select-open{overflow-y:hidden!important}
 
 /* Country count remains a single line: 16 of 193 */
 #meVisited{white-space:nowrap!important;flex-wrap:nowrap!important}
+
+/* v0.18.59 — stable Stats carousel + compact controls */
+.passport-stats-carousel{min-height:390px!important;transition:min-height .22s ease}
+.passport-stats-carousel.stats-expanded{min-height:620px!important}
+.passport-stats-slide{min-height:330px!important}
+.passport-stats-slide h4,#highestRatedStatsSlide h4{
+  white-space:nowrap!important;
+  overflow:visible!important;
+  line-height:1.05!important;
+  font-size:clamp(15px,4.4vw,24px)!important;
+  max-width:calc(100% - 115px)!important;
+  margin:0 0 20px!important;
+  padding-right:0!important;
+}
+.passport-stats-head{height:0!important}
+#passportStatsDots{
+  top:12px!important;
+  transform:translateY(-50%)!important;
+  display:flex!important;
+  align-items:center!important;
+}
+.stats-show-more,.companion-more{
+  width:54px!important;height:54px!important;min-width:54px!important;
+  padding:0!important;margin:18px auto 0!important;border-radius:50%!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:rgba(8,122,143,.30)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  color:#fff!important;font-size:34px!important;font-weight:400!important;
+  line-height:1!important;box-shadow:0 7px 20px rgba(0,74,94,.12)!important;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)
+}
+#countryStats .passport-mini-row span,
+#cityStats .passport-mini-row span,
+#highestRatedStats .passport-mini-row span{cursor:pointer}
+#countryStats .passport-mini-row span:active,
+#cityStats .passport-mini-row span:active,
+#highestRatedStats .passport-mini-row span:active{opacity:.65}
