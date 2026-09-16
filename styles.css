@@ -1705,3 +1705,34 @@ body.trips-view .trips-actions{margin:0 4px -35px!important}body.trips-view .tri
  .trip-stop-dates input[type="date"]{font-size:11px!important;letter-spacing:-.5px!important;padding-left:6px!important;padding-right:22px!important}
  .add-next-stop.tourist-add-stop{margin:-27px 7px 28px auto!important;transform:rotate(-5deg)!important}
 }
+
+/* v0.18.30 — final trip polish + multi-select */
+/* Uniform editor typography and the same slim chevron used by date controls. */
+.wozza-select-button,.trip-destination-name,.trip-stop-dates input[type="date"]{font-size:15px!important;font-weight:500!important;line-height:1.25!important}
+.trip-destination-name::placeholder{color:#87979d!important;opacity:1!important}
+.wozza-select-button:after{content:''!important;width:9px;height:9px;border-right:1.7px solid #52666f;border-bottom:1.7px solid #52666f;right:17px;top:47%;transform:translateY(-50%) rotate(45deg)!important}
+.trip-stop-dates{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)!important;gap:4px!important}
+.trip-stop-dates input[type="date"]{letter-spacing:-.55px!important;padding:10px 24px 10px 5px!important}
+.trip-stop-dates input[type="date"]::-webkit-calendar-picker-indicator{right:5px!important;width:13px!important;height:13px!important}
+/* Add Stop hangs a touch farther off the card and has a quick, restrained wiggle. */
+.add-next-stop.tourist-add-stop{margin:-24px -2px 34px auto!important}
+@keyframes wozzaAddStopWiggle{0%,100%{transform:rotate(-5deg)}25%{transform:rotate(-8deg)}55%{transform:rotate(-2deg)}78%{transform:rotate(-6.5deg)}}
+.add-next-stop.tourist-add-stop.wiggle{animation:wozzaAddStopWiggle .42s ease-in-out}
+@media(prefers-reduced-motion:reduce){.add-next-stop.tourist-add-stop.wiggle{animation:none}}
+/* Tighter collapsed companion rhythm. */
+.trip-companions-section.collapsed{margin-bottom:0!important}
+.trip-companions-section.collapsed .trip-companions-head{margin-bottom:2px!important}
+.trip-companions-section.collapsed+.trip-notes-section{margin-top:12px!important}
+/* Use the fixed card space more deliberately. */
+#tripList .trip-card-country,#tripList .trip-card-date{font-size:13px!important;line-height:1.35!important}
+#tripList .trip-card-date{margin-top:4px!important}
+#tripList .trip-card-meta-row{display:flex;align-items:center;gap:10px;margin-top:10px;min-width:0}
+#tripList .trip-card-meta-row .trip-stars{margin-top:0!important}
+#tripList .trip-stars button{font-size:21px!important;line-height:22px!important}
+.trip-travel-icons{display:flex;align-items:center;gap:5px;color:#087c96}.trip-travel-icons span{display:grid;place-items:center;width:20px;height:20px}.trip-travel-icons svg{width:18px;height:18px;fill:currentColor;stroke:currentColor;stroke-width:.35}
+/* Minimal long-press multi-select. */
+#tripList .trip-card.trip-selected{outline:2px solid #e8bd2f;outline-offset:-2px;background:#fffdf3!important}
+#tripList .trip-card.trip-selected:after{content:'✓';position:absolute;left:8px;top:8px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e8bd2f;color:#16303a;font-weight:900;font-size:14px;box-shadow:0 2px 7px rgba(9,38,47,.15)}
+.trip-selection-bar{position:sticky;top:8px;z-index:30;margin:0 0 10px auto;width:max-content;max-width:100%;display:flex;align-items:center;gap:8px;padding:6px 7px 6px 12px;border-radius:999px;background:#f7f5ed;border:1px solid rgba(7,94,120,.13);box-shadow:0 8px 22px rgba(9,38,47,.16);color:#16303a}.trip-selection-bar[hidden]{display:none!important}.trip-selection-bar strong{font-size:12px}.trip-selection-bar button{width:34px;height:34px;border-radius:50%;border:0;display:grid;place-items:center;font-size:20px;font-weight:800}.trip-selection-bin{background:#fff2ef;color:#b43831}.trip-selection-close{background:#e9f0ef;color:#52666f}
+.wozza-confirm-actions{display:flex;justify-content:flex-end;gap:8px}.wozza-alert-card .wozza-confirm-actions button{margin:0!important}.wozza-alert-card .wozza-confirm-actions .secondary{background:#fff;color:#16303a;border:1px solid rgba(22,48,58,.12)}.wozza-alert-card .wozza-confirm-actions .danger{background:#e8bd2f;color:#17243a}
+@media(max-width:420px){.trip-stop-dates input[type="date"]{font-size:14px!important;letter-spacing:-.75px!important;padding-left:3px!important;padding-right:21px!important}.add-next-stop.tourist-add-stop{margin:-21px -4px 34px auto!important}#tripList .trip-card-country,#tripList .trip-card-date{font-size:12px!important}#tripList .trip-stars button{font-size:20px!important}}
