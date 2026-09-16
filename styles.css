@@ -1963,3 +1963,28 @@ body.wozza-select-open{overflow-y:hidden!important}
 }
 @media(max-width:420px){.new-trip-name-arrow{left:-6px!important;}}
 @media(prefers-reduced-motion:reduce){.new-trip-name-arrow.show{animation:none!important;transform:rotate(-12deg)!important;}}
+
+/* v0.18.44 — trip-name header enforcement + working arrow pulse */
+/* Scope is deliberately limited to the trip editor name field. */
+.trip-dialog .trip-name-head #tripName{
+  font-family:"Archivo Black",Impact,sans-serif!important;
+  text-transform:uppercase!important;
+  font-weight:900!important;
+  letter-spacing:-.045em!important;
+}
+.trip-dialog .trip-name-head #tripName::placeholder{
+  font-family:"Archivo Black",Impact,sans-serif!important;
+  text-transform:uppercase!important;
+  font-weight:900!important;
+}
+/* Keep the arrow a touch further left. Animate `scale` separately so the
+   existing !important transform cannot suppress the animation on Android. */
+.new-trip-name-arrow{left:-10px!important;scale:.92;}
+.new-trip-name-arrow.show{animation:wozzaTripNamePulse 5.6s ease-in-out infinite!important;}
+@keyframes wozzaTripNamePulse{
+  0%,20%,100%{scale:.92;opacity:.82}
+  36%,50%{scale:1.08;opacity:.97}
+  68%,84%{scale:.92;opacity:.82}
+}
+@media(max-width:420px){.new-trip-name-arrow{left:-14px!important;}}
+@media(prefers-reduced-motion:reduce){.new-trip-name-arrow.show{animation:none!important;scale:1;}}
