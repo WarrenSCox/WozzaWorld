@@ -1657,3 +1657,6 @@ body.trips-view .trips-actions{margin:0 4px -35px!important}body.trips-view .tri
 @media(max-width:420px){body.trips-view .trips-actions{margin-bottom:-32px!important}.trip-category-title{font-size:20px!important}body.trips-view .trips-actions #newTripBtn{font-size:12px!important;padding:8px 12px!important}#tripList .trip-card{height:150px!important;min-height:150px!important;max-height:150px!important;padding-right:105px!important}#tripList .trip-card-side{right:13px;width:82px}.trip-stop-dates{gap:5px!important}.date-to-word{font-size:11px}}
 .trip-selected-summary{display:none;color:rgba(255,255,255,.82);font-size:11px;font-weight:650;line-height:1.3;width:100%;order:3}.trip-companions-section.collapsed .trip-selected-summary:not(:empty){display:block!important;margin-top:3px}.trip-companions-section.collapsed .trip-companions-head{display:flex!important}
 .date-field{position:relative}.date-field input:invalid,.date-field input[value=""]{color:#87979d}
+
+/* v0.18.27 — rearview section collapse reliability */
+.rearview-category.collapsed .trip-category-list{display:none!important}
