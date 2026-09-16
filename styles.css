@@ -1817,3 +1817,20 @@ body.wozza-select-open{overflow-y:hidden!important}
 .new-trip-name-arrow{left:70px!important;}
 @media(max-width:420px){.new-trip-name-arrow{left:54px!important;}}
 #tripNotesBody #tripNotes{padding-top:34px!important;}
+
+/* v0.18.37 — card/title/stat/dropdown polish */
+#tripList .trip-card-title-row>strong.trip-title-long{font-size:16px!important;letter-spacing:-.15px!important}
+#tripList .trip-card-title-row>strong.trip-title-xlong{font-size:14px!important;letter-spacing:-.3px!important}
+#tripList .trip-card-title-row>strong{max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#tripList .trip-country-flag{border:0!important;padding:4px!important;background:#fff!important;box-shadow:0 4px 11px rgba(9,38,47,.16)!important}
+#tripList .trip-country-flag-img{border:0!important;box-shadow:none!important}
+/* Guidance arrow stays wholly in the teal gutter and clear of Details. */
+.new-trip-name-arrow{top:45px!important;left:24px!important;width:86px!important;height:64px!important;transform:rotate(-12deg)!important}
+.new-trip-name-arrow.show{transform:rotate(-12deg)!important}
+@media(max-width:420px){.new-trip-name-arrow{top:43px!important;left:18px!important;width:78px!important;height:58px!important}}
+/* Dropdown heading and circular close share one clean header row. */
+.wozza-select-panel{position:relative!important;padding-top:70px!important}
+.wozza-select-title{position:absolute!important;top:16px!important;left:22px!important;right:74px!important;height:42px!important;line-height:42px!important;padding:0!important;margin:0!important}
+.wozza-select-close{position:absolute!important;top:16px!important;right:18px!important;left:auto!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;border-radius:50%!important;display:grid!important;place-items:center!important;margin:0!important;padding:0!important}
+/* Extra stats inherit the existing two-column card treatment. */
+.stats-grid .wozza-extra-stat strong{font-size:27px!important;line-height:1.15!important}
