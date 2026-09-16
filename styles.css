@@ -1610,3 +1610,27 @@ body.trips-view #tripList{padding-top:0!important}
 .itinerary-swipe-prompt span{font-size:17px;vertical-align:-1px;margin-right:5px}
 #tripNotesBody{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important}
 #tripNotesBody #tripNotes{margin:0!important;background:#fff!important}
+
+/* v0.18.25 — playful stop header + compact editor polish */
+.trip-name-head{align-items:center!important;margin:0 0 18px!important}
+.trip-name-head .trip-name-field{flex:1!important;min-width:0!important;margin:0!important}
+.trip-name-head .trip-dialog-close{flex:0 0 32px!important;background:#f4f5f3!important;border:1px solid rgba(16,47,59,.08)!important;color:#65747a!important}
+.tourist-stops-sign{width:max-content;max-width:100%;display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:7px 11px;border:1px solid rgba(255,255,255,.85);border-radius:5px;background:#8b4513;color:#fff;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:13px;font-weight:850;letter-spacing:.04em;box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.tourist-stops-icons{font-size:15px;letter-spacing:-2px}.tourist-stops-arrow{font-size:21px;line-height:.7;margin-left:2px}
+.add-next-stop{background:rgba(235,241,240,.32)!important;border:1px dashed rgba(255,255,255,.28)!important;color:rgba(255,255,255,.78)!important;box-shadow:none!important}
+.trip-stop-number{display:block!important;font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive!important;font-size:12px!important;font-weight:600!important;letter-spacing:0!important;color:#6e8086!important;text-transform:none!important}
+.trip-destination-stop.single-stop .trip-stop-card-head{justify-content:initial!important}
+.trip-destination-stop.single-stop .trip-stop-number{margin-right:auto!important}
+.trip-destination-stop .trip-destination-name,.trip-destination-stop .trip-stop-country{font-size:15px!important;font-weight:500!important}
+.destination-type-field>span{font-size:12px!important;font-weight:500!important;margin-bottom:12px!important}
+.trip-new-companion{display:block!important;margin-bottom:0!important}.trip-new-companion input{width:100%!important}
+.trip-companions-section.collapsed .trip-companions-head{margin-bottom:7px!important}
+.trip-companions-section.collapsed .trip-companions-head::after{content:none}
+.trip-companions-section.collapsed #tripCompanionsBody{display:none!important}
+.trip-companions-section.collapsed .trip-companions-head{flex-wrap:wrap!important}
+.trip-companions-section.collapsed .trip-companions-head .trip-section-title{flex:1 1 auto!important}
+.trip-dialog .dialog-actions{grid-template-columns:auto minmax(82px,.8fr) minmax(142px,1.25fr)!important;gap:9px!important}
+.trip-dialog .dialog-actions button{height:44px!important;min-height:44px!important;border-radius:999px!important;padding:0 16px!important;white-space:nowrap!important;font-size:14px!important}
+.trip-dialog .dialog-actions .trip-delete-icon{width:44px!important;min-width:44px!important;padding:0!important}
+@media(max-width:420px){.trip-dialog .dialog-actions{grid-template-columns:40px minmax(72px,.75fr) minmax(128px,1.35fr)!important;gap:7px!important}.trip-dialog .dialog-actions button{font-size:12px!important;padding:0 10px!important}.trip-dialog .dialog-actions .trip-delete-icon{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important}}
+.tourist-stops-icons svg{width:36px;height:18px;display:block;fill:#fff;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
