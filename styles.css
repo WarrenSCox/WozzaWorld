@@ -1736,3 +1736,27 @@ body.trips-view .trips-actions{margin:0 4px -35px!important}body.trips-view .tri
 .trip-selection-bar{position:sticky;top:8px;z-index:30;margin:0 0 10px auto;width:max-content;max-width:100%;display:flex;align-items:center;gap:8px;padding:6px 7px 6px 12px;border-radius:999px;background:#f7f5ed;border:1px solid rgba(7,94,120,.13);box-shadow:0 8px 22px rgba(9,38,47,.16);color:#16303a}.trip-selection-bar[hidden]{display:none!important}.trip-selection-bar strong{font-size:12px}.trip-selection-bar button{width:34px;height:34px;border-radius:50%;border:0;display:grid;place-items:center;font-size:20px;font-weight:800}.trip-selection-bin{background:#fff2ef;color:#b43831}.trip-selection-close{background:#e9f0ef;color:#52666f}
 .wozza-confirm-actions{display:flex;justify-content:flex-end;gap:8px}.wozza-alert-card .wozza-confirm-actions button{margin:0!important}.wozza-alert-card .wozza-confirm-actions .secondary{background:#fff;color:#16303a;border:1px solid rgba(22,48,58,.12)}.wozza-alert-card .wozza-confirm-actions .danger{background:#e8bd2f;color:#17243a}
 @media(max-width:420px){.trip-stop-dates input[type="date"]{font-size:14px!important;letter-spacing:-.75px!important;padding-left:3px!important;padding-right:21px!important}.add-next-stop.tourist-add-stop{margin:-21px -4px 34px auto!important}#tripList .trip-card-country,#tripList .trip-card-date{font-size:12px!important}#tripList .trip-stars button{font-size:20px!important}}
+
+/* v0.18.31 — trip finishing polish */
+/* Full DD/MM/YYYY at the same type size as the editor dropdowns. */
+.trip-stop-dates input[type="date"]{font-size:15px!important;font-weight:500!important;letter-spacing:-1px!important;padding-left:3px!important;padding-right:15px!important}
+.trip-stop-dates input[type="date"]::-webkit-datetime-edit{padding:0!important;margin:0!important}
+.trip-stop-dates input[type="date"]::-webkit-calendar-picker-indicator{right:2px!important;width:10px!important;height:10px!important}
+@media(max-width:420px){.trip-stop-dates input[type="date"]{font-size:15px!important;letter-spacing:-1.15px!important;padding-left:2px!important;padding-right:13px!important}.trip-stop-dates input[type="date"]::-webkit-calendar-picker-indicator{right:1px!important;width:9px!important;height:9px!important}}
+
+/* The tourist sign now visibly bounces/wiggles every cycle and on tap. */
+@keyframes wozzaAddStopBounce{0%,100%{translate:0 0;rotate:0deg}18%{translate:0 -7px;rotate:-4deg}38%{translate:0 1px;rotate:4deg}58%{translate:0 -4px;rotate:-3deg}78%{translate:0 0;rotate:2deg}}
+.add-next-stop.tourist-add-stop.wiggle{animation:wozzaAddStopBounce .68s cubic-bezier(.2,.85,.35,1.25)!important}
+@media(prefers-reduced-motion:reduce){.add-next-stop.tourist-add-stop.wiggle{animation:none!important}}
+
+/* Recognisable travel symbols and fuller use of the fixed trip-card space. */
+#tripList .trip-card-country,#tripList .trip-card-date{font-size:14px!important;line-height:1.38!important}
+#tripList .trip-card-date{margin-top:5px!important}
+#tripList .trip-card-meta-row{margin-top:13px!important;gap:12px!important}
+#tripList .trip-stars button{font-size:24px!important;line-height:25px!important}
+.trip-travel-icons{gap:4px!important}.trip-travel-icons>span{width:26px!important;height:26px!important;display:grid!important;place-items:center!important}.travel-mode-emoji{font-size:23px!important;line-height:1!important;display:block!important}
+@media(max-width:420px){#tripList .trip-card-country,#tripList .trip-card-date{font-size:13.5px!important}#tripList .trip-stars button{font-size:23px!important}.travel-mode-emoji{font-size:22px!important}}
+
+/* Countdown badge on the compact trip cards inside a country. */
+.country-trip-card{align-items:stretch!important}.country-trip-copy{min-width:0;align-self:center}.country-trip-side{margin-left:auto;display:flex;align-items:center;gap:9px;flex:0 0 auto}.country-trip-card .country-trip-countdown{position:static!important;margin:0!important;font-size:9px!important;white-space:nowrap!important}.country-trip-chevron{font-size:30px;color:#82959d;line-height:1}
+@media(max-width:420px){.country-trip-card{gap:8px!important}.country-trip-side{gap:5px}.country-trip-card .country-trip-countdown{font-size:8px!important;padding:6px 8px!important}.country-trip-chevron{font-size:25px}}
