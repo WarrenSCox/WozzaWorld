@@ -1841,4 +1841,43 @@ body.wozza-select-open{overflow-y:hidden!important}
 .trip-stop-summary{display:flex;align-items:center;gap:8px;min-width:0}
 .trip-stop-summary>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .trip-stop-summary-flag{width:24px!important;height:24px!important;min-width:24px!important;aspect-ratio:1/1!important;border-radius:50%!important;object-fit:cover!important;border:0!important;box-shadow:0 3px 8px rgba(9,38,47,.16)!important}
-\n\n/* v0.18.39 — multi-stop alignment + clean flags + stats polish */\n.trip-editor-date-range{margin:10px 0 18px 12px!important;}\n.trip-destination-stop.collapsed .trip-stop-card-head{display:flex!important;align-items:center!important;gap:8px!important;}\n.trip-destination-stop.collapsed .trip-stop-number{flex:0 0 auto!important;white-space:nowrap!important;}\n.trip-destination-stop.collapsed .trip-stop-summary{display:block!important;flex:1 1 auto!important;min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}\n.trip-stop-summary-flag-slot{display:none;flex:0 0 auto;margin-left:auto;}\n.trip-destination-stop.collapsed .trip-stop-summary-flag-slot{display:grid!important;place-items:center!important;width:30px!important;height:30px!important;min-width:30px!important;}\n.trip-stop-summary-flag{display:block!important;width:30px!important;height:30px!important;min-width:30px!important;max-width:30px!important;aspect-ratio:1/1!important;border-radius:50%!important;object-fit:cover!important;border:0!important;padding:0!important;background:transparent!important;box-shadow:0 3px 8px rgba(9,38,47,.16)!important;}\n.trip-destination-stop.collapsed .trip-stop-actions{flex:0 0 auto!important;margin-left:2px!important;}\n/* Trip-card flags: no white ring, only a soft shadow. */\n#tripList .trip-country-flag{border:0!important;padding:0!important;background:transparent!important;box-shadow:0 4px 11px rgba(9,38,47,.16)!important;overflow:hidden!important;}\n#tripList .trip-country-flag-img{display:block!important;width:100%!important;height:100%!important;border:0!important;border-radius:50%!important;object-fit:cover!important;box-shadow:none!important;}\n/* New highest-rated stats page follows the existing stats carousel language. */\n#highestRatedStatsSlide h3{margin:8px 0 8px;color:var(--ink);font-size:24px;}\n#highestRatedStatsSlide .passport-stats-kicker{color:var(--brand-deep);font-weight:900;letter-spacing:.18em;font-size:13px;}\n#highestRatedStatsSlide .highest-rated-row strong{white-space:nowrap;}\n
+
+
+/* v0.18.39 — multi-stop alignment + clean flags + stats polish */
+.trip-editor-date-range{margin:10px 0 18px 12px!important;}
+.trip-destination-stop.collapsed .trip-stop-card-head{display:flex!important;align-items:center!important;gap:8px!important;}
+.trip-destination-stop.collapsed .trip-stop-number{flex:0 0 auto!important;white-space:nowrap!important;}
+.trip-destination-stop.collapsed .trip-stop-summary{display:block!important;flex:1 1 auto!important;min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.trip-stop-summary-flag-slot{display:none;flex:0 0 auto;margin-left:auto;}
+.trip-destination-stop.collapsed .trip-stop-summary-flag-slot{display:grid!important;place-items:center!important;width:30px!important;height:30px!important;min-width:30px!important;}
+.trip-stop-summary-flag{display:block!important;width:30px!important;height:30px!important;min-width:30px!important;max-width:30px!important;aspect-ratio:1/1!important;border-radius:50%!important;object-fit:cover!important;border:0!important;padding:0!important;background:transparent!important;box-shadow:0 3px 8px rgba(9,38,47,.16)!important;}
+.trip-destination-stop.collapsed .trip-stop-actions{flex:0 0 auto!important;margin-left:2px!important;}
+/* Trip-card flags: no white ring, only a soft shadow. */
+#tripList .trip-country-flag{border:0!important;padding:0!important;background:transparent!important;box-shadow:0 4px 11px rgba(9,38,47,.16)!important;overflow:hidden!important;}
+#tripList .trip-country-flag-img{display:block!important;width:100%!important;height:100%!important;border:0!important;border-radius:50%!important;object-fit:cover!important;box-shadow:none!important;}
+/* New highest-rated stats page follows the existing stats carousel language. */
+#highestRatedStatsSlide h3{margin:8px 0 8px;color:var(--ink);font-size:24px;}
+#highestRatedStatsSlide .passport-stats-kicker{color:var(--brand-deep);font-weight:900;letter-spacing:.18em;font-size:13px;}
+#highestRatedStatsSlide .highest-rated-row strong{white-space:nowrap;}
+
+
+/* v0.18.40 — remove white flag rings at the actual wrapper level */
+#tripList .trip-country-flag,
+#tripList .trip-card-flags .trip-country-flag{
+  border:0!important;
+  outline:0!important;
+  padding:0!important;
+  background:transparent!important;
+  box-shadow:0 4px 11px rgba(9,38,47,.16)!important;
+  overflow:hidden!important;
+}
+#tripList .trip-country-flag-img,
+.trip-stop-summary-flag{
+  display:block!important;
+  border:0!important;
+  outline:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+}
