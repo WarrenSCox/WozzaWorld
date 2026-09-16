@@ -1834,3 +1834,10 @@ body.wozza-select-open{overflow-y:hidden!important}
 .wozza-select-close{position:absolute!important;top:16px!important;right:18px!important;left:auto!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;border-radius:50%!important;display:grid!important;place-items:center!important;margin:0!important;padding:0!important}
 /* Extra stats inherit the existing two-column card treatment. */
 .stats-grid .wozza-extra-stat strong{font-size:27px!important;line-height:1.15!important}
+
+/* v0.18.38 — multi-stop editor summary polish */
+.trip-editor-date-range{margin:-2px 0 12px 12px!important;color:rgba(255,255,255,.9)!important;font-size:13px!important;font-weight:800!important;letter-spacing:.02em!important;line-height:1.25!important}
+.trip-editor-date-range[hidden]{display:none!important}
+.trip-stop-summary{display:flex;align-items:center;gap:8px;min-width:0}
+.trip-stop-summary>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trip-stop-summary-flag{width:24px!important;height:24px!important;min-width:24px!important;aspect-ratio:1/1!important;border-radius:50%!important;object-fit:cover!important;border:0!important;box-shadow:0 3px 8px rgba(9,38,47,.16)!important}
