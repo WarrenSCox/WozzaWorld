@@ -2527,3 +2527,10 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .rearview-filter-panel[hidden]{display:none!important}.rearview-filter-panel strong{display:block;color:var(--navy);font-size:12px;margin:0 0 8px}.rearview-filter-panel strong+div+strong{margin-top:13px}
 .rearview-sort-options,.rearview-year-options{display:flex;flex-wrap:wrap;gap:7px}.rearview-filter-panel button{border:1px solid rgba(7,94,120,.12);border-radius:999px;background:#fff;color:var(--navy);font:inherit;font-size:11px;font-weight:750;padding:7px 10px}.rearview-filter-panel button.active,.rearview-filter-panel button[data-rear-sort]:hover{background:#087f98;color:#fff}
 @media(max-width:420px){.rearview-hand-note{width:min(270px,78%);margin-right:35px}.recycle-launch{background-size:200px auto;background-position:right 50px center}}
+
+/* 2026-09-17 — dialog consistency + persistent rearview sort selection */
+.filter-dialog{background:#f8f3e9!important;color:var(--ink)!important;border:1px solid rgba(16,33,63,.08)!important;box-shadow:0 24px 60px rgba(5,54,73,.24)!important}
+.filter-dialog p,.filter-dialog .filter-note{color:#667080!important}
+.filter-actions #resetVisitedFilters,.filter-actions button:not(.primary){background:#fff!important;color:var(--ink)!important;border:1px solid rgba(16,33,63,.08)!important}
+.filter-actions .primary{background:linear-gradient(135deg,#087b9b,#11a9c2)!important;color:#fff!important}
+.rearview-filter-panel button[data-rear-sort].active{background:#087f98!important;color:#fff!important;border-color:#087f98!important}
