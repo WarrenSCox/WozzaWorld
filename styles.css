@@ -2640,3 +2640,19 @@ body.map-view .map-stage{background:transparent!important;}
   transform:translate(-22px,-22px)!important;
 }
 .recycle-handnote{left:0!important;transform:none!important;margin-right:0!important;}
+
+/* v0.18.66 — Recycle Bin annotation ONLY */
+.recycle-handnote{
+  width:min(190px,52vw)!important;
+  max-width:190px!important;
+  height:auto!important;
+  left:0!important;
+  transform:none!important;
+  margin-right:0!important;
+}
+@media(max-width:420px){
+  .recycle-handnote{
+    width:min(180px,50vw)!important;
+    max-width:180px!important;
+  }
+}
