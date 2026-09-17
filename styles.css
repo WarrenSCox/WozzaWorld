@@ -2485,52 +2485,19 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
   padding:0!important;
 }
 
-/* v0.18.46 — Notes preview + final visible ADD STOP flight */
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:start!important;column-gap:12px!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head>div:first-child{min-width:0!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-summary{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:4!important;overflow:hidden!important;margin-top:3px!important;color:rgba(255,255,255,.82)!important;font-size:11px!important;font-weight:650!important;line-height:1.3!important;white-space:pre-wrap!important;position:relative!important;max-height:5.2em!important;}
-.trip-dialog .trip-notes-section:not(.collapsed) .trip-notes-summary,.trip-dialog .trip-notes-summary:empty{display:none!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-summary:not(:empty){-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.78) 74%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.78) 74%,transparent 100%);}
-.trip-dialog .trip-notes-section.collapsed .section-collapse-toggle{grid-column:2!important;grid-row:1!important;align-self:center!important;}
-.add-stop-flight-clone{opacity:1!important;visibility:visible!important;will-change:transform!important;}
-
-
-/* v0.18.47 — discussed trip-card fixes */
-/* Notes preview participates in normal document flow so 1–4 lines physically grow the card
-   and push Trip Rating/actions down instead of painting underneath them. */
-.trip-dialog .trip-notes-section.collapsed{height:auto!important;min-height:0!important;overflow:visible!important;position:relative!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head{height:auto!important;min-height:32px!important;grid-template-rows:32px auto!important;row-gap:3px!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head>div:first-child{display:contents!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-section-title{grid-column:1!important;grid-row:1!important;align-self:center!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-summary{grid-column:1!important;grid-row:2!important;height:auto!important;min-height:0!important;margin:0!important;}
-.trip-dialog .trip-notes-section.collapsed + label.trip-section-heading:has(.trip-rating-input){margin-top:22px!important;position:relative!important;clear:both!important;}
-/* Companion long-press should own the full pill and not trigger browser selection/callouts. */
-.trip-dialog #tripCompanionBank .companion-tag{touch-action:manipulation!important;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;}
-
-
-/* v0.18.XX — recycle-bin handwritten cue + undated trip fallback */
-.recycle-launch{position:relative!important;min-height:92px!important;align-items:center!important;overflow:visible!important;}
-.recycle-launch::before{content:"Recycle bin";position:absolute;right:92px;top:30px;color:#fff;font-family:"Comic Sans MS","Bradley Hand",cursive;font-size:18px;font-weight:700;line-height:1;transform:rotate(-5deg);letter-spacing:.01em;opacity:.96;pointer-events:none;white-space:nowrap;}
-.recycle-launch::after{content:"↝";position:absolute;right:52px;top:20px;color:#fff;font-family:"Comic Sans MS","Bradley Hand",cursive;font-size:38px;font-weight:700;line-height:1;transform:rotate(10deg);opacity:.96;pointer-events:none;}
-.trip-editor-date-range>span:first-child{color:#fff!important;text-transform:none!important;}
-
-/* v0.18.XX — final discussed polish: notes alignment, handwritten SVG cues, rearview sorting/filtering */
-.trip-dialog .trip-notes-head{display:grid!important;grid-template-columns:minmax(0,1fr) 32px!important;align-items:center!important;column-gap:10px!important}
-.trip-dialog .trip-notes-head .section-collapse-toggle{grid-column:2!important;justify-self:end!important;margin:0!important}
-.recycle-launch::before,.recycle-launch::after{content:none!important}
-.recycle-launch{background-image:url('recycle-bin-note.svg');background-repeat:no-repeat;background-position:right 58px center;background-size:230px auto}
-.rearview-head-actions{display:flex;align-items:center;gap:9px;margin-left:auto}
-.rearview-filter-toggle{width:32px;height:32px;min-width:32px;border:0;border-radius:50%;background:linear-gradient(135deg,#075e78,#0794a7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;box-shadow:0 3px 8px rgba(7,94,120,.18)}
-.rearview-filter-toggle span{display:block;height:2px;border-radius:2px;background:#fff}.rearview-filter-toggle span:nth-child(1){width:15px}.rearview-filter-toggle span:nth-child(2){width:10px}.rearview-filter-toggle span:nth-child(3){width:5px}
-.rearview-hand-note{display:block;width:min(310px,76%);height:auto;margin:-4px 42px 12px auto;pointer-events:none}
-.rearview-filter-panel{margin:0 4px 14px;padding:14px;background:rgba(255,255,255,.94);border-radius:18px;box-shadow:0 7px 18px rgba(4,52,68,.12)}
-.rearview-filter-panel[hidden]{display:none!important}.rearview-filter-panel strong{display:block;color:var(--navy);font-size:12px;margin:0 0 8px}.rearview-filter-panel strong+div+strong{margin-top:13px}
-.rearview-sort-options,.rearview-year-options{display:flex;flex-wrap:wrap;gap:7px}.rearview-filter-panel button{border:1px solid rgba(7,94,120,.12);border-radius:999px;background:#fff;color:var(--navy);font:inherit;font-size:11px;font-weight:750;padding:7px 10px}.rearview-filter-panel button.active,.rearview-filter-panel button[data-rear-sort]:hover{background:#087f98;color:#fff}
-@media(max-width:420px){.rearview-hand-note{width:min(270px,78%);margin-right:35px}.recycle-launch{background-size:200px auto;background-position:right 50px center}}
-
-/* 2026-09-17 — dialog consistency + persistent rearview sort selection */
-.filter-dialog{background:#f8f3e9!important;color:var(--ink)!important;border:1px solid rgba(16,33,63,.08)!important;box-shadow:0 24px 60px rgba(5,54,73,.24)!important}
-.filter-dialog p,.filter-dialog .filter-note{color:#667080!important}
-.filter-actions #resetVisitedFilters,.filter-actions button:not(.primary){background:#fff!important;color:var(--ink)!important;border:1px solid rgba(16,33,63,.08)!important}
-.filter-actions .primary{background:linear-gradient(135deg,#087b9b,#11a9c2)!important;color:#fff!important}
-.rearview-filter-panel button[data-rear-sort].active{background:#087f98!important;color:#fff!important;border-color:#087f98!important}
+/* Hotfix — single-stop default, recycle dialog scrollbar, illustrated annotations */
+.recycle-dialog form{
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+}
+.recycle-dialog form::-webkit-scrollbar,
+.recycle-dialog .recycle-list::-webkit-scrollbar{
+  width:0!important;height:0!important;display:none!important;background:transparent!important;
+}
+.recycle-dialog .recycle-list{scrollbar-width:none!important;-ms-overflow-style:none!important}
+.recycle-launch{align-items:center!important;gap:10px!important}
+.recycle-handnote{display:block;width:min(250px,68vw);height:auto;margin-right:-2px;pointer-events:none;user-select:none}
+.rearview-handnote{display:none;width:min(330px,78vw);height:auto;margin:12px 18px 2px auto;pointer-events:none;user-select:none}
+.rearview-category.collapsed .rearview-handnote{display:block}
+.rearview-category:not(.collapsed) .rearview-handnote{display:none}
+@media(max-width:420px){.recycle-handnote{width:min(220px,64vw)}.rearview-handnote{width:min(300px,76vw)}}
