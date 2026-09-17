@@ -2656,3 +2656,20 @@ body.map-view .map-stage{background:transparent!important;}
     max-width:180px!important;
   }
 }
+
+/* v0.18.67 — Rearview annotation ONLY */
+.rearview-handnote{
+  width:min(360px,72vw)!important;
+  max-width:360px!important;
+  height:auto!important;
+  transform:translate(-10px,-12px)!important;
+  transform-origin:center top!important;
+  margin-right:0!important;
+}
+@media(max-width:420px){
+  .rearview-handnote{
+    width:min(330px,70vw)!important;
+    max-width:330px!important;
+    transform:translate(-8px,-10px)!important;
+  }
+}
