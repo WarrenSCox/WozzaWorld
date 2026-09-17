@@ -2673,3 +2673,33 @@ body.map-view .map-stage{background:transparent!important;}
     transform:translate(-8px,-10px)!important;
   }
 }
+
+/* v0.18.68 — Rearview ONLY: fresh separate lettering + arrow assets */
+.rearview-handnote{display:none!important;}
+.rearview-illustration{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  width:min(430px,82vw)!important;
+  margin:8px 12px 4px auto!important;
+  pointer-events:none!important;
+}
+.rearview-lettering{
+  display:block!important;
+  width:min(285px,58vw)!important;
+  height:auto!important;
+  flex:0 1 auto!important;
+}
+.rearview-arrow{
+  display:block!important;
+  width:70px!important;
+  height:auto!important;
+  flex:0 0 auto!important;
+  transform:translateY(-14px)!important;
+}
+@media(max-width:420px){
+  .rearview-illustration{width:min(360px,86vw)!important;gap:6px!important;margin-top:6px!important;}
+  .rearview-lettering{width:min(245px,58vw)!important;}
+  .rearview-arrow{width:58px!important;transform:translateY(-12px)!important;}
+}
