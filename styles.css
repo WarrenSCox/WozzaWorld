@@ -2501,3 +2501,45 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .rearview-category.collapsed .rearview-handnote{display:block}
 .rearview-category:not(.collapsed) .rearview-handnote{display:none}
 @media(max-width:420px){.recycle-handnote{width:min(220px,64vw)}.rearview-handnote{width:min(300px,76vw)}}
+
+
+/* v0.18.62 — Trips clouds + recycle overflow/annotation + Rearview pointer */
+body.trips-view .sky-clouds{
+  display:block!important;
+}
+/* Fix the actual width overshoot rather than only hiding its scrollbar. */
+.recycle-dialog{
+  overflow:hidden!important;
+  max-width:min(92vw,420px)!important;
+  box-sizing:border-box!important;
+}
+.recycle-dialog form{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+}
+.recycle-dialog form>*,
+.recycle-dialog .recycle-list,
+.recycle-dialog .recycle-row{
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+.recycle-dialog .recycle-list{overflow-x:hidden!important;}
+/* Keep the approved artwork, simply give its arrow more room before the bin icon. */
+.recycle-launch{padding-right:12px!important;}
+.recycle-handnote{
+  position:relative!important;
+  left:-12px!important;
+  margin-right:-8px!important;
+}
+/* Rearview artwork now rises toward the existing + control. */
+.rearview-handnote{
+  margin-right:4px!important;
+}
+@media(max-width:420px){
+  .recycle-handnote{left:-14px!important;}
+}
