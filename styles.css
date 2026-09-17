@@ -2704,7 +2704,7 @@ body.map-view .map-stage{background:transparent!important;}
   .rearview-arrow{width:58px!important;transform:translateY(-12px)!important;}
 }
 
-/* v0.18.70 — Rearview bounds fix ONLY */
+/* v0.18.71 — Rearview clean-components fix ONLY */
 .rearview-category.collapsed .rearview-handnote{
   display:block!important;
   width:min(225px,58vw)!important;
