@@ -2206,3 +2206,24 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .trip-todo-row.has-text{position:relative;}
 .trip-todo-scribble{position:absolute;left:8px;right:88px;top:50%;height:26px;transform:translateY(-50%);pointer-events:none;z-index:4;overflow:visible;}
 .trip-todo-scribble path{fill:none;stroke:#111;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
+
+
+/* v0.18.35 — trip card compact rating + final to-do polish */
+/* Entry state reuses the trip-title typography exactly. */
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input{font-family:"Archivo Black",Impact,sans-serif!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:.055em!important;color:#172f3a!important;}
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input::placeholder{font-family:"Archivo Black",Impact,sans-serif!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:.055em!important;color:#172f3a!important;opacity:1!important;}
+
+/* Scribble hugs the wording only and uses a softer ink tone. Width is set from measured text in JS. */
+.trip-todo-scribble{left:8px!important;right:auto!important;width:40px;height:26px;top:50%;transform:translateY(-50%);}
+.trip-todo-scribble path{stroke:#344047!important;stroke-width:2.35!important;}
+
+/* Collapsed companion and to-do sections share one compact spacing rhythm. */
+.trip-companions-section.collapsed,.trip-todo-section.collapsed{margin-bottom:0!important;}
+.trip-companions-section.collapsed .trip-companions-head,.trip-todo-section.collapsed .trip-todo-head{margin-bottom:0!important;}
+.trip-companions-section.collapsed .trip-selected-summary:not(:empty),.trip-todo-section.collapsed .trip-todo-summary:not(:empty){margin-top:3px!important;}
+.trip-companions-section.collapsed+.trip-todo-section,.trip-todo-section.collapsed+.trip-notes-section{margin-top:12px!important;}
+
+/* Rating heading and stars use the same horizontal row without changing rating behaviour. */
+.trip-dialog label.trip-section-heading:has(.trip-rating-input){display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin-top:22px!important;}
+.trip-dialog label.trip-section-heading:has(.trip-rating-input) .trip-rating-input{margin-top:0!important;flex:0 0 auto!important;}
+.trip-dialog label.trip-section-heading:has(.trip-rating-input) .trip-rating-input button{font-size:25px!important;}
