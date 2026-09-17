@@ -7,4 +7,10 @@
 <path d="M 1083 104 C 1101 95, 1117 90, 1127 88 C 1121 106, 1117 122, 1117 139"
       fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
 
+
+<!-- v0.18.63 single natural rising pointer -->
+<path d="M 900 270 C 955 275, 1010 246, 1050 202 C 1080 169, 1100 132, 1120 96"
+ fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 1088 111 C 1101 103, 1112 98, 1120 96 C 1116 109, 1114 121, 1115 132"
+ fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

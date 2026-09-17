@@ -2543,3 +2543,33 @@ body.trips-view .sky-clouds{
 @media(max-width:420px){
   .recycle-handnote{left:-14px!important;}
 }
+
+
+/* v0.18.63 — To-do draft styling + annotation composition refinements */
+.todo-item input::placeholder,
+.todo-row input::placeholder,
+.todo-input::placeholder{
+  text-transform:none!important;
+}
+.todo-item.is-new input,
+.todo-row.is-new input,
+.todo-input.is-new,
+input.todo-input{
+  background:#fff!important;
+}
+
+/* Do not compensate for the Recycle note by shifting the whole illustration.
+   Keep the lettering placement stable; arrow composition is handled inside the asset. */
+.recycle-handnote{
+  left:0!important;
+  margin-right:0!important;
+}
+@media(max-width:420px){
+  .recycle-handnote{left:0!important;}
+}
+
+/* Bring the Rearview illustrated note up and left beneath its heading. */
+.rearview-handnote{
+  transform:translate(-18px,-20px)!important;
+  margin-right:0!important;
+}
