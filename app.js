@@ -358,7 +358,7 @@ document.addEventListener('click',e=>{
  const setCompact=(on,animate=false,dir=1)=>{
    compactMode=!!on;
    if(on){
-     if(animate){sign.classList.add('add-stop-flyaway');sign.style.transform=`translateX(${dir*(innerWidth+sign.offsetWidth)}px) rotate(${dir*18-5}deg)`;sign.style.opacity='0';setTimeout(()=>{sign.classList.add('add-stop-sign-hidden');sign.classList.remove('add-stop-flyaway');sign.style.transform='';sign.style.opacity='';compact.hidden=false},360)}
+     if(animate){const rect=sign.getBoundingClientRect();const currentX=new DOMMatrixReadOnly(getComputedStyle(sign).transform==='none'?undefined:getComputedStyle(sign).transform).m41||0;const remaining=dir>0?(innerWidth-rect.left+sign.offsetWidth*1.35):(rect.right+sign.offsetWidth*1.35);const throwX=currentX+dir*Math.max(remaining,innerWidth*.72);const throwRot=dir*(32+Math.min(28,Math.abs(vx)*18));sign.classList.add('add-stop-flyaway');sign.style.setProperty('--add-stop-throw-ms',`${Math.max(260,Math.min(480,430-Math.abs(vx)*90))}ms`);requestAnimationFrame(()=>{sign.style.transform=`translateX(${throwX}px) rotate(${throwRot}deg)`});setTimeout(()=>{sign.classList.add('add-stop-sign-hidden');sign.classList.remove('add-stop-flyaway');sign.style.transform='';sign.style.removeProperty('--add-stop-throw-ms');compact.hidden=false},500)}
      else{sign.classList.add('add-stop-sign-hidden');compact.hidden=false}
    }else{
      compact.hidden=true;sign.classList.remove('add-stop-sign-hidden','add-stop-flyaway','add-stop-flicking');sign.style.transform='';sign.style.opacity=''
@@ -376,7 +376,7 @@ document.addEventListener('click',e=>{
  });
  sign.addEventListener('pointermove',e=>{
    if(!down)return;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>7)moved=true;
-   if(Math.abs(dx)>Math.abs(dy)*.75){const now=performance.now(),dt=Math.max(1,now-lastT);vx=(e.clientX-lastX)/dt;lastX=e.clientX;lastT=now;sign.style.transform=`translateX(${dx}px) rotate(${(-5+dx*.035)}deg)`;sign.style.opacity=String(Math.max(.35,1-Math.abs(dx)/420))}
+   if(Math.abs(dx)>Math.abs(dy)*.75){const now=performance.now(),dt=Math.max(1,now-lastT);vx=(e.clientX-lastX)/dt;lastX=e.clientX;lastT=now;sign.style.transform=`translateX(${dx}px) rotate(${(-5+dx*.045)}deg)`}
  });
  const finish=e=>{
    if(!down)return;down=false;sign.classList.remove('add-stop-flicking');const dx=e.clientX-sx;const flick=Math.abs(dx)>72||(Math.abs(dx)>30&&Math.abs(vx)>.45);
@@ -384,7 +384,7 @@ document.addEventListener('click',e=>{
  };
  sign.addEventListener('pointerup',finish);sign.addEventListener('pointercancel',()=>{down=false;sign.classList.remove('add-stop-flicking');sign.style.transform='';sign.style.opacity=''});
  sign.addEventListener('click',e=>{if(suppressClick||moved){e.preventDefault();e.stopImmediatePropagation();moved=false}},true);
- compact.addEventListener('click',()=>$('#addTripDestination')?.click());
+ compact.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();addDestinationStop({country:tripCountryChoices().slice(-1)[0]||currentCountry||''});updateStopLabels();});
  compact.addEventListener('pointerdown',()=>{clearTimeout(holdTimer);holdTimer=setTimeout(()=>{persist(false);setCompact(false,false);if(navigator.vibrate)navigator.vibrate(20)},650)});
  ['pointerup','pointercancel','pointerleave'].forEach(type=>compact.addEventListener(type,()=>clearTimeout(holdTimer)));
  // Sync immediately if this script is evaluated while an editor is already open.

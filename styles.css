@@ -2266,14 +2266,14 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 /* v0.18.41 — flick-away ADD STOP sign / compact per-trip add control */
 .add-next-stop.tourist-add-stop{
   touch-action:pan-y!important;
-  will-change:transform,opacity!important;
+  will-change:transform!important;
 }
 .add-next-stop.tourist-add-stop.add-stop-flicking{
   transition:none!important;
   animation:none!important;
 }
 .add-next-stop.tourist-add-stop.add-stop-flyaway{
-  transition:transform .38s cubic-bezier(.18,.75,.2,1),opacity .30s ease!important;
+  transition:transform var(--add-stop-throw-ms,.38s) cubic-bezier(.12,.72,.18,1)!important;
   pointer-events:none!important;
 }
 .add-next-stop.tourist-add-stop.add-stop-sign-hidden{
@@ -2296,5 +2296,25 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .trip-compact-add-stop:active{transform:scale(.95)!important;opacity:.95!important}
 .trip-compact-add-stop[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){
- .add-next-stop.tourist-add-stop.add-stop-flyaway{transition:opacity .15s linear!important}
+ .add-next-stop.tourist-add-stop.add-stop-flyaway{transition:transform .18s ease-out!important}
 }
+
+
+/* v0.18.42 — physical sign throw + first-tap compact add + exact companion rhythm */
+.add-next-stop.tourist-add-stop.add-stop-flicking,
+.add-next-stop.tourist-add-stop.add-stop-flyaway{opacity:1!important;}
+.trip-dialog .trip-companions-section.collapsed{margin-top:12px!important;margin-bottom:0!important;}
+.trip-dialog .trip-companions-section.collapsed .trip-companions-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 32px!important;
+  grid-template-rows:32px auto!important;
+  column-gap:10px!important;
+  row-gap:3px!important;
+  align-items:center!important;
+  margin:0!important;
+  min-height:0!important;
+}
+.trip-dialog .trip-companions-section.collapsed .trip-companions-head .trip-section-title{grid-column:1!important;grid-row:1!important;margin:0!important;}
+.trip-dialog .trip-companions-section.collapsed .trip-companions-head .section-collapse-toggle{grid-column:2!important;grid-row:1!important;align-self:center!important;}
+.trip-dialog .trip-companions-section.collapsed .trip-selected-summary:not(:empty){grid-column:1!important;grid-row:2!important;margin:0!important;padding:0!important;line-height:1.3!important;}
+.trip-dialog .trip-companions-section.collapsed + .trip-todo-section{margin-top:12px!important;}
