@@ -2617,3 +2617,26 @@ body.map-view .map-stage{background:transparent!important;}
   color:#172f3a!important;
   opacity:.72!important;
 }
+
+/* v0.18.65 — clean annotation rebuild + real World View cloud clone */
+.worldview-cloud-clone{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+}
+.full-map-view,.map-fullscreen,.world-view,#fullMap{position:relative!important;}
+.full-map-view>*:not(.worldview-cloud-clone),
+.map-fullscreen>*:not(.worldview-cloud-clone),
+.world-view>*:not(.worldview-cloud-clone),
+#fullMap>*:not(.worldview-cloud-clone){position:relative;z-index:1;}
+.rearview-handnote{
+  width:76%!important;
+  max-width:570px!important;
+  transform:translate(-22px,-22px)!important;
+}
+.recycle-handnote{left:0!important;transform:none!important;margin-right:0!important;}
