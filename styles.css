@@ -2493,3 +2493,16 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .trip-dialog .trip-notes-section.collapsed .trip-notes-summary:not(:empty){-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.78) 74%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.78) 74%,transparent 100%);}
 .trip-dialog .trip-notes-section.collapsed .section-collapse-toggle{grid-column:2!important;grid-row:1!important;align-self:center!important;}
 .add-stop-flight-clone{opacity:1!important;visibility:visible!important;will-change:transform!important;}
+
+
+/* v0.18.47 — discussed trip-card fixes */
+/* Notes preview participates in normal document flow so 1–4 lines physically grow the card
+   and push Trip Rating/actions down instead of painting underneath them. */
+.trip-dialog .trip-notes-section.collapsed{height:auto!important;min-height:0!important;overflow:visible!important;position:relative!important;}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-head{height:auto!important;min-height:32px!important;grid-template-rows:32px auto!important;row-gap:3px!important;}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-head>div:first-child{display:contents!important;}
+.trip-dialog .trip-notes-section.collapsed .trip-section-title{grid-column:1!important;grid-row:1!important;align-self:center!important;}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-summary{grid-column:1!important;grid-row:2!important;height:auto!important;min-height:0!important;margin:0!important;}
+.trip-dialog .trip-notes-section.collapsed + label.trip-section-heading:has(.trip-rating-input){margin-top:22px!important;position:relative!important;clear:both!important;}
+/* Companion long-press should own the full pill and not trigger browser selection/callouts. */
+.trip-dialog #tripCompanionBank .companion-tag{touch-action:manipulation!important;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;}
