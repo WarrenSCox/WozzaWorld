@@ -2246,3 +2246,6 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .trip-unsaved-actions .primary{background:#e9bf2e;color:#172f3a;}
 #tripUnsavedLeave{background:#fff2ef;color:#b43831;}
 #tripUnsavedCancel{background:#fff;color:#53666d;}
+
+/* v0.18.37 — restore completed scribbles on reopen + task text alignment */
+.trip-dialog .trip-todo-row.has-text .trip-todo-input{padding:12px 14px 10px!important;}
