@@ -2703,3 +2703,18 @@ body.map-view .map-stage{background:transparent!important;}
   .rearview-lettering{width:min(245px,58vw)!important;}
   .rearview-arrow{width:58px!important;transform:translateY(-12px)!important;}
 }
+
+/* v0.18.69 — Rearview SAFE fix: existing DOM only */
+.rearview-category.collapsed .rearview-handnote{
+  display:block!important;
+  width:min(250px,64vw)!important;
+  max-width:250px!important;
+  height:auto!important;
+  margin:4px 18px 4px auto!important;
+  transform:none!important;
+  pointer-events:none!important;
+  user-select:none!important;
+}
+.rearview-category:not(.collapsed) .rearview-handnote{display:none!important;}
+/* Disable remnants of the abandoned separate-assets experiment if present. */
+.rearview-illustration{display:none!important;}
