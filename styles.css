@@ -2506,3 +2506,10 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .trip-dialog .trip-notes-section.collapsed + label.trip-section-heading:has(.trip-rating-input){margin-top:22px!important;position:relative!important;clear:both!important;}
 /* Companion long-press should own the full pill and not trigger browser selection/callouts. */
 .trip-dialog #tripCompanionBank .companion-tag{touch-action:manipulation!important;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;}
+
+
+/* v0.18.XX — recycle-bin handwritten cue + undated trip fallback */
+.recycle-launch{position:relative!important;min-height:92px!important;align-items:center!important;overflow:visible!important;}
+.recycle-launch::before{content:"Recycle bin";position:absolute;right:92px;top:30px;color:#fff;font-family:"Comic Sans MS","Bradley Hand",cursive;font-size:18px;font-weight:700;line-height:1;transform:rotate(-5deg);letter-spacing:.01em;opacity:.96;pointer-events:none;white-space:nowrap;}
+.recycle-launch::after{content:"↝";position:absolute;right:52px;top:20px;color:#fff;font-family:"Comic Sans MS","Bradley Hand",cursive;font-size:38px;font-weight:700;line-height:1;transform:rotate(10deg);opacity:.96;pointer-events:none;}
+.trip-editor-date-range>span:first-child{color:#fff!important;text-transform:none!important;}
