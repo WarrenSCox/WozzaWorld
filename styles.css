@@ -2447,3 +2447,40 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
     transition:transform .45s ease-out!important;
   }
 }
+
+/* v0.18.45 — collapsed toggle/header alignment hotfix
+   The To Do heading + preview are wrapped in an extra div in the markup. Flatten
+   that wrapper into the shared grid so the + is centred on the TITLE row only,
+   not on the combined title+preview block. */
+.trip-dialog .trip-todo-section.collapsed .trip-todo-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 32px!important;
+  grid-template-rows:32px auto!important;
+  column-gap:10px!important;
+  row-gap:3px!important;
+  align-items:center!important;
+}
+.trip-dialog .trip-todo-section.collapsed .trip-todo-head>div:first-child{
+  display:contents!important;
+}
+.trip-dialog .trip-todo-section.collapsed .trip-todo-head .trip-section-title{
+  grid-column:1!important;
+  grid-row:1!important;
+  align-self:center!important;
+  margin:0!important;
+  padding:0!important;
+}
+.trip-dialog .trip-todo-section.collapsed .trip-todo-head .section-collapse-toggle{
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:center!important;
+  justify-self:center!important;
+  margin:0!important;
+}
+.trip-dialog .trip-todo-section.collapsed .trip-todo-summary:not(:empty){
+  grid-column:1!important;
+  grid-row:2!important;
+  align-self:start!important;
+  margin:0!important;
+  padding:0!important;
+}
