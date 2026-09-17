@@ -2513,3 +2513,17 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .recycle-launch::before{content:"Recycle bin";position:absolute;right:92px;top:30px;color:#fff;font-family:"Comic Sans MS","Bradley Hand",cursive;font-size:18px;font-weight:700;line-height:1;transform:rotate(-5deg);letter-spacing:.01em;opacity:.96;pointer-events:none;white-space:nowrap;}
 .recycle-launch::after{content:"↝";position:absolute;right:52px;top:20px;color:#fff;font-family:"Comic Sans MS","Bradley Hand",cursive;font-size:38px;font-weight:700;line-height:1;transform:rotate(10deg);opacity:.96;pointer-events:none;}
 .trip-editor-date-range>span:first-child{color:#fff!important;text-transform:none!important;}
+
+/* v0.18.XX — final discussed polish: notes alignment, handwritten SVG cues, rearview sorting/filtering */
+.trip-dialog .trip-notes-head{display:grid!important;grid-template-columns:minmax(0,1fr) 32px!important;align-items:center!important;column-gap:10px!important}
+.trip-dialog .trip-notes-head .section-collapse-toggle{grid-column:2!important;justify-self:end!important;margin:0!important}
+.recycle-launch::before,.recycle-launch::after{content:none!important}
+.recycle-launch{background-image:url('recycle-bin-note.svg');background-repeat:no-repeat;background-position:right 58px center;background-size:230px auto}
+.rearview-head-actions{display:flex;align-items:center;gap:9px;margin-left:auto}
+.rearview-filter-toggle{width:32px;height:32px;min-width:32px;border:0;border-radius:50%;background:linear-gradient(135deg,#075e78,#0794a7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;box-shadow:0 3px 8px rgba(7,94,120,.18)}
+.rearview-filter-toggle span{display:block;height:2px;border-radius:2px;background:#fff}.rearview-filter-toggle span:nth-child(1){width:15px}.rearview-filter-toggle span:nth-child(2){width:10px}.rearview-filter-toggle span:nth-child(3){width:5px}
+.rearview-hand-note{display:block;width:min(310px,76%);height:auto;margin:-4px 42px 12px auto;pointer-events:none}
+.rearview-filter-panel{margin:0 4px 14px;padding:14px;background:rgba(255,255,255,.94);border-radius:18px;box-shadow:0 7px 18px rgba(4,52,68,.12)}
+.rearview-filter-panel[hidden]{display:none!important}.rearview-filter-panel strong{display:block;color:var(--navy);font-size:12px;margin:0 0 8px}.rearview-filter-panel strong+div+strong{margin-top:13px}
+.rearview-sort-options,.rearview-year-options{display:flex;flex-wrap:wrap;gap:7px}.rearview-filter-panel button{border:1px solid rgba(7,94,120,.12);border-radius:999px;background:#fff;color:var(--navy);font:inherit;font-size:11px;font-weight:750;padding:7px 10px}.rearview-filter-panel button.active,.rearview-filter-panel button[data-rear-sort]:hover{background:#087f98;color:#fff}
+@media(max-width:420px){.rearview-hand-note{width:min(270px,78%);margin-right:35px}.recycle-launch{background-size:200px auto;background-position:right 50px center}}
