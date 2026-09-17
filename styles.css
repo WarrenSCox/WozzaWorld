@@ -2730,3 +2730,48 @@ body.map-view .map-stage{background:transparent!important;}
 .trip-dialog .trip-notes-section.collapsed .trip-notes-summary:not(:empty){display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:4!important;overflow:hidden!important;white-space:pre-wrap!important;line-height:1.35!important;max-height:5.4em!important;margin:3px 0 0!important;padding:0!important;color:rgba(255,255,255,.82)!important;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.72) 76%,transparent 100%)!important;mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.72) 76%,transparent 100%)!important}
 .trip-dialog .trip-notes-section:not(.collapsed) .trip-notes-summary,.trip-dialog .trip-notes-summary:empty{display:none!important}
 .trip-dialog .trip-notes-section.collapsed + .trip-section-heading{margin-top:0!important;clear:both!important}
+
+
+/* v0.18.81 — World View: reuse the existing working Passport cloud layer.
+   Layer order is deliberate: teal/map-stage < clouds < SVG map < controls. */
+body.map-view .sky-clouds{
+  display:block!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:2!important;
+  opacity:.72!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+}
+body.map-view .sky-clouds .cloud{
+  display:block!important;
+  background:rgba(255,255,255,.62)!important;
+  filter:blur(13px)!important;
+}
+body.map-view .map-card,
+body.map-view .map-stage{
+  z-index:1!important;
+  background:transparent!important;
+}
+body.map-view #worldMap{
+  position:relative!important;
+  z-index:3!important;
+}
+body.map-view .map-view-title,
+body.map-view .map-close{
+  z-index:120!important;
+}
+
+/* v0.18.81 — restore agreed Filter & Sort styling only. */
+.filter-dialog{
+  background:#f6e8c7!important;
+  color:#10213f!important;
+}
+.filter-dialog .filter-actions #resetVisitedFilters{
+  background:#fff!important;
+  color:#10213f!important;
+}
+.filter-dialog .filter-actions .primary{
+  background:linear-gradient(135deg,#087b9b,#11a9c2)!important;
+  color:#fff!important;
+}
