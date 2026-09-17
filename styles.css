@@ -2262,3 +2262,39 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
 .trip-dialog .trip-companions-section.collapsed + .trip-todo-section,
 .trip-dialog .trip-todo-section.collapsed + .trip-notes-section{margin-top:12px!important;}
 .trip-unsaved-actions .secondary-save{background:#dcebed!important;color:#172f3a!important;}
+
+/* v0.18.41 — flick-away ADD STOP sign / compact per-trip add control */
+.add-next-stop.tourist-add-stop{
+  touch-action:pan-y!important;
+  will-change:transform,opacity!important;
+}
+.add-next-stop.tourist-add-stop.add-stop-flicking{
+  transition:none!important;
+  animation:none!important;
+}
+.add-next-stop.tourist-add-stop.add-stop-flyaway{
+  transition:transform .38s cubic-bezier(.18,.75,.2,1),opacity .30s ease!important;
+  pointer-events:none!important;
+}
+.add-next-stop.tourist-add-stop.add-stop-sign-hidden{
+  display:none!important;
+}
+.trip-compact-add-stop{
+  width:48px!important;height:48px!important;
+  margin:8px auto 24px!important;
+  border:0!important;border-radius:50%!important;
+  display:grid!important;place-items:center!important;
+  background:rgba(0,111,137,.48)!important;
+  color:#fff!important;
+  font:800 31px/1 Arial,sans-serif!important;
+  box-shadow:0 3px 9px rgba(0,0,0,.08)!important;
+  padding:0!important;
+  opacity:.78!important;
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+.trip-compact-add-stop:active{transform:scale(.95)!important;opacity:.95!important}
+.trip-compact-add-stop[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){
+ .add-next-stop.tourist-add-stop.add-stop-flyaway{transition:opacity .15s linear!important}
+}

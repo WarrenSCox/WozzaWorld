@@ -338,3 +338,55 @@ document.addEventListener('click',e=>{
     if(trip && typeof openTrip==='function') openTrip(trip.id);
   }
 });
+
+/* v0.18.41 — the roadside ADD STOP sign can be flicked away per trip. */
+(()=>{
+ const sign=$('#addTripDestination');
+ if(!sign||sign.dataset.flickReady)return;
+ sign.dataset.flickReady='1';
+ const compact=document.createElement('button');
+ compact.type='button';
+ compact.className='trip-compact-add-stop';
+ compact.hidden=true;
+ compact.setAttribute('aria-label','Add stop');
+ compact.setAttribute('title','Add stop · hold to restore sign');
+ compact.textContent='+';
+ sign.insertAdjacentElement('afterend',compact);
+ let compactMode=false,down=false,moved=false,sx=0,sy=0,lastX=0,lastT=0,vx=0,holdTimer=0,suppressClick=false;
+ const trip=()=>editingTripId?state.trips.find(t=>String(t.id)===String(editingTripId)):null;
+ const persist=hidden=>{const t=trip();if(t){t.addStopSignHidden=!!hidden;save()}};
+ const setCompact=(on,animate=false,dir=1)=>{
+   compactMode=!!on;
+   if(on){
+     if(animate){sign.classList.add('add-stop-flyaway');sign.style.transform=`translateX(${dir*(innerWidth+sign.offsetWidth)}px) rotate(${dir*18-5}deg)`;sign.style.opacity='0';setTimeout(()=>{sign.classList.add('add-stop-sign-hidden');sign.classList.remove('add-stop-flyaway');sign.style.transform='';sign.style.opacity='';compact.hidden=false},360)}
+     else{sign.classList.add('add-stop-sign-hidden');compact.hidden=false}
+   }else{
+     compact.hidden=true;sign.classList.remove('add-stop-sign-hidden','add-stop-flyaway','add-stop-flicking');sign.style.transform='';sign.style.opacity=''
+   }
+ };
+ const sync=()=>setCompact(!!trip()?.addStopSignHidden,false);
+ const oldOpenTripEditor=openTripEditor;
+ openTripEditor=function(t){oldOpenTripEditor(t);requestAnimationFrame(sync)};
+ const oldOpenTrip=openTrip;
+ openTrip=function(country=''){oldOpenTrip(country);requestAnimationFrame(()=>setCompact(false,false))};
+ sign.addEventListener('pointerdown',e=>{
+   if(e.button!=null&&e.button!==0)return;
+   down=true;moved=false;sx=lastX=e.clientX;sy=e.clientY;lastT=performance.now();vx=0;
+   sign.setPointerCapture?.(e.pointerId);sign.classList.remove('wiggle');sign.classList.add('add-stop-flicking');
+ });
+ sign.addEventListener('pointermove',e=>{
+   if(!down)return;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>7)moved=true;
+   if(Math.abs(dx)>Math.abs(dy)*.75){const now=performance.now(),dt=Math.max(1,now-lastT);vx=(e.clientX-lastX)/dt;lastX=e.clientX;lastT=now;sign.style.transform=`translateX(${dx}px) rotate(${(-5+dx*.035)}deg)`;sign.style.opacity=String(Math.max(.35,1-Math.abs(dx)/420))}
+ });
+ const finish=e=>{
+   if(!down)return;down=false;sign.classList.remove('add-stop-flicking');const dx=e.clientX-sx;const flick=Math.abs(dx)>72||(Math.abs(dx)>30&&Math.abs(vx)>.45);
+   if(flick){suppressClick=true;persist(true);setCompact(true,true,dx<0?-1:1);setTimeout(()=>suppressClick=false,450)}else{sign.style.transform='';sign.style.opacity=''}
+ };
+ sign.addEventListener('pointerup',finish);sign.addEventListener('pointercancel',()=>{down=false;sign.classList.remove('add-stop-flicking');sign.style.transform='';sign.style.opacity=''});
+ sign.addEventListener('click',e=>{if(suppressClick||moved){e.preventDefault();e.stopImmediatePropagation();moved=false}},true);
+ compact.addEventListener('click',()=>$('#addTripDestination')?.click());
+ compact.addEventListener('pointerdown',()=>{clearTimeout(holdTimer);holdTimer=setTimeout(()=>{persist(false);setCompact(false,false);if(navigator.vibrate)navigator.vibrate(20)},650)});
+ ['pointerup','pointercancel','pointerleave'].forEach(type=>compact.addEventListener(type,()=>clearTimeout(holdTimer)));
+ // Sync immediately if this script is evaluated while an editor is already open.
+ if($('#tripDialog')?.open)sync();
+})();
