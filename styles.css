@@ -2573,3 +2573,47 @@ input.todo-input{
   transform:translate(-18px,-20px)!important;
   margin-right:0!important;
 }
+
+
+/* v0.18.64 — final annotation composition + World View clouds + todo draft */
+body.map-view .sky-clouds,
+body.trips-view .sky-clouds{
+  display:block!important;
+}
+/* Keep clouds behind the full-map artwork/controls. */
+body.map-view .sky-clouds{z-index:0!important;inset:0!important;}
+body.map-view #app{position:relative!important;z-index:1!important;}
+body.map-view .map-card,
+body.map-view .map-stage{background:transparent!important;}
+
+/* Rearview note: slightly smaller, higher and left; arrow lives only inside clean SVG. */
+.rearview-handnote{
+  width:82%!important;
+  max-width:620px!important;
+  transform:translate(-28px,-26px)!important;
+  transform-origin:center top!important;
+}
+
+/* Recycle note: stable placement; compact arrow lives only inside clean SVG. */
+.recycle-handnote{
+  left:0!important;
+  margin-right:0!important;
+  transform:none!important;
+}
+
+/* New to-do draft looks like the white item above, with normal proper-case placeholder. */
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input{
+  background:#fff!important;
+  color:#172f3a!important;
+  border-color:rgba(7,94,120,.10)!important;
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;
+  font-weight:500!important;
+  text-transform:none!important;
+}
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input::placeholder{
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;
+  font-weight:500!important;
+  text-transform:none!important;
+  color:#172f3a!important;
+  opacity:.72!important;
+}
