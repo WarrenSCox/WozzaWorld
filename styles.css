@@ -2720,3 +2720,13 @@ body.map-view .map-stage{background:transparent!important;}
 .trip-dialog .trip-notes-section.collapsed .trip-notes-summary{grid-column:1!important;grid-row:2!important;height:auto!important;min-height:0!important;margin:0!important;}
 .rearview-category.collapsed .rearview-handnote{display:block!important;width:min(225px,58vw)!important;max-width:225px!important;height:auto!important;margin:2px 14px 6px auto!important;pointer-events:none!important}
 .rearview-category:not(.collapsed) .rearview-handnote{display:none!important}
+
+/* v0.18.80 — contained Notes preview restoration */
+.trip-dialog .trip-notes-section.collapsed{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important;margin-top:16px!important;margin-bottom:18px!important}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-head{display:grid!important;grid-template-columns:minmax(0,1fr) 32px!important;grid-template-rows:32px auto!important;column-gap:10px!important;row-gap:4px!important;align-items:start!important;height:auto!important;min-height:32px!important;overflow:visible!important}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-head>div:first-child{grid-column:1!important;grid-row:1 / span 2!important;min-width:0!important}
+.trip-dialog .trip-notes-section.collapsed .trip-section-title{margin:0!important;min-height:32px!important;display:flex!important;align-items:center!important}
+.trip-dialog .trip-notes-section.collapsed .section-collapse-toggle{grid-column:2!important;grid-row:1!important;justify-self:end!important;align-self:center!important}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-summary:not(:empty){display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:4!important;overflow:hidden!important;white-space:pre-wrap!important;line-height:1.35!important;max-height:5.4em!important;margin:3px 0 0!important;padding:0!important;color:rgba(255,255,255,.82)!important;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.72) 76%,transparent 100%)!important;mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.72) 76%,transparent 100%)!important}
+.trip-dialog .trip-notes-section:not(.collapsed) .trip-notes-summary,.trip-dialog .trip-notes-summary:empty{display:none!important}
+.trip-dialog .trip-notes-section.collapsed + .trip-section-heading{margin-top:0!important;clear:both!important}
