@@ -212,21 +212,6 @@ body.map-view::after{content:"Rotate your phone for the full map";position:fixed
 }
 @media(orientation:landscape){body.map-view::after{display:none}}
 
-.map-rotate-phone{display:none}
-@media(orientation:portrait){
-  body.map-view .map-rotate-phone{
-    display:block;position:fixed;z-index:111;left:50%;
-    bottom:calc(max(18px,env(safe-area-inset-bottom)) + 50px);
-    transform:translateX(-50%);pointer-events:none
-  }
-  .map-rotate-phone-icon{
-    width:58px;height:58px;border-radius:50%;display:grid;place-items:center;
-    color:#fff;background:linear-gradient(145deg,#18c5ce,#07899f);
-    box-shadow:0 8px 22px rgba(0,0,0,.20)
-  }
-  .map-rotate-phone-icon svg{width:38px;height:38px;display:block}
-}
-@media(orientation:landscape){body.map-view .map-rotate-phone{display:none!important}}
 
 
 /* v0.12 — header balance + finer map borders */
@@ -2834,3 +2819,7 @@ body.map-view #worldMap .country{pointer-events:auto!important;cursor:pointer!im
 #tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) > div:first-child{
   padding-top:7px!important;
 }
+
+/* World View close button: smaller and contained within banner */
+body.map-view .map-close{width:48px!important;height:48px!important;top:10px!important;right:14px!important;font-size:32px!important;line-height:1!important;box-shadow:0 4px 12px rgba(0,0,0,.14)!important}
+@media(orientation:landscape){body.map-view .map-close{width:46px!important;height:46px!important;top:8px!important;right:14px!important;font-size:30px!important}}
