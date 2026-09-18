@@ -3248,19 +3248,40 @@ body.map-view #mapClose.map-close{
  .country-facts-accordion-icon{flex-basis:36px;width:36px;height:36px;font-size:23px}
 }
 
-/* Fast Facts polish */
+/* v0.18.XX - Country facts header sizing + Trip editor expanded/empty spacing consistency */
 .country-facts-accordion-toggle{
-  color:#172e38!important;
-  font-family:inherit!important;
-  font-weight:900!important;
-  font-size:22px!important;
-  line-height:1.08!important;
-  letter-spacing:.025em!important;
+  font-family:"Archivo Black",Impact,sans-serif!important;
   text-transform:uppercase!important;
-}
-@media(max-width:560px){
- .country-facts-accordion-toggle{font-size:20px!important}
+  letter-spacing:.055em!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  line-height:1.15!important;
 }
 @media(orientation:landscape) and (max-height:650px){
- .country-facts-accordion-toggle{font-size:17px!important}
+  .country-facts-accordion-toggle{font-size:17px!important}
+}
+
+/* Expanded content clears the +/- control consistently. */
+#tripForm .trip-companions-section:not(.collapsed) #tripCompanionsBody,
+#tripForm .trip-todo-section:not(.collapsed) #tripTodoBody,
+#tripForm .trip-notes-section:not(.collapsed) #tripNotesBody{
+  margin-top:16px!important;
+}
+
+/* Empty collapsed Notes has no preview to reserve room for: pull the section up
+   and vertically centre its title against the + control. */
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty){
+  margin-top:18px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  min-height:54px!important;
+  align-items:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div{
+  padding-top:0!important;
+  align-self:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .trip-section-title{
+  transform:none!important;
+  align-self:center!important;
 }
