@@ -155,11 +155,86 @@ function renderCitiesSheet(){const a=state.cities[currentCountry]||[];$('#cityLi
 function addToCompanionBank(name){name=String(name||'').trim();if(!name)return '';const existing=state.companionBank.find(x=>x.toLowerCase()===name.toLowerCase());if(existing)return existing;state.companionBank.push(name);return name}
 function renderCompanionStats(){const el=$('#companionStats');if(!el)return;const counts={};state.trips.forEach(t=>{const seen=new Set();(t.companions||[]).forEach(n=>{const name=String(n).trim();if(!name||seen.has(name.toLowerCase()))return;seen.add(name.toLowerCase());counts[name]=(counts[name]||0)+1})});for(const [country,names] of Object.entries(state.companions||{})){const linked=countryTrips(country),linkedNames=new Set(linked.flatMap(t=>t.companions||[]).map(n=>String(n).trim().toLowerCase()));for(const raw of names||[]){const name=String(raw).trim();if(!name||linkedNames.has(name.toLowerCase()))continue;counts[name]=(counts[name]||0)+1}}const rows=Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,10);const max=rows[0]?.[1]||1;if(!rows.length){el.innerHTML='<p class="muted">Add companions to trips to build your chart.</p>';return}el.innerHTML=rows.map(([n,c],i)=>`<div class="companion-stat-row ${i>=5?'is-stat-hidden':''}"><span>${esc(n)}</span><div><i style="width:${Math.max(12,c/max*100)}%"></i></div><strong>${c} ${c===1?'trip':'trips'}</strong></div>`).join('')+(rows.length>5?'<button type="button" class="stats-show-more list-add" data-expanded="false" aria-label="Show more">＋</button>':'');const btn=el.querySelector('.stats-show-more');if(btn)btn.onclick=()=>{const expanding=btn.dataset.expanded!=='true';el.querySelectorAll('.companion-stat-row').forEach((r,i)=>r.classList.toggle('is-stat-hidden',!expanding&&i>=5));btn.dataset.expanded=expanding?'true':'false';btn.textContent=expanding?'−':'＋';btn.setAttribute('aria-label',expanding?'Show less':'Show more');el.closest('.passport-stats-carousel')?.classList.toggle('stats-expanded',expanding)}}function renderPassportCarouselStats(){const track=$('#passportStatsTrack');if(track&&!$('#highestRatedStatsSlide')){const slide=document.createElement('article');slide.id='highestRatedStatsSlide';slide.className='passport-stats-slide';slide.innerHTML='<h4>Highest rated</h4><div id="highestRatedStats" class="passport-mini-list"></div>';track.appendChild(slide)}const visited=countryRows('visited');const continentMap={Europe:['United Kingdom','Ireland','France','Spain','Portugal','Italy','Germany','Belgium','Netherlands','Denmark','Norway','Sweden','Finland','Iceland','Poland','Austria','Switzerland','Greece','Croatia','Czechia','Slovakia','Hungary','Romania','Bulgaria','Serbia','Slovenia','Estonia','Latvia','Lithuania','Belarus','Ukraine','Moldova'],Africa:['Niger','Morocco','Egypt','South Africa','Kenya','Tanzania','Tunisia','Algeria','Ghana','Nigeria'],Asia:['China','Japan','Thailand','India','Vietnam','Indonesia','Singapore','Malaysia','South Korea','United Arab Emirates','Turkey'],"North America":['United States of America','United States','Canada','Mexico','Cuba','Jamaica'],"South America":['Brazil','Argentina','Chile','Peru','Colombia'],Oceania:['Australia','New Zealand','Fiji']};const continents=Object.entries(continentMap).map(([n,a])=>[n,visited.filter(c=>a.some(x=>sameCountry(x,c))).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);const countryCounts=visited.map(c=>[c,Math.max(1,countryTrips(c).length)]).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));const cityCounts={};state.trips.forEach(t=>{(t.destinations||[]).forEach(d=>{const k=String(d.name||'').trim();if(k)cityCounts[k]=(cityCounts[k]||0)+1});Object.entries(t.cities||{}).forEach(([c,names])=>(names||[]).forEach(n=>{const k=String(n).trim();if(k)cityCounts[k]=(cityCounts[k]||0)+1}))});const cities=Object.entries(cityCounts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));const bindMore=el=>{const btn=el?.querySelector('.stats-show-more');if(!btn)return;btn.onclick=()=>{const expanding=btn.dataset.expanded!=='true';el.querySelectorAll('.passport-mini-row').forEach((r,i)=>r.classList.toggle('is-stat-hidden',!expanding&&i>=5));btn.dataset.expanded=expanding?'true':'false';btn.textContent=expanding?'−':'＋';btn.setAttribute('aria-label',expanding?'Show less':'Show more');el.closest('.passport-stats-carousel')?.classList.toggle('stats-expanded',expanding)}};const fill=(id,rows,unit)=>{const el=$('#'+id);if(!el)return;if(!rows.length){el.innerHTML='<p class="muted">More travel data will appear here.</p>';return}el.innerHTML=rows.slice(0,10).map(([n,c],i)=>`<div class="passport-mini-row ${i>=5?'is-stat-hidden':''}"><b>${i+1}</b><span>${esc(n)}</span><strong>${c} ${c===1?unit:unit+'s'}</strong></div>`).join('')+(rows.length>5?'<button type="button" class="stats-show-more list-add" data-expanded="false" aria-label="Show more">＋</button>':'');bindMore(el)};fill('continentStats',continents,'country');fill('countryStats',countryCounts,'trip');fill('cityStats',cities,'visit');const rated=state.trips.filter(t=>Number(t.rating)>0).sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||String(a.name||'').localeCompare(String(b.name||'')));const ratedEl=$('#highestRatedStats');if(ratedEl){if(!rated.length)ratedEl.innerHTML='<p class="muted">Rate a trip to build your chart.</p>';else{ratedEl.innerHTML=rated.slice(0,10).map((t,i)=>`<div class="passport-mini-row highest-rated-row ${i>=5?'is-stat-hidden':''}"><b>${i+1}</b><span>${esc(t.name||'Untitled trip')}</span><strong>${Number(t.rating)} ★</strong></div>`).join('')+(rated.length>5?'<button type="button" class="stats-show-more list-add" data-expanded="false" aria-label="Show more">＋</button>':'');bindMore(ratedEl)}}}let passportStatsSlide=0;function setPassportStatsSlide(i){const track=$('#passportStatsTrack'),dots=$('#passportStatsDots');if(!track)return;const slides=[...track.querySelectorAll('.passport-stats-slide')],count=Math.max(1,slides.length);passportStatsSlide=(i+count)%count;track.style.transform='none';slides.forEach((slide,idx)=>slide.classList.toggle('is-active',idx===passportStatsSlide));if(dots)dots.textContent=slides.map((_,x)=>x===passportStatsSlide?'●':'○').join(' ')}
 function renderCompanionBanks(){const selected=new Set(state.companions[currentCountry]||[]);const bank=$('#companionBank');if(bank)bank.innerHTML=state.companionBank.map(n=>`<button type="button" class="companion-tag ${selected.has(n)?'selected':''}" data-companion="${esc(n)}">${esc(n)}</button>`).join('');$$('#companionBank .companion-tag').forEach(b=>b.onclick=()=>{const n=b.dataset.companion;state.companions[currentCountry]??=[];state.companions[currentCountry]=state.companions[currentCountry].includes(n)?state.companions[currentCountry].filter(x=>x!==n):[...state.companions[currentCountry],n];save()})}
+
+let countryGuideData=null,countryWeatherData=null;
+const countryGuideAliases={
+  'Dem. Rep. Congo':'Democratic Republic of the Congo',
+  'Congo':'Republic of the Congo',
+  'Central African Rep.':'Central African Republic',
+  'Dominican Rep.':'Dominican Republic',
+  'Eq. Guinea':'Equatorial Guinea',
+  'S. Sudan':'South Sudan',
+  'W. Sahara':'Western Sahara',
+  'United States of America':'United States'
+};
+async function loadCountryGuideData(){
+ if(countryGuideData&&countryWeatherData)return;
+ const [g,w]=await Promise.all([
+  fetch('country-guides.json').then(r=>{if(!r.ok)throw new Error('Country guide data unavailable');return r.json()}),
+  fetch('country-typical-weather.json').then(r=>{if(!r.ok)throw new Error('Weather data unavailable');return r.json()})
+ ]);
+ countryGuideData=g;countryWeatherData=w;
+}
+function countryGuideName(name){return countryGuideAliases[name]||name}
+function factRow(label,value){
+ if(!value||!String(value).trim())return '';
+ return `<div class="country-fact-row"><strong>${esc(label)}</strong><span>${esc(String(value))}</span></div>`
+}
+function factList(title,items){
+ if(!Array.isArray(items)||!items.length)return '';
+ return `<section class="country-fact-section"><h3>${esc(title)}</h3><ul>${items.map(x=>`<li>${esc(String(x))}</li>`).join('')}</ul></section>`
+}
+function weatherBlock(weather){
+ if(!weather?.typicalWeather?.length)return '';
+ return `<section class="country-fact-section country-weather-section"><h3>Typical weather</h3>
+  <div class="country-weather-grid">${weather.typicalWeather.map(x=>`<div class="country-weather-card"><strong>${esc(x.months||'')}</strong><b>${esc(x.season||'')}</b><span>${Number.isFinite(x.typicalTemperatureC?.low)&&Number.isFinite(x.typicalTemperatureC?.high)?`${x.typicalTemperatureC.low}–${x.typicalTemperatureC.high}°C`:''}</span><p>${esc(x.summary||'')}</p></div>`).join('')}</div>
+  ${weather.regionalVariation?`<p class="country-regional-note"><strong>Regional variation:</strong> ${esc(weather.regionalVariation)}</p>`:''}
+ </section>`
+}
+async function openCountryInfo(){
+ const dialog=$('#countryInfoDialog'),body=$('#countryInfoBody');
+ if(!dialog||!body)return;
+ const name=countryGuideName(currentCountry);
+ $('#countryInfoTitle').textContent=`About ${currentCountry}`;
+ const u=flagUrl(currentCountry);
+ $('#countryInfoFlag').innerHTML=u?`<img src="${u}" alt="${esc(currentCountry)} flag">`:'';
+ body.innerHTML='<p class="country-facts-loading">Loading country guide…</p>';
+ if(!dialog.open)dialog.showModal();
+ try{
+  await loadCountryGuideData();
+  const guide=countryGuideData.find(x=>x.country===name);
+  const weather=countryWeatherData.find(x=>x.country===name);
+  if(!guide){
+   body.innerHTML='<p class="country-facts-empty">Country information is not available yet.</p>';
+   return;
+  }
+  const currency=(guide.currency||[]).map(x=>x.name?`${x.name}${x.code?` (${x.code})`:''}`:x.code).filter(Boolean).join(', ');
+  body.innerHTML=`
+   <section class="country-facts-key">
+    ${factRow('Capital',guide.capital)}
+    ${factRow('Languages',(guide.officialLanguages||[]).join(', '))}
+    ${factRow('Currency',currency)}
+    ${factRow('Plug sockets',(guide.plugSocketTypes||[]).join(', '))}
+    ${factRow('Driving side',guide.drivingSide?guide.drivingSide.charAt(0).toUpperCase()+guide.drivingSide.slice(1):'')}
+    ${factRow('Time zone',(guide.standardTimeZones||[]).join(', '))}
+   </section>
+   ${weatherBlock(weather)}
+   ${factList('Landmarks',guide.notableLandmarks)}
+   ${factList('Food to know',guide.wellKnownCuisine)}
+   ${factList('Interesting facts',guide.interestingFacts)}
+   ${factList('Culture & etiquette',guide.cultureEtiquette)}
+  `;
+ }catch(err){
+  body.innerHTML='<p class="country-facts-empty">Country information could not be loaded.</p>';
+ }
+}
+function closeCountryInfo(){const d=$('#countryInfoDialog');if(d?.open)d.close()}
+
 function renderSheet(){
  const s=state.statuses[currentCountry],u=flagUrl(currentCountry),trips=countryTrips(currentCountry),cities=countryCityDisplay(currentCountry),companions=countryCompanions(currentCountry),rating=countryRating(currentCountry);
  const countryFlagEl=$('#countryFlag');countryFlagEl.innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=currentCountry;countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};if(countryFlagEl){countryFlagEl.setAttribute('role','link');countryFlagEl.setAttribute('tabindex','0');countryFlagEl.setAttribute('title',`Search Google for ${currentCountry}`);countryFlagEl.onclick=googleCountry;countryFlagEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}}};
  const pills=$('#countrySummaryPills');if(pills)pills.innerHTML=`<span><b>${trips.length}</b> ${trips.length===1?'trip':'trips'}</span><span><b>${cities.length}</b> ${cities.length===1?'place':'places'}</span><span><b>${companions.length}</b> ${companions.length===1?'companion':'companions'}</span>`;
- const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';const infoBtn=$('#countryInfoButton');if(infoBtn){infoBtn.onclick=e=>e.preventDefault();}
+ const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';const infoBtn=$('#countryInfoButton');if(infoBtn){infoBtn.onclick=e=>{e.preventDefault();openCountryInfo()}}
  $$('.choice-grid button').forEach(b=>{const selected=countryHasStatus(currentCountry,b.dataset.status);b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',selected?'true':'false');const tick=b.querySelector('.status-tick');if(tick)tick.textContent=selected?'✓':'';const bucket=b.querySelector('.status-bucket');if(bucket)bucket.classList.toggle('filled',selected);const clock=b.querySelector('.status-clock');if(clock)clock.classList.toggle('filled',selected)});
  $('#countryTrips').innerHTML=trips.length?trips.map(t=>{const td=orderedTripDates(t),dates=td.start?`${pretty(td.start)}${td.end&&td.end!==td.start?' – '+pretty(td.end):''}`:'Dates not set',r=Math.max(0,Math.min(5,Number(t.rating)||0)),days=countdownDays(td.start),count=days===null&&tripIsOnHorizon(t)?'PLANNING':days===0?'TODAY ✈':days>0?`${days} DAYS TO GO`:'';return `<div class="country-trip-card" data-open-trip="${esc(t.id||'')}" role="button" tabindex="0"><div class="country-trip-copy"><strong>${esc(t.name)}</strong><p>${dates}</p>${r?`<div class="country-trip-rating" aria-label="${r} out of 5 stars">${'★'.repeat(r)}${'☆'.repeat(5-r)}</div>`:''}</div><div class="country-trip-side">${count?`<span class="countdown-badge country-trip-countdown">${count}</span>`:''}<span class="country-trip-chevron" aria-hidden="true">›</span></div></div>`}).join(''):'<p class="muted country-no-trips">No trips for this country yet.</p>';
  const info=$('#countryInfoSummary');if(info){const cityNames=cities.map(x=>x.name),parts=[];if(cityNames.length)parts.push(`<div><strong>Destinations</strong><p>${cityNames.map(esc).join(' · ')}</p></div>`);if(companions.length)parts.push(`<div><strong>Travel companions</strong><p>${companions.map(esc).join(' · ')}</p></div>`);info.innerHTML=`<h3>SUMMARY</h3>${parts.join('')}`}
@@ -172,6 +247,9 @@ async function showHome(){document.body.classList.remove('trips-view');await lea
 async function showMap(){document.body.classList.remove('trips-view');document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.remove('active'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));window.scrollTo({top:0});try{await screen.orientation?.lock?.('landscape')}catch(e){}}
 async function showSection(target){if(target==='home')return showHome();if(target==='map')return showMap();await leaveMapMode();document.body.classList.toggle('trips-view',target==='trips');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target===target));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen===target));window.scrollTo({top:0,behavior:'smooth'})}
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=showHome;$('#mapClose').onclick=showHome;$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
+const countryInfoDialog=$('#countryInfoDialog');
+$('#countryInfoClose').onclick=closeCountryInfo;
+countryInfoDialog?.addEventListener('click',e=>{if(e.target===countryInfoDialog)closeCountryInfo()});
 $('#sheetBackdrop').onclick=closeSheet;
 let wozzaSelectOverlay=null;
 function syncWozzaSelect(select){const btn=select?._wozzaButton;if(!btn)return;const opt=select.options[select.selectedIndex];btn.textContent=opt?.textContent||'';btn.classList.toggle('placeholder',!select.value)}
