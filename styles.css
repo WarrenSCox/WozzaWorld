@@ -2823,3 +2823,39 @@ body.map-view #worldMap .country{pointer-events:auto!important;cursor:pointer!im
 /* World View close button: smaller and contained within banner */
 body.map-view .map-close{width:48px!important;height:48px!important;top:10px!important;right:14px!important;font-size:32px!important;line-height:1!important;box-shadow:0 4px 12px rgba(0,0,0,.14)!important}
 @media(orientation:landscape){body.map-view .map-close{width:46px!important;height:46px!important;top:8px!important;right:14px!important;font-size:30px!important}}
+
+
+/* World View close control - final cascade authority */
+body.map-view #mapClose.map-close{
+  position:fixed!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  top:8px!important;
+  right:12px!important;
+  bottom:auto!important;
+  left:auto!important;
+  transform:none!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:28px!important;
+  line-height:1!important;
+  z-index:120!important;
+  box-sizing:border-box!important;
+}
+@media(orientation:landscape){
+  body.map-view #mapClose.map-close{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+    top:7px!important;
+    right:12px!important;
+    font-size:27px!important;
+  }
+}
