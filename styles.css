@@ -3285,3 +3285,38 @@ body.map-view #mapClose.map-close{
   transform:none!important;
   align-self:center!important;
 }
+
+/* v0.18.XXb - final spacing polish */
+/* Empty collapsed Notes should consume only its header row, then hand space to Trip Rating. */
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty){
+  margin-top:10px!important;
+  margin-bottom:4px!important;
+  padding:0!important;
+  min-height:0!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  grid-template-rows:32px!important;
+  height:32px!important;
+  min-height:32px!important;
+  margin:0!important;
+  padding:0!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div{
+  grid-row:1!important;
+  height:32px!important;
+  min-height:32px!important;
+  display:flex!important;
+  align-items:center!important;
+}
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty) + .trip-section-heading{
+  margin-top:6px!important;
+}
+
+/* With no country rating, the info asset starts at the left of the rating/info row. */
+#countrySheet .country-rating-row:has(.country-rating-summary:empty){
+  justify-content:flex-start!important;
+}
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
+  margin-left:0!important;
+  margin-right:auto!important;
+}
