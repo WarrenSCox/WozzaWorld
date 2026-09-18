@@ -497,6 +497,20 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 #tripForm .trip-companions-head>.trip-selected-summary{grid-column:1!important;margin-top:6px!important;padding:0!important}
 #tripForm .trip-section-title{margin:0!important;padding:0!important;line-height:1.08!important}
 #tripForm .trip-todo-summary,#tripForm .trip-notes-summary{margin-top:8px!important;margin-bottom:0!important}
+/* Empty collapsed sections have no preview row, so centre the title against the 54px + control.
+   Preview-bearing sections retain the existing title + preview geometry. */
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:empty)>.trip-section-title,
+#tripForm .trip-todo-section.collapsed .trip-todo-head:has(.trip-todo-summary:empty) .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .trip-section-title{
+  padding-top:0!important;
+  align-self:center!important;
+  transform:translateY(11px)!important
+}
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:not(:empty))>.trip-section-title,
+#tripForm .trip-todo-section.collapsed .trip-todo-head:has(.trip-todo-summary:not(:empty)) .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) .trip-section-title{
+  transform:none!important
+}
 #tripForm .section-collapse-toggle{grid-column:2!important;grid-row:1!important;justify-self:end!important;align-self:start!important;margin:0!important;position:static!important;transform:none!important;width:54px!important;height:54px!important}
 .world-view-signature .stamp-main{overflow:visible!important}
 .world-view-signature .stamp-name{box-sizing:border-box!important;overflow:visible!important}
