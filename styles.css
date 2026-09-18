@@ -3018,3 +3018,101 @@ body.map-view #mapClose.map-close{
   }
   #countrySheet .country-info-button span{font-size:13px!important}
 }
+
+/* Country Card hero - three-row refinement */
+#countrySheet .country-title-row{
+  display:block!important;
+  padding-top:4px!important;
+}
+#countrySheet .country-title-row h2{
+  margin:0!important;
+  line-height:1!important;
+}
+#countrySheet .country-hero-lower-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  margin-top:12px!important;
+  transform:none!important;
+}
+#countrySheet .country-summary-pills{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  flex:0 1 auto!important;
+  min-width:0!important;
+}
+#countrySheet .country-summary-pills span,
+#countrySheet .country-info-button{
+  box-sizing:border-box!important;
+  height:36px!important;
+  min-height:36px!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.04)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+#countrySheet .country-summary-pills span{
+  display:flex!important;
+  align-items:center!important;
+  padding:0 11px!important;
+  white-space:nowrap!important;
+}
+#countrySheet .country-info-button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 36px!important;
+  width:36px!important;
+  min-width:36px!important;
+  padding:0!important;
+  margin:0!important;
+}
+#countrySheet .country-info-button span{
+  display:block!important;
+  font:800 17px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  transform:none!important;
+}
+#countrySheet .country-rating-summary{
+  display:flex!important;
+  align-items:center!important;
+  margin:12px 0 0!important;
+  line-height:1!important;
+}
+#countrySheet .country-rating-summary span{
+  display:block!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+@media(orientation:landscape) and (max-height:650px){
+  #countrySheet .country-title-row{padding-top:1px!important}
+  #countrySheet .country-hero-lower-row{
+    gap:4px!important;
+    margin-top:7px!important;
+  }
+  #countrySheet .country-summary-pills{gap:4px!important}
+  #countrySheet .country-summary-pills span,
+  #countrySheet .country-info-button{
+    height:26px!important;
+    min-height:26px!important;
+  }
+  #countrySheet .country-summary-pills span{
+    padding:0 7px!important;
+    font-size:9px!important;
+  }
+  #countrySheet .country-info-button{
+    flex-basis:26px!important;
+    width:26px!important;
+    min-width:26px!important;
+  }
+  #countrySheet .country-info-button span{font-size:13px!important}
+  #countrySheet .country-rating-summary{
+    margin-top:7px!important;
+  }
+  #countrySheet .country-rating-summary span{
+    font-size:18px!important;
+  }
+}
