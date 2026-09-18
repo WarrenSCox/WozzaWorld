@@ -2952,7 +2952,7 @@ body.map-view #mapClose.map-close{
   #countrySheet .country-info-button span{font-size:22px}
 }
 @media(orientation:landscape) and (max-height:650px){
-  #countrySheet.sheet{width:min(900px,82vw)!important}
+  #countrySheet.sheet{width:min(900px,74vw)!important}
   #countrySheet .country-title-row{gap:8px}
   #countrySheet .country-rating-summary span{font-size:19px!important;letter-spacing:0}
   #countrySheet .country-hero-lower-row{margin-top:4px!important;gap:6px!important}
@@ -2963,4 +2963,58 @@ body.map-view #mapClose.map-close{
     box-shadow:0 3px 8px rgba(0,0,0,.12)!important;
   }
   #countrySheet .country-info-button span{font-size:19px!important}
+}
+
+/* Country hero refinement */
+#countrySheet .country-title-row{
+  align-items:center!important;
+  padding-top:6px;
+}
+#countrySheet .country-title-row h2{
+  margin-top:4px!important;
+  margin-bottom:0!important;
+  line-height:1!important;
+}
+#countrySheet .country-rating-summary{
+  align-self:center!important;
+  display:flex!important;
+  align-items:center!important;
+  margin-top:4px!important;
+}
+#countrySheet .country-rating-summary span{
+  display:block!important;
+  line-height:1!important;
+}
+#countrySheet .country-hero-lower-row{
+  margin-top:3px!important;
+  transform:translateY(-2px);
+}
+#countrySheet .country-info-button{
+  width:auto!important;
+  height:auto!important;
+  min-width:38px!important;
+  min-height:0!important;
+  flex:0 0 auto!important;
+  padding:5px 11px!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.04)!important;
+  box-shadow:none!important;
+  color:#fff!important;
+}
+#countrySheet .country-info-button span{
+  font:800 16px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  transform:none!important;
+}
+@media(orientation:landscape) and (max-height:650px){
+  #countrySheet.sheet{width:min(900px,74vw)!important}
+  #countrySheet .country-title-row{padding-top:2px!important}
+  #countrySheet .country-title-row h2{margin-top:2px!important}
+  #countrySheet .country-rating-summary{margin-top:2px!important}
+  #countrySheet .country-hero-lower-row{margin-top:1px!important;transform:translateY(-1px)}
+  #countrySheet .country-info-button{
+    width:auto!important;height:auto!important;min-width:30px!important;
+    padding:3px 8px!important;border-radius:999px!important;
+  }
+  #countrySheet .country-info-button span{font-size:13px!important}
 }

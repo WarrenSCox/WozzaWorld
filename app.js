@@ -122,14 +122,13 @@ function updateCountryLabels(transform){
  if(portraitLabelBand===1&&k>=3.45)portraitLabelBand=2;
  else if(portraitLabelBand===2&&k<3.10)portraitLabelBand=1;
  if(portraitLabelBand===2&&k>=5.35)portraitLabelBand=3;
- else if(portraitLabelBand===3&&k<4.90)portraitLabelBand=2;
  labels.each(function(d){
   const pt=transform.apply(d.centroid);
   const baseW=d.bounds[1][0]-d.bounds[0][0],baseH=d.bounds[1][1]-d.bounds[0][1],baseArea=baseW*baseH;
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
   d3.select(this).attr('x',pt[0]).attr('y',pt[1]).style('display',show?null:'none')
  })
-}mapZoomBehavior=d3.zoom().scaleExtent([1,40]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
+}mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
@@ -577,7 +576,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     body.map-view #countrySheet.open{z-index:141!important}
     body.map-view #countrySheet.open~* .map-close{pointer-events:none}
     @media (orientation:landscape) and (max-height:650px){
-      #countrySheet.sheet{width:min(900px,82vw)!important;max-height:90dvh!important;padding:5px 12px calc(9px + env(safe-area-inset-bottom))!important;border-radius:20px 20px 0 0!important}
+      #countrySheet.sheet{width:min(900px,74vw)!important;max-height:90dvh!important;padding:5px 12px calc(9px + env(safe-area-inset-bottom))!important;border-radius:20px 20px 0 0!important}
       #countrySheet .grabber{margin-bottom:3px!important;height:3px!important}
       #countrySheet .sheet-close{width:28px!important;height:28px!important;top:6px!important;right:10px!important;font-size:18px!important}
       #countrySheet .country-hero-minimal{grid-template-columns:58px minmax(0,1fr)!important;gap:10px!important;padding:8px 12px!important;margin:2px 0 6px!important;border-radius:17px!important;min-height:0!important}
