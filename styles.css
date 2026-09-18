@@ -3644,3 +3644,30 @@ body.map-view #mapClose.map-close{
 #countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
   margin:0 auto 0 0!important;
 }
+
+/* v0.18.XX - trip destination ellipsis + unrated country info micro-alignment */
+/* The destination text sits on its own row. Let that row span the card's usable width,
+   while preserving a real single-line ellipsis at the normal right inset. */
+#tripList .trip-card-copy{
+  overflow:visible!important;
+}
+#tripList .trip-card-country{
+  box-sizing:border-box!important;
+  width:calc(100% + 100px)!important;
+  max-width:calc(100% + 100px)!important;
+  padding-right:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:420px){
+  #tripList .trip-card-country{
+    width:calc(100% + 87px)!important;
+    max-width:calc(100% + 87px)!important;
+  }
+}
+
+/* No rating: tiny optical correction so the information icon shares the header/stats left edge. */
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
+  transform:translateX(2px)!important;
+}
