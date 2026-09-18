@@ -108,7 +108,7 @@ function renderCompanionStats(){const el=$('#companionStats');if(!el)return;cons
 function renderCompanionBanks(){const selected=new Set(state.companions[currentCountry]||[]);const bank=$('#companionBank');if(bank)bank.innerHTML=state.companionBank.map(n=>`<button type="button" class="companion-tag ${selected.has(n)?'selected':''}" data-companion="${esc(n)}">${esc(n)}</button>`).join('');$$('#companionBank .companion-tag').forEach(b=>b.onclick=()=>{const n=b.dataset.companion;state.companions[currentCountry]??=[];state.companions[currentCountry]=state.companions[currentCountry].includes(n)?state.companions[currentCountry].filter(x=>x!==n):[...state.companions[currentCountry],n];save()})}
 function renderSheet(){
  const s=state.statuses[currentCountry],u=flagUrl(currentCountry),trips=countryTrips(currentCountry),cities=countryCityDisplay(currentCountry),companions=countryCompanions(currentCountry),rating=countryRating(currentCountry);
- $('#countryFlag').innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=currentCountry;countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};
+ const countryFlagEl=$('#countryFlag');countryFlagEl.innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=currentCountry;countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};if(countryFlagEl){countryFlagEl.setAttribute('role','link');countryFlagEl.setAttribute('tabindex','0');countryFlagEl.setAttribute('title',`Search Google for ${currentCountry}`);countryFlagEl.onclick=googleCountry;countryFlagEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}}};
  const pills=$('#countrySummaryPills');if(pills)pills.innerHTML=`<span><b>${trips.length}</b> ${trips.length===1?'trip':'trips'}</span><span><b>${cities.length}</b> ${cities.length===1?'destination':'destinations'}</span><span><b>${companions.length}</b> ${companions.length===1?'companion':'companions'}</span>`;
  const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';
  $$('.choice-grid button').forEach(b=>{const selected=countryHasStatus(currentCountry,b.dataset.status);b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',selected?'true':'false');const tick=b.querySelector('.status-tick');if(tick)tick.textContent=selected?'✓':'';const bucket=b.querySelector('.status-bucket');if(bucket)bucket.classList.toggle('filled',selected);const clock=b.querySelector('.status-clock');if(clock)clock.classList.toggle('filled',selected)});
@@ -317,53 +317,52 @@ function fitWorldViewStampName(){
   const full=(x.dataset.fullName||x.textContent).replace(/\s+/g,' ').trim();
   x.dataset.fullName=full;x.textContent=full;
   x.style.removeProperty('font-size');x.style.removeProperty('letter-spacing');x.style.removeProperty('white-space');x.style.removeProperty('line-height');x.style.removeProperty('transform');x.style.removeProperty('max-width');
-  sig.classList.remove('stamp-name-wrapped');
+  sig.classList.remove('stamp-name-wrapped','stamp-name-three-line');
+  // Ordinary names keep the original clean one-line stamp. Only genuinely long names use fitting/wrapping.
+  if(full.length<=12){
+    x.style.setProperty('white-space','nowrap','important');
+    return;
+  }
   requestAnimationFrame(()=>{
     const mainBox=main.getBoundingClientRect(),planeBox=plane?.getBoundingClientRect();
-    const safety=14;
+    // Reserve the plane as a hard no-text zone. Long names may use three lines,
+    // but never grow or move the stamp itself.
+    const safety=18;
     const available=Math.max(34,(planeBox?planeBox.left-mainBox.left:main.clientWidth)-safety);
     let base=parseFloat(getComputedStyle(x).fontSize)||18,size=base,min=Math.max(9,base*.54);
     x.style.setProperty('max-width',available+'px','important');
-    while(x.scrollWidth>available&&size>min){
-      size=Math.max(min,size-.4);
-      x.style.setProperty('font-size',size+'px','important');
-      x.style.setProperty('letter-spacing','0','important');
-    }
+    while(x.scrollWidth>available&&size>min){size=Math.max(min,size-.4);x.style.setProperty('font-size',size+'px','important');x.style.setProperty('letter-spacing','0','important')}
     if(x.scrollWidth<=available)return;
 
     const possessive=full.endsWith("'S")?"'S":'',bare=possessive?full.slice(0,-2):full;
-    let left='',right='';
+    const chunks=[];
     if(bare.includes('-')){
-      const parts=bare.split('-'),mid=Math.ceil(parts.length/2);
-      left=parts.slice(0,mid).join('-')+'-';
-      right=parts.slice(mid).join('-')+possessive;
+      const parts=bare.split('-').filter(Boolean);
+      parts.forEach((part,i)=>chunks.push(part+(i<parts.length-1?'-':'')));
     }else{
-      const cut=Math.ceil(bare.length/2);
-      left=bare.slice(0,cut).trim();
-      right=bare.slice(cut).trim()+possessive;
+      // For an unusually long unhyphenated first name, split into visually balanced chunks.
+      const target=Math.ceil(bare.length/3);
+      for(let i=0;i<bare.length;i+=target)chunks.push(bare.slice(i,i+target));
     }
-    x.innerHTML=`<span>${esc(left)}</span><span>${esc(right)}</span>`;
+    if(chunks.length<2){const cut=Math.ceil(bare.length/2);chunks.splice(0,chunks.length,bare.slice(0,cut),bare.slice(cut))}
+    // Keep a maximum of three name lines. If there are more chunks, merge the tail.
+    while(chunks.length>3)chunks[chunks.length-2]+=chunks.pop();
+    chunks[chunks.length-1]+=possessive;
+    x.innerHTML=chunks.map(v=>`<span>${esc(v)}</span>`).join('');
     sig.classList.add('stamp-name-wrapped');
+    if(chunks.length===3)sig.classList.add('stamp-name-three-line');
     x.style.setProperty('white-space','normal','important');
     x.style.setProperty('letter-spacing','0','important');
-    x.style.setProperty('line-height','.96','important');
-    x.style.setProperty('transform','translateY(-10px)','important');
+    x.style.setProperty('line-height','.88','important');
+    // Three lines deliberately use the spare vertical area above WORLD VIEW.
+    x.style.setProperty('transform',chunks.length===3?'translateY(-17px)':'translateY(-10px)','important');
     x.style.setProperty('max-width',available+'px','important');
-
     const lines=[...x.querySelectorAll('span')];
-    lines.forEach(line=>{
-      line.style.display='block';
-      line.style.whiteSpace='nowrap';
-      line.style.maxWidth=available+'px';
-    });
-
-    size=Math.max(9,base*.66);
+    lines.forEach(line=>{line.style.display='block';line.style.whiteSpace='nowrap';line.style.maxWidth=available+'px'});
+    size=Math.max(9,base*(chunks.length===3?.60:.66));
     x.style.setProperty('font-size',size+'px','important');
     const widest=()=>Math.max(...lines.map(line=>line.scrollWidth));
-    while(widest()>available&&size>9){
-      size=Math.max(9,size-.35);
-      x.style.setProperty('font-size',size+'px','important');
-    }
+    while(widest()>available&&size>8.5){size=Math.max(8.5,size-.3);x.style.setProperty('font-size',size+'px','important')}
   });
 }
 function applyWorldViewName(){
@@ -488,3 +487,18 @@ document.addEventListener('click',e=>{
   }
 });
 window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewClouds));
+
+
+// v0.18.87 — consistent trip section rhythm + long-name stamp safe area polish.
+(function(){if(document.getElementById('wozza-hotfix-087-style'))return;const st=document.createElement('style');st.id='wozza-hotfix-087-style';st.textContent=`
+#tripForm .trip-companions-section,#tripForm .trip-todo-section,#tripForm .trip-notes-section{margin-top:28px!important;margin-bottom:0!important;padding:0!important}
+#tripForm .trip-companions-head,#tripForm .trip-todo-head,#tripForm .trip-notes-head{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) 54px!important;column-gap:14px!important;align-items:start!important;min-height:54px!important;padding:0!important;margin:0!important}
+#tripForm .trip-companions-head>.trip-section-title,#tripForm .trip-todo-head>div,#tripForm .trip-notes-head>div{min-width:0!important;padding-top:7px!important}
+#tripForm .trip-companions-head>.trip-selected-summary{grid-column:1!important;margin-top:6px!important;padding:0!important}
+#tripForm .trip-section-title{margin:0!important;padding:0!important;line-height:1.08!important}
+#tripForm .trip-todo-summary,#tripForm .trip-notes-summary{margin-top:8px!important;margin-bottom:0!important}
+#tripForm .section-collapse-toggle{grid-column:2!important;grid-row:1!important;justify-self:end!important;align-self:start!important;margin:0!important;position:static!important;transform:none!important;width:54px!important;height:54px!important}
+.world-view-signature .stamp-main{overflow:visible!important}
+.world-view-signature .stamp-name{box-sizing:border-box!important;overflow:visible!important}
+.world-view-signature.stamp-name-three-line .stamp-name span{line-height:.88!important}
+`;document.head.appendChild(st)})();
