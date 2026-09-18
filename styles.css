@@ -3247,3 +3247,20 @@ body.map-view #mapClose.map-close{
  .country-facts-accordion-toggle{font-size:15px;padding:2px 0}
  .country-facts-accordion-icon{flex-basis:36px;width:36px;height:36px;font-size:23px}
 }
+
+/* Fast Facts polish */
+.country-facts-accordion-toggle{
+  color:#172e38!important;
+  font-family:inherit!important;
+  font-weight:900!important;
+  font-size:22px!important;
+  line-height:1.08!important;
+  letter-spacing:.025em!important;
+  text-transform:uppercase!important;
+}
+@media(max-width:560px){
+ .country-facts-accordion-toggle{font-size:20px!important}
+}
+@media(orientation:landscape) and (max-height:650px){
+ .country-facts-accordion-toggle{font-size:17px!important}
+}

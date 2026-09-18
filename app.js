@@ -185,6 +185,10 @@ function factList(title,items){
  return `<section class="country-fact-section"><h3>${esc(title)}</h3><ul>${items.map(x=>`<li>${esc(String(x))}</li>`).join('')}</ul></section>`
 }
 
+function properCaseCuisine(value){
+ const s=String(value||'').trim();
+ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s;
+}
 function factListContent(items){
  if(!Array.isArray(items)||!items.length)return '<p class="country-facts-empty-inline">No information available yet.</p>';
  return `<ul class="country-facts-accordion-list">${items.map(x=>`<li>${esc(String(x))}</li>`).join('')}</ul>`;
@@ -202,7 +206,6 @@ function weatherBlock(weather){
  if(!weather?.typicalWeather?.length)return '';
  return `<section class="country-fact-section country-weather-section"><h3>Typical weather</h3>
   <div class="country-weather-grid">${weather.typicalWeather.map(x=>`<div class="country-weather-card"><strong>${esc(x.months||'')}</strong><b>${esc(x.season||'')}</b><span>${Number.isFinite(x.typicalTemperatureC?.low)&&Number.isFinite(x.typicalTemperatureC?.high)?`${x.typicalTemperatureC.low}–${x.typicalTemperatureC.high}°C`:''}</span><p>${esc(x.summary||'')}</p></div>`).join('')}</div>
-  ${weather.regionalVariation?`<p class="country-regional-note"><strong>Regional variation:</strong> ${esc(weather.regionalVariation)}</p>`:''}
  </section>`
 }
 async function openCountryInfo(){
@@ -234,7 +237,7 @@ async function openCountryInfo(){
    ${countryInfoAccordion('WEATHER',weatherBlock(weather))}
    ${countryInfoAccordion('INTERESTING FACTS',factListContent(guide.interestingFacts))}
    ${countryInfoAccordion('LANDMARKS',factListContent(guide.notableLandmarks))}
-   ${countryInfoAccordion('FAMOUS CUISINE',factListContent(guide.wellKnownCuisine))}
+   ${countryInfoAccordion('FAMOUS CUISINE',factListContent((guide.wellKnownCuisine||[]).map(properCaseCuisine)))}
   `;
  }catch(err){
   body.innerHTML='<p class="country-facts-empty">Country information could not be loaded.</p>';
