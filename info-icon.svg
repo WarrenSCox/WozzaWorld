@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Information icon</title>
+  <circle cx="256" cy="256" r="238" fill="#1762AD" stroke="#FFFFFF" stroke-width="28"/>
+  <circle cx="256" cy="137" r="34" fill="#FFFFFF"/>
+  <path fill="#FFFFFF" d="M218 210
+    C218 196 229 185 243 185
+    H282
+    C296 185 305 198 301 211
+    L252 373
+    C249 383 254 390 262 390
+    C272 390 282 379 294 359
+    L312 370
+    C291 409 268 429 238 429
+    C205 429 190 405 199 374
+    L239 239
+    C242 229 238 224 228 224
+    H218 Z"/>
+</svg>
