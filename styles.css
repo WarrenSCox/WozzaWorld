@@ -2802,3 +2802,21 @@ body.map-view .map-close{
 }
 
 body.map-view #worldMap .country{pointer-events:auto!important;cursor:pointer!important;}
+
+
+/* v0.18.90 — empty collapsed trip sections: centre heading against + button.
+   Sections with preview content keep the existing top-aligned title + preview rhythm. */
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:empty) > .trip-section-title{
+  padding-top:14px!important;
+}
+#tripForm .trip-todo-section.collapsed .trip-todo-head:has(.trip-todo-summary:empty) > div{
+  padding-top:14px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) > div:first-child{
+  padding-top:14px!important;
+}
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:not(:empty)) > .trip-section-title,
+#tripForm .trip-todo-section.collapsed .trip-todo-head:has(.trip-todo-summary:not(:empty)) > div,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) > div:first-child{
+  padding-top:7px!important;
+}
