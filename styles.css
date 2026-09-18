@@ -3708,3 +3708,10 @@ body.map-view #mapClose.map-close{
   outline:none!important;
   box-shadow:none!important;
 }
+
+
+/* Passport: label the chart carousel as its own section, matching STATS. */
+.screen[data-screen="me"] .passport-charts-heading{
+  margin:30px 0 12px!important;
+  color:#fff!important;
+}
