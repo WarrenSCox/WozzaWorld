@@ -3399,3 +3399,26 @@ body.map-view #mapClose.map-close{
 #tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty) + .trip-section-heading{
   margin-top:20px!important;
 }
+
+/* Empty Notes control: match the visual size of the other Trip section controls. */
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  grid-template-columns:minmax(0,1fr) 44px!important;
+  grid-template-rows:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child{
+  height:44px!important;
+  min-height:44px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  max-width:44px!important;
+  max-height:44px!important;
+  flex:0 0 44px!important;
+  font-size:26px!important;
+}
