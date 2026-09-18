@@ -129,7 +129,7 @@ function updateCountryLabels(transform){
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
   d3.select(this).attr('x',pt[0]).attr('y',pt[1]).style('display',show?null:'none')
  })
-}mapZoomBehavior=d3.zoom().scaleExtent([1,24]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
+}mapZoomBehavior=d3.zoom().scaleExtent([1,40]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
@@ -577,23 +577,34 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     body.map-view #countrySheet.open{z-index:141!important}
     body.map-view #countrySheet.open~* .map-close{pointer-events:none}
     @media (orientation:landscape) and (max-height:650px){
-      #countrySheet.sheet{width:min(860px,94vw)!important;max-height:92dvh!important;padding:7px 14px calc(12px + env(safe-area-inset-bottom))!important;border-radius:22px 22px 0 0!important}
-      #countrySheet .grabber{margin-bottom:5px!important;height:4px!important}
-      #countrySheet .sheet-close{width:32px!important;height:32px!important;top:8px!important;right:12px!important;font-size:20px!important}
-      #countrySheet .country-hero-minimal{grid-template-columns:72px minmax(0,1fr)!important;gap:12px!important;padding:12px 14px!important;margin:4px 0 9px!important;border-radius:20px!important;min-height:0!important}
-      #countrySheet .country-hero-minimal .flag img{width:72px!important;height:48px!important;border-radius:9px!important}
-      #countrySheet .country-hero-copy h2{font-size:clamp(24px,4.5vw,36px)!important;line-height:1!important;margin:0 42px 5px 0!important}
+      #countrySheet.sheet{width:min(900px,94vw)!important;max-height:90dvh!important;padding:5px 12px calc(9px + env(safe-area-inset-bottom))!important;border-radius:20px 20px 0 0!important}
+      #countrySheet .grabber{margin-bottom:3px!important;height:3px!important}
+      #countrySheet .sheet-close{width:28px!important;height:28px!important;top:6px!important;right:10px!important;font-size:18px!important}
+      #countrySheet .country-hero-minimal{grid-template-columns:58px minmax(0,1fr)!important;gap:10px!important;padding:8px 12px!important;margin:2px 0 6px!important;border-radius:17px!important;min-height:0!important}
+      #countrySheet .country-hero-minimal .flag img{width:58px!important;height:39px!important;border-radius:8px!important}
+      #countrySheet .country-hero-copy h2{font-size:clamp(22px,3.4vw,30px)!important;line-height:1!important;margin:0 36px 4px 0!important}
       #countrySheet .country-summary-pills{gap:5px!important}
-      #countrySheet .country-summary-pills span{padding:5px 8px!important;font-size:10px!important}
+      #countrySheet .country-summary-pills span{padding:3px 7px!important;font-size:9px!important}
       #countrySheet .country-rating-summary{margin-top:3px!important}
-      #countrySheet .country-status-grid{gap:7px!important;margin:8px 0!important}
-      #countrySheet .country-status-grid button{min-height:74px!important;padding:7px 4px!important;border-radius:16px!important;font-size:13px!important}
-      #countrySheet .country-status-grid button svg{width:30px!important;height:30px!important}
-      #countrySheet .country-status-grid button span{margin-top:3px!important}
-      #countrySheet .add-trip-btn,#countrySheet [data-add-trip]{min-height:44px!important;padding:10px 14px!important;margin:7px 0!important}
-      #countrySheet .divider{margin:10px 0!important}
-      #countrySheet .space-top{margin-top:12px!important}
-      #countrySheet h3{margin-top:8px!important;margin-bottom:6px!important}
+      #countrySheet .country-status-grid{gap:6px!important;margin:5px 0!important}
+      #countrySheet .country-status-grid button{min-height:54px!important;padding:4px 4px!important;border-radius:14px!important;font-size:11px!important;gap:3px!important}
+      #countrySheet .country-status-grid button svg{width:24px!important;height:24px!important}
+      #countrySheet .country-status-grid button span{margin-top:1px!important}
+      #countrySheet .add-trip-btn,#countrySheet [data-add-trip],#countrySheet .country-add-trip{min-height:34px!important;padding:6px 12px!important;margin:5px 0!important;font-size:12px!important}
+      #countrySheet .divider{margin:7px 0!important}
+      #countrySheet .space-top{margin-top:8px!important}
+      #countrySheet h3{margin-top:5px!important;margin-bottom:4px!important}
+      #countrySheet .country-status-grid .status-icon{width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important}
+      #countrySheet .country-status-grid .status-tick{width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;font-size:16px!important;line-height:22px!important}
+      #countrySheet .country-status-grid .status-clock svg,#countrySheet .country-status-grid .status-bucket svg{width:26px!important;height:26px!important;max-width:26px!important;max-height:26px!important}
+      #countrySheet .country-trip-list{gap:6px!important;margin-bottom:7px!important}
+      #countrySheet .country-no-trips{padding:3px 0 1px!important;margin:4px 0 6px!important;font-size:11px!important}
+      #countrySheet .country-trip-card{padding:9px 11px!important;border-radius:14px!important}
+      #countrySheet .country-info-summary{padding-top:8px!important}
+      #countrySheet .country-info-summary h3{margin:0 0 5px!important;font-size:12px!important}
+      #countrySheet .country-info-summary>div{padding:8px 10px!important;margin-top:5px!important;border-radius:12px!important}
+      #countrySheet .country-info-summary p{margin-top:3px!important;font-size:10px!important;line-height:1.3!important}
+      #countrySheet .country-info-summary strong{font-size:10px!important}
     }
   `;
   document.head.appendChild(style);
