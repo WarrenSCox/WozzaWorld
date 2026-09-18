@@ -2859,3 +2859,26 @@ body.map-view #mapClose.map-close{
     font-size:27px!important;
   }
 }
+
+/* World View X: fit completely inside the 48px portrait banner */
+body.map-view #mapClose.map-close{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  top:5px!important;
+  right:10px!important;
+  font-size:25px!important;
+  box-shadow:0 3px 9px rgba(0,0,0,.13)!important;
+}
+@media(orientation:landscape){
+  body.map-view #mapClose.map-close{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+    top:4px!important;
+    right:10px!important;
+    font-size:23px!important;
+  }
+}
