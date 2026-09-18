@@ -3671,3 +3671,40 @@ body.map-view #mapClose.map-close{
 #countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
   transform:translateX(2px)!important;
 }
+
+/* v0.18.x - playful empty recycle-bin state + companion focus polish */
+.recycle-dialog .recycle-head > span{display:none!important}
+.recycle-dialog .dialog-actions{display:none!important}
+.recycle-dialog .recycle-empty-state{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:2px 4px 8px;
+  text-align:center;
+}
+.recycle-dialog .recycle-empty-state strong{
+  color:var(--navy,#0d1b3e);
+  font-size:clamp(22px,5vw,30px);
+  font-weight:850;
+  line-height:1.05;
+}
+.recycle-dialog .recycle-empty-state img{
+  display:block;
+  width:min(100%,330px);
+  max-height:330px;
+  object-fit:contain;
+  border-radius:18px;
+}
+/* Do not show the playful asset when actual recycle rows exist. */
+.recycle-dialog .recycle-list:has(.recycle-row) .recycle-empty-state{display:none!important}
+
+/* Remove Android/browser black focus ring from Add a new companion only. */
+#tripCompanionInput:focus,
+#tripCompanionInput:focus-visible,
+.trip-companions-section input[placeholder="Add a new companion"]:focus,
+.trip-companions-section input[placeholder="Add a new companion"]:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
