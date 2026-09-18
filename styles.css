@@ -3422,3 +3422,50 @@ body.map-view #mapClose.map-close{
   flex:0 0 44px!important;
   font-size:26px!important;
 }
+
+/* v0.18.XX - Trip collapsed header lock
+   Collapsing only hides content. Header/control geometry stays identical to the
+   normal section header, with To Do List as the sizing reference. */
+#tripForm .trip-companions-section.collapsed .trip-companions-head > .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head > div:first-child,
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:empty) > .trip-section-title,
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:not(:empty)) > .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) > div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) > div:first-child{
+  padding-top:0!important;
+  transform:none!important;
+}
+
+/* Notes +/- is literally the same 32px control geometry and glyph sizing as To Do. */
+#tripForm .trip-notes-section .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle{
+  box-sizing:border-box!important;
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  min-height:32px!important;
+  max-width:32px!important;
+  max-height:32px!important;
+  flex:0 0 32px!important;
+  aspect-ratio:1 / 1!important;
+  border-radius:50%!important;
+  padding:0!important;
+  font-size:20px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  display:grid!important;
+  place-items:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  grid-template-columns:minmax(0,1fr) 32px!important;
+  grid-template-rows:32px!important;
+  height:32px!important;
+  min-height:32px!important;
+  max-height:32px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child{
+  height:32px!important;
+  min-height:32px!important;
+  display:flex!important;
+  align-items:center!important;
+}
