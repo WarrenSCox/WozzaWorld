@@ -3534,3 +3534,65 @@ body.map-view #mapClose.map-close{
 #tripForm .trip-notes-section.collapsed .trip-notes-head {
   grid-template-columns:minmax(0,1fr) 44px!important;
 }
+
+/* v0.18.XX - Notes motion lock + rating breathing room
+   To Do remains untouched. Keep the Notes title/toggle anchored to one 44px
+   header row in every state; only the preview/body below changes height. */
+#tripForm .trip-notes-section .trip-notes-head,
+#tripForm .trip-notes-section.collapsed .trip-notes-head,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty),
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 44px!important;
+  grid-template-rows:44px auto!important;
+  column-gap:10px!important;
+  row-gap:4px!important;
+  align-items:start!important;
+  height:auto!important;
+  min-height:44px!important;
+  max-height:none!important;
+  padding:0!important;
+}
+#tripForm .trip-notes-section .trip-notes-head>div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty))>div:first-child{
+  grid-column:1!important;
+  grid-row:1 / span 2!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:44px!important;
+  padding:0!important;
+  margin:0!important;
+  align-self:start!important;
+  display:block!important;
+}
+#tripForm .trip-notes-section .trip-notes-head .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head .trip-section-title{
+  box-sizing:border-box!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section .trip-notes-head .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head .section-collapse-toggle{
+  grid-column:2!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  align-self:start!important;
+  margin:0!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-summary:not(:empty){
+  margin:3px 0 0!important;
+  padding:0!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-summary:empty{display:none!important;}
+
+/* Give Trip Rating a little more separation from Notes in both preview states. */
+#tripForm .trip-notes-section + label.trip-section-heading:has(.trip-rating-input){
+  margin-top:30px!important;
+}
