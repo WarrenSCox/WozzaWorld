@@ -3469,3 +3469,35 @@ body.map-view #mapClose.map-close{
   display:flex!important;
   align-items:center!important;
 }
+
+/* Notes toggle visual parity hotfix
+   The Notes control renders smaller than the shared To Do / Companions control in
+   the current mobile layout. Compensate at the Notes control itself so its final
+   rendered circle and glyph visually match the reference controls. */
+#tripForm .trip-notes-section .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) .section-collapse-toggle{
+  box-sizing:border-box!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  max-width:44px!important;
+  max-height:44px!important;
+  flex:0 0 44px!important;
+  aspect-ratio:1 / 1!important;
+  padding:0!important;
+  border-radius:50%!important;
+  font-size:27px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty),
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)){
+  grid-template-columns:minmax(0,1fr) 44px!important;
+}
