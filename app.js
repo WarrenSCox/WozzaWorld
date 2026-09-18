@@ -184,6 +184,20 @@ function factList(title,items){
  if(!Array.isArray(items)||!items.length)return '';
  return `<section class="country-fact-section"><h3>${esc(title)}</h3><ul>${items.map(x=>`<li>${esc(String(x))}</li>`).join('')}</ul></section>`
 }
+
+function factListContent(items){
+ if(!Array.isArray(items)||!items.length)return '<p class="country-facts-empty-inline">No information available yet.</p>';
+ return `<ul class="country-facts-accordion-list">${items.map(x=>`<li>${esc(String(x))}</li>`).join('')}</ul>`;
+}
+function countryInfoAccordion(title,content){
+ return `<section class="country-facts-accordion">
+   <button type="button" class="country-facts-accordion-toggle" aria-expanded="false">
+    <span>${esc(title)}</span><span class="country-facts-accordion-icon" aria-hidden="true">+</span>
+   </button>
+   <div class="country-facts-accordion-panel" hidden>${content||'<p class="country-facts-empty-inline">No information available yet.</p>'}</div>
+  </section>`;
+}
+
 function weatherBlock(weather){
  if(!weather?.typicalWeather?.length)return '';
  return `<section class="country-fact-section country-weather-section"><h3>Typical weather</h3>
@@ -195,7 +209,7 @@ async function openCountryInfo(){
  const dialog=$('#countryInfoDialog'),body=$('#countryInfoBody');
  if(!dialog||!body)return;
  const name=countryGuideName(currentCountry);
- $('#countryInfoTitle').textContent=`About ${currentCountry}`;
+ $('#countryInfoTitle').textContent=currentCountry;
  const u=flagUrl(currentCountry);
  $('#countryInfoFlag').innerHTML=u?`<img src="${u}" alt="${esc(currentCountry)} flag">`:'';
  body.innerHTML='<p class="country-facts-loading">Loading country guide…</p>';
@@ -216,13 +230,11 @@ async function openCountryInfo(){
     ${factRow('Currency',currency)}
     ${factRow('Plug sockets',(guide.plugSocketTypes||[]).join(', '))}
     ${factRow('Driving side',guide.drivingSide?guide.drivingSide.charAt(0).toUpperCase()+guide.drivingSide.slice(1):'')}
-    ${factRow('Time zone',(guide.standardTimeZones||[]).join(', '))}
    </section>
-   ${weatherBlock(weather)}
-   ${factList('Landmarks',guide.notableLandmarks)}
-   ${factList('Food to know',guide.wellKnownCuisine)}
-   ${factList('Interesting facts',guide.interestingFacts)}
-   ${factList('Culture & etiquette',guide.cultureEtiquette)}
+   ${countryInfoAccordion('WEATHER',weatherBlock(weather))}
+   ${countryInfoAccordion('INTERESTING FACTS',factListContent(guide.interestingFacts))}
+   ${countryInfoAccordion('LANDMARKS',factListContent(guide.notableLandmarks))}
+   ${countryInfoAccordion('FAMOUS CUISINE',factListContent(guide.wellKnownCuisine))}
   `;
  }catch(err){
   body.innerHTML='<p class="country-facts-empty">Country information could not be loaded.</p>';
@@ -249,6 +261,13 @@ async function showSection(target){if(target==='home')return showHome();if(targe
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=showHome;$('#mapClose').onclick=showHome;$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
+$('#countryInfoBody')?.addEventListener('click',e=>{
+ const btn=e.target.closest('.country-facts-accordion-toggle'); if(!btn)return;
+ const panel=btn.nextElementSibling,open=btn.getAttribute('aria-expanded')==='true';
+ btn.setAttribute('aria-expanded',String(!open));
+ btn.querySelector('.country-facts-accordion-icon').textContent=open?'+':'−';
+ panel.hidden=open;
+});
 countryInfoDialog?.addEventListener('click',e=>{if(e.target===countryInfoDialog)closeCountryInfo()});
 $('#sheetBackdrop').onclick=closeSheet;
 let wozzaSelectOverlay=null;

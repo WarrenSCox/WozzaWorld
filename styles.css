@@ -3222,3 +3222,28 @@ body.map-view #mapClose.map-close{
  }
  #countrySheet .country-info-asset-button{flex-basis:18px!important}
 }
+
+/* Fast Facts accordions - mirrors the Trip Card section/header behaviour */
+.country-facts-accordion{margin-top:14px}
+.country-facts-accordion-toggle{
+ width:100%;border:0;background:transparent;padding:5px 0;
+ display:flex;align-items:center;justify-content:space-between;gap:18px;
+ color:#172e38;font:900 19px/1.15 inherit;letter-spacing:.035em;text-align:left;
+}
+.country-facts-accordion-icon{
+ flex:0 0 52px;width:52px;height:52px;border-radius:50%;
+ display:grid;place-items:center;background:linear-gradient(145deg,#0b8999,#11a6b5);
+ color:#fff;font:700 31px/1 Arial,sans-serif;box-shadow:0 8px 18px rgba(6,93,108,.16);
+}
+.country-facts-accordion-panel{padding:8px 0 4px}
+.country-facts-accordion-panel[hidden]{display:none!important}
+.country-facts-accordion-list{margin:0;padding:4px 0 2px 21px}
+.country-facts-accordion-list li{margin:8px 0;color:#4b5c65;font-size:13px;line-height:1.45}
+.country-facts-empty-inline{margin:5px 0;color:#61717a;font-size:13px}
+.country-facts-accordion-panel .country-fact-section{margin-top:0}
+.country-facts-accordion-panel .country-fact-section>h3{display:none}
+@media(orientation:landscape) and (max-height:650px){
+ .country-facts-accordion{margin-top:7px}
+ .country-facts-accordion-toggle{font-size:15px;padding:2px 0}
+ .country-facts-accordion-icon{flex-basis:36px;width:36px;height:36px;font-size:23px}
+}
