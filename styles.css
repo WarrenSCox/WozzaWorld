@@ -3596,3 +3596,51 @@ body.map-view #mapClose.map-close{
 #tripForm .trip-notes-section + label.trip-section-heading:has(.trip-rating-input){
   margin-top:30px!important;
 }
+
+/* v0.18.XX - bundled micro-polish: Notes focus, rating rhythm, trip preview width, unrated info alignment */
+
+/* Notes: keep the existing field styling while removing the browser's black typing/focus ring. */
+#tripForm #tripNotes:focus,
+#tripForm #tripNotes:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
+
+/* Give the rating a little more air below Notes, then a slightly larger gap before the footer actions. */
+#tripForm .trip-notes-section + label.trip-section-heading:has(.trip-rating-input){
+  margin-top:36px!important;
+  margin-bottom:18px!important;
+}
+#tripForm .trip-notes-section + label.trip-section-heading:has(.trip-rating-input) + .dialog-actions{
+  margin-top:18px!important;
+}
+
+/* Trip overview: the destination line is above the side/flag row, so let it use the spare card width.
+   It remains one line and only ellipsises when it genuinely reaches the card's right padding. */
+#tripList .trip-card-country{
+  width:calc(100% + 100px)!important;
+  max-width:calc(100% + 100px)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:420px){
+  #tripList .trip-card-country{
+    width:calc(100% + 88px)!important;
+    max-width:calc(100% + 88px)!important;
+  }
+}
+
+/* Country hero: when there is no rating, the info asset starts exactly at the content column's left edge.
+   No phantom star width or centring is retained. */
+#countrySheet .country-rating-row:has(.country-rating-summary:empty){
+  width:100%!important;
+  justify-content:flex-start!important;
+  gap:0!important;
+}
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-rating-summary{
+  display:none!important;
+}
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
+  margin:0 auto 0 0!important;
+}
