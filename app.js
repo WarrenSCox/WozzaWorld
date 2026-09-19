@@ -216,6 +216,9 @@ function ensureCountryGuidePhotoStyle(){
  style.textContent=`
   .country-guide-photo{margin:0 0 18px;width:100%;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:#eef3f3;box-shadow:0 8px 20px rgba(6,52,66,.10)}
   .country-guide-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+  #countrySheet .country-hero-minimal.has-country-photo{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;position:relative!important;isolation:isolate}
+  #countrySheet .country-hero-minimal.has-country-photo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%);z-index:-1}
+  #countrySheet .country-hero-minimal.has-country-photo .flag img{box-shadow:0 6px 14px rgba(0,0,0,.18)}
  `;
  document.head.appendChild(style);
 }
@@ -238,7 +241,9 @@ async function openCountryInfo(){
    return;
   }
   const currency=(guide.currency||[]).map(x=>x.name?`${x.name}${x.code?` (${x.code})`:''}`:x.code).filter(Boolean).join(', ');
-  const countryPhoto=name==='Belgium' ? `<figure class="country-guide-photo"><img src="belgium-country-guide.jpg" alt="Bruges canal and historic buildings in Belgium"></figure>` : '';
+  const guidePhotos={Belgium:{src:'belgium-country-guide.jpg',alt:'Bruges canal and historic buildings in Belgium'},France:{src:'france-country-hero.jpg',alt:'Eiffel Tower in Paris, France'}};
+  const guidePhoto=guidePhotos[name];
+  const countryPhoto=guidePhoto ? `<figure class="country-guide-photo"><img src="${guidePhoto.src}" alt="${guidePhoto.alt}"></figure>` : '';
   body.innerHTML=`
    ${countryPhoto}
    <section class="country-facts-key">
@@ -261,6 +266,7 @@ function closeCountryInfo(){const d=$('#countryInfoDialog');if(d?.open)d.close()
 
 function renderSheet(){
  const s=state.statuses[currentCountry],u=flagUrl(currentCountry),trips=countryTrips(currentCountry),cities=countryCityDisplay(currentCountry),companions=countryCompanions(currentCountry),rating=countryRating(currentCountry);
+ const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg'},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
  const countryFlagEl=$('#countryFlag');countryFlagEl.innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=currentCountry;countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};if(countryFlagEl){countryFlagEl.setAttribute('role','link');countryFlagEl.setAttribute('tabindex','0');countryFlagEl.setAttribute('title',`Search Google for ${currentCountry}`);countryFlagEl.onclick=googleCountry;countryFlagEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}}};
  const pills=$('#countrySummaryPills');if(pills)pills.innerHTML=`<span><b>${trips.length}</b> ${trips.length===1?'trip':'trips'}</span><span><b>${cities.length}</b> ${cities.length===1?'place':'places'}</span><span><b>${companions.length}</b> ${companions.length===1?'companion':'companions'}</span>`;
  const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';const infoBtn=$('#countryInfoButton');if(infoBtn){infoBtn.onclick=e=>{e.preventDefault();openCountryInfo()}}
