@@ -57,7 +57,7 @@ function attachBucketRanking(){
   const list=$('#bucketCountries');if(!list)return;
   if(!document.getElementById('bucket-ranking-style')){
     const style=document.createElement('style');style.id='bucket-ranking-style';style.textContent=`
-      #bucketCountries .bucket-rank-row{transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;cursor:grab;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-touch-callout:none;display:grid!important;grid-template-columns:42px 108px minmax(0,1fr) 42px!important;align-items:center!important;column-gap:0!important;padding-left:22px!important;padding-right:28px!important}
+      #bucketCountries .bucket-rank-row{transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;cursor:grab;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-touch-callout:none;display:grid!important;grid-template-columns:36px 92px minmax(0,1fr) 42px!important;align-items:center!important;column-gap:0!important;padding-left:10px!important;padding-right:28px!important}
       #bucketCountries .bucket-rank-row .overview-flag{justify-self:start!important}
       #bucketCountries .bucket-rank-row .country-row-copy{justify-self:start!important;min-width:0!important}
       #bucketCountries .bucket-rank-row .row-metrics{grid-column:4!important;justify-self:end!important;margin-left:0!important}
