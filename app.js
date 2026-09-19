@@ -390,17 +390,54 @@ function updateStopLabels(){const rows=$$('#tripDestinationStops .trip-destinati
 function updateStopSummary(row){const name=row.querySelector('.trip-destination-name')?.value.trim(),country=row.querySelector('.trip-stop-country')?.value.trim(),summary=row.querySelector('.trip-stop-summary'),flagSlot=row.querySelector('.trip-stop-summary-flag-slot'),meta=row.querySelector('.trip-stop-collapsed-meta');const label=name||country||'';if(summary)summary.textContent=label;if(flagSlot)flagSlot.innerHTML=country?flagMarkup(country,'trip-stop-summary-flag'):'';if(meta){const rows=$$('#tripDestinationStops .trip-destination-stop'),single=rows.length===1,collapsed=row.classList.contains('collapsed'),start=row.querySelector('.trip-destination-from')?.value||'',end=row.querySelector('.trip-destination-to')?.value||'',mode=row.querySelector('.trip-travel-mode')?.value||'';meta.innerHTML=single&&collapsed?`${start?`<span class="single-stop-summary-date">${pretty(start)}${end?' – '+pretty(end):''}</span>`:''}${mode?`<span class="single-stop-summary-mode">${travelModeIcon(mode)}</span>`:''}`:''}}
 function toggleStopCollapsed(row,force){const next=force===undefined?!row.classList.contains('collapsed'):force;row.classList.toggle('collapsed',next);const b=row.querySelector('.stop-collapse-toggle');if(b){b.textContent=next?'+':'−';b.setAttribute('aria-expanded',String(!next));b.setAttribute('aria-label',next?'Expand stop':'Minimise stop')}updateStopLabels()}
 function enableStopReorder(row){
-  let timer=null,held=false,pointerId=null,startX=0,startY=0,lastY=0,suppressClick=false,manualScroll=false;
+  let timer=null,held=false,pointerId=null,startX=0,startY=0,lastY=0,suppressClick=false,manualScroll=false,scrollLock=null,autoRaf=0,autoDir=0;
   const wrap=$('#tripDestinationStops');
   const clearHold=()=>{clearTimeout(timer);timer=null};
-  row.style.touchAction='none';
-  row.style.webkitUserSelect='none';
-  row.style.userSelect='none';
-  row.style.webkitTouchCallout='none';
+  const getScrollHost=()=>{
+    let el=wrap.parentElement;
+    while(el&&el!==document.body){const cs=getComputedStyle(el);if(/auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+2)return el;el=el.parentElement}
+    return document.scrollingElement||document.documentElement;
+  };
+  const lockBackground=()=>{
+    const y=window.scrollY;
+    const body=document.body,html=document.documentElement;
+    scrollLock={y,bodyStyle:body.getAttribute('style')||'',htmlStyle:html.getAttribute('style')||''};
+    body.style.position='fixed';body.style.top=`-${y}px`;body.style.left='0';body.style.right='0';body.style.width='100%';body.style.overflow='hidden';
+    html.style.overscrollBehavior='none';
+    document.documentElement.classList.add('stop-drag-active');
+  };
+  const unlockBackground=()=>{
+    if(!scrollLock)return;
+    const {y,bodyStyle,htmlStyle}=scrollLock;
+    document.body.setAttribute('style',bodyStyle);
+    document.documentElement.setAttribute('style',htmlStyle);
+    document.documentElement.classList.remove('stop-drag-active');
+    window.scrollTo(0,y);
+    scrollLock=null;
+  };
+  const stopAuto=()=>{autoDir=0;if(autoRaf)cancelAnimationFrame(autoRaf);autoRaf=0};
+  const runAuto=()=>{
+    if(!held||!autoDir){autoRaf=0;return}
+    const host=getScrollHost();
+    if(host===document.scrollingElement||host===document.documentElement||host===document.body){
+      // The background page is intentionally locked during drag.
+    }else host.scrollTop+=autoDir*8;
+    autoRaf=requestAnimationFrame(runAuto);
+  };
+  const setAuto=e=>{
+    const host=getScrollHost();
+    if(host===document.scrollingElement||host===document.documentElement||host===document.body){stopAuto();return}
+    const r=host.getBoundingClientRect(),edge=Math.min(70,r.height*.18);
+    const dir=e.clientY<r.top+edge?-1:e.clientY>r.bottom-edge?1:0;
+    if(dir===autoDir)return;stopAuto();autoDir=dir;if(dir)autoRaf=requestAnimationFrame(runAuto);
+  };
+  row.style.touchAction='none';row.style.webkitUserSelect='none';row.style.userSelect='none';row.style.webkitTouchCallout='none';
   const finish=()=>{
-    clearHold();if(!held)return;held=false;row.classList.remove('is-dragging');
+    clearHold();stopAuto();
+    if(!held){unlockBackground();return}
+    held=false;row.classList.remove('is-dragging');
     try{row.releasePointerCapture?.(pointerId)}catch{}
-    updateStopLabels();pointerId=null;suppressClick=true;
+    updateStopLabels();pointerId=null;suppressClick=true;unlockBackground();
     row.classList.add('stop-drag-settle');setTimeout(()=>row.classList.remove('stop-drag-settle'),240);
     setTimeout(()=>{suppressClick=false},90);
   };
@@ -408,7 +445,11 @@ function enableStopReorder(row){
     if(e.target.closest('button,input,select,textarea,.destination-suggestions'))return;
     if(e.button!==undefined&&e.button!==0)return;
     clearHold();held=false;manualScroll=false;pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;lastY=e.clientY;
-    timer=setTimeout(()=>{held=true;suppressClick=true;row.classList.add('is-dragging');try{row.setPointerCapture?.(pointerId)}catch{}navigator.vibrate?.(20)},420);
+    timer=setTimeout(()=>{
+      held=true;suppressClick=true;lockBackground();row.classList.add('is-dragging');
+      try{row.setPointerCapture?.(pointerId)}catch{}
+      navigator.vibrate?.(20);
+    },420);
   });
   row.addEventListener('pointermove',e=>{
     if(!held){
@@ -417,14 +458,14 @@ function enableStopReorder(row){
       else lastY=e.clientY;
       return;
     }
-    e.preventDefault();
+    e.preventDefault();e.stopPropagation();setAuto(e);
     const others=[...wrap.querySelectorAll('.trip-destination-stop')].filter(x=>x!==row);let before=null;
     for(const target of others){const r=target.getBoundingClientRect();if(e.clientY<r.top+r.height/2){before=target;break}}
     if(before!==row.nextSibling)wrap.insertBefore(row,before);
     updateStopLabels();
   },{passive:false});
   row.addEventListener('pointerup',e=>{if(held){e.preventDefault();e.stopPropagation();finish()}else{clearHold();if(manualScroll){e.preventDefault();e.stopPropagation();manualScroll=false;setTimeout(()=>{suppressClick=false},90)}}});
-  row.addEventListener('pointercancel',()=>{if(held)finish();else clearHold()});
+  row.addEventListener('pointercancel',finish);
   row.addEventListener('lostpointercapture',()=>{if(held)finish()});
   row.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation()}},true);
 }
@@ -845,4 +886,4 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 
 ;(()=>{const heroSources=['belgium-country-hero.jpg','france-country-hero.jpg','antarctica-country-hero.jpg','morocco-country-hero.jpg','portugal-country-hero.jpg','switzerland-country-hero.jpg','luxembourg-country-hero.jpg','greece-country-hero.jpg','netherlands-country-hero.jpg','poland-country-hero.jpg'];const warm=()=>heroSources.forEach(src=>{const img=new Image();img.src=src;if(img.decode)img.decode().catch(()=>{})});if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:1200});else setTimeout(warm,120)})();
 
-(()=>{if(document.getElementById('trip-stop-reorder-style'))return;const st=document.createElement('style');st.id='trip-stop-reorder-style';st.textContent=`#tripDestinationStops .trip-destination-stop{transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#tripDestinationStops .trip-destination-stop.is-dragging{transform:scale(1.018);box-shadow:0 14px 30px rgba(0,35,55,.20);opacity:.96;z-index:20;position:relative;cursor:grabbing}#tripDestinationStops .trip-destination-stop.stop-drag-settle{animation:stopDragSettle .22s ease-out}@keyframes stopDragSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}`;document.head.appendChild(st)})();
+(()=>{if(document.getElementById('trip-stop-reorder-style'))return;const st=document.createElement('style');st.id='trip-stop-reorder-style';st.textContent=`html.stop-drag-active,html.stop-drag-active body{overscroll-behavior:none!important}#tripDestinationStops .trip-destination-stop{transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#tripDestinationStops .trip-destination-stop.is-dragging{transform:scale(1.018);box-shadow:0 14px 30px rgba(0,35,55,.20);opacity:.96;z-index:20;position:relative;cursor:grabbing}#tripDestinationStops .trip-destination-stop.stop-drag-settle{animation:stopDragSettle .22s ease-out}@keyframes stopDragSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}`;document.head.appendChild(st)})();
