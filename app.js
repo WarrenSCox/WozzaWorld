@@ -56,7 +56,7 @@ function attachBucketRanking(){
   const list=$('#bucketCountries');if(!list)return;
   if(!document.getElementById('bucket-ranking-style')){
     const style=document.createElement('style');style.id='bucket-ranking-style';style.textContent=`
-      #bucketCountries .bucket-rank-row{transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;cursor:grab;-webkit-user-select:none;user-select:none}
+      #bucketCountries .bucket-rank-row{transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;cursor:grab;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-touch-callout:none}
       #bucketCountries .bucket-rank-row.bucket-dragging{position:relative;z-index:8;transform:scale(1.025);box-shadow:0 12px 26px rgba(8,34,61,.20);opacity:.97;cursor:grabbing}
       #bucketCountries .bucket-rank-row.bucket-settle{animation:bucketSettle .22s ease-out}
       @keyframes bucketSettle{0%{transform:scale(1.018)}65%{transform:scale(.995)}100%{transform:scale(1)}}
@@ -69,7 +69,7 @@ function attachBucketRanking(){
   const cancelHold=()=>{clearTimeout(timer);timer=null};
   const finish=()=>{
     cancelHold();if(!held)return;
-    const dropped=held;dropped.classList.remove('bucket-dragging');dropped.style.touchAction='';
+    const dropped=held;dropped.classList.remove('bucket-dragging');
     try{dropped.releasePointerCapture?.(pointerId)}catch{}
     state.bucketOrder=rows().map(x=>x.dataset.bucketCountry);
     localStorage.setItem('wozzaworld-state',JSON.stringify(state));
@@ -82,7 +82,7 @@ function attachBucketRanking(){
       if(e.target.closest('button'))return;
       cancelHold();held=null;pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;
       timer=setTimeout(()=>{
-        held=row;row.classList.add('bucket-dragging');row.style.touchAction='none';
+        held=row;row.classList.add('bucket-dragging');
         try{row.setPointerCapture?.(pointerId)}catch{}
         if(navigator.vibrate)navigator.vibrate(20);
       },420);
