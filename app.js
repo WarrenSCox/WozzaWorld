@@ -420,8 +420,11 @@ function enableStopReorder(row){
   const movePlaceholder=y=>{
     const cards=[...wrap.querySelectorAll('.trip-destination-stop')].filter(el=>el!==row);
     let before=null;
-    for(const card of cards){const r=card.getBoundingClientRect();if(y<r.top+r.height/2){before=card;break}}
-    wrap.insertBefore(placeholder,before);
+    for(const card of cards){const cr=card.getBoundingClientRect();if(y<cr.top+cr.height/2){before=card;break}}
+    if(before)wrap.insertBefore(placeholder,before);else wrap.appendChild(placeholder);
+    // Temporarily put the hidden source beside the marker so numbering reflects
+    // the proposed drop position without allowing the source to create a second gap.
+    placeholder.parentNode.insertBefore(row,placeholder.nextSibling);
     updateStopLabels();
   };
   const startDrag=e=>{
@@ -430,8 +433,9 @@ function enableStopReorder(row){
     grabOffsetY=Math.max(12,Math.min(r.height-12,startY-r.top));
     placeholder=document.createElement('div');
     placeholder.className='trip-stop-drag-placeholder';
-    placeholder.style.height=`${r.height}px`;
-    placeholder.style.width=`${r.width}px`;
+    const cs=getComputedStyle(row);
+    const mt=parseFloat(cs.marginTop)||0,mb=parseFloat(cs.marginBottom)||0;
+    placeholder.style.cssText=`display:block;box-sizing:border-box;flex:0 0 ${r.height}px;height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;width:100%;margin:${mt}px 0 ${mb}px;align-self:auto;`;
     row.parentNode.insertBefore(placeholder,row);
     ghost=row.cloneNode(true);
     ghost.classList.add('trip-stop-drag-ghost');
@@ -937,4 +941,17 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 .trip-stop-drag-source{visibility:hidden!important}
 .trip-stop-drag-placeholder{box-sizing:border-box;border:2px dashed rgba(10,79,96,.24);border-radius:18px;background:rgba(255,255,255,.16);margin-bottom:inherit}
 .trip-stop-drag-ghost{transform:scale(1.025);box-shadow:0 18px 38px rgba(0,35,55,.28)!important;opacity:.97!important;will-change:top;overflow:hidden}
+`;document.head.appendChild(st)})();
+
+;(()=>{const st=document.createElement('style');st.id='trip-stop-placeholder-size-fix';st.textContent=`
+#tripDestinationStops>.trip-stop-drag-placeholder{
+  flex-grow:0!important;flex-shrink:0!important;
+  align-self:auto!important;position:relative!important;
+  padding:0!important;overflow:hidden!important;
+}
+#tripDestinationStops>.trip-stop-drag-source{
+  position:absolute!important;pointer-events:none!important;
+  height:0!important;min-height:0!important;margin:0!important;padding:0!important;
+  border:0!important;overflow:hidden!important;
+}
 `;document.head.appendChild(st)})();
