@@ -311,11 +311,10 @@ async function openCountryInfo(){
   if(name==='Greenland'){
    body.innerHTML=`<figure class="country-guide-photo"><img src="greenland-country-hero.jpg" alt="Iceberg and expedition boat in Greenland"></figure>
    <section class="country-facts-key">${factRow('Capital','Nuuk')}${factRow('Languages','Greenlandic (official), Danish widely used')}${factRow('Currency','Danish krone (DKK)')}${factRow('Plug sockets','C, E, F and K')}${factRow('Driving side','Right')}</section>
-   ${countryInfoAccordion('TIME ZONES',factListContent(['Greenland spans several time zones, so the local time depends on where you are travelling.']))}
-   ${countryInfoAccordion('LANDMARKS',factListContent(['Ilulissat Icefjord','Nuuk','Disko Bay','Greenland Ice Sheet']))}
-   ${countryInfoAccordion('FOOD & DRINK',factListContent(['Suaasat, a traditional Greenlandic soup','Fish and seafood','Reindeer and musk ox']))}
+   ${countryInfoAccordion('WEATHER',factListContent(['Arctic climate with cool summers and very cold winters. Conditions vary considerably by region and season.']))}
    ${countryInfoAccordion('INTERESTING FACTS',factListContent(['Greenland is the world’s largest island that is not a continent.','Almost 80% of Greenland is covered by the ice cap and glaciers.','Greenland is self-governing within the Kingdom of Denmark.']))}
-   ${countryInfoAccordion('CULTURE & ETIQUETTE',factListContent(['Greenlandic culture has deep Inuit roots and traditions.','Ask permission before taking close-up photographs of people.','If invited into a local home, it is customary to remove your shoes.']))}`;
+   ${countryInfoAccordion('LANDMARKS',factListContent(['Ilulissat Icefjord','Nuuk','Disko Bay','Greenland Ice Sheet']))}
+   ${countryInfoAccordion('FAMOUS CUISINE',factListContent(['Suaasat, a traditional Greenlandic soup','Fish and seafood','Reindeer and musk ox']))}`;
    return;
   }
   if(!guide){
