@@ -390,83 +390,83 @@ function updateStopLabels(){const rows=$$('#tripDestinationStops .trip-destinati
 function updateStopSummary(row){const name=row.querySelector('.trip-destination-name')?.value.trim(),country=row.querySelector('.trip-stop-country')?.value.trim(),summary=row.querySelector('.trip-stop-summary'),flagSlot=row.querySelector('.trip-stop-summary-flag-slot'),meta=row.querySelector('.trip-stop-collapsed-meta');const label=name||country||'';if(summary)summary.textContent=label;if(flagSlot)flagSlot.innerHTML=country?flagMarkup(country,'trip-stop-summary-flag'):'';if(meta){const rows=$$('#tripDestinationStops .trip-destination-stop'),single=rows.length===1,collapsed=row.classList.contains('collapsed'),start=row.querySelector('.trip-destination-from')?.value||'',end=row.querySelector('.trip-destination-to')?.value||'',mode=row.querySelector('.trip-travel-mode')?.value||'';meta.innerHTML=single&&collapsed?`${start?`<span class="single-stop-summary-date">${pretty(start)}${end?' – '+pretty(end):''}</span>`:''}${mode?`<span class="single-stop-summary-mode">${travelModeIcon(mode)}</span>`:''}`:''}}
 function toggleStopCollapsed(row,force){const next=force===undefined?!row.classList.contains('collapsed'):force;row.classList.toggle('collapsed',next);const b=row.querySelector('.stop-collapse-toggle');if(b){b.textContent=next?'+':'−';b.setAttribute('aria-expanded',String(!next));b.setAttribute('aria-label',next?'Expand stop':'Minimise stop')}updateStopLabels()}
 function enableStopReorder(row){
-  let timer=null,held=false,pointerId=null,startX=0,startY=0,lastY=0,suppressClick=false,manualScroll=false,scrollLock=null,autoRaf=0,autoDir=0;
+  let timer=null,dragging=false,pointerId=null,startX=0,startY=0,lastY=0,suppressClick=false,scrolling=false,autoRaf=0,autoSpeed=0;
   const wrap=$('#tripDestinationStops');
   const clearHold=()=>{clearTimeout(timer);timer=null};
-  const getScrollHost=()=>{
+  const tripScroller=()=>{
+    const dlg=$('#tripDialog')||row.closest('dialog,.modal,.sheet');
+    if(dlg){
+      const all=[dlg,...dlg.querySelectorAll('*')];
+      const hit=all.find(el=>{const cs=getComputedStyle(el);return /auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+4});
+      if(hit)return hit;
+    }
     let el=wrap.parentElement;
-    while(el&&el!==document.body){const cs=getComputedStyle(el);if(/auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+2)return el;el=el.parentElement}
-    return document.scrollingElement||document.documentElement;
+    while(el&&el!==document.body){const cs=getComputedStyle(el);if(/auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+4)return el;el=el.parentElement}
+    return null;
   };
-  const lockBackground=()=>{
-    const y=window.scrollY;
-    const body=document.body,html=document.documentElement;
-    scrollLock={y,bodyStyle:body.getAttribute('style')||'',htmlStyle:html.getAttribute('style')||''};
-    body.style.position='fixed';body.style.top=`-${y}px`;body.style.left='0';body.style.right='0';body.style.width='100%';body.style.overflow='hidden';
-    html.style.overscrollBehavior='none';
-    document.documentElement.classList.add('stop-drag-active');
+  const stopAuto=()=>{autoSpeed=0;if(autoRaf)cancelAnimationFrame(autoRaf);autoRaf=0};
+  const autoTick=()=>{
+    if(!dragging||!autoSpeed){autoRaf=0;return}
+    const sc=tripScroller();
+    if(sc)sc.scrollTop+=autoSpeed;
+    autoRaf=requestAnimationFrame(autoTick);
   };
-  const unlockBackground=()=>{
-    if(!scrollLock)return;
-    const {y,bodyStyle,htmlStyle}=scrollLock;
-    document.body.setAttribute('style',bodyStyle);
-    document.documentElement.setAttribute('style',htmlStyle);
-    document.documentElement.classList.remove('stop-drag-active');
-    window.scrollTo(0,y);
-    scrollLock=null;
+  const updateAuto=e=>{
+    const sc=tripScroller();if(!sc){stopAuto();return}
+    const r=sc.getBoundingClientRect(),edge=Math.min(82,Math.max(48,r.height*.16));
+    let speed=0;
+    if(e.clientY<r.top+edge)speed=-Math.max(4,Math.min(14,(r.top+edge-e.clientY)/5));
+    else if(e.clientY>r.bottom-edge)speed=Math.max(4,Math.min(14,(e.clientY-(r.bottom-edge))/5));
+    if(speed===autoSpeed)return;
+    stopAuto();autoSpeed=speed;if(speed)autoRaf=requestAnimationFrame(autoTick);
   };
-  const stopAuto=()=>{autoDir=0;if(autoRaf)cancelAnimationFrame(autoRaf);autoRaf=0};
-  const runAuto=()=>{
-    if(!held||!autoDir){autoRaf=0;return}
-    const host=getScrollHost();
-    if(host===document.scrollingElement||host===document.documentElement||host===document.body){
-      // The background page is intentionally locked during drag.
-    }else host.scrollTop+=autoDir*8;
-    autoRaf=requestAnimationFrame(runAuto);
-  };
-  const setAuto=e=>{
-    const host=getScrollHost();
-    if(host===document.scrollingElement||host===document.documentElement||host===document.body){stopAuto();return}
-    const r=host.getBoundingClientRect(),edge=Math.min(70,r.height*.18);
-    const dir=e.clientY<r.top+edge?-1:e.clientY>r.bottom-edge?1:0;
-    if(dir===autoDir)return;stopAuto();autoDir=dir;if(dir)autoRaf=requestAnimationFrame(runAuto);
-  };
-  row.style.touchAction='none';row.style.webkitUserSelect='none';row.style.userSelect='none';row.style.webkitTouchCallout='none';
+  row.style.touchAction='none';
+  row.style.webkitUserSelect='none';row.style.userSelect='none';row.style.webkitTouchCallout='none';
   const finish=()=>{
     clearHold();stopAuto();
-    if(!held){unlockBackground();return}
-    held=false;row.classList.remove('is-dragging');
+    if(!dragging)return;
+    dragging=false;row.classList.remove('is-dragging');
     try{row.releasePointerCapture?.(pointerId)}catch{}
-    updateStopLabels();pointerId=null;suppressClick=true;unlockBackground();
-    row.classList.add('stop-drag-settle');setTimeout(()=>row.classList.remove('stop-drag-settle'),240);
-    setTimeout(()=>{suppressClick=false},90);
+    updateStopLabels();pointerId=null;suppressClick=true;
+    row.classList.add('stop-drag-settle');
+    setTimeout(()=>row.classList.remove('stop-drag-settle'),220);
+    setTimeout(()=>{suppressClick=false},100);
   };
   row.addEventListener('pointerdown',e=>{
     if(e.target.closest('button,input,select,textarea,.destination-suggestions'))return;
     if(e.button!==undefined&&e.button!==0)return;
-    clearHold();held=false;manualScroll=false;pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;lastY=e.clientY;
+    clearHold();scrolling=false;pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;lastY=e.clientY;
     timer=setTimeout(()=>{
-      held=true;suppressClick=true;lockBackground();row.classList.add('is-dragging');
+      dragging=true;suppressClick=true;row.classList.add('is-dragging');
       try{row.setPointerCapture?.(pointerId)}catch{}
       navigator.vibrate?.(20);
     },420);
   });
   row.addEventListener('pointermove',e=>{
-    if(!held){
+    if(!dragging){
       const dx=e.clientX-startX,dy=e.clientY-startY;
-      if(Math.hypot(dx,dy)>10){clearHold();if(Math.abs(dy)>Math.abs(dx)){manualScroll=true;window.scrollBy(0,lastY-e.clientY);lastY=e.clientY;suppressClick=true}}
-      else lastY=e.clientY;
+      if(Math.hypot(dx,dy)>10){
+        clearHold();
+        if(Math.abs(dy)>Math.abs(dx)){
+          const sc=tripScroller();
+          if(sc){scrolling=true;sc.scrollTop+=lastY-e.clientY;lastY=e.clientY;suppressClick=true}
+        }
+      }else lastY=e.clientY;
       return;
     }
-    e.preventDefault();e.stopPropagation();setAuto(e);
-    const others=[...wrap.querySelectorAll('.trip-destination-stop')].filter(x=>x!==row);let before=null;
+    e.preventDefault();e.stopPropagation();updateAuto(e);
+    const others=[...wrap.querySelectorAll('.trip-destination-stop')].filter(x=>x!==row);
+    let before=null;
     for(const target of others){const r=target.getBoundingClientRect();if(e.clientY<r.top+r.height/2){before=target;break}}
-    if(before!==row.nextSibling)wrap.insertBefore(row,before);
+    wrap.insertBefore(row,before);
     updateStopLabels();
   },{passive:false});
-  row.addEventListener('pointerup',e=>{if(held){e.preventDefault();e.stopPropagation();finish()}else{clearHold();if(manualScroll){e.preventDefault();e.stopPropagation();manualScroll=false;setTimeout(()=>{suppressClick=false},90)}}});
+  row.addEventListener('pointerup',e=>{
+    if(dragging){e.preventDefault();e.stopPropagation();finish()}
+    else{clearHold();if(scrolling){e.preventDefault();e.stopPropagation();scrolling=false;setTimeout(()=>{suppressClick=false},100)}}
+  });
   row.addEventListener('pointercancel',finish);
-  row.addEventListener('lostpointercapture',()=>{if(held)finish()});
+  row.addEventListener('lostpointercapture',()=>{if(dragging)finish()});
   row.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation()}},true);
 }
 function addDestinationStop(data={}){const wrap=$('#tripDestinationStops'),row=document.createElement('section');row.className='trip-destination-stop';row.dataset.stopId=data.id||'';row.innerHTML=`<div class="trip-stop-card-head"><span class="trip-stop-summary-flag-slot" aria-hidden="true"></span><span class="trip-stop-number"></span><strong class="trip-stop-summary"></strong><span class="trip-stop-collapsed-meta"></span><div class="trip-stop-actions"><button type="button" class="stop-collapse-toggle" aria-expanded="true" aria-label="Minimise stop">−</button><button type="button" class="remove-destination-stop" aria-label="Delete stop">×</button></div></div><div class="trip-stop-body"><div class="trip-stop-top"><select class="trip-stop-country" aria-label="Country">${countryOptions(data.country||'')}</select></div><div class="destination-autocomplete destination-name-label"><input class="trip-destination-name" aria-label="Destination name" autocomplete="off" placeholder="Start typing a destination…" value="${esc(data.name||'')}"><div class="destination-suggestions" hidden></div></div><div class="destination-type-field"><select class="trip-destination-type" aria-label="Destination type">${destinationTypeOptions(data.type||'')}</select></div><div class="travel-mode-field"><select class="trip-travel-mode" aria-label="Travelling by">${travelModeOptions(data.travelMode||'')}</select></div><div class="trip-stop-dates"><div class="date-field"><input class="trip-destination-from" type="date" aria-label="Start date" value="${esc(data.start||'')}" data-placeholder="Start"></div><span class="date-to-word">to</span><div class="date-field"><input class="trip-destination-to" type="date" aria-label="End date" value="${esc(data.end||'')}" data-placeholder="End"></div></div><div class="itinerary-swipe-prompt" aria-hidden="true"><span>→</span> Swipe to create itinerary</div></div>`;wrap.appendChild(row);row.querySelectorAll('select').forEach(enhanceWozzaSelect);const input=row.querySelector('.trip-destination-name');input.addEventListener('input',()=>{input.dataset.selected='';renderDestinationSuggestions(row);updateStopSummary(row)});input.addEventListener('focus',()=>renderDestinationSuggestions(row));row.querySelector('.trip-stop-country').addEventListener('change',()=>{renderDestinationSuggestions(row);updateStopSummary(row)});row.querySelector('.remove-destination-stop').onclick=()=>{row.remove();updateStopLabels()};row.querySelector('.stop-collapse-toggle').onclick=()=>toggleStopCollapsed(row);enableStopReorder(row);updateStopLabels();return row}
@@ -887,3 +887,31 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 ;(()=>{const heroSources=['belgium-country-hero.jpg','france-country-hero.jpg','antarctica-country-hero.jpg','morocco-country-hero.jpg','portugal-country-hero.jpg','switzerland-country-hero.jpg','luxembourg-country-hero.jpg','greece-country-hero.jpg','netherlands-country-hero.jpg','poland-country-hero.jpg'];const warm=()=>heroSources.forEach(src=>{const img=new Image();img.src=src;if(img.decode)img.decode().catch(()=>{})});if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:1200});else setTimeout(warm,120)})();
 
 (()=>{if(document.getElementById('trip-stop-reorder-style'))return;const st=document.createElement('style');st.id='trip-stop-reorder-style';st.textContent=`html.stop-drag-active,html.stop-drag-active body{overscroll-behavior:none!important}#tripDestinationStops .trip-destination-stop{transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#tripDestinationStops .trip-destination-stop.is-dragging{transform:scale(1.018);box-shadow:0 14px 30px rgba(0,35,55,.20);opacity:.96;z-index:20;position:relative;cursor:grabbing}#tripDestinationStops .trip-destination-stop.stop-drag-settle{animation:stopDragSettle .22s ease-out}@keyframes stopDragSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}`;document.head.appendChild(st)})();
+
+;(()=>{
+  if(window.__wozzaTripPageFreezeInstalled)return;
+  window.__wozzaTripPageFreezeInstalled=true;
+  let frozen=false,y=0,bodyStyle='',htmlStyle='';
+  const trip=$('#tripDialog');
+  if(!trip)return;
+  const freeze=()=>{
+    if(frozen)return;frozen=true;y=window.scrollY;
+    bodyStyle=document.body.getAttribute('style')||'';
+    htmlStyle=document.documentElement.getAttribute('style')||'';
+    document.body.style.position='fixed';document.body.style.top=`-${y}px`;
+    document.body.style.left='0';document.body.style.right='0';document.body.style.width='100%';
+    document.body.style.overflow='hidden';document.documentElement.style.overscrollBehavior='none';
+    document.documentElement.classList.add('trip-page-frozen');
+  };
+  const thaw=()=>{
+    if(!frozen)return;frozen=false;
+    document.body.setAttribute('style',bodyStyle);
+    document.documentElement.setAttribute('style',htmlStyle);
+    document.documentElement.classList.remove('trip-page-frozen');
+    window.scrollTo(0,y);
+  };
+  const sync=()=>trip.open?freeze():thaw();
+  new MutationObserver(sync).observe(trip,{attributes:true,attributeFilter:['open']});
+  trip.addEventListener('close',thaw);trip.addEventListener('cancel',()=>setTimeout(thaw,0));
+  sync();
+})();
