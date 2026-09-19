@@ -313,7 +313,7 @@ async function openCountryInfo(){
    return;
   }
   const currency=(guide.currency||[]).map(x=>x.name?`${x.name}${x.code?` (${x.code})`:''}`:x.code).filter(Boolean).join(', ');
-  const guidePhotos={Belgium:{src:'belgium-country-guide.jpg',alt:'Bruges canal and historic buildings in Belgium'},France:{src:'france-country-hero.jpg',alt:'Eiffel Tower in Paris, France'},Antarctica:{src:'antarctica-country-hero.jpg',alt:'Expedition ship in Antarctic waters'},Morocco:{src:'morocco-country-hero.jpg',alt:'Camel on the Moroccan coast'},Portugal:{src:'portugal-country-hero.jpg',alt:'Canal and traditional boats in Portugal'},Switzerland:{src:'switzerland-country-hero.jpg',alt:'Historic bridge and waterfront in Switzerland'},Luxembourg:{src:'luxembourg-country-hero.jpg',alt:'Luxembourg cityscape'},Greece:{src:'greece-country-hero.jpg',alt:'Blue-domed church overlooking the sea in Greece'},Netherlands:{src:'netherlands-country-hero.jpg',alt:'Amsterdam waterfront at night'},Poland:{src:'poland-country-hero.jpg',alt:'Horse-drawn carriages in Poland'},Italy:{src:'italy-country-hero.jpg',alt:'Venice Grand Canal and historic skyline'},Germany:{src:'germany-country-hero.jpg',alt:'Brandenburg Gate and Berlin TV Tower'},Spain:{src:'spain-country-hero.jpg',alt:'Traditional Spanish festival dress in Valencia'},Denmark:{src:'denmark-country-hero.jpg',alt:'Nyhavn waterfront in Copenhagen'},Ireland:{src:'ireland-country-hero.jpg',alt:'Irish coastal cliffs and countryside'},'United Kingdom':{src:'united-kingdom-country-hero.jpg',alt:'Tower Bridge illuminated at night in London'},Norway:{src:'norway-country-hero.jpg',alt:'Norwegian fjord with mountains and ferry'},'United States':{src:'united-states-country-hero.jpg',alt:'Statue of Liberty and Manhattan skyline in New York'}};
+  const guidePhotos={Belgium:{src:'belgium-country-guide.jpg',alt:'Bruges canal and historic buildings in Belgium'},France:{src:'france-country-hero.jpg',alt:'Eiffel Tower in Paris, France'},Antarctica:{src:'antarctica-country-hero.jpg',alt:'Expedition ship in Antarctic waters'},Morocco:{src:'morocco-country-hero.jpg',alt:'Camel on the Moroccan coast'},Portugal:{src:'portugal-country-hero.jpg',alt:'Canal and traditional boats in Portugal'},Switzerland:{src:'switzerland-country-hero.jpg',alt:'Historic bridge and waterfront in Switzerland'},Luxembourg:{src:'luxembourg-country-hero.jpg',alt:'Luxembourg cityscape'},Greece:{src:'greece-country-hero.jpg',alt:'Blue-domed church overlooking the sea in Greece'},Netherlands:{src:'netherlands-country-hero.jpg',alt:'Amsterdam waterfront at night'},Poland:{src:'poland-country-hero.jpg',alt:'Horse-drawn carriages in Poland'},Italy:{src:'italy-country-hero.jpg',alt:'Venice Grand Canal and historic skyline'},Germany:{src:'germany-country-hero.jpg',alt:'Brandenburg Gate and Berlin TV Tower'},Spain:{src:'spain-country-hero.jpg',alt:'Traditional Spanish festival dress in Valencia'},Denmark:{src:'denmark-country-hero.jpg',alt:'Nyhavn waterfront in Copenhagen'},Ireland:{src:'ireland-country-hero.jpg',alt:'Irish coastal cliffs and countryside'},'United Kingdom':{src:'united-kingdom-country-hero.jpg',alt:'Tower Bridge illuminated at night in London'},Norway:{src:'norway-country-hero.jpg',alt:'Norwegian fjord with mountains and ferry'},Hungary:{src:'hungary-country-hero.jpg',alt:'Hungarian Parliament Building in Budapest'},'United States':{src:'united-states-country-hero.jpg',alt:'Statue of Liberty and Manhattan skyline in New York'}};
   const guidePhoto=guidePhotos[name];
   const countryPhoto=guidePhoto ? `<figure class="country-guide-photo"><img src="${guidePhoto.src}" alt="${guidePhoto.alt}"></figure>` : '';
   body.innerHTML=`
@@ -339,7 +339,7 @@ function closeCountryInfo(){const d=$('#countryInfoDialog');if(d?.open)d.close()
 function renderSheet(){
  ensureCountryGuidePhotoStyle();
  const s=state.statuses[currentCountry],u=flagUrl(currentCountry),trips=countryTrips(currentCountry),cities=countryCityDisplay(currentCountry),companions=countryCompanions(currentCountry),rating=countryRating(currentCountry);
- const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg',Antarctica:'antarctica-country-hero.jpg',Morocco:'morocco-country-hero.jpg',Portugal:'portugal-country-hero.jpg',Switzerland:'switzerland-country-hero.jpg',Luxembourg:'luxembourg-country-hero.jpg',Greece:'greece-country-hero.jpg',Netherlands:'netherlands-country-hero.jpg',Poland:'poland-country-hero.jpg',Italy:'italy-country-hero.jpg',Germany:'germany-country-hero.jpg',Spain:'spain-country-hero.jpg',Denmark:'denmark-country-hero.jpg',Ireland:'ireland-country-hero.jpg','United Kingdom':'united-kingdom-country-hero.jpg',Norway:'norway-country-hero.jpg','United States':'united-states-country-hero.jpg'},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%),url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
+ const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg',Antarctica:'antarctica-country-hero.jpg',Morocco:'morocco-country-hero.jpg',Portugal:'portugal-country-hero.jpg',Switzerland:'switzerland-country-hero.jpg',Luxembourg:'luxembourg-country-hero.jpg',Greece:'greece-country-hero.jpg',Netherlands:'netherlands-country-hero.jpg',Poland:'poland-country-hero.jpg',Italy:'italy-country-hero.jpg',Germany:'germany-country-hero.jpg',Spain:'spain-country-hero.jpg',Denmark:'denmark-country-hero.jpg',Ireland:'ireland-country-hero.jpg','United Kingdom':'united-kingdom-country-hero.jpg',Norway:'norway-country-hero.jpg',Hungary:'hungary-country-hero.jpg','United States':'united-states-country-hero.jpg'},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%),url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
  const countryFlagEl=$('#countryFlag');countryFlagEl.innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=currentCountry;countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};if(countryFlagEl){countryFlagEl.setAttribute('role','link');countryFlagEl.setAttribute('tabindex','0');countryFlagEl.setAttribute('title',`Search Google for ${currentCountry}`);countryFlagEl.onclick=googleCountry;countryFlagEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}}};
  const pills=$('#countrySummaryPills');if(pills)pills.innerHTML=`<span><b>${trips.length}</b> ${trips.length===1?'trip':'trips'}</span><span><b>${cities.length}</b> ${cities.length===1?'place':'places'}</span><span><b>${companions.length}</b> ${companions.length===1?'companion':'companions'}</span>`;
  const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';const infoBtn=$('#countryInfoButton');if(infoBtn){infoBtn.onclick=e=>{e.preventDefault();openCountryInfo()}}
@@ -838,7 +838,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 // Stops-per-year chart + recycle-bin polish (startup-safe hotfix)
 (()=>{if(document.getElementById('stops-per-year-bin-polish-style'))return;document.getElementById('trips-per-year-hotfix-style')?.remove();const st=document.createElement('style');st.id='stops-per-year-bin-polish-style';st.textContent=`.trips-per-year-chart{width:100%;padding:12px 2px 0;box-sizing:border-box}.trips-per-year-chart svg{display:block;width:100%;height:auto;overflow:visible}.trip-year-guides line{stroke:rgba(5,86,112,.13);stroke-width:1.5}.trip-year-line{fill:none;stroke:#056b89;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.trip-year-area{fill:url(#stopYearArea)}.trips-per-year-chart circle{fill:#e9bd25;stroke:#056b89;stroke-width:3.5}.trips-per-year-chart text{font-family:inherit;font-weight:800;fill:#153047}.trip-year-value{font-size:15px}.trip-year-label,.trip-year-y-label{font-size:12px;fill:#607782}.recycle-row{position:relative!important}.recycle-row .recycle-copy{text-align:left!important;justify-self:start!important;margin-left:0!important;padding-left:0!important}.recycle-row .recycle-select-dot{position:absolute!important;left:0!important;top:50%!important;transform:translateY(-50%)!important}.recycle-list:not(.selection-mode) .recycle-row .recycle-select-dot,#recycleList:not(.selection-mode) .recycle-row .recycle-select-dot{display:none!important}.recycle-row{justify-content:flex-start!important;text-align:left!important}.recycle-row .recycle-copy{flex:1 1 auto!important;text-align:left!important}.recycle-row .recycle-actions{margin-left:auto!important}#recycleDialog::backdrop{background:rgba(5,34,51,.32)!important;backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important}`;document.head.appendChild(st)})();
 
-;(()=>{const heroSources=['belgium-country-hero.jpg','france-country-hero.jpg','antarctica-country-hero.jpg','morocco-country-hero.jpg','portugal-country-hero.jpg','switzerland-country-hero.jpg','luxembourg-country-hero.jpg','greece-country-hero.jpg','netherlands-country-hero.jpg','poland-country-hero.jpg','italy-country-hero.jpg','germany-country-hero.jpg','spain-country-hero.jpg','denmark-country-hero.jpg','ireland-country-hero.jpg','united-kingdom-country-hero.jpg','norway-country-hero.jpg','united-states-country-hero.jpg'];const warm=()=>heroSources.forEach(src=>{const img=new Image();img.src=src;if(img.decode)img.decode().catch(()=>{})});if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:1200});else setTimeout(warm,120)})();
+;(()=>{const heroSources=['belgium-country-hero.jpg','france-country-hero.jpg','antarctica-country-hero.jpg','morocco-country-hero.jpg','portugal-country-hero.jpg','switzerland-country-hero.jpg','luxembourg-country-hero.jpg','greece-country-hero.jpg','netherlands-country-hero.jpg','poland-country-hero.jpg','italy-country-hero.jpg','germany-country-hero.jpg','spain-country-hero.jpg','denmark-country-hero.jpg','ireland-country-hero.jpg','united-kingdom-country-hero.jpg','norway-country-hero.jpg','hungary-country-hero.jpg','united-states-country-hero.jpg'];const warm=()=>heroSources.forEach(src=>{const img=new Image();img.src=src;if(img.decode)img.decode().catch(()=>{})});if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:1200});else setTimeout(warm,120)})();
 
 (()=>{if(document.getElementById('trip-stop-reorder-style'))return;const st=document.createElement('style');st.id='trip-stop-reorder-style';st.textContent=`html.stop-drag-active,html.stop-drag-active body{overscroll-behavior:none!important}#tripDestinationStops .trip-destination-stop{transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#tripDestinationStops .trip-destination-stop.is-dragging{transform:scale(1.018);box-shadow:0 14px 30px rgba(0,35,55,.20);opacity:.96;z-index:20;position:relative;cursor:grabbing}#tripDestinationStops .trip-destination-stop.stop-drag-settle{animation:stopDragSettle .22s ease-out}@keyframes stopDragSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}`;document.head.appendChild(st)})();
 
@@ -917,3 +917,54 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 })();
 
 
+
+;(()=>{
+ if(window.__wozzaAddStopStyleToggle)return;window.__wozzaAddStopStyleToggle=true;
+ const KEY='wozzaAddStopStyle';
+ const selectors=['#addDestinationStop','.add-destination-stop','.add-stop-btn','[data-add-stop]'];
+ const getBtn=()=>selectors.map(x=>document.querySelector(x)).find(Boolean);
+ const css=document.createElement('style');css.id='wozza-add-stop-style-toggle';css.textContent=`
+.wozza-add-stop-subtle{
+ width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+ border-radius:50%!important;padding:0!important;margin:12px auto!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ background:rgba(0,137,145,.82)!important;color:#fff!important;
+ border:1px solid rgba(255,255,255,.48)!important;
+ box-shadow:0 4px 12px rgba(0,35,55,.14)!important;
+ font-size:0!important;line-height:1!important;backdrop-filter:blur(7px);
+ -webkit-backdrop-filter:blur(7px)
+}
+.wozza-add-stop-subtle::after{content:'+';font-size:28px!important;font-weight:500!important;line-height:1!important;color:#fff!important}
+`;document.head.appendChild(css);
+ const apply=()=>{const b=getBtn();if(!b)return; b.classList.toggle('wozza-add-stop-subtle',localStorage.getItem(KEY)==='subtle')};
+ apply();
+ new MutationObserver(apply).observe(document.body,{childList:true,subtree:true});
+ let timer=null,held=false,target=null,sx=0,sy=0;
+ const start=e=>{
+   const b=e.target.closest&&e.target.closest(selectors.join(','));if(!b)return;
+   target=b;held=false;
+   const p=e.touches?e.touches[0]:e;sx=p.clientX;sy=p.clientY;
+   timer=setTimeout(()=>{
+     held=true;
+     const subtle=!target.classList.contains('wozza-add-stop-subtle');
+     localStorage.setItem(KEY,subtle?'subtle':'sign');
+     target.classList.toggle('wozza-add-stop-subtle',subtle);
+     navigator.vibrate?.(20);
+   },500);
+ };
+ const move=e=>{
+   if(!timer)return;const p=e.touches?e.touches[0]:e;
+   if(Math.hypot(p.clientX-sx,p.clientY-sy)>10){clearTimeout(timer);timer=null}
+ };
+ const end=()=>{if(timer){clearTimeout(timer);timer=null}target=null};
+ document.addEventListener('touchstart',start,{capture:true,passive:true});
+ document.addEventListener('touchmove',move,{capture:true,passive:true});
+ document.addEventListener('touchend',end,true);
+ document.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')start(e)},true);
+ document.addEventListener('pointermove',e=>{if(e.pointerType!=='touch')move(e)},true);
+ document.addEventListener('pointerup',e=>{if(e.pointerType!=='touch')end(e)},true);
+ document.addEventListener('click',e=>{
+   const b=e.target.closest&&e.target.closest(selectors.join(','));if(!b)return;
+   if(held){e.preventDefault();e.stopImmediatePropagation();held=false}
+ },true);
+})();
