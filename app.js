@@ -390,57 +390,78 @@ function updateStopLabels(){const rows=$$('#tripDestinationStops .trip-destinati
 function updateStopSummary(row){const name=row.querySelector('.trip-destination-name')?.value.trim(),country=row.querySelector('.trip-stop-country')?.value.trim(),summary=row.querySelector('.trip-stop-summary'),flagSlot=row.querySelector('.trip-stop-summary-flag-slot'),meta=row.querySelector('.trip-stop-collapsed-meta');const label=name||country||'';if(summary)summary.textContent=label;if(flagSlot)flagSlot.innerHTML=country?flagMarkup(country,'trip-stop-summary-flag'):'';if(meta){const rows=$$('#tripDestinationStops .trip-destination-stop'),single=rows.length===1,collapsed=row.classList.contains('collapsed'),start=row.querySelector('.trip-destination-from')?.value||'',end=row.querySelector('.trip-destination-to')?.value||'',mode=row.querySelector('.trip-travel-mode')?.value||'';meta.innerHTML=single&&collapsed?`${start?`<span class="single-stop-summary-date">${pretty(start)}${end?' – '+pretty(end):''}</span>`:''}${mode?`<span class="single-stop-summary-mode">${travelModeIcon(mode)}</span>`:''}`:''}}
 function toggleStopCollapsed(row,force){const next=force===undefined?!row.classList.contains('collapsed'):force;row.classList.toggle('collapsed',next);const b=row.querySelector('.stop-collapse-toggle');if(b){b.textContent=next?'+':'−';b.setAttribute('aria-expanded',String(!next));b.setAttribute('aria-label',next?'Expand stop':'Minimise stop')}updateStopLabels()}
 function enableStopReorder(row){
-  let timer=null,dragging=false,pointerId=null,startX=0,startY=0,lastY=0,suppressClick=false,scrolling=false,autoRaf=0,autoSpeed=0;
+  let timer=null,dragging=false,pointerId=null,startX=0,startY=0,lastY=0,suppressClick=false,scrolling=false;
+  let ghost=null,placeholder=null,grabOffsetY=0,autoRaf=0,autoSpeed=0;
   const wrap=$('#tripDestinationStops');
   const clearHold=()=>{clearTimeout(timer);timer=null};
   const tripScroller=()=>{
     const dlg=$('#tripDialog')||row.closest('dialog,.modal,.sheet');
     if(dlg){
-      const all=[dlg,...dlg.querySelectorAll('*')];
-      const hit=all.find(el=>{const cs=getComputedStyle(el);return /auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+4});
+      const candidates=[dlg,...dlg.querySelectorAll('*')];
+      const hit=candidates.find(el=>{const cs=getComputedStyle(el);return /auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+4});
       if(hit)return hit;
     }
-    let el=wrap.parentElement;
-    while(el&&el!==document.body){const cs=getComputedStyle(el);if(/auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+4)return el;el=el.parentElement}
     return null;
   };
   const stopAuto=()=>{autoSpeed=0;if(autoRaf)cancelAnimationFrame(autoRaf);autoRaf=0};
   const autoTick=()=>{
     if(!dragging||!autoSpeed){autoRaf=0;return}
-    const sc=tripScroller();
-    if(sc)sc.scrollTop+=autoSpeed;
+    const sc=tripScroller();if(sc)sc.scrollTop+=autoSpeed;
     autoRaf=requestAnimationFrame(autoTick);
   };
-  const updateAuto=e=>{
+  const setAuto=y=>{
     const sc=tripScroller();if(!sc){stopAuto();return}
-    const r=sc.getBoundingClientRect(),edge=Math.min(82,Math.max(48,r.height*.16));
+    const r=sc.getBoundingClientRect(),edge=Math.min(84,Math.max(52,r.height*.17));
     let speed=0;
-    if(e.clientY<r.top+edge)speed=-Math.max(4,Math.min(14,(r.top+edge-e.clientY)/5));
-    else if(e.clientY>r.bottom-edge)speed=Math.max(4,Math.min(14,(e.clientY-(r.bottom-edge))/5));
-    if(speed===autoSpeed)return;
-    stopAuto();autoSpeed=speed;if(speed)autoRaf=requestAnimationFrame(autoTick);
+    if(y<r.top+edge)speed=-Math.max(4,Math.min(15,(r.top+edge-y)/4.5));
+    else if(y>r.bottom-edge)speed=Math.max(4,Math.min(15,(y-(r.bottom-edge))/4.5));
+    if(speed===autoSpeed)return;stopAuto();autoSpeed=speed;if(speed)autoRaf=requestAnimationFrame(autoTick);
   };
-  row.style.touchAction='none';
-  row.style.webkitUserSelect='none';row.style.userSelect='none';row.style.webkitTouchCallout='none';
+  const movePlaceholder=y=>{
+    const cards=[...wrap.querySelectorAll('.trip-destination-stop')].filter(el=>el!==row);
+    let before=null;
+    for(const card of cards){const r=card.getBoundingClientRect();if(y<r.top+r.height/2){before=card;break}}
+    wrap.insertBefore(placeholder,before);
+    updateStopLabels();
+  };
+  const startDrag=e=>{
+    dragging=true;suppressClick=true;
+    const r=row.getBoundingClientRect();
+    grabOffsetY=Math.max(12,Math.min(r.height-12,startY-r.top));
+    placeholder=document.createElement('div');
+    placeholder.className='trip-stop-drag-placeholder';
+    placeholder.style.height=`${r.height}px`;
+    placeholder.style.width=`${r.width}px`;
+    row.parentNode.insertBefore(placeholder,row);
+    ghost=row.cloneNode(true);
+    ghost.classList.add('trip-stop-drag-ghost');
+    ghost.removeAttribute('id');
+    ghost.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    Object.assign(ghost.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647',pointerEvents:'none',touchAction:'none'});
+    document.body.appendChild(ghost);
+    row.classList.add('trip-stop-drag-source');
+    try{row.setPointerCapture?.(pointerId)}catch{}
+    navigator.vibrate?.(20);
+  };
   const finish=()=>{
     clearHold();stopAuto();
     if(!dragging)return;
-    dragging=false;row.classList.remove('is-dragging');
+    dragging=false;
+    if(placeholder?.parentNode)placeholder.parentNode.insertBefore(row,placeholder);
+    placeholder?.remove();placeholder=null;
+    ghost?.remove();ghost=null;
+    row.classList.remove('trip-stop-drag-source');
     try{row.releasePointerCapture?.(pointerId)}catch{}
     updateStopLabels();pointerId=null;suppressClick=true;
-    row.classList.add('stop-drag-settle');
-    setTimeout(()=>row.classList.remove('stop-drag-settle'),220);
+    row.classList.add('stop-drag-settle');setTimeout(()=>row.classList.remove('stop-drag-settle'),220);
     setTimeout(()=>{suppressClick=false},100);
   };
+  row.style.touchAction='none';row.style.webkitUserSelect='none';row.style.userSelect='none';row.style.webkitTouchCallout='none';
   row.addEventListener('pointerdown',e=>{
     if(e.target.closest('button,input,select,textarea,.destination-suggestions'))return;
     if(e.button!==undefined&&e.button!==0)return;
     clearHold();scrolling=false;pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;lastY=e.clientY;
-    timer=setTimeout(()=>{
-      dragging=true;suppressClick=true;row.classList.add('is-dragging');
-      try{row.setPointerCapture?.(pointerId)}catch{}
-      navigator.vibrate?.(20);
-    },420);
+    timer=setTimeout(()=>startDrag(e),420);
   });
   row.addEventListener('pointermove',e=>{
     if(!dragging){
@@ -448,18 +469,14 @@ function enableStopReorder(row){
       if(Math.hypot(dx,dy)>10){
         clearHold();
         if(Math.abs(dy)>Math.abs(dx)){
-          const sc=tripScroller();
-          if(sc){scrolling=true;sc.scrollTop+=lastY-e.clientY;lastY=e.clientY;suppressClick=true}
+          const sc=tripScroller();if(sc){scrolling=true;sc.scrollTop+=lastY-e.clientY;lastY=e.clientY;suppressClick=true}
         }
       }else lastY=e.clientY;
       return;
     }
-    e.preventDefault();e.stopPropagation();updateAuto(e);
-    const others=[...wrap.querySelectorAll('.trip-destination-stop')].filter(x=>x!==row);
-    let before=null;
-    for(const target of others){const r=target.getBoundingClientRect();if(e.clientY<r.top+r.height/2){before=target;break}}
-    wrap.insertBefore(row,before);
-    updateStopLabels();
+    e.preventDefault();e.stopPropagation();
+    if(ghost)ghost.style.top=`${e.clientY-grabOffsetY}px`;
+    movePlaceholder(e.clientY);setAuto(e.clientY);
   },{passive:false});
   row.addEventListener('pointerup',e=>{
     if(dragging){e.preventDefault();e.stopPropagation();finish()}
@@ -915,3 +932,9 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   trip.addEventListener('close',thaw);trip.addEventListener('cancel',()=>setTimeout(thaw,0));
   sync();
 })();
+
+;(()=>{if(document.getElementById('trip-stop-floating-drag-style'))return;const st=document.createElement('style');st.id='trip-stop-floating-drag-style';st.textContent=`
+.trip-stop-drag-source{visibility:hidden!important}
+.trip-stop-drag-placeholder{box-sizing:border-box;border:2px dashed rgba(10,79,96,.24);border-radius:18px;background:rgba(255,255,255,.16);margin-bottom:inherit}
+.trip-stop-drag-ghost{transform:scale(1.025);box-shadow:0 18px 38px rgba(0,35,55,.28)!important;opacity:.97!important;will-change:top;overflow:hidden}
+`;document.head.appendChild(st)})();
