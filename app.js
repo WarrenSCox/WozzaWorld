@@ -209,7 +209,18 @@ function weatherBlock(weather){
   <div class="country-weather-grid">${weather.typicalWeather.map(x=>`<div class="country-weather-card"><strong>${esc(x.months||'')}</strong><b>${esc(x.season||'')}</b><span>${Number.isFinite(x.typicalTemperatureC?.low)&&Number.isFinite(x.typicalTemperatureC?.high)?`${x.typicalTemperatureC.low}–${x.typicalTemperatureC.high}°C`:''}</span><p>${esc(x.summary||'')}</p></div>`).join('')}</div>
  </section>`
 }
+function ensureCountryGuidePhotoStyle(){
+ if(document.getElementById('country-guide-photo-style'))return;
+ const style=document.createElement('style');
+ style.id='country-guide-photo-style';
+ style.textContent=`
+  .country-guide-photo{margin:0 0 18px;width:100%;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:#eef3f3;box-shadow:0 8px 20px rgba(6,52,66,.10)}
+  .country-guide-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+ `;
+ document.head.appendChild(style);
+}
 async function openCountryInfo(){
+ ensureCountryGuidePhotoStyle();
  const dialog=$('#countryInfoDialog'),body=$('#countryInfoBody');
  if(!dialog||!body)return;
  const name=countryGuideName(currentCountry);
@@ -227,7 +238,9 @@ async function openCountryInfo(){
    return;
   }
   const currency=(guide.currency||[]).map(x=>x.name?`${x.name}${x.code?` (${x.code})`:''}`:x.code).filter(Boolean).join(', ');
+  const countryPhoto=name==='Belgium' ? `<figure class="country-guide-photo"><img src="belgium-country-guide.jpg" alt="Bruges canal and historic buildings in Belgium"></figure>` : '';
   body.innerHTML=`
+   ${countryPhoto}
    <section class="country-facts-key">
     ${factRow('Capital',guide.capital)}
     ${factRow('Languages',(guide.officialLanguages||[]).join(', '))}
