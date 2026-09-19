@@ -313,7 +313,7 @@ async function openCountryInfo(){
    return;
   }
   const currency=(guide.currency||[]).map(x=>x.name?`${x.name}${x.code?` (${x.code})`:''}`:x.code).filter(Boolean).join(', ');
-  const guidePhotos={Belgium:{src:'belgium-country-guide.jpg',alt:'Bruges canal and historic buildings in Belgium'},France:{src:'france-country-hero.jpg',alt:'Eiffel Tower in Paris, France'},Antarctica:{src:'antarctica-country-hero.jpg',alt:'Expedition ship in Antarctic waters'},Morocco:{src:'morocco-country-hero.jpg',alt:'Camel on the Moroccan coast'},Portugal:{src:'portugal-country-hero.jpg',alt:'Canal and traditional boats in Portugal'},Switzerland:{src:'switzerland-country-hero.jpg',alt:'Historic bridge and waterfront in Switzerland'},Luxembourg:{src:'luxembourg-country-hero.jpg',alt:'Luxembourg cityscape'},Greece:{src:'greece-country-hero.jpg',alt:'Blue-domed church overlooking the sea in Greece'},Netherlands:{src:'netherlands-country-hero.jpg',alt:'Amsterdam waterfront at night'},Poland:{src:'poland-country-hero.jpg',alt:'Horse-drawn carriages in Poland'}};
+  const guidePhotos={Belgium:{src:'belgium-country-guide.jpg',alt:'Bruges canal and historic buildings in Belgium'},France:{src:'france-country-hero.jpg',alt:'Eiffel Tower in Paris, France'},Antarctica:{src:'antarctica-country-hero.jpg',alt:'Expedition ship in Antarctic waters'},Morocco:{src:'morocco-country-hero.jpg',alt:'Camel on the Moroccan coast'},Portugal:{src:'portugal-country-hero.jpg',alt:'Canal and traditional boats in Portugal'},Switzerland:{src:'switzerland-country-hero.jpg',alt:'Historic bridge and waterfront in Switzerland'},Luxembourg:{src:'luxembourg-country-hero.jpg',alt:'Luxembourg cityscape'},Greece:{src:'greece-country-hero.jpg',alt:'Blue-domed church overlooking the sea in Greece'},Netherlands:{src:'netherlands-country-hero.jpg',alt:'Amsterdam waterfront at night'},Poland:{src:'poland-country-hero.jpg',alt:'Horse-drawn carriages in Poland'},Italy:{src:'italy-country-hero.jpg',alt:'Venice Grand Canal and historic skyline'}};
   const guidePhoto=guidePhotos[name];
   const countryPhoto=guidePhoto ? `<figure class="country-guide-photo"><img src="${guidePhoto.src}" alt="${guidePhoto.alt}"></figure>` : '';
   body.innerHTML=`
@@ -339,7 +339,7 @@ function closeCountryInfo(){const d=$('#countryInfoDialog');if(d?.open)d.close()
 function renderSheet(){
  ensureCountryGuidePhotoStyle();
  const s=state.statuses[currentCountry],u=flagUrl(currentCountry),trips=countryTrips(currentCountry),cities=countryCityDisplay(currentCountry),companions=countryCompanions(currentCountry),rating=countryRating(currentCountry);
- const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg',Antarctica:'antarctica-country-hero.jpg',Morocco:'morocco-country-hero.jpg',Portugal:'portugal-country-hero.jpg',Switzerland:'switzerland-country-hero.jpg',Luxembourg:'luxembourg-country-hero.jpg',Greece:'greece-country-hero.jpg',Netherlands:'netherlands-country-hero.jpg',Poland:'poland-country-hero.jpg'},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%),url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
+ const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg',Antarctica:'antarctica-country-hero.jpg',Morocco:'morocco-country-hero.jpg',Portugal:'portugal-country-hero.jpg',Switzerland:'switzerland-country-hero.jpg',Luxembourg:'luxembourg-country-hero.jpg',Greece:'greece-country-hero.jpg',Netherlands:'netherlands-country-hero.jpg',Poland:'poland-country-hero.jpg',Italy:'italy-country-hero.jpg'},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%),url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
  const countryFlagEl=$('#countryFlag');countryFlagEl.innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=currentCountry;countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};if(countryFlagEl){countryFlagEl.setAttribute('role','link');countryFlagEl.setAttribute('tabindex','0');countryFlagEl.setAttribute('title',`Search Google for ${currentCountry}`);countryFlagEl.onclick=googleCountry;countryFlagEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}}};
  const pills=$('#countrySummaryPills');if(pills)pills.innerHTML=`<span><b>${trips.length}</b> ${trips.length===1?'trip':'trips'}</span><span><b>${cities.length}</b> ${cities.length===1?'place':'places'}</span><span><b>${companions.length}</b> ${companions.length===1?'companion':'companions'}</span>`;
  const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';const infoBtn=$('#countryInfoButton');if(infoBtn){infoBtn.onclick=e=>{e.preventDefault();openCountryInfo()}}
@@ -390,105 +390,83 @@ function updateStopLabels(){const rows=$$('#tripDestinationStops .trip-destinati
 function updateStopSummary(row){const name=row.querySelector('.trip-destination-name')?.value.trim(),country=row.querySelector('.trip-stop-country')?.value.trim(),summary=row.querySelector('.trip-stop-summary'),flagSlot=row.querySelector('.trip-stop-summary-flag-slot'),meta=row.querySelector('.trip-stop-collapsed-meta');const label=name||country||'';if(summary)summary.textContent=label;if(flagSlot)flagSlot.innerHTML=country?flagMarkup(country,'trip-stop-summary-flag'):'';if(meta){const rows=$$('#tripDestinationStops .trip-destination-stop'),single=rows.length===1,collapsed=row.classList.contains('collapsed'),start=row.querySelector('.trip-destination-from')?.value||'',end=row.querySelector('.trip-destination-to')?.value||'',mode=row.querySelector('.trip-travel-mode')?.value||'';meta.innerHTML=single&&collapsed?`${start?`<span class="single-stop-summary-date">${pretty(start)}${end?' – '+pretty(end):''}</span>`:''}${mode?`<span class="single-stop-summary-mode">${travelModeIcon(mode)}</span>`:''}`:''}}
 function toggleStopCollapsed(row,force){const next=force===undefined?!row.classList.contains('collapsed'):force;row.classList.toggle('collapsed',next);const b=row.querySelector('.stop-collapse-toggle');if(b){b.textContent=next?'+':'−';b.setAttribute('aria-expanded',String(!next));b.setAttribute('aria-label',next?'Expand stop':'Minimise stop')}updateStopLabels()}
 function enableStopReorder(row){
-  let timer=null,dragging=false,pointerId=null,startX=0,startY=0,lastY=0,suppressClick=false,scrolling=false;
-  let ghost=null,placeholder=null,grabOffsetY=0,autoRaf=0,autoSpeed=0;
+  let holdTimer=null,startX=0,startY=0,lastY=0,dragging=false,ghost=null,marker=null,grabY=0,activeTouchId=null;
   const wrap=$('#tripDestinationStops');
-  const clearHold=()=>{clearTimeout(timer);timer=null};
-  const tripScroller=()=>{
+  const clearHold=()=>{clearTimeout(holdTimer);holdTimer=null};
+  const getScroller=()=>{
     const dlg=$('#tripDialog')||row.closest('dialog,.modal,.sheet');
-    if(dlg){
-      const candidates=[dlg,...dlg.querySelectorAll('*')];
-      const hit=candidates.find(el=>{const cs=getComputedStyle(el);return /auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+4});
-      if(hit)return hit;
-    }
-    return null;
+    if(!dlg)return null;
+    return [dlg,...dlg.querySelectorAll('*')].find(el=>{const cs=getComputedStyle(el);return /auto|scroll/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+4})||dlg;
   };
-  const stopAuto=()=>{autoSpeed=0;if(autoRaf)cancelAnimationFrame(autoRaf);autoRaf=0};
-  const autoTick=()=>{
-    if(!dragging||!autoSpeed){autoRaf=0;return}
-    const sc=tripScroller();if(sc)sc.scrollTop+=autoSpeed;
-    autoRaf=requestAnimationFrame(autoTick);
+  const pointFromTouch=e=>{
+    const list=[...(e.touches||[]),...(e.changedTouches||[])];
+    return list.find(t=>activeTouchId==null||t.identifier===activeTouchId)||list[0]||null;
   };
-  const setAuto=y=>{
-    const sc=tripScroller();if(!sc){stopAuto();return}
-    const r=sc.getBoundingClientRect(),edge=Math.min(84,Math.max(52,r.height*.17));
-    let speed=0;
-    if(y<r.top+edge)speed=-Math.max(4,Math.min(15,(r.top+edge-y)/4.5));
-    else if(y>r.bottom-edge)speed=Math.max(4,Math.min(15,(y-(r.bottom-edge))/4.5));
-    if(speed===autoSpeed)return;stopAuto();autoSpeed=speed;if(speed)autoRaf=requestAnimationFrame(autoTick);
-  };
-  const movePlaceholder=y=>{
+  const placeMarker=y=>{
     const cards=[...wrap.querySelectorAll('.trip-destination-stop')].filter(el=>el!==row);
     let before=null;
-    for(const card of cards){const cr=card.getBoundingClientRect();if(y<cr.top+cr.height/2){before=card;break}}
-    if(before)wrap.insertBefore(placeholder,before);else wrap.appendChild(placeholder);
-    // Temporarily put the hidden source beside the marker so numbering reflects
-    // the proposed drop position without allowing the source to create a second gap.
-    placeholder.parentNode.insertBefore(row,placeholder.nextSibling);
-    updateStopLabels();
+    for(const card of cards){const r=card.getBoundingClientRect();if(y<r.top+r.height/2){before=card;break}}
+    if(before)wrap.insertBefore(marker,before);else wrap.appendChild(marker);
   };
-  const startDrag=e=>{
-    dragging=true;suppressClick=true;
-    const r=row.getBoundingClientRect();
-    grabOffsetY=Math.max(12,Math.min(r.height-12,startY-r.top));
-    placeholder=document.createElement('div');
-    placeholder.className='trip-stop-drag-placeholder';
-    const cs=getComputedStyle(row);
-    const mt=parseFloat(cs.marginTop)||0,mb=parseFloat(cs.marginBottom)||0;
-    placeholder.style.cssText=`display:block;box-sizing:border-box;flex:0 0 ${r.height}px;height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;width:100%;margin:${mt}px 0 ${mb}px;align-self:auto;`;
-    row.parentNode.insertBefore(placeholder,row);
-    ghost=row.cloneNode(true);
-    ghost.classList.add('trip-stop-drag-ghost');
-    ghost.removeAttribute('id');
-    ghost.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
-    Object.assign(ghost.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647',pointerEvents:'none',touchAction:'none'});
+  const startDrag=(x,y)=>{
+    dragging=true;
+    const r=row.getBoundingClientRect(),cs=getComputedStyle(row);
+    grabY=Math.max(10,Math.min(r.height-10,y-r.top));
+    marker=document.createElement('div');
+    marker.className='trip-stop-mobile-marker';
+    marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;flex:0 0 ${r.height}px;width:100%;box-sizing:border-box;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;
+    wrap.insertBefore(marker,row);
+    ghost=row.cloneNode(true);ghost.removeAttribute('id');ghost.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    ghost.classList.add('trip-stop-mobile-ghost');
+    Object.assign(ghost.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647',pointerEvents:'none'});
     document.body.appendChild(ghost);
-    row.classList.add('trip-stop-drag-source');
-    try{row.setPointerCapture?.(pointerId)}catch{}
+    row.classList.add('trip-stop-mobile-source');
     navigator.vibrate?.(20);
   };
-  const finish=()=>{
-    clearHold();stopAuto();
+  const moveDrag=(x,y)=>{
     if(!dragging)return;
-    dragging=false;
-    if(placeholder?.parentNode)placeholder.parentNode.insertBefore(row,placeholder);
-    placeholder?.remove();placeholder=null;
-    ghost?.remove();ghost=null;
-    row.classList.remove('trip-stop-drag-source');
-    try{row.releasePointerCapture?.(pointerId)}catch{}
-    updateStopLabels();pointerId=null;suppressClick=true;
-    row.classList.add('stop-drag-settle');setTimeout(()=>row.classList.remove('stop-drag-settle'),220);
-    setTimeout(()=>{suppressClick=false},100);
-  };
-  row.style.touchAction='none';row.style.webkitUserSelect='none';row.style.userSelect='none';row.style.webkitTouchCallout='none';
-  row.addEventListener('pointerdown',e=>{
-    if(e.target.closest('button,input,select,textarea,.destination-suggestions'))return;
-    if(e.button!==undefined&&e.button!==0)return;
-    clearHold();scrolling=false;pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;lastY=e.clientY;
-    timer=setTimeout(()=>startDrag(e),420);
-  });
-  row.addEventListener('pointermove',e=>{
-    if(!dragging){
-      const dx=e.clientX-startX,dy=e.clientY-startY;
-      if(Math.hypot(dx,dy)>10){
-        clearHold();
-        if(Math.abs(dy)>Math.abs(dx)){
-          const sc=tripScroller();if(sc){scrolling=true;sc.scrollTop+=lastY-e.clientY;lastY=e.clientY;suppressClick=true}
-        }
-      }else lastY=e.clientY;
-      return;
+    if(ghost)ghost.style.top=`${y-grabY}px`;
+    placeMarker(y);
+    const sc=getScroller();
+    if(sc){
+      const r=sc.getBoundingClientRect(),edge=Math.min(80,Math.max(50,r.height*.16));
+      if(y<r.top+edge)sc.scrollTop-=Math.min(14,Math.max(4,(r.top+edge-y)/5));
+      else if(y>r.bottom-edge)sc.scrollTop+=Math.min(14,Math.max(4,(y-(r.bottom-edge))/5));
     }
-    e.preventDefault();e.stopPropagation();
-    if(ghost)ghost.style.top=`${e.clientY-grabOffsetY}px`;
-    movePlaceholder(e.clientY);setAuto(e.clientY);
-  },{passive:false});
-  row.addEventListener('pointerup',e=>{
-    if(dragging){e.preventDefault();e.stopPropagation();finish()}
-    else{clearHold();if(scrolling){e.preventDefault();e.stopPropagation();scrolling=false;setTimeout(()=>{suppressClick=false},100)}}
+  };
+  const finishDrag=()=>{
+    clearHold();
+    if(!dragging){activeTouchId=null;return}
+    dragging=false;
+    if(marker?.parentNode)marker.parentNode.insertBefore(row,marker);
+    marker?.remove();marker=null;ghost?.remove();ghost=null;
+    row.classList.remove('trip-stop-mobile-source');
+    updateStopLabels();
+    activeTouchId=null;
+  };
+  row.addEventListener('touchstart',e=>{
+    if(e.target.closest('button,input,select,textarea,.destination-suggestions'))return;
+    if(e.touches.length!==1)return;
+    const t=e.touches[0];activeTouchId=t.identifier;startX=t.clientX;startY=t.clientY;lastY=t.clientY;clearHold();
+    holdTimer=setTimeout(()=>startDrag(startX,startY),420);
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(activeTouchId==null)return;
+    const t=pointFromTouch(e);if(!t)return;
+    if(dragging){e.preventDefault();e.stopPropagation();moveDrag(t.clientX,t.clientY);return}
+    if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)clearHold();
+    lastY=t.clientY;
+  },{passive:false,capture:true});
+  document.addEventListener('touchend',e=>{if(activeTouchId!=null){if(dragging){e.preventDefault();e.stopPropagation()}finishDrag()}},{passive:false,capture:true});
+  document.addEventListener('touchcancel',finishDrag,{capture:true});
+  // Mouse/desktop fallback.
+  row.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='touch'||e.target.closest('button,input,select,textarea,.destination-suggestions'))return;
+    startX=e.clientX;startY=e.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420);
+    const move=ev=>{if(dragging){ev.preventDefault();moveDrag(ev.clientX,ev.clientY)}else if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>10)clearHold()};
+    const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);finishDrag()};
+    document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true});
   });
-  row.addEventListener('pointercancel',finish);
-  row.addEventListener('lostpointercapture',()=>{if(dragging)finish()});
-  row.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation()}},true);
 }
 function addDestinationStop(data={}){const wrap=$('#tripDestinationStops'),row=document.createElement('section');row.className='trip-destination-stop';row.dataset.stopId=data.id||'';row.innerHTML=`<div class="trip-stop-card-head"><span class="trip-stop-summary-flag-slot" aria-hidden="true"></span><span class="trip-stop-number"></span><strong class="trip-stop-summary"></strong><span class="trip-stop-collapsed-meta"></span><div class="trip-stop-actions"><button type="button" class="stop-collapse-toggle" aria-expanded="true" aria-label="Minimise stop">−</button><button type="button" class="remove-destination-stop" aria-label="Delete stop">×</button></div></div><div class="trip-stop-body"><div class="trip-stop-top"><select class="trip-stop-country" aria-label="Country">${countryOptions(data.country||'')}</select></div><div class="destination-autocomplete destination-name-label"><input class="trip-destination-name" aria-label="Destination name" autocomplete="off" placeholder="Start typing a destination…" value="${esc(data.name||'')}"><div class="destination-suggestions" hidden></div></div><div class="destination-type-field"><select class="trip-destination-type" aria-label="Destination type">${destinationTypeOptions(data.type||'')}</select></div><div class="travel-mode-field"><select class="trip-travel-mode" aria-label="Travelling by">${travelModeOptions(data.travelMode||'')}</select></div><div class="trip-stop-dates"><div class="date-field"><input class="trip-destination-from" type="date" aria-label="Start date" value="${esc(data.start||'')}" data-placeholder="Start"></div><span class="date-to-word">to</span><div class="date-field"><input class="trip-destination-to" type="date" aria-label="End date" value="${esc(data.end||'')}" data-placeholder="End"></div></div><div class="itinerary-swipe-prompt" aria-hidden="true"><span>→</span> Swipe to create itinerary</div></div>`;wrap.appendChild(row);row.querySelectorAll('select').forEach(enhanceWozzaSelect);const input=row.querySelector('.trip-destination-name');input.addEventListener('input',()=>{input.dataset.selected='';renderDestinationSuggestions(row);updateStopSummary(row)});input.addEventListener('focus',()=>renderDestinationSuggestions(row));row.querySelector('.trip-stop-country').addEventListener('change',()=>{renderDestinationSuggestions(row);updateStopSummary(row)});row.querySelector('.remove-destination-stop').onclick=()=>{row.remove();updateStopLabels()};row.querySelector('.stop-collapse-toggle').onclick=()=>toggleStopCollapsed(row);enableStopReorder(row);updateStopLabels();return row}
 function collectDestinationStops(){const rows=$$('#tripDestinationStops .trip-destination-stop'),out=[];for(const row of rows){const country=canonicalCountry(row.querySelector('.trip-stop-country').value);if(!country)continue;const input=row.querySelector('.trip-destination-name'),typed=input.value.trim();let name='',type=row.querySelector('.trip-destination-type')?.value||'Other',custom=false;if(typed){const known=knownDestination(typed,country);name=known?.name||typed;type=type||known?.type||'Other';custom=!known;if(custom){const exists=(state.customDestinations||[]).some(d=>d.name.toLowerCase()===name.toLowerCase()&&sameCountry(d.country,country));if(!exists)state.customDestinations.push({id:`custom-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,name,type,country})}}out.push({id:row.dataset.stopId||crypto.randomUUID?.()||String(Date.now()+out.length),name,type,country,start:row.querySelector('.trip-destination-from').value,end:row.querySelector('.trip-destination-to').value,travelMode:row.querySelector('.trip-travel-mode')?.value||'',custom})}return out}
@@ -905,7 +883,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 // Stops-per-year chart + recycle-bin polish (startup-safe hotfix)
 (()=>{if(document.getElementById('stops-per-year-bin-polish-style'))return;document.getElementById('trips-per-year-hotfix-style')?.remove();const st=document.createElement('style');st.id='stops-per-year-bin-polish-style';st.textContent=`.trips-per-year-chart{width:100%;padding:12px 2px 0;box-sizing:border-box}.trips-per-year-chart svg{display:block;width:100%;height:auto;overflow:visible}.trip-year-guides line{stroke:rgba(5,86,112,.13);stroke-width:1.5}.trip-year-line{fill:none;stroke:#056b89;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.trip-year-area{fill:url(#stopYearArea)}.trips-per-year-chart circle{fill:#e9bd25;stroke:#056b89;stroke-width:3.5}.trips-per-year-chart text{font-family:inherit;font-weight:800;fill:#153047}.trip-year-value{font-size:15px}.trip-year-label,.trip-year-y-label{font-size:12px;fill:#607782}.recycle-row{position:relative!important}.recycle-row .recycle-copy{text-align:left!important;justify-self:start!important;margin-left:0!important;padding-left:0!important}.recycle-row .recycle-select-dot{position:absolute!important;left:0!important;top:50%!important;transform:translateY(-50%)!important}.recycle-list:not(.selection-mode) .recycle-row .recycle-select-dot,#recycleList:not(.selection-mode) .recycle-row .recycle-select-dot{display:none!important}.recycle-row{justify-content:flex-start!important;text-align:left!important}.recycle-row .recycle-copy{flex:1 1 auto!important;text-align:left!important}.recycle-row .recycle-actions{margin-left:auto!important}#recycleDialog::backdrop{background:rgba(5,34,51,.32)!important;backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important}`;document.head.appendChild(st)})();
 
-;(()=>{const heroSources=['belgium-country-hero.jpg','france-country-hero.jpg','antarctica-country-hero.jpg','morocco-country-hero.jpg','portugal-country-hero.jpg','switzerland-country-hero.jpg','luxembourg-country-hero.jpg','greece-country-hero.jpg','netherlands-country-hero.jpg','poland-country-hero.jpg'];const warm=()=>heroSources.forEach(src=>{const img=new Image();img.src=src;if(img.decode)img.decode().catch(()=>{})});if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:1200});else setTimeout(warm,120)})();
+;(()=>{const heroSources=['belgium-country-hero.jpg','france-country-hero.jpg','antarctica-country-hero.jpg','morocco-country-hero.jpg','portugal-country-hero.jpg','switzerland-country-hero.jpg','luxembourg-country-hero.jpg','greece-country-hero.jpg','netherlands-country-hero.jpg','poland-country-hero.jpg','italy-country-hero.jpg'];const warm=()=>heroSources.forEach(src=>{const img=new Image();img.src=src;if(img.decode)img.decode().catch(()=>{})});if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:1200});else setTimeout(warm,120)})();
 
 (()=>{if(document.getElementById('trip-stop-reorder-style'))return;const st=document.createElement('style');st.id='trip-stop-reorder-style';st.textContent=`html.stop-drag-active,html.stop-drag-active body{overscroll-behavior:none!important}#tripDestinationStops .trip-destination-stop{transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#tripDestinationStops .trip-destination-stop.is-dragging{transform:scale(1.018);box-shadow:0 14px 30px rgba(0,35,55,.20);opacity:.96;z-index:20;position:relative;cursor:grabbing}#tripDestinationStops .trip-destination-stop.stop-drag-settle{animation:stopDragSettle .22s ease-out}@keyframes stopDragSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}`;document.head.appendChild(st)})();
 
@@ -954,4 +932,10 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   height:0!important;min-height:0!important;margin:0!important;padding:0!important;
   border:0!important;overflow:hidden!important;
 }
+`;document.head.appendChild(st)})();
+
+;(()=>{if(document.getElementById('trip-stop-touch-sort-style'))return;const st=document.createElement('style');st.id='trip-stop-touch-sort-style';st.textContent=`
+#tripDestinationStops>.trip-stop-mobile-source{display:none!important}
+#tripDestinationStops>.trip-stop-mobile-marker{display:block!important;flex-grow:0!important;flex-shrink:0!important;border:2px dashed rgba(10,79,96,.28);border-radius:18px;background:rgba(255,255,255,.13);padding:0!important;overflow:hidden!important}
+.trip-stop-mobile-ghost{transform:scale(1.025);box-shadow:0 18px 38px rgba(0,35,55,.30)!important;opacity:.98!important;will-change:top}
 `;document.head.appendChild(st)})();
