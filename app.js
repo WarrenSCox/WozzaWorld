@@ -219,6 +219,8 @@ function ensureCountryGuidePhotoStyle(){
   #countrySheet .country-hero-minimal.has-country-photo{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;position:relative!important;isolation:isolate}
   #countrySheet .country-hero-minimal.has-country-photo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%);z-index:-1}
   #countrySheet .country-hero-minimal.has-country-photo .flag img{box-shadow:0 6px 14px rgba(0,0,0,.18)}
+  #countrySheet .sheet-close{z-index:20!important}
+  #countrySheet .country-hero-minimal{z-index:1}
  `;
  document.head.appendChild(style);
 }
@@ -265,6 +267,7 @@ async function openCountryInfo(){
 function closeCountryInfo(){const d=$('#countryInfoDialog');if(d?.open)d.close()}
 
 function renderSheet(){
+ ensureCountryGuidePhotoStyle();
  const s=state.statuses[currentCountry],u=flagUrl(currentCountry),trips=countryTrips(currentCountry),cities=countryCityDisplay(currentCountry),companions=countryCompanions(currentCountry),rating=countryRating(currentCountry);
  const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg'},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
  const countryFlagEl=$('#countryFlag');countryFlagEl.innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=currentCountry;countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};if(countryFlagEl){countryFlagEl.setAttribute('role','link');countryFlagEl.setAttribute('tabindex','0');countryFlagEl.setAttribute('title',`Search Google for ${currentCountry}`);countryFlagEl.onclick=googleCountry;countryFlagEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}}};
