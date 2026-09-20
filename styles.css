@@ -207,7 +207,7 @@ body.map-view #worldMap{display:block;width:100vw!important;height:100dvh!import
 body.map-view .map-summary,body.map-view .country-carousel{display:none!important}
 body.map-view .map-loading{background:var(--blue)!important;color:#fff}
 @media(orientation:portrait){
-body.map-view::after{content:"Rotate your phone for landscape view";position:fixed;z-index:110;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:9px 13px;border-radius:999px;background:rgba(23,33,61,.76);color:#fff;font:700 12px/1.2 Inter,sans-serif;white-space:nowrap;pointer-events:none}
+body.map-view::after{content:"Rotate your phone for the full map";position:fixed;z-index:110;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:9px 13px;border-radius:999px;background:rgba(23,33,61,.76);color:#fff;font:700 12px/1.2 Inter,sans-serif;white-space:nowrap;pointer-events:none}
 
 }
 @media(orientation:landscape){body.map-view::after{display:none}}
@@ -3715,8 +3715,10 @@ body.map-view #mapClose.map-close{
   margin:30px 0 12px!important;
   color:#fff!important;
 }
-\n\n/* v0.18.x — Home > World View shared-map morph.\n   The existing Home plane animation and World View cloud animation are intentionally untouched. */\n.map-card{view-transition-name:wozza-world-map}\n::view-transition-group(wozza-world-map){animation-duration:860ms;animation-timing-function:cubic-bezier(.22,.78,.22,1)}\n::view-transition-old(wozza-world-map),::view-transition-new(wozza-world-map){animation-duration:860ms;animation-timing-function:cubic-bezier(.22,.78,.22,1);mix-blend-mode:normal}\n::view-transition-old(root),::view-transition-new(root){animation-duration:500ms;animation-timing-function:ease}\nhtml.world-map-morphing{overflow:hidden}\nhtml.world-map-morphing body{pointer-events:none}\nbody:not(.map-view) #mapStage{cursor:pointer}\n@media(prefers-reduced-motion:reduce){::view-transition-group(wozza-world-map),::view-transition-old(wozza-world-map),::view-transition-new(wozza-world-map),::view-transition-old(root),::view-transition-new(root){animation-duration:0.01ms!important}}\n
 
-/* Hotfix: compact/alternative Add Stop stays upright. The original tourist-sign Add Stop remains intentionally jaunty. */
-.trip-compact-add-stop{transform:rotate(0deg)!important;}
-.trip-compact-add-stop:active{transform:rotate(0deg) scale(.95)!important;}
+/* World View shell: reuse the standard app banner without changing map interaction/animation logic. */
+body.map-view .topbar{display:grid!important;position:fixed!important;top:0!important;left:0!important;right:0!important;z-index:130!important}
+body.map-view .map-view-title,body.map-view .map-close{display:none!important}
+body.map-view .map-stage{padding-top:var(--worldview-header-height,112px)!important}
+body.map-view #worldMap{height:calc(100dvh - var(--worldview-header-height,112px))!important}
+body.map-view main{height:100dvh!important}
