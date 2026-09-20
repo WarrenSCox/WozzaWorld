@@ -34,15 +34,17 @@
     <img class="splash-cloud-img cloud-r3" src="cloud-b.svg?v=0.16.8" alt="">
     <img class="splash-cloud-img cloud-r4" src="cloud-a.svg?v=0.16.8" alt="">
   </div>
-  <img class="launch-logo" src="wozzaworld-logo.png?v=0.16.8" alt="">
+  <div class="launch-brand-lockup"><img class="launch-logo" src="wozzaworld-logo.png?v=0.16.8" alt=""><div class="launch-tagline">MAP IT. LIVE IT. LOVE IT.</div></div>
 </div>
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),2700)</script>
 <div class="map-view-title" id="mapViewTitle">MY WORLD VIEW</div>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
 <div id="app">
 <header class="topbar">
-  <button class="brand home-link premium-brand" id="homeLogo" aria-label="WozzaWorld home"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.16.8" alt="WozzaWorld"></button>
   <nav class="header-nav" aria-label="Main navigation">
+    <button class="header-nav-item" data-target="home" aria-label="Home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 14.5 16 4l12 10.5M7.5 12.5V28h17V12.5M12.5 28v-9h7v9"/></svg><span>Home</span>
+    </button>
     <button class="header-nav-item" data-target="map" aria-label="Map">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 7.5l8-4 9 4 8-4v21l-8 4-9-4-8 4zM11.5 3.5v21M20.5 7.5v21"/></svg><span>Map</span>
     </button>
@@ -53,7 +55,7 @@
       <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="9" r="5"/><path d="M5 28v-3c0-5.2 4.9-8.5 11-8.5s11 3.3 11 8.5v3z"/></svg><span>Passport</span>
     </button>
   </nav>
-  <div class="header-slogan"><strong>MAP IT.</strong><strong>LIVE IT.</strong><strong>LOVE IT.</strong></div>
+  <button class="brand premium-brand ecosystem-brand" id="ecosystemLogo" aria-label="WozzaWorld"><img class="brand-main-logo restored-logo" src="wozzaworld-logo.png?v=0.16.8" alt="WozzaWorld"></button>
 </header>
 
 <button id="installBtn" class="install-btn" type="button" aria-label="Add WozzaWorld to phone">＋ Add WozzaWorld to phone</button>

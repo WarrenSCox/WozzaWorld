@@ -3715,32 +3715,9 @@ body.map-view #mapClose.map-close{
   margin:30px 0 12px!important;
   color:#fff!important;
 }
+\n\n/* v0.18.x — Home > World View shared-map morph.\n   The existing Home plane animation and World View cloud animation are intentionally untouched. */\n.map-card{view-transition-name:wozza-world-map}\n::view-transition-group(wozza-world-map){animation-duration:860ms;animation-timing-function:cubic-bezier(.22,.78,.22,1)}\n::view-transition-old(wozza-world-map),::view-transition-new(wozza-world-map){animation-duration:860ms;animation-timing-function:cubic-bezier(.22,.78,.22,1);mix-blend-mode:normal}\n::view-transition-old(root),::view-transition-new(root){animation-duration:500ms;animation-timing-function:ease}\nhtml.world-map-morphing{overflow:hidden}\nhtml.world-map-morphing body{pointer-events:none}\nbody:not(.map-view) #mapStage{cursor:pointer}\n@media(prefers-reduced-motion:reduce){::view-transition-group(wozza-world-map),::view-transition-old(wozza-world-map),::view-transition-new(wozza-world-map),::view-transition-old(root),::view-transition-new(root){animation-duration:0.01ms!important}}\n
 
-/* World View shell: reuse the standard app banner without changing map interaction/animation logic. */
-body.map-view .topbar{display:grid!important;position:fixed!important;top:0!important;left:0!important;right:0!important;z-index:130!important}
-body.map-view .map-view-title,body.map-view .map-close{display:none!important}
-body.map-view .map-stage{padding-top:var(--worldview-header-height,112px)!important}
-body.map-view #worldMap{height:calc(100dvh - var(--worldview-header-height,112px))!important}
-body.map-view main{height:100dvh!important}
-
-/* Active header navigation: aircraft annunciator-style illumination.
-   Keep the existing layout, white label and unselected items unchanged. */
-.header-nav-item.active{
-  background:transparent!important;
-  color:#fff!important;
-  box-shadow:none!important;
-  filter:none!important;
-}
-.header-nav-item.active svg{
-  color:#ffb21a!important;
-  stroke:#ffb21a!important;
-  filter:drop-shadow(0 0 2px rgba(255,178,26,.98)) drop-shadow(0 0 6px rgba(255,137,0,.9)) drop-shadow(0 0 12px rgba(255,111,0,.55))!important;
-}
-.header-nav-item.active span{
-  color:#fff!important;
-  text-shadow:none!important;
-}
-.header-nav-item.active:after{
-  display:none!important;
-  content:none!important;
-}
+/* Hotfix: compact/alternative Add Stop stays upright. The original tourist-sign Add Stop remains intentionally jaunty. */
+.trip-compact-add-stop{transform:rotate(0deg)!important;}
+.trip-compact-add-stop:active{transform:rotate(0deg) scale(.95)!important;}
+\n\n/* Header navigation refresh: Home / Map / Trips / Passport + brand lockup */\n.topbar{grid-template-columns:minmax(0,1fr) auto!important;gap:14px!important}\n.header-nav{grid-template-columns:repeat(4,72px)!important;gap:12px!important;margin:0!important}\n.ecosystem-brand{justify-self:end!important;cursor:default!important}\n.ecosystem-brand .brand-main-logo{width:158px!important;height:88px!important;max-width:23vw!important}\n.header-nav-item.active{color:#f7b500!important;text-shadow:0 0 8px rgba(247,181,0,.72),0 0 16px rgba(247,181,0,.32)!important}\n.header-nav-item.active svg{filter:drop-shadow(0 0 5px rgba(247,181,0,.9)) drop-shadow(0 0 11px rgba(247,181,0,.42))!important}\n.header-nav-item.active:after{display:none!important}\n.launch-brand-lockup{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}\n.launch-brand-lockup .launch-logo{position:static!important;transform:none!important}\n.launch-tagline{color:#fff;font-family:Inter,sans-serif;font-size:clamp(13px,3.2vw,20px);font-weight:650;letter-spacing:.22em;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.22);animation:launchTaglineIn .65s ease .35s both}\n@keyframes launchTaglineIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}\n@media(max-width:620px){\n .topbar{grid-template-columns:minmax(0,1fr) 105px!important;gap:5px!important}\n .header-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;width:100%!important}\n .header-nav-item{width:auto!important;min-width:0!important;height:64px!important;padding:2px!important}\n .header-nav-item svg{width:28px!important;height:28px!important}\n .header-nav-item span{font-size:9px!important}\n .ecosystem-brand .brand-main-logo{width:100px!important;height:68px!important;max-width:100%!important}\n}\n@media(max-width:390px){\n .topbar{grid-template-columns:minmax(0,1fr) 88px!important}\n .header-nav-item svg{width:25px!important;height:25px!important}\n .header-nav-item span{font-size:8.5px!important}\n .ecosystem-brand .brand-main-logo{width:86px!important;height:62px!important}\n}\n
