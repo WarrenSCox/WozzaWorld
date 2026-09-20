@@ -1103,25 +1103,26 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  `;document.head.appendChild(st);
 })();
 
-// v0.18.XX — Trips interaction emergency repair.
-// Delegated handlers keep dynamically-rendered Trip cards and Rearview controls clickable
-// even if a later render path fails before the normal per-element bindings are attached.
+// Trips interaction capture repair: handle Trip-list actions before any nested/stale handlers can swallow them.
 ;(()=>{
- if(window.__wozzaTripsDelegatedRepair)return;window.__wozzaTripsDelegatedRepair=true;
+ if(window.__wozzaTripsCaptureRepair)return;window.__wozzaTripsCaptureRepair=true;
  document.addEventListener('click',e=>{
+   const list=e.target.closest?.('#tripList');
+   if(!list)return;
    const rear=e.target.closest?.('.rearview-toggle');
    if(rear){
-     e.preventDefault();e.stopPropagation();
+     e.preventDefault();e.stopImmediatePropagation();
      rearviewExpanded=!rearviewExpanded;
-     const list=$('#tripList');if(list){list.innerHTML=renderMyTrips();attachTripRatingEvents();attachTripCardEvents()}
+     list.innerHTML=renderMyTrips();
+     setupTripTitleScroll();attachTripRatingEvents();attachTripCardEvents();
      return;
    }
+   if(e.target.closest?.('[data-trip-rating],[data-trip-country],.rearview-filter-toggle,[data-rear-sort],[data-rear-year],.trip-selection-bin,.trip-selection-close'))return;
    const card=e.target.closest?.('[data-open-trip]');
-   if(!card||!card.closest?.('#tripList'))return;
-   if(e.target.closest?.('[data-trip-rating],[data-trip-country]'))return;
-   // If the normal card handler is present it has already handled the click.
-   if(typeof card.onclick==='function')return;
+   if(!card)return;
    const t=state.trips.find(x=>String(x.id)===String(card.dataset.openTrip));
-   if(t){e.preventDefault();openTripEditor(t)}
- },false);
+   if(!t)return;
+   e.preventDefault();e.stopImmediatePropagation();
+   openTripEditor(t);
+ },true);
 })();
