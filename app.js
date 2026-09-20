@@ -378,7 +378,7 @@ async function withWorldMapMorph(update){
 async function showHome(){
  const fromMap=document.body.classList.contains('map-view');
  document.body.classList.remove('trips-view');
- const update=async()=>{await leaveMapMode();$$('.header-nav-item').forEach(x=>x.classList.remove('active'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));countrySlide=0;renderCountryLists();resetMapZoom(false);window.scrollTo({top:0})};
+ const update=async()=>{await leaveMapMode();$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='home'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));countrySlide=0;renderCountryLists();resetMapZoom(false);window.scrollTo({top:0})};
  if(fromMap)await withWorldMapMorph(update);else await update();
  requestAnimationFrame(()=>requestAnimationFrame(()=>setCountrySlide(0,false)));
 }
@@ -389,7 +389,7 @@ async function showMap(){
  try{await screen.orientation?.lock?.('landscape')}catch(e){}
 }
 async function showSection(target){if(target==='home')return showHome();if(target==='map')return showMap();await leaveMapMode();document.body.classList.toggle('trips-view',target==='trips');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target===target));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen===target));window.scrollTo({top:0,behavior:'smooth'})}
-$$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo')?.onclick=showHome;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
+$$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=showHome;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
 $('#countryInfoBody')?.addEventListener('click',e=>{
