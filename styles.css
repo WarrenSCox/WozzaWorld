@@ -206,8 +206,13 @@ body.map-view .map-stage{position:absolute;inset:0;min-height:0!important;width:
 body.map-view #worldMap{display:block;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;object-fit:contain;touch-action:none}
 body.map-view .map-summary,body.map-view .country-carousel{display:none!important}
 body.map-view .map-loading{background:var(--blue)!important;color:#fff}
-@media(orientation:portrait){body.map-view::after{content:"Rotate your phone for landscape view";position:fixed;z-index:110;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:9px 13px;border-radius:999px;background:rgba(23,33,61,.76);color:#fff;font:700 12px/1.2 Inter,sans-serif;white-space:nowrap;pointer-events:none}}
+@media(orientation:portrait){
+body.map-view::after{content:"Rotate your phone for the full map";position:fixed;z-index:110;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:9px 13px;border-radius:999px;background:rgba(23,33,61,.76);color:#fff;font:700 12px/1.2 Inter,sans-serif;white-space:nowrap;pointer-events:none}
+
+}
 @media(orientation:landscape){body.map-view::after{display:none}}
+
+
 
 /* v0.12 — header balance + finer map borders */
 .topbar{
@@ -1216,7 +1221,7 @@ body:not(.map-view){background:radial-gradient(ellipse at 50% 32%,rgba(65,210,20
 .country-status-grid{margin:0 0 10px}.country-status-grid button{min-height:106px!important;background:#fff!important;border:1px solid rgba(7,94,120,.08)!important;border-radius:22px!important;color:var(--ink)!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:24px!important;transition:.15s ease}.country-status-grid button span:last-child{font-size:11px!important;margin:0!important}.country-status-grid button.selected[data-status=visited]{background:#e1f5ed!important}.country-status-grid button.selected[data-status=going]{background:#fff0d5!important}.country-status-grid button.selected[data-status=bucket]{background:#fff6d6!important}.status-icon{display:grid!important;place-items:center!important;width:34px;height:34px;margin:0!important;font-size:24px!important;line-height:1}.status-tick{border:2px solid #98a6a5;border-radius:50%;font-size:21px!important;font-weight:900;color:#fff}.selected[data-status=visited] .status-tick{background:#159b70;border-color:#159b70}.status-heart{font-family:Arial,sans-serif;font-size:32px!important;font-weight:400}.selected[data-status=bucket] .status-heart{color:#d9ad28}.country-add-trip{margin:0 0 12px!important;min-height:48px;background:#dfb72f!important;color:var(--ink)!important;font-size:15px!important}
 .country-trip-list{gap:9px!important;margin-bottom:14px}.country-trip-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid rgba(7,94,120,.08);border-radius:20px;padding:15px 16px;box-shadow:0 8px 22px rgba(21,55,66,.06);cursor:pointer}.country-trip-card>div{min-width:0}.country-trip-card strong{font-size:16px}.country-trip-card p{margin:4px 0;color:var(--soft-ink);font-size:11px}.country-trip-card>span{font-size:30px;color:#82959d}.country-trip-rating{color:#dfb72f;font-size:19px;letter-spacing:1px;margin-top:5px}.country-no-trips{text-align:center;padding:8px 0 2px}.country-info-summary{border-top:1px solid rgba(22,48,58,.10);padding-top:14px}.country-info-summary:empty{display:none}.country-info-summary h3{margin:0 0 10px;font-size:14px!important;color:var(--brand-deep)}.country-info-summary>div{background:rgba(255,255,255,.72);border-radius:16px;padding:12px 14px;margin-top:8px}.country-info-summary strong{font-size:12px}.country-info-summary p{margin:5px 0 0;color:var(--soft-ink);font-size:12px;line-height:1.45}
 @media(max-width:430px){.country-hero-minimal{grid-template-columns:78px minmax(0,1fr);padding:20px 15px;gap:14px}.country-hero-minimal .flag img{width:78px;height:52px}.country-hero-copy h2{font-size:34px!important}.country-summary-pills{gap:5px}.country-summary-pills span{padding:6px 8px;font-size:10px}.country-status-grid{gap:6px!important}.country-status-grid button{min-height:98px!important;padding:10px 4px!important}}
-\n/* v0.18.2 — status icons, smart map labels */\n.country-status-grid button,.country-status-grid button.selected{background:#fff!important;box-shadow:none!important}\n.status-plane svg,.status-bucket svg{width:34px;height:34px;display:block;fill:none;stroke:#687781;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:fill .15s ease,color .15s ease,stroke .15s ease}\n.status-plane svg path:first-child{fill:transparent}\n.country-status-grid button.selected[data-status=going] .status-plane svg{fill:#d99b25;stroke:#d99b25}\n.country-status-grid button.selected[data-status=bucket] .status-bucket svg path:first-child{fill:#e1bd38;stroke:#b58d17}\n.country-status-grid button.selected[data-status=bucket] .status-bucket svg .bucket-handle{fill:none;stroke:#b58d17}\n.map-country-label{font-family:Inter,Arial,sans-serif;font-size:8px;font-weight:400;fill:#263b46;pointer-events:none;user-select:none}\nbody:not(.map-view) #countryLabels{display:none}\n
+\n/* v0.18.2 — status icons, smart map labels */\n.country-status-grid button,.country-status-grid button.selected{background:#fff!important;box-shadow:none!important}\n.status-plane svg,.status-bucket svg{width:34px;height:34px;display:block;fill:none;stroke:#687781;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:fill .15s ease,color .15s ease,stroke .15s ease}\n.status-plane svg path:first-child{fill:transparent}\n.country-status-grid button.selected[data-status=going] .status-plane svg{fill:#d99b25;stroke:#d99b25}\n.country-status-grid button.selected[data-status=bucket] .status-bucket svg path:first-child{fill:#e1bd38;stroke:#b58d17}\n.country-status-grid button.selected[data-status=bucket] .status-bucket svg .bucket-handle{fill:none;stroke:#b58d17}\n.map-country-label{font-family:Inter,Arial,sans-serif;font-size:8px;font-weight:400;fill:#263b46;pointer-events:auto;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}\nbody:not(.map-view) #countryLabels{display:none}\n
 /* v0.18.3 — regression restorations and compact country lists */
 .country-list-panel{min-height:0!important}
 .carousel-track{align-items:flex-start!important}
@@ -2485,43 +2490,1233 @@ input,textarea,[contenteditable="true"],[contenteditable=""],.allow-text-selecti
   padding:0!important;
 }
 
-/* v0.18.46 — Notes preview + final visible ADD STOP flight */
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:start!important;column-gap:12px!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head>div:first-child{min-width:0!important;}
+/* Hotfix — single-stop default, recycle dialog scrollbar, illustrated annotations */
+.recycle-dialog form{
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+}
+.recycle-dialog form::-webkit-scrollbar,
+.recycle-dialog .recycle-list::-webkit-scrollbar{
+  width:0!important;height:0!important;display:none!important;background:transparent!important;
+}
+.recycle-dialog .recycle-list{scrollbar-width:none!important;-ms-overflow-style:none!important}
+.recycle-launch{align-items:center!important;gap:10px!important}
+.recycle-handnote{display:block;width:min(250px,68vw);height:auto;margin-right:-2px;pointer-events:none;user-select:none}
+.rearview-handnote{display:none;width:min(330px,78vw);height:auto;margin:12px 18px 2px auto;pointer-events:none;user-select:none}
+.rearview-category.collapsed .rearview-handnote{display:block}
+.rearview-category:not(.collapsed) .rearview-handnote{display:none}
+@media(max-width:420px){.recycle-handnote{width:min(220px,64vw)}.rearview-handnote{width:min(300px,76vw)}}
+
+
+/* v0.18.62 — Trips clouds + recycle overflow/annotation + Rearview pointer */
+body.trips-view .sky-clouds{
+  display:block!important;
+}
+/* Fix the actual width overshoot rather than only hiding its scrollbar. */
+.recycle-dialog{
+  overflow:hidden!important;
+  max-width:min(92vw,420px)!important;
+  box-sizing:border-box!important;
+}
+.recycle-dialog form{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+}
+.recycle-dialog form>*,
+.recycle-dialog .recycle-list,
+.recycle-dialog .recycle-row{
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+.recycle-dialog .recycle-list{overflow-x:hidden!important;}
+/* Keep the approved artwork, simply give its arrow more room before the bin icon. */
+.recycle-launch{padding-right:12px!important;}
+.recycle-handnote{
+  position:relative!important;
+  left:-12px!important;
+  margin-right:-8px!important;
+}
+/* Rearview artwork now rises toward the existing + control. */
+.rearview-handnote{
+  margin-right:4px!important;
+}
+@media(max-width:420px){
+  .recycle-handnote{left:-14px!important;}
+}
+
+
+/* v0.18.63 — To-do draft styling + annotation composition refinements */
+.todo-item input::placeholder,
+.todo-row input::placeholder,
+.todo-input::placeholder{
+  text-transform:none!important;
+}
+.todo-item.is-new input,
+.todo-row.is-new input,
+.todo-input.is-new,
+input.todo-input{
+  background:#fff!important;
+}
+
+/* Do not compensate for the Recycle note by shifting the whole illustration.
+   Keep the lettering placement stable; arrow composition is handled inside the asset. */
+.recycle-handnote{
+  left:0!important;
+  margin-right:0!important;
+}
+@media(max-width:420px){
+  .recycle-handnote{left:0!important;}
+}
+
+/* Bring the Rearview illustrated note up and left beneath its heading. */
+.rearview-handnote{
+  transform:translate(-18px,-20px)!important;
+  margin-right:0!important;
+}
+
+
+/* v0.18.64 — final annotation composition + World View clouds + todo draft */
+body.map-view .sky-clouds,
+body.trips-view .sky-clouds{
+  display:block!important;
+}
+/* Keep clouds behind the full-map artwork/controls. */
+body.map-view .sky-clouds{z-index:0!important;inset:0!important;}
+body.map-view #app{position:relative!important;z-index:1!important;}
+body.map-view .map-card,
+body.map-view .map-stage{background:transparent!important;}
+
+/* Rearview note: slightly smaller, higher and left; arrow lives only inside clean SVG. */
+.rearview-handnote{
+  width:82%!important;
+  max-width:620px!important;
+  transform:translate(-28px,-26px)!important;
+  transform-origin:center top!important;
+}
+
+/* Recycle note: stable placement; compact arrow lives only inside clean SVG. */
+.recycle-handnote{
+  left:0!important;
+  margin-right:0!important;
+  transform:none!important;
+}
+
+/* New to-do draft looks like the white item above, with normal proper-case placeholder. */
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input{
+  background:#fff!important;
+  color:#172f3a!important;
+  border-color:rgba(7,94,120,.10)!important;
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;
+  font-weight:500!important;
+  text-transform:none!important;
+}
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input::placeholder{
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;
+  font-weight:500!important;
+  text-transform:none!important;
+  color:#172f3a!important;
+  opacity:.72!important;
+}
+
+/* v0.18.65 — clean annotation rebuild + real World View cloud clone */
+.worldview-cloud-clone{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+}
+.full-map-view,.map-fullscreen,.world-view,#fullMap{position:relative!important;}
+.full-map-view>*:not(.worldview-cloud-clone),
+.map-fullscreen>*:not(.worldview-cloud-clone),
+.world-view>*:not(.worldview-cloud-clone),
+#fullMap>*:not(.worldview-cloud-clone){position:relative;z-index:1;}
+.rearview-handnote{
+  width:76%!important;
+  max-width:570px!important;
+  transform:translate(-22px,-22px)!important;
+}
+.recycle-handnote{left:0!important;transform:none!important;margin-right:0!important;}
+
+/* v0.18.66 — Recycle Bin annotation ONLY */
+.recycle-handnote{
+  width:min(190px,52vw)!important;
+  max-width:190px!important;
+  height:auto!important;
+  left:0!important;
+  transform:none!important;
+  margin-right:0!important;
+}
+@media(max-width:420px){
+  .recycle-handnote{
+    width:min(180px,50vw)!important;
+    max-width:180px!important;
+  }
+}
+
+/* v0.18.67 — Rearview annotation ONLY */
+.rearview-handnote{
+  width:min(360px,72vw)!important;
+  max-width:360px!important;
+  height:auto!important;
+  transform:translate(-10px,-12px)!important;
+  transform-origin:center top!important;
+  margin-right:0!important;
+}
+@media(max-width:420px){
+  .rearview-handnote{
+    width:min(330px,70vw)!important;
+    max-width:330px!important;
+    transform:translate(-8px,-10px)!important;
+  }
+}
+
+/* v0.18.68 — Rearview ONLY: fresh separate lettering + arrow assets */
+.rearview-handnote{display:none!important;}
+.rearview-illustration{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  width:min(430px,82vw)!important;
+  margin:8px 12px 4px auto!important;
+  pointer-events:none!important;
+}
+.rearview-lettering{
+  display:block!important;
+  width:min(285px,58vw)!important;
+  height:auto!important;
+  flex:0 1 auto!important;
+}
+.rearview-arrow{
+  display:block!important;
+  width:70px!important;
+  height:auto!important;
+  flex:0 0 auto!important;
+  transform:translateY(-14px)!important;
+}
+@media(max-width:420px){
+  .rearview-illustration{width:min(360px,86vw)!important;gap:6px!important;margin-top:6px!important;}
+  .rearview-lettering{width:min(245px,58vw)!important;}
+  .rearview-arrow{width:58px!important;transform:translateY(-12px)!important;}
+}
+
+
+/* v0.18.75 — safe restoration: Rearview filter + Notes preview */
+.rearview-head-actions{display:flex;align-items:center;gap:9px;margin-left:auto}
+.rearview-filter-toggle{width:32px;height:32px;min-width:32px;border:0;border-radius:50%;background:linear-gradient(135deg,#075e78,#0794a7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;box-shadow:0 3px 8px rgba(7,94,120,.18)}
+.rearview-filter-toggle span{display:block;height:2px;border-radius:2px;background:#fff}.rearview-filter-toggle span:nth-child(1){width:15px}.rearview-filter-toggle span:nth-child(2){width:10px}.rearview-filter-toggle span:nth-child(3){width:5px}
+.rearview-filter-panel{margin:0 4px 14px;padding:14px;background:rgba(255,255,255,.94);border-radius:18px;box-shadow:0 7px 18px rgba(4,52,68,.12)}
+.rearview-filter-panel[hidden]{display:none!important}.rearview-filter-panel strong{display:block;color:var(--navy);font-size:12px;margin:0 0 8px}.rearview-filter-panel strong+div+strong{margin-top:13px}
+.rearview-sort-options,.rearview-year-options{display:flex;flex-wrap:wrap;gap:7px}.rearview-filter-panel button{border:1px solid rgba(7,94,120,.12);border-radius:999px;background:#fff;color:var(--navy);font:inherit;font-size:11px;font-weight:750;padding:7px 10px}.rearview-filter-panel button.active,.rearview-filter-panel button[data-rear-sort]:hover{background:#087f98;color:#fff}
+@media(max-width:420px){.rearview-hand-note{width:min(270px,78%);margin-right:35px}.recycle-launch{background-size:200px auto;background-position:right 50px center}}
+.rearview-filter-panel button[data-rear-sort].active{background:#087f98!important;color:#fff!important;border-color:#087f98!important}
 .trip-dialog .trip-notes-section.collapsed .trip-notes-summary{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:4!important;overflow:hidden!important;margin-top:3px!important;color:rgba(255,255,255,.82)!important;font-size:11px!important;font-weight:650!important;line-height:1.3!important;white-space:pre-wrap!important;position:relative!important;max-height:5.2em!important;}
 .trip-dialog .trip-notes-section:not(.collapsed) .trip-notes-summary,.trip-dialog .trip-notes-summary:empty{display:none!important;}
 .trip-dialog .trip-notes-section.collapsed .trip-notes-summary:not(:empty){-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.78) 74%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.78) 74%,transparent 100%);}
-.trip-dialog .trip-notes-section.collapsed .section-collapse-toggle{grid-column:2!important;grid-row:1!important;align-self:center!important;}
-.add-stop-flight-clone{opacity:1!important;visibility:visible!important;will-change:transform!important;}
-
-
-/* v0.18.47 — discussed trip-card fixes */
-/* Notes preview participates in normal document flow so 1–4 lines physically grow the card
-   and push Trip Rating/actions down instead of painting underneath them. */
-.trip-dialog .trip-notes-section.collapsed{height:auto!important;min-height:0!important;overflow:visible!important;position:relative!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head{height:auto!important;min-height:32px!important;grid-template-rows:32px auto!important;row-gap:3px!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-notes-head>div:first-child{display:contents!important;}
-.trip-dialog .trip-notes-section.collapsed .trip-section-title{grid-column:1!important;grid-row:1!important;align-self:center!important;}
 .trip-dialog .trip-notes-section.collapsed .trip-notes-summary{grid-column:1!important;grid-row:2!important;height:auto!important;min-height:0!important;margin:0!important;}
-.trip-dialog .trip-notes-section.collapsed + label.trip-section-heading:has(.trip-rating-input){margin-top:22px!important;position:relative!important;clear:both!important;}
-/* Companion long-press should own the full pill and not trigger browser selection/callouts. */
-.trip-dialog #tripCompanionBank .companion-tag{touch-action:manipulation!important;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;}
+.rearview-category.collapsed .rearview-handnote{display:block!important;width:min(225px,58vw)!important;max-width:225px!important;height:auto!important;margin:2px 14px 6px auto!important;pointer-events:none!important}
+.rearview-category:not(.collapsed) .rearview-handnote{display:none!important}
+
+/* v0.18.80 — contained Notes preview restoration */
+.trip-dialog .trip-notes-section.collapsed{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important;margin-top:16px!important;margin-bottom:18px!important}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-head{display:grid!important;grid-template-columns:minmax(0,1fr) 32px!important;grid-template-rows:32px auto!important;column-gap:10px!important;row-gap:4px!important;align-items:start!important;height:auto!important;min-height:32px!important;overflow:visible!important}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-head>div:first-child{grid-column:1!important;grid-row:1 / span 2!important;min-width:0!important}
+.trip-dialog .trip-notes-section.collapsed .trip-section-title{margin:0!important;min-height:32px!important;display:flex!important;align-items:center!important}
+.trip-dialog .trip-notes-section.collapsed .section-collapse-toggle{grid-column:2!important;grid-row:1!important;justify-self:end!important;align-self:center!important}
+.trip-dialog .trip-notes-section.collapsed .trip-notes-summary:not(:empty){display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:4!important;overflow:hidden!important;white-space:pre-wrap!important;line-height:1.35!important;max-height:5.4em!important;margin:3px 0 0!important;padding:0!important;color:rgba(255,255,255,.82)!important;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.72) 76%,transparent 100%)!important;mask-image:linear-gradient(to bottom,#000 0%,#000 58%,rgba(0,0,0,.72) 76%,transparent 100%)!important}
+.trip-dialog .trip-notes-section:not(.collapsed) .trip-notes-summary,.trip-dialog .trip-notes-summary:empty{display:none!important}
+.trip-dialog .trip-notes-section.collapsed + .trip-section-heading{margin-top:0!important;clear:both!important}
 
 
-/* Main-thread merged hotfix: alternative Add Stop stays upright; original sign remains wonky. */
-#addTripDestination.wozza-add-stop-subtle,
-#addTripDestination.wozza-add-stop-subtle.wiggle{
-  transform:none!important;rotate:0deg!important;animation:none!important;
+/* v0.18.81 — World View: reuse the existing working Passport cloud layer.
+   Layer order is deliberate: teal/map-stage < clouds < SVG map < controls. */
+body.map-view .sky-clouds{
+  display:block!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:2!important;
+  opacity:.72!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+}
+body.map-view .sky-clouds .cloud{
+  display:block!important;
+  background:rgba(255,255,255,.62)!important;
+  filter:blur(13px)!important;
+}
+body.map-view .map-card,
+body.map-view .map-stage{
+  z-index:1!important;
+  background:transparent!important;
+}
+body.map-view #worldMap{
+  position:relative!important;
+  z-index:3!important;
+}
+body.map-view .map-view-title,
+body.map-view .map-close{
+  z-index:120!important;
 }
 
-/* Home > World View morph. Slower, fluid expansion without changing map/cloud/plane behaviour. */
-body.wozza-map-morph-enter .map-card{
-  animation:wozzaHomeWorldMorph 720ms cubic-bezier(.22,.72,.2,1) both!important;
-  transform-origin:center center!important;
+/* v0.18.81 — restore agreed Filter & Sort styling only. */
+.filter-dialog{
+  background:#f6e8c7!important;
+  color:#10213f!important;
 }
-@keyframes wozzaHomeWorldMorph{
-  0%{transform:scale(.88);opacity:.72;border-radius:30px}
-  55%{opacity:1}
-  100%{transform:scale(1);opacity:1;border-radius:0}
+.filter-dialog .filter-actions #resetVisitedFilters{
+  background:#fff!important;
+  color:#10213f!important;
 }
-@media(prefers-reduced-motion:reduce){body.wozza-map-morph-enter .map-card{animation:none!important}}
+.filter-dialog .filter-actions .primary{
+  background:linear-gradient(135deg,#087b9b,#11a9c2)!important;
+  color:#fff!important;
+}
+
+
+/* v0.18.82 — queued UI polish */
+.trip-dialog .trip-notes-head{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 32px!important;
+  column-gap:10px!important;align-items:center!important;
+}
+.trip-dialog .trip-notes-head>div:first-child{min-width:0!important;grid-column:1!important;}
+.trip-dialog .trip-notes-head .section-collapse-toggle{
+  grid-column:2!important;justify-self:end!important;margin-left:0!important;
+}
+.trip-dialog #tripNotes{resize:none!important;}
+
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input{
+  background:#fff!important;min-height:44px!important;height:44px!important;
+  padding:11px 14px!important;line-height:22px!important;
+  border-color:rgba(7,94,120,.10)!important;outline:none!important;box-shadow:none!important;
+}
+.trip-dialog .trip-todo-input:focus,
+.trip-dialog .trip-todo-input:focus-visible{outline:none!important;box-shadow:none!important;}
+.trip-dialog .trip-todo-row:not(.has-text) .trip-todo-input::placeholder{text-align:left!important;}
+
+.avg-rating-star{
+  display:inline-block!important;color:#ffc400!important;transform:translateY(-3px)!important;
+}
+
+body.map-view #worldMap .country{pointer-events:auto!important;cursor:pointer!important;}
+
+/* v0.18.90 — collapsed empty trip sections: centre heading against + button only when no preview exists. */
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:empty) > .trip-section-title,
+#tripForm .trip-todo-section.collapsed .trip-todo-head:has(.trip-todo-summary:empty) > div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) > div:first-child{
+  padding-top:14px!important;
+}
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:not(:empty)) > .trip-section-title,
+#tripForm .trip-todo-section.collapsed .trip-todo-head:has(.trip-todo-summary:not(:empty)) > div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) > div:first-child{
+  padding-top:7px!important;
+}
+
+/* World View close button: smaller and contained within banner */
+body.map-view .map-close{width:48px!important;height:48px!important;top:10px!important;right:14px!important;font-size:32px!important;line-height:1!important;box-shadow:0 4px 12px rgba(0,0,0,.14)!important}
+@media(orientation:landscape){body.map-view .map-close{width:46px!important;height:46px!important;top:8px!important;right:14px!important;font-size:30px!important}}
+
+
+/* World View close control - final cascade authority */
+body.map-view #mapClose.map-close{
+  position:fixed!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  top:8px!important;
+  right:12px!important;
+  bottom:auto!important;
+  left:auto!important;
+  transform:none!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:28px!important;
+  line-height:1!important;
+  z-index:120!important;
+  box-sizing:border-box!important;
+}
+@media(orientation:landscape){
+  body.map-view #mapClose.map-close{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+    top:7px!important;
+    right:12px!important;
+    font-size:27px!important;
+  }
+}
+
+/* World View X: fit completely inside the 48px portrait banner */
+body.map-view #mapClose.map-close{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  top:5px!important;
+  right:10px!important;
+  font-size:25px!important;
+  box-shadow:0 3px 9px rgba(0,0,0,.13)!important;
+}
+@media(orientation:landscape){
+  body.map-view #mapClose.map-close{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+    top:4px!important;
+    right:10px!important;
+    font-size:23px!important;
+  }
+}
+
+/* Approved Country Card hero layout */
+#countrySheet .country-hero-copy{min-width:0}
+#countrySheet .country-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-width:0;
+}
+#countrySheet .country-title-row h2{min-width:0}
+#countrySheet .country-rating-summary{
+  margin:0 4px 0 auto;
+  flex:0 0 auto;
+  line-height:1;
+}
+#countrySheet .country-rating-summary span{
+  color:#f4c321;
+  font-size:clamp(22px,5vw,34px);
+  letter-spacing:1px;
+  white-space:nowrap;
+  text-shadow:0 2px 4px rgba(0,0,0,.10);
+}
+#countrySheet .country-hero-lower-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:8px;
+}
+#countrySheet .country-summary-pills{
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:6px;
+  min-width:0;
+  flex:1 1 auto;
+}
+#countrySheet .country-summary-pills span{
+  white-space:nowrap;
+}
+#countrySheet .country-info-button{
+  flex:0 0 42px;
+  width:42px;
+  height:42px;
+  border:1.5px solid rgba(255,255,255,.8);
+  border-radius:50%;
+  padding:0;
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,#0a91a0,#087b91);
+  color:#fff;
+  box-shadow:0 5px 12px rgba(0,0,0,.14);
+  cursor:default;
+}
+#countrySheet .country-info-button span{
+  font:800 25px/1 Georgia,serif;
+  transform:translateY(-1px);
+}
+@media(max-width:430px){
+  #countrySheet .country-title-row{align-items:flex-start;gap:7px}
+  #countrySheet .country-rating-summary span{font-size:20px}
+  #countrySheet .country-hero-lower-row{gap:7px;margin-top:7px}
+  #countrySheet .country-summary-pills{gap:4px}
+  #countrySheet .country-summary-pills span{padding:5px 6px;font-size:9px}
+  #countrySheet .country-info-button{width:36px;height:36px;flex-basis:36px}
+  #countrySheet .country-info-button span{font-size:22px}
+}
+@media(orientation:landscape) and (max-height:650px){
+  #countrySheet.sheet{width:min(900px,74vw)!important}
+  #countrySheet .country-title-row{gap:8px}
+  #countrySheet .country-rating-summary span{font-size:19px!important;letter-spacing:0}
+  #countrySheet .country-hero-lower-row{margin-top:4px!important;gap:6px!important}
+  #countrySheet .country-summary-pills{gap:4px!important}
+  #countrySheet .country-summary-pills span{padding:3px 6px!important;font-size:9px!important}
+  #countrySheet .country-info-button{
+    width:30px!important;height:30px!important;flex-basis:30px!important;
+    box-shadow:0 3px 8px rgba(0,0,0,.12)!important;
+  }
+  #countrySheet .country-info-button span{font-size:19px!important}
+}
+
+/* Country hero refinement */
+#countrySheet .country-title-row{
+  align-items:center!important;
+  padding-top:6px;
+}
+#countrySheet .country-title-row h2{
+  margin-top:4px!important;
+  margin-bottom:0!important;
+  line-height:1!important;
+}
+#countrySheet .country-rating-summary{
+  align-self:center!important;
+  display:flex!important;
+  align-items:center!important;
+  margin-top:4px!important;
+}
+#countrySheet .country-rating-summary span{
+  display:block!important;
+  line-height:1!important;
+}
+#countrySheet .country-hero-lower-row{
+  margin-top:3px!important;
+  transform:translateY(-2px);
+}
+#countrySheet .country-info-button{
+  width:auto!important;
+  height:auto!important;
+  min-width:38px!important;
+  min-height:0!important;
+  flex:0 0 auto!important;
+  padding:5px 11px!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.04)!important;
+  box-shadow:none!important;
+  color:#fff!important;
+}
+#countrySheet .country-info-button span{
+  font:800 16px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  transform:none!important;
+}
+@media(orientation:landscape) and (max-height:650px){
+  #countrySheet.sheet{width:min(900px,74vw)!important}
+  #countrySheet .country-title-row{padding-top:2px!important}
+  #countrySheet .country-title-row h2{margin-top:2px!important}
+  #countrySheet .country-rating-summary{margin-top:2px!important}
+  #countrySheet .country-hero-lower-row{margin-top:1px!important;transform:translateY(-1px)}
+  #countrySheet .country-info-button{
+    width:auto!important;height:auto!important;min-width:30px!important;
+    padding:3px 8px!important;border-radius:999px!important;
+  }
+  #countrySheet .country-info-button span{font-size:13px!important}
+}
+
+/* Country Card hero - three-row refinement */
+#countrySheet .country-title-row{
+  display:block!important;
+  padding-top:4px!important;
+}
+#countrySheet .country-title-row h2{
+  margin:0!important;
+  line-height:1!important;
+}
+#countrySheet .country-hero-lower-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  margin-top:12px!important;
+  transform:none!important;
+}
+#countrySheet .country-summary-pills{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  flex:0 1 auto!important;
+  min-width:0!important;
+}
+#countrySheet .country-summary-pills span,
+#countrySheet .country-info-button{
+  box-sizing:border-box!important;
+  height:36px!important;
+  min-height:36px!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.04)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+#countrySheet .country-summary-pills span{
+  display:flex!important;
+  align-items:center!important;
+  padding:0 11px!important;
+  white-space:nowrap!important;
+}
+#countrySheet .country-info-button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 36px!important;
+  width:36px!important;
+  min-width:36px!important;
+  padding:0!important;
+  margin:0!important;
+}
+#countrySheet .country-info-button span{
+  display:block!important;
+  font:800 17px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  transform:none!important;
+}
+#countrySheet .country-rating-summary{
+  display:flex!important;
+  align-items:center!important;
+  margin:12px 0 0!important;
+  line-height:1!important;
+}
+#countrySheet .country-rating-summary span{
+  display:block!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+@media(orientation:landscape) and (max-height:650px){
+  #countrySheet .country-title-row{padding-top:1px!important}
+  #countrySheet .country-hero-lower-row{
+    gap:4px!important;
+    margin-top:7px!important;
+  }
+  #countrySheet .country-summary-pills{gap:4px!important}
+  #countrySheet .country-summary-pills span,
+  #countrySheet .country-info-button{
+    height:26px!important;
+    min-height:26px!important;
+  }
+  #countrySheet .country-summary-pills span{
+    padding:0 7px!important;
+    font-size:9px!important;
+  }
+  #countrySheet .country-info-button{
+    flex-basis:26px!important;
+    width:26px!important;
+    min-width:26px!important;
+  }
+  #countrySheet .country-info-button span{font-size:13px!important}
+  #countrySheet .country-rating-summary{
+    margin-top:7px!important;
+  }
+  #countrySheet .country-rating-summary span{
+    font-size:18px!important;
+  }
+}
+
+/* Country information asset button beside rating */
+#countrySheet .country-rating-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin-top:12px!important;
+}
+#countrySheet .country-rating-row .country-rating-summary{
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+}
+#countrySheet .country-info-asset-button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  flex:0 0 34px!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+#countrySheet .country-info-asset-button img{
+  display:block!important;
+  width:34px!important;
+  height:34px!important;
+  object-fit:contain!important;
+}
+@media(orientation:landscape) and (max-height:650px){
+  #countrySheet .country-rating-row{
+    gap:7px!important;
+    margin-top:7px!important;
+  }
+  #countrySheet .country-info-asset-button,
+  #countrySheet .country-info-asset-button img{
+    width:25px!important;
+    height:25px!important;
+    min-width:25px!important;
+    min-height:25px!important;
+  }
+  #countrySheet .country-info-asset-button{flex-basis:25px!important}
+}
+
+/* Country information popup */
+.country-facts-dialog{
+  width:min(680px,92vw);max-height:88dvh;padding:0;border:0;border-radius:28px;
+  background:transparent;color:#18313b;overflow:visible;
+}
+.country-facts-dialog::backdrop{background:rgba(8,27,39,.58);backdrop-filter:blur(3px)}
+.country-facts-card{
+  position:relative;background:#f8fbfa;border-radius:28px;padding:24px;
+  box-shadow:0 24px 70px rgba(0,0,0,.28);max-height:88dvh;overflow:auto;
+}
+.country-facts-close{
+  position:absolute;right:16px;top:16px;width:44px;height:44px;border:0;border-radius:50%;
+  background:#f0eee9;color:#111;font-size:30px;line-height:1;font-weight:500;z-index:2;
+}
+.country-facts-head{display:flex;align-items:center;gap:16px;padding-right:54px;margin-bottom:20px}
+.country-facts-flag img{display:block;width:78px;height:52px;object-fit:cover;border-radius:10px;box-shadow:0 3px 8px rgba(0,0,0,.14)}
+.country-facts-kicker{font-size:11px;font-weight:900;letter-spacing:.16em;color:#168c96;margin-bottom:3px}
+.country-facts-head h2{margin:0;font-size:32px;line-height:1.05;color:#172e38}
+.country-facts-key{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;padding:16px;border-radius:18px;background:#fff}
+.country-fact-row{display:grid;grid-template-columns:110px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid rgba(23,46,56,.08)}
+.country-fact-row strong{font-size:13px}.country-fact-row span{font-size:13px;color:#51616a}
+.country-fact-section{margin-top:18px}.country-fact-section h3{margin:0 0 9px;font-size:17px;color:#172e38}
+.country-fact-section ul{margin:0;padding-left:20px}.country-fact-section li{margin:6px 0;line-height:1.4;color:#4b5c65;font-size:13px}
+.country-weather-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.country-weather-card{background:#fff;border-radius:15px;padding:12px;display:grid;gap:3px}
+.country-weather-card strong{font-size:12px;color:#168c96}.country-weather-card b{font-size:13px}.country-weather-card span{font-size:15px;font-weight:800;color:#172e38}
+.country-weather-card p,.country-regional-note{font-size:12px;line-height:1.4;color:#5b6970;margin:4px 0 0}
+.country-facts-loading,.country-facts-empty{padding:24px;text-align:center;color:#61717a}
+@media(max-width:560px){
+ .country-facts-card{padding:20px 16px}.country-facts-head h2{font-size:27px}
+ .country-facts-key{grid-template-columns:1fr}.country-weather-grid{grid-template-columns:1fr}
+ .country-fact-row{grid-template-columns:100px 1fr}
+}
+@media(orientation:landscape) and (max-height:650px){
+ .country-facts-dialog{width:min(760px,84vw);max-height:90dvh}
+ .country-facts-card{padding:16px 18px;max-height:90dvh}
+ .country-facts-head{margin-bottom:10px}.country-facts-head h2{font-size:25px}
+ .country-facts-flag img{width:60px;height:40px}.country-facts-close{width:34px;height:34px;font-size:24px}
+ .country-facts-key{padding:10px;gap:3px 14px}.country-fact-row{padding:4px 0}
+ .country-fact-section{margin-top:11px}.country-weather-card{padding:8px}
+}
+/* Next-release refinements: smaller info asset and explicit number-label spacing */
+#countrySheet .country-info-asset-button,
+#countrySheet .country-info-asset-button img{
+  width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;
+}
+#countrySheet .country-info-asset-button{flex-basis:24px!important}
+#countrySheet .country-summary-pills b{margin-right:4px!important}
+@media(orientation:landscape) and (max-height:650px){
+ #countrySheet .country-info-asset-button,
+ #countrySheet .country-info-asset-button img{
+   width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;
+ }
+ #countrySheet .country-info-asset-button{flex-basis:18px!important}
+}
+
+/* Fast Facts accordions - mirrors the Trip Card section/header behaviour */
+.country-facts-accordion{margin-top:14px}
+.country-facts-accordion-toggle{
+ width:100%;border:0;background:transparent;padding:5px 0;
+ display:flex;align-items:center;justify-content:space-between;gap:18px;
+ color:#172e38;font:900 19px/1.15 inherit;letter-spacing:.035em;text-align:left;
+}
+.country-facts-accordion-icon{
+ flex:0 0 52px;width:52px;height:52px;border-radius:50%;
+ display:grid;place-items:center;background:linear-gradient(145deg,#0b8999,#11a6b5);
+ color:#fff;font:700 31px/1 Arial,sans-serif;box-shadow:0 8px 18px rgba(6,93,108,.16);
+}
+.country-facts-accordion-panel{padding:8px 0 4px}
+.country-facts-accordion-panel[hidden]{display:none!important}
+.country-facts-accordion-list{margin:0;padding:4px 0 2px 21px}
+.country-facts-accordion-list li{margin:8px 0;color:#4b5c65;font-size:13px;line-height:1.45}
+.country-facts-empty-inline{margin:5px 0;color:#61717a;font-size:13px}
+.country-facts-accordion-panel .country-fact-section{margin-top:0}
+.country-facts-accordion-panel .country-fact-section>h3{display:none}
+@media(orientation:landscape) and (max-height:650px){
+ .country-facts-accordion{margin-top:7px}
+ .country-facts-accordion-toggle{font-size:15px;padding:2px 0}
+ .country-facts-accordion-icon{flex-basis:36px;width:36px;height:36px;font-size:23px}
+}
+
+/* v0.18.XX - Country facts header sizing + Trip editor expanded/empty spacing consistency */
+.country-facts-accordion-toggle{
+  font-family:"Archivo Black",Impact,sans-serif!important;
+  text-transform:uppercase!important;
+  letter-spacing:.055em!important;
+  font-size:17px!important;
+  font-weight:900!important;
+  line-height:1.15!important;
+}
+@media(orientation:landscape) and (max-height:650px){
+  .country-facts-accordion-toggle{font-size:17px!important}
+}
+
+/* Expanded content clears the +/- control consistently. */
+#tripForm .trip-companions-section:not(.collapsed) #tripCompanionsBody,
+#tripForm .trip-todo-section:not(.collapsed) #tripTodoBody,
+#tripForm .trip-notes-section:not(.collapsed) #tripNotesBody{
+  margin-top:16px!important;
+}
+
+/* Empty collapsed Notes has no preview to reserve room for: pull the section up
+   and vertically centre its title against the + control. */
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty){
+  margin-top:18px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  min-height:54px!important;
+  align-items:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div{
+  padding-top:0!important;
+  align-self:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .trip-section-title{
+  transform:none!important;
+  align-self:center!important;
+}
+
+/* v0.18.XXc - empty Notes rhythm repair
+   Keep an intentional Notes block instead of collapsing it into Trip Rating. */
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty){
+  margin-top:12px!important;
+  margin-bottom:0!important;
+  padding:0!important;
+  min-height:44px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 32px!important;
+  grid-template-rows:44px!important;
+  column-gap:10px!important;
+  align-items:center!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child{
+  grid-column:1!important;
+  grid-row:1!important;
+  height:44px!important;
+  min-height:44px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .trip-section-title{
+  margin:0!important;
+  padding:0!important;
+  min-height:0!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle{
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:center!important;
+  justify-self:end!important;
+}
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty) + .trip-section-heading{
+  margin-top:16px!important;
+}
+
+/* No country rating: start the information control at the left of its row. */
+#countrySheet .country-rating-row:has(.country-rating-summary:empty){
+  justify-content:flex-start!important;
+}
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
+  margin-left:0!important;
+  margin-right:auto!important;
+}
+
+/* v0.18.XXd - Empty Notes: true header-only row, circular control, deliberate rating gap */
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty){
+  display:block!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:16px 0 0!important;
+  padding:0!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 32px!important;
+  grid-template-rows:32px!important;
+  column-gap:10px!important;
+  row-gap:0!important;
+  align-items:center!important;
+  height:32px!important;
+  min-height:32px!important;
+  max-height:32px!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child{
+  grid-column:1!important;
+  grid-row:1!important;
+  height:32px!important;
+  min-height:32px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .trip-section-title{
+  margin:0!important;
+  padding:0!important;
+  min-height:0!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle{
+  grid-column:2!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  align-self:center!important;
+  box-sizing:border-box!important;
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  min-height:32px!important;
+  max-width:32px!important;
+  max-height:32px!important;
+  aspect-ratio:1 / 1!important;
+  flex:0 0 32px!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:50%!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty) .trip-notes-summary{display:none!important}
+#tripForm .trip-notes-section.collapsed:has(.trip-notes-summary:empty) + .trip-section-heading{
+  margin-top:20px!important;
+}
+
+/* Empty Notes control: match the visual size of the other Trip section controls. */
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  grid-template-columns:minmax(0,1fr) 44px!important;
+  grid-template-rows:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child{
+  height:44px!important;
+  min-height:44px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  max-width:44px!important;
+  max-height:44px!important;
+  flex:0 0 44px!important;
+  font-size:26px!important;
+}
+
+/* v0.18.XX - Trip collapsed header lock
+   Collapsing only hides content. Header/control geometry stays identical to the
+   normal section header, with To Do List as the sizing reference. */
+#tripForm .trip-companions-section.collapsed .trip-companions-head > .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head > div:first-child,
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:empty) > .trip-section-title,
+#tripForm .trip-companions-section.collapsed .trip-companions-head:has(.trip-selected-summary:not(:empty)) > .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) > div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) > div:first-child{
+  padding-top:0!important;
+  transform:none!important;
+}
+
+/* Notes +/- is literally the same 32px control geometry and glyph sizing as To Do. */
+#tripForm .trip-notes-section .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle{
+  box-sizing:border-box!important;
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  min-height:32px!important;
+  max-width:32px!important;
+  max-height:32px!important;
+  flex:0 0 32px!important;
+  aspect-ratio:1 / 1!important;
+  border-radius:50%!important;
+  padding:0!important;
+  font-size:20px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  display:grid!important;
+  place-items:center!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty){
+  grid-template-columns:minmax(0,1fr) 32px!important;
+  grid-template-rows:32px!important;
+  height:32px!important;
+  min-height:32px!important;
+  max-height:32px!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child{
+  height:32px!important;
+  min-height:32px!important;
+  display:flex!important;
+  align-items:center!important;
+}
+
+/* Notes toggle visual parity hotfix
+   The Notes control renders smaller than the shared To Do / Companions control in
+   the current mobile layout. Compensate at the Notes control itself so its final
+   rendered circle and glyph visually match the reference controls. */
+#tripForm .trip-notes-section .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty) .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)) .section-collapse-toggle{
+  box-sizing:border-box!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  max-width:44px!important;
+  max-height:44px!important;
+  flex:0 0 44px!important;
+  aspect-ratio:1 / 1!important;
+  padding:0!important;
+  border-radius:50%!important;
+  font-size:27px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-head,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty),
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)){
+  grid-template-columns:minmax(0,1fr) 44px!important;
+}
+
+/* v0.18.XX - Trip section toggle canonical sizing
+   One shared rule for Companions, To Do and Notes. No section-specific sizing. */
+#tripForm .trip-companions-section .section-collapse-toggle,
+#tripForm .trip-todo-section .section-collapse-toggle,
+#tripForm .trip-notes-section .section-collapse-toggle {
+  box-sizing:border-box!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  max-width:44px!important;
+  max-height:44px!important;
+  flex:0 0 44px!important;
+  aspect-ratio:1 / 1!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:50%!important;
+  font-size:27px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+}
+#tripForm .trip-companions-head,
+#tripForm .trip-todo-head,
+#tripForm .trip-notes-head,
+#tripForm .trip-companions-section.collapsed .trip-companions-head,
+#tripForm .trip-todo-section.collapsed .trip-todo-head,
+#tripForm .trip-notes-section.collapsed .trip-notes-head {
+  grid-template-columns:minmax(0,1fr) 44px!important;
+}
+
+/* v0.18.XX - Notes motion lock + rating breathing room
+   To Do remains untouched. Keep the Notes title/toggle anchored to one 44px
+   header row in every state; only the preview/body below changes height. */
+#tripForm .trip-notes-section .trip-notes-head,
+#tripForm .trip-notes-section.collapsed .trip-notes-head,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty),
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty)){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 44px!important;
+  grid-template-rows:44px auto!important;
+  column-gap:10px!important;
+  row-gap:4px!important;
+  align-items:start!important;
+  height:auto!important;
+  min-height:44px!important;
+  max-height:none!important;
+  padding:0!important;
+}
+#tripForm .trip-notes-section .trip-notes-head>div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:empty)>div:first-child,
+#tripForm .trip-notes-section.collapsed .trip-notes-head:has(.trip-notes-summary:not(:empty))>div:first-child{
+  grid-column:1!important;
+  grid-row:1 / span 2!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:44px!important;
+  padding:0!important;
+  margin:0!important;
+  align-self:start!important;
+  display:block!important;
+}
+#tripForm .trip-notes-section .trip-notes-head .trip-section-title,
+#tripForm .trip-notes-section.collapsed .trip-notes-head .trip-section-title{
+  box-sizing:border-box!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section .trip-notes-head .section-collapse-toggle,
+#tripForm .trip-notes-section.collapsed .trip-notes-head .section-collapse-toggle{
+  grid-column:2!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  align-self:start!important;
+  margin:0!important;
+  transform:none!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-summary:not(:empty){
+  margin:3px 0 0!important;
+  padding:0!important;
+}
+#tripForm .trip-notes-section.collapsed .trip-notes-summary:empty{display:none!important;}
+
+/* Give Trip Rating a little more separation from Notes in both preview states. */
+#tripForm .trip-notes-section + label.trip-section-heading:has(.trip-rating-input){
+  margin-top:30px!important;
+}
+
+/* v0.18.XX - bundled micro-polish: Notes focus, rating rhythm, trip preview width, unrated info alignment */
+
+/* Notes: keep the existing field styling while removing the browser's black typing/focus ring. */
+#tripForm #tripNotes:focus,
+#tripForm #tripNotes:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
+
+/* Give the rating a little more air below Notes, then a slightly larger gap before the footer actions. */
+#tripForm .trip-notes-section + label.trip-section-heading:has(.trip-rating-input){
+  margin-top:36px!important;
+  margin-bottom:18px!important;
+}
+#tripForm .trip-notes-section + label.trip-section-heading:has(.trip-rating-input) + .dialog-actions{
+  margin-top:18px!important;
+}
+
+/* Trip overview: the destination line is above the side/flag row, so let it use the spare card width.
+   It remains one line and only ellipsises when it genuinely reaches the card's right padding. */
+#tripList .trip-card-country{
+  width:calc(100% + 100px)!important;
+  max-width:calc(100% + 100px)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:420px){
+  #tripList .trip-card-country{
+    width:calc(100% + 88px)!important;
+    max-width:calc(100% + 88px)!important;
+  }
+}
+
+/* Country hero: when there is no rating, the info asset starts exactly at the content column's left edge.
+   No phantom star width or centring is retained. */
+#countrySheet .country-rating-row:has(.country-rating-summary:empty){
+  width:100%!important;
+  justify-content:flex-start!important;
+  gap:0!important;
+}
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-rating-summary{
+  display:none!important;
+}
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
+  margin:0 auto 0 0!important;
+}
+
+/* v0.18.XX - trip destination ellipsis + unrated country info micro-alignment */
+/* The destination text sits on its own row. Let that row span the card's usable width,
+   while preserving a real single-line ellipsis at the normal right inset. */
+#tripList .trip-card-copy{
+  overflow:visible!important;
+}
+#tripList .trip-card-country{
+  box-sizing:border-box!important;
+  width:calc(100% + 100px)!important;
+  max-width:calc(100% + 100px)!important;
+  padding-right:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:420px){
+  #tripList .trip-card-country{
+    width:calc(100% + 87px)!important;
+    max-width:calc(100% + 87px)!important;
+  }
+}
+
+/* No rating: tiny optical correction so the information icon shares the header/stats left edge. */
+#countrySheet .country-rating-row:has(.country-rating-summary:empty) .country-info-asset-button{
+  transform:translateX(2px)!important;
+}
+
+/* v0.18.x - playful empty recycle-bin state + companion focus polish */
+.recycle-dialog .recycle-head > span{display:none!important}
+.recycle-dialog .dialog-actions{display:none!important}
+.recycle-dialog .recycle-empty-state{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:2px 4px 8px;
+  text-align:center;
+}
+.recycle-dialog .recycle-empty-state strong{
+  color:var(--navy,#0d1b3e);
+  font-size:clamp(22px,5vw,30px);
+  font-weight:850;
+  line-height:1.05;
+}
+.recycle-dialog .recycle-empty-state img{
+  display:block;
+  width:min(100%,330px);
+  max-height:330px;
+  object-fit:contain;
+  border-radius:18px;
+}
+/* Do not show the playful asset when actual recycle rows exist. */
+.recycle-dialog .recycle-list:has(.recycle-row) .recycle-empty-state{display:none!important}
+
+/* Remove Android/browser black focus ring from Add a new companion only. */
+#tripCompanionInput:focus,
+#tripCompanionInput:focus-visible,
+.trip-companions-section input[placeholder="Add a new companion"]:focus,
+.trip-companions-section input[placeholder="Add a new companion"]:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
+
+
+/* Passport: label the chart carousel as its own section, matching STATS. */
+.screen[data-screen="me"] .passport-charts-heading{
+  margin:30px 0 12px!important;
+  color:#fff!important;
+}
+\n\n/* v0.18.x — Home > World View shared-map morph.\n   The existing Home plane animation and World View cloud animation are intentionally untouched. */\n.map-card{view-transition-name:wozza-world-map}\n::view-transition-group(wozza-world-map){animation-duration:860ms;animation-timing-function:cubic-bezier(.22,.78,.22,1)}\n::view-transition-old(wozza-world-map),::view-transition-new(wozza-world-map){animation-duration:860ms;animation-timing-function:cubic-bezier(.22,.78,.22,1);mix-blend-mode:normal}\n::view-transition-old(root),::view-transition-new(root){animation-duration:500ms;animation-timing-function:ease}\nhtml.world-map-morphing{overflow:hidden}\nhtml.world-map-morphing body{pointer-events:none}\nbody:not(.map-view) #mapStage{cursor:pointer}\n@media(prefers-reduced-motion:reduce){::view-transition-group(wozza-world-map),::view-transition-old(wozza-world-map),::view-transition-new(wozza-world-map),::view-transition-old(root),::view-transition-new(root){animation-duration:0.01ms!important}}\n
+
+/* Hotfix: compact/alternative Add Stop stays upright. The original tourist-sign Add Stop remains intentionally jaunty. */
+.trip-compact-add-stop{transform:rotate(0deg)!important;}
+.trip-compact-add-stop:active{transform:rotate(0deg) scale(.95)!important;}
