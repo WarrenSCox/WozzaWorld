@@ -568,7 +568,7 @@ function populateTripVibes(selected=[]){
  const native=['City Break','Beach Holiday','Relax & Recharge','Adventure','Road Trip','Winter & Snow','Once in a Lifetime','Visiting Friends & Family','Celebration','Great Outdoors','Camping'];
  const wanted=new Set((selected||[]).map(x=>String(x).toLowerCase())),all=[...state.vibeBank];(selected||[]).forEach(v=>{if(!all.some(x=>String(x).toLowerCase()===String(v).toLowerCase()))all.push(v)});
  bank.innerHTML=all.map(n=>{const isNative=native.some(x=>x.toLowerCase()===String(n).toLowerCase());return `<button type="button" class="companion-tag vibe-tag ${wanted.has(String(n).toLowerCase())?'selected':''}" data-vibe="${esc(n)}" data-native="${isNative?'1':'0'}">${esc(n)}</button>`}).join('');
- $$('#tripVibeBank .vibe-tag').forEach(b=>{let hold=null,longPressed=false,sx=0,sy=0;const cancel=()=>{clearTimeout(hold);hold=null};b.onclick=e=>{if(longPressed){e.preventDefault();e.stopPropagation();longPressed=false;return}b.classList.toggle('selected');refreshTripEditorSummaryLine()};if(b.dataset.native==='1')return;b.addEventListener('contextmenu',e=>e.preventDefault());b.addEventListener('pointerdown',e=>{if(e.button!=null&&e.button!==0)return;sx=e.clientX;sy=e.clientY;longPressed=false;cancel();hold=setTimeout(()=>{longPressed=true;const name=b.dataset.vibe;showWozzaConfirm('Delete custom vibe?',`Remove “${name}” from your saved Vibes? Trips already using it will keep it.`,()=>{const selectedNow=$$('#tripVibeBank .vibe-tag.selected').map(x=>x.dataset.vibe);state.vibeBank=state.vibeBank.filter(x=>String(x).toLowerCase()!==String(name).toLowerCase());populateTripVibes(selectedNow.filter(x=>String(x).toLowerCase()!==String(name).toLowerCase()));localStorage.setItem('wozzaworld-state',JSON.stringify(state));toast(`${name} removed`);refreshTripEditorSummaryLine()},'Delete vibe');navigator.vibrate?.(20)},520)});b.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-sx,e.clientY-sy)>14)cancel()});b.addEventListener('pointerup',cancel);b.addEventListener('pointercancel',cancel)})
+ $$('#tripVibeBank .vibe-tag').forEach(b=>{let hold=null,longPressed=false,sx=0,sy=0;const cancel=()=>{clearTimeout(hold);hold=null};b.onclick=e=>{if(longPressed){e.preventDefault();e.stopPropagation();longPressed=false;return}b.classList.toggle('selected');syncTripVibeSummary();refreshTripEditorSummaryLine()};if(b.dataset.native==='1')return;b.addEventListener('contextmenu',e=>e.preventDefault());b.addEventListener('pointerdown',e=>{if(e.button!=null&&e.button!==0)return;sx=e.clientX;sy=e.clientY;longPressed=false;cancel();hold=setTimeout(()=>{longPressed=true;const name=b.dataset.vibe;showWozzaConfirm('Delete custom vibe?',`Remove “${name}” from your saved Vibes? Trips already using it will keep it.`,()=>{const selectedNow=$$('#tripVibeBank .vibe-tag.selected').map(x=>x.dataset.vibe);state.vibeBank=state.vibeBank.filter(x=>String(x).toLowerCase()!==String(name).toLowerCase());populateTripVibes(selectedNow.filter(x=>String(x).toLowerCase()!==String(name).toLowerCase()));localStorage.setItem('wozzaworld-state',JSON.stringify(state));toast(`${name} removed`);refreshTripEditorSummaryLine()},'Delete vibe');navigator.vibrate?.(20)},520)});b.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-sx,e.clientY-sy)>14)cancel()});b.addEventListener('pointerup',cancel);b.addEventListener('pointercancel',cancel)})
 }
 function saveNewTripVibe(){
  const input=$('#tripVibeCustom'),raw=String(input?.value||'').trim();if(!raw)return;
@@ -576,12 +576,12 @@ function saveNewTripVibe(){
  if(!existing)state.vibeBank.push(v);
  const selected=[v,...$$('#tripVibeBank .vibe-tag.selected').map(b=>b.dataset.vibe)];
  input.value='';populateTripVibes(selected);
- localStorage.setItem('wozzaworld-state',JSON.stringify(state));toast(`${v} saved ✓`);
+ localStorage.setItem('wozzaworld-state',JSON.stringify(state));syncTripVibeSummary();toast(`${v} saved ✓`);
 }
+function syncTripVibeSummary(){const summary=$('#tripVibeSummary');if(!summary)return;summary.textContent=$$('#tripVibeBank .vibe-tag.selected').map(x=>x.dataset.vibe).filter(Boolean).join(' · ')}
 function setTripVibeCollapsed(collapsed){
  ensureTripVibeSection();const section=$('#tripVibeSection'),body=$('#tripVibeBody'),b=$('#tripVibeToggle'),summary=$('#tripVibeSummary');if(!section||!body||!b)return;
- const selected=$$('#tripVibeBank .vibe-tag.selected').map(x=>x.dataset.vibe).filter(Boolean);
- if(summary)summary.textContent=selected.join(' · ');
+ syncTripVibeSummary();
  section.classList.toggle('collapsed',collapsed);body.hidden=collapsed;b.textContent=collapsed?'+':'−';b.setAttribute('aria-expanded',String(!collapsed));b.setAttribute('aria-label',collapsed?'Expand the vibe':'Minimise the vibe');
 }
 function toggleTripVibe(){const section=$('#tripVibeSection');if(section)setTripVibeCollapsed(!section.classList.contains('collapsed'))}
@@ -1068,4 +1068,39 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  style.id='wozza-narrowboat-icon-scale';
  style.textContent='img[src$="narrowboat.png"]{transform:scale(1.24)!important;transform-origin:center!important}';
  document.head.appendChild(style);
+})();
+
+
+// v0.18.XX — Vibe true Companion blueprint + expanded-stop scroll repair.
+(()=>{
+ if(document.getElementById('wozza-vibe-companion-blueprint-scroll-fix'))return;
+ const st=document.createElement('style');st.id='wozza-vibe-companion-blueprint-scroll-fix';st.textContent=`
+ /* Vibe uses the exact same expanded panel treatment as Travel Companions. */
+ #tripForm #tripVibeBody{
+   background:#edf5f4!important;
+   border:1px solid rgba(7,94,120,.075)!important;
+   border-radius:24px!important;
+   padding:16px!important;
+   box-shadow:0 3px 10px rgba(5,65,85,.025)!important;
+   margin-top:16px!important;
+ }
+ #tripForm #tripVibeBody[hidden]{display:none!important}
+ #tripForm #tripVibeBank{display:flex!important;flex-wrap:wrap!important;gap:7px!important;margin:7px 0 10px!important}
+ #tripForm #tripVibeBank .companion-tag{padding:7px 11px!important;font-size:13px!important;line-height:1!important}
+ #tripForm #tripVibeBody .trip-new-companion{display:block!important;margin-bottom:0!important}
+ #tripForm #tripVibeCustom{width:100%!important;box-sizing:border-box!important}
+ /* One canonical toggle size for Vibe, identical to the other trip sections. */
+ #tripForm #tripVibeSection .section-collapse-toggle{
+   box-sizing:border-box!important;width:44px!important;height:44px!important;
+   min-width:44px!important;min-height:44px!important;max-width:44px!important;max-height:44px!important;
+   flex:0 0 44px!important;aspect-ratio:1/1!important;padding:0!important;margin:0!important;
+   border-radius:50%!important;font-size:27px!important;font-weight:700!important;line-height:1!important;
+   display:grid!important;place-items:center!important;transform:none!important;
+ }
+ #tripForm #tripVibeSection .trip-vibe-head{grid-template-columns:minmax(0,1fr) 44px!important}
+ #tripForm #tripVibeSummary{font:inherit!important;color:inherit}
+ /* A normal swipe on a stop scrolls the dialog. JS only suppresses it after the long-press drag has actually begun. */
+ #tripDestinationStops .trip-destination-stop{touch-action:pan-y!important}
+ #tripDestinationStops .trip-destination-stop.trip-stop-mobile-live{touch-action:none!important}
+ `;document.head.appendChild(st);
 })();
