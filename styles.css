@@ -3950,3 +3950,30 @@ body.map-view main{height:100dvh!important}
   body.map-view #worldMap{height:100dvh!important}
   body.map-view .map-close{display:grid!important;top:max(8px,env(safe-area-inset-top))!important;right:12px!important}
 }
+
+/* v0.18.95 - World View finishing polish.
+   Navigation now provides the exit path, so the legacy close control is redundant. */
+body.map-view #mapClose.map-close{display:none!important}
+
+/* Landscape World View: centre the existing map at its existing size inside the
+   usable viewport to the right of the navigation rail, rather than the full screen. */
+@media (orientation:landscape){
+  body.map-view{
+    --worldview-rail-width:clamp(82px,10vw,112px);
+  }
+  body.map-view .topbar{
+    width:var(--worldview-rail-width)!important;
+  }
+  body.map-view .map-stage{
+    left:var(--worldview-rail-width)!important;
+    right:0!important;
+    width:calc(100vw - var(--worldview-rail-width))!important;
+    height:100dvh!important;
+    padding:0!important;
+  }
+  body.map-view #worldMap{
+    width:100%!important;
+    height:100dvh!important;
+    margin:0 auto!important;
+  }
+}
