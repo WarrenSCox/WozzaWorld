@@ -3715,3 +3715,12 @@ body.map-view #mapClose.map-close{
   margin:30px 0 12px!important;
   color:#fff!important;
 }
+
+
+/* Next-fix bundle — alignment, Add Stop plus, map preview affordance */
+#tripList .trip-card-meta-row{align-items:center!important;}
+#tripList .trip-travel-icons{align-self:center!important;display:flex!important;align-items:center!important;height:26px!important;}
+#tripList .trip-travel-icons>span{display:flex!important;align-items:center!important;justify-content:center!important;height:26px!important;line-height:26px!important;}
+#tripList .trip-travel-icons .travel-mode-icon{display:block!important;margin:0!important;transform:none!important;vertical-align:middle!important;}
+#addTripDestination.wozza-add-stop-subtle::after{transform:none!important;rotate:0deg!important;translate:0 0!important;font-family:Arial,sans-serif!important;font-style:normal!important;}
+body:not(.map-view) #mapStage{cursor:pointer!important;}
