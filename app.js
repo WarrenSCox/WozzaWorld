@@ -951,3 +951,12 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  btn.addEventListener('contextmenu',e=>{if(held)e.preventDefault()});
  btn.addEventListener('click',e=>{if(!held)return;held=false;e.preventDefault();e.stopImmediatePropagation()},true);
 })();
+
+
+;(()=>{
+ if(document.getElementById('wozza-narrowboat-icon-scale'))return;
+ const style=document.createElement('style');
+ style.id='wozza-narrowboat-icon-scale';
+ style.textContent='img[src$="narrowboat.png"]{transform:scale(1.24)!important;transform-origin:center!important}';
+ document.head.appendChild(style);
+})();
