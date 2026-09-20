@@ -547,20 +547,17 @@ function ensureTripVibeSection(){
  if($('#tripVibeSection'))return;
  const companions=document.querySelector('.trip-companions-section');if(!companions)return;
  const section=document.createElement('div');section.id='tripVibeSection';section.className='trip-vibe-section collapsed';
- section.innerHTML='<div class="trip-vibe-head"><div class="trip-vibe-title-wrap"><div class="trip-section-title">THE VIBE</div><div id="tripVibeSummary" class="trip-vibe-summary"></div></div><button type="button" id="tripVibeToggle" class="section-collapse-toggle" aria-expanded="false" aria-label="Expand the vibe">+</button></div><div id="tripVibeBody" hidden><div id="tripVibeBank" class="vibe-bank companion-bank"></div><div class="trip-new-vibe"><input id="tripVibeCustom" autocomplete="off" placeholder="Add your own vibe"></div></div>';
+ section.innerHTML='<div class="trip-vibe-head trip-companions-head"><div class="trip-section-title">THE VIBE</div><div id="tripVibeSummary" class="trip-vibe-summary trip-selected-summary"></div><button type="button" id="tripVibeToggle" class="section-collapse-toggle" aria-expanded="false" aria-label="Expand the vibe">+</button></div><div id="tripVibeBody"><div id="tripVibeBank" class="vibe-bank companion-bank"></div><div class="trip-new-vibe trip-new-companion"><input id="tripVibeCustom" autocomplete="off" placeholder="Add your own vibe"></div></div>';
  companions.insertAdjacentElement('afterend',section);
  const st=document.createElement('style');st.id='wozza-trip-vibe-style';st.textContent=`
- #tripVibeSection{margin-top:28px}
+ #tripVibeSection{margin-top:28px!important;margin-bottom:0!important;padding:0!important}
  #tripVibeSection .trip-vibe-head{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) 54px!important;column-gap:14px!important;align-items:start!important;min-height:54px!important;padding:0!important;margin:0!important}
- #tripVibeSection .trip-vibe-title-wrap{min-width:0!important;padding-top:7px!important}
- #tripVibeSection.collapsed .trip-vibe-head:has(.trip-vibe-summary:empty) .trip-vibe-title-wrap{padding-top:0!important;align-self:center!important;transform:translateY(11px)!important}
+ #tripVibeSection .trip-vibe-head>.trip-section-title{min-width:0!important;padding-top:7px!important}
+ #tripVibeSection .trip-vibe-head>.trip-selected-summary{grid-column:1!important;margin-top:6px!important;padding:0!important}
+ #tripVibeSection.collapsed .trip-vibe-head:has(.trip-selected-summary:empty)>.trip-section-title{padding-top:0!important;align-self:center!important;transform:translateY(11px)!important}
+ #tripVibeSection.collapsed .trip-vibe-head:has(.trip-selected-summary:not(:empty))>.trip-section-title{transform:none!important}
  #tripVibeSection .section-collapse-toggle{grid-column:2!important;grid-row:1!important;justify-self:end!important;align-self:start!important;margin:0!important;position:static!important;transform:none!important;width:54px!important;height:54px!important}
- #tripVibeSection .trip-vibe-summary{font-size:.82rem;font-weight:700;opacity:.78;margin-top:4px}
- #tripVibeSection .vibe-bank{background:#f4fbfb;border-radius:22px;padding:18px;display:flex;flex-wrap:wrap;gap:8px}
  #tripVibeSection .vibe-tag{position:relative}
- #tripVibeSection .vibe-tag.selected{background:#078b98;color:#fff;border-color:#078b98}
- #tripVibeSection .trip-new-vibe{background:#f4fbfb;padding:0 18px 18px;border-radius:0 0 22px 22px;margin-top:-12px}
- #tripVibeSection #tripVibeCustom{box-sizing:border-box;width:100%;border:1px solid rgba(13,45,59,.12);border-radius:18px;background:#fff;padding:13px 16px;font:inherit;color:#172d39;outline:none}
  `;
  document.head.appendChild(st);
  $('#tripVibeToggle').addEventListener('click',toggleTripVibe);
