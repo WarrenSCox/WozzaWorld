@@ -207,7 +207,7 @@ body.map-view #worldMap{display:block;width:100vw!important;height:100dvh!import
 body.map-view .map-summary,body.map-view .country-carousel{display:none!important}
 body.map-view .map-loading{background:var(--blue)!important;color:#fff}
 @media(orientation:portrait){
-body.map-view::after{content:"Rotate your phone for the full map";position:fixed;z-index:110;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:9px 13px;border-radius:999px;background:rgba(23,33,61,.76);color:#fff;font:700 12px/1.2 Inter,sans-serif;white-space:nowrap;pointer-events:none}
+body.map-view::after{content:"Rotate your phone for landscape view";position:fixed;z-index:110;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:9px 13px;border-radius:999px;background:rgba(23,33,61,.76);color:#fff;font:700 12px/1.2 Inter,sans-serif;white-space:nowrap;pointer-events:none}
 
 }
 @media(orientation:landscape){body.map-view::after{display:none}}
