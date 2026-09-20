@@ -3895,3 +3895,58 @@ body.map-view main{height:100dvh!important}
   body.map-view .map-stage{padding-top:var(--worldview-header-height,68px)!important}
   body.map-view #worldMap{height:calc(100dvh - var(--worldview-header-height,68px))!important}
 }
+
+/* v0.18.94 - World View landscape navigation rail.
+   Landscape map only: move the existing header into the otherwise-unused left side space. */
+@media (orientation:landscape){
+  body.map-view .topbar{
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    align-items:stretch!important;
+    position:fixed!important;
+    top:0!important;
+    bottom:0!important;
+    left:0!important;
+    right:auto!important;
+    width:clamp(82px,10vw,112px)!important;
+    min-height:0!important;
+    height:100dvh!important;
+    padding:max(8px,env(safe-area-inset-top)) 6px max(8px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))!important;
+    gap:3px!important;
+    overflow:hidden!important;
+    background:linear-gradient(180deg,rgba(7,94,120,.82),rgba(10,119,139,.74))!important;
+  }
+  body.map-view .header-nav{
+    display:flex!important;
+    flex:1 1 auto!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:space-evenly!important;
+    width:100%!important;
+    min-height:0!important;
+    gap:0!important;
+  }
+  body.map-view .header-nav-item{
+    flex:1 1 0!important;
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    max-height:76px!important;
+    padding:2px 0!important;
+    gap:1px!important;
+  }
+  body.map-view .header-nav-item svg{width:28px!important;height:28px!important}
+  body.map-view .header-nav-item span{font-size:9.5px!important}
+  body.map-view .ecosystem-brand{
+    flex:0 0 58px!important;
+    width:100%!important;
+    min-width:0!important;
+    height:58px!important;
+    margin-top:2px!important;
+  }
+  body.map-view .ecosystem-brand .brand-main-logo{width:min(94px,94%)!important;max-width:94%!important}
+  body.map-view .map-stage{padding:0!important}
+  body.map-view #worldMap{height:100dvh!important}
+  body.map-view .map-close{display:grid!important;top:max(8px,env(safe-area-inset-top))!important;right:12px!important}
+}
