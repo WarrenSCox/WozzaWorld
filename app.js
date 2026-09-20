@@ -173,7 +173,7 @@ function updateCountryLabels(transform){
    const pt=transform.apply(d.centroid),bw=(d.bounds[1][0]-d.bounds[0][0])*transform.k,bh=(d.bounds[1][1]-d.bounds[0][1])*transform.k,font=8,tw=Math.max(8,d.name.length*4.25);
    let show=bw>tw*1.25&&bh>font*1.7&&pt[0]>8&&pt[0]<992&&pt[1]>8&&pt[1]<512;
    if(show){const box=[pt[0]-tw/2-2,pt[1]-font/2-2,pt[0]+tw/2+2,pt[1]+font/2+2];if(occupied.some(b=>!(box[2]<b[0]||box[0]>b[2]||box[3]<b[1]||box[1]>b[3])))show=false;else occupied.push(box)}
-   d3.select(this).attr('x',pt[0]).attr('y',pt[1]).style('display',show?null:'none')
+   d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?34:0)).style('display',show?null:'none')
   });
   return
  }
@@ -189,7 +189,7 @@ function updateCountryLabels(transform){
   const pt=transform.apply(d.centroid);
   const baseW=d.bounds[1][0]-d.bounds[0][0],baseH=d.bounds[1][1]-d.bounds[0][1],baseArea=baseW*baseH;
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
-  d3.select(this).attr('x',pt[0]).attr('y',pt[1]).style('display',show?null:'none')
+  d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?34:0)).style('display',show?null:'none')
  })
 }mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
