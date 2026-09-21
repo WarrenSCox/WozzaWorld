@@ -197,20 +197,32 @@ function updateCountryLabels(transform){
 function ensurePortraitOcean(){
  let ocean=svg.select('#portraitOcean');
  if(ocean.empty())ocean=svg.insert('rect',':first-child').attr('id','portraitOcean').attr('x',-5000).attr('y',-5000).attr('width',11000).attr('height',10520).attr('pointer-events','none');
- ocean.attr('fill','#dff3f7').style('display',document.body.classList.contains('map-view')&&window.matchMedia('(orientation: portrait)').matches?null:'none')
+ const sphereFill=getComputedStyle(svg.select('#sphere').node()).fill;
+ ocean.attr('fill',sphereFill).style('display',document.body.classList.contains('map-view')&&window.matchMedia('(orientation: portrait)').matches?null:'none')
 }
 function renderPortraitWorldCopies(t){
  clearPortraitWorldCopies();ensurePortraitOcean();
  if(!document.body.classList.contains('map-view')||!window.matchMedia('(orientation: portrait)').matches)return;
  const period=952*t.k;
  [-1,1].forEach(dir=>{
+  const dx=dir*period;
   const c=svg.select('#countries').node().cloneNode(true);
   c.removeAttribute('id');c.setAttribute('class','portrait-world-copy portrait-countries-copy');c.setAttribute('pointer-events','none');c.setAttribute('aria-hidden','true');
   svg.node().insertBefore(c,svg.select('#countryLabels').node());
-  d3.select(c).attr('transform',`translate(${t.x+dir*period},${t.y}) scale(${t.k})`)
+  d3.select(c).attr('transform',`translate(${t.x+dx},${t.y}) scale(${t.k})`);
+  const lg=svg.select('#countryLabels').node().cloneNode(true);
+  lg.removeAttribute('id');lg.setAttribute('class','portrait-world-copy portrait-label-copy');lg.setAttribute('pointer-events','none');lg.setAttribute('aria-hidden','true');
+  svg.node().appendChild(lg);
+  d3.select(lg).selectAll('text').each(function(_,i){
+   const source=labels.nodes()[i];
+   if(!source)return;
+   const x=parseFloat(source.getAttribute('x'));
+   const y=parseFloat(source.getAttribute('y'));
+   d3.select(this).attr('x',Number.isFinite(x)?x+dx:0).attr('y',Number.isFinite(y)?y:0).style('display',source.style.display)
+  })
  })
 }
-mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?1.15:1,56]).translateExtent(portrait?[[-1e9,0],[1e9,520]]:[[0,0],[1000,520]]);if(!portrait){clearPortraitWorldCopies();svg.select('#portraitOcean').style('display','none')}}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;let t=event.transform;if(window.matchMedia('(orientation: portrait)').matches){const period=952*t.k,centre=500;let x=t.x;while(x>centre+period/2)x-=period;while(x<centre-period/2)x+=period;if(Math.abs(x-t.x)>.01){t=d3.zoomIdentity.translate(x,t.y).scale(t.k);svg.property('__zoom',t)}}svg.select('#sphere').attr('transform',t);svg.select('#countries').attr('transform',t);renderPortraitWorldCopies(t);updateCountryLabels(t)});
+mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?1.15:1,56]).translateExtent(portrait?[[-1e9,0],[1e9,520]]:[[0,0],[1000,520]]);if(!portrait){clearPortraitWorldCopies();svg.select('#portraitOcean').style('display','none')}}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;let t=event.transform;if(window.matchMedia('(orientation: portrait)').matches){const period=952*t.k,centre=500;let x=t.x;while(x>centre+period/2)x-=period;while(x<centre-period/2)x+=period;t=d3.zoomIdentity.translate(x,t.y).scale(t.k)}svg.select('#sphere').attr('transform',t);svg.select('#countries').attr('transform',t);updateCountryLabels(t);renderPortraitWorldCopies(t)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
