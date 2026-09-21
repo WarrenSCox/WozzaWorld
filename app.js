@@ -1138,3 +1138,12 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  #tripDestinationStops .trip-destination-stop.trip-stop-mobile-live{touch-action:none!important}
  `;document.head.appendChild(st);
 })();
+
+// Map landscape only: centre the country card in the usable map area beside the navigation rail.
+(()=>{
+  if(document.getElementById('map-landscape-country-card-centre'))return;
+  const st=document.createElement('style');
+  st.id='map-landscape-country-card-centre';
+  st.textContent=`@media (orientation:landscape){body.map-view #countrySheet.sheet{left:calc(50% + clamp(41px,5vw,56px))!important}}`;
+  document.head.appendChild(st);
+})();
