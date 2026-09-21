@@ -200,7 +200,8 @@ function updateCountryLabels(transform){
   const pt=transform.apply(d.centroid);
   const baseW=d.bounds[1][0]-d.bounds[0][0],baseH=d.bounds[1][1]-d.bounds[0][1],baseArea=baseW*baseH;
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
-  d3.select(this).attr('x',pt[0]+(d.name==='Vietnam'?78:0)).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
+  const vietnamDx=d.name==='Vietnam'?Math.max(0,Math.min(78,(k-2.15)/(5.35-2.15)*78)):0;
+  d3.select(this).attr('x',pt[0]+vietnamDx).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
 }function clearPortraitWorldCopies(){svg.selectAll('.portrait-world-copy').remove()}
 function ensurePortraitOcean(){
@@ -242,7 +243,7 @@ function renderPortraitWorldCopies(t){
   })
  })
 }
-mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?1.15:1,56]).translateExtent(portrait?[[-1e9,0],[1e9,520]]:[[0,0],[1000,520]]);if(!portrait){clearPortraitWorldCopies();svg.select('#portraitOcean').style('display','none')}}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;let t=event.transform;if(window.matchMedia('(orientation: portrait)').matches){const period=952*t.k,centre=500;let x=t.x;while(x>centre+period/2)x-=period;while(x<centre-period/2)x+=period;const y=(520-520*t.k)/2;t=d3.zoomIdentity.translate(x,y).scale(t.k);svg.property('__zoom',t)}svg.select('#sphere').attr('transform',t);svg.select('#countries').attr('transform',t);updateCountryLabels(t);renderPortraitWorldCopies(t)});
+mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?1.15:1,56]).translateExtent(portrait?[[-1e9,0],[1e9,520]]:[[0,0],[1000,520]]);if(!portrait){clearPortraitWorldCopies();svg.select('#portraitOcean').style('display','none')}}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;let t=event.transform;if(window.matchMedia('(orientation: portrait)').matches){const period=952*t.k,centre=500;let x=t.x;while(x>centre+period/2)x-=period;while(x<centre-period/2)x+=period;const baseY=(520-520*t.k)/2;const y=t.k<=1.7?baseY:t.y;t=d3.zoomIdentity.translate(x,y).scale(t.k);svg.property('__zoom',t)}svg.select('#sphere').attr('transform',t);svg.select('#countries').attr('transform',t);updateCountryLabels(t);renderPortraitWorldCopies(t)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
@@ -1175,8 +1176,9 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   st.id='fast-facts-flag-chart-shadow-hotfix';
   st.textContent=`
     #countryInfoFlag{cursor:pointer}
-    .passport-stats-slide .stats-show-more{margin-bottom:18px!important;overflow:visible!important}
-    .passport-mini-list{overflow:visible!important}
+    .passport-stats-slide .stats-show-more{margin-bottom:24px!important;overflow:visible!important}
+    .passport-mini-list{overflow:visible!important;padding-bottom:16px!important}
+    .passport-stats-carousel.stats-expanded .passport-stats-slide.is-active{overflow:visible!important}
   `;
   document.getElementById(st.id)?.remove();
   document.head.appendChild(st);
