@@ -205,8 +205,14 @@ function ensurePortraitWorldCopies(){
  if(!svg.select('.portrait-countries-copy-left').empty())return;
  [-1,1].forEach(dir=>{
   const c=svg.select('#countries').node().cloneNode(true);
-  c.removeAttribute('id');c.setAttribute('class',`portrait-world-copy portrait-countries-copy portrait-countries-copy-${dir<0?'left':'right'}`);c.setAttribute('pointer-events','none');c.setAttribute('aria-hidden','true');
+  c.removeAttribute('id');c.setAttribute('class',`portrait-world-copy portrait-countries-copy portrait-countries-copy-${dir<0?'left':'right'}`);c.setAttribute('pointer-events','auto');c.setAttribute('aria-hidden','true');
   svg.node().insertBefore(c,svg.select('#countryLabels').node());
+  d3.select(c).selectAll('.country').attr('tabindex',null).on('click',(event,d)=>{
+   if(!document.body.classList.contains('map-view'))return;
+   event.preventDefault();event.stopPropagation();
+   const country=event.currentTarget?.dataset?.country||d?.properties?.name;
+   if(country)openCountry(country,{type:'map'})
+  });
   const l=svg.select('#countryLabels').node().cloneNode(true);
   l.removeAttribute('id');l.setAttribute('class',`portrait-world-copy portrait-label-copy portrait-label-copy-${dir<0?'left':'right'}`);l.setAttribute('pointer-events','none');l.setAttribute('aria-hidden','true');
   svg.node().appendChild(l)
@@ -395,7 +401,7 @@ function renderSheet(){
  const info=$('#countryInfoSummary');if(info){const cityNames=cities.map(x=>x.name),parts=[];if(cityNames.length)parts.push(`<div><strong>Destinations</strong><p>${cityNames.map(esc).join(' · ')}</p></div>`);if(companions.length)parts.push(`<div><strong>Travel companions</strong><p>${companions.map(esc).join(' · ')}</p></div>`);info.innerHTML=`<h3>SUMMARY</h3>${parts.join('')}`}
  attachTripCardEvents($('#countryTrips'));
 }
-function toast(t,action=null){const el=$('#toast');el.textContent=t;el.classList.add('show');el.onclick=action?()=>{action();el.classList.remove('show')}:null;clearTimeout(el._timer);el._timer=setTimeout(()=>{el.classList.remove('show');el.onclick=null},action?4200:1800)}
+function toast(t,action=null){const el=$('#toast'),tripConfirmation=t==='Trip updated'||t==='Trip created';el.textContent=t;if(tripConfirmation)el.style.opacity='.88';else el.style.removeProperty('opacity');el.classList.add('show');el.onclick=action?()=>{action();el.classList.remove('show');el.style.removeProperty('opacity')}:null;clearTimeout(el._timer);el._timer=setTimeout(()=>{el.classList.remove('show');el.onclick=null;el.style.removeProperty('opacity')},action?4200:1800)}
 $$('.choice-grid button').forEach(b=>b.onclick=()=>{const status=b.dataset.status,was=countryHasStatus(currentCountry,status);if(status==='bucket'&&!was){setCountryStatus(currentCountry,'bucket',true)}else setCountryStatus(currentCountry,status,!was);if(status==='visited'&&!was){state.visitHistory=state.visitHistory.filter(c=>c!==currentCountry);state.visitHistory.push(currentCountry)}save()});
 async function leaveMapMode(){try{const m=d3.select('#worldMap');m.selectAll('.portrait-world-copy').remove();m.select('#portraitOcean').style('display','none')}catch(e){}document.body.classList.remove('map-view');resetMapZoom(false);try{screen.orientation?.unlock?.()}catch(e){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}}
 
