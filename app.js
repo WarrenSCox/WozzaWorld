@@ -193,7 +193,7 @@ function updateCountryLabels(transform){
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
   d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
-}mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
+}mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{mapZoomBehavior.scaleExtent([window.matchMedia('(orientation: portrait)').matches?.55:1,56])}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
@@ -385,24 +385,11 @@ async function showHome(){
  if(fromMap)await withWorldMapMorph(update);else await update();
  requestAnimationFrame(()=>requestAnimationFrame(()=>setCountrySlide(0,false)));
 }
-function setPortraitMapInitialZoom(){
- if(!mapZoomBehavior||!document.body.classList.contains('map-view'))return;
- if(!window.matchMedia('(orientation: portrait)').matches)return;
- const svg=d3.select('#worldMap'),k=1.55,cx=500,cy=250;
- // Portrait gets a closer starting view only. The zoom behaviour itself keeps
- // the baseline [1,56] scale extent, so pinching out still reaches the normal
- // full-world view and landscape keeps its original limits/behaviour.
- const initial=d3.zoomIdentity.translate(cx*(1-k),cy*(1-k)).scale(k);
- svg.call(mapZoomBehavior.transform,initial);
-}
 async function showMap(){
  if(document.body.classList.contains('map-view'))return;
- const update=()=>{document.body.classList.remove('trips-view');document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='map'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));const bar=document.querySelector('.topbar');if(bar)requestAnimationFrame(()=>document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px'));window.scrollTo({top:0});ensureWorldViewClouds()};
+ const update=()=>{document.body.classList.remove('trips-view');document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='map'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));const bar=document.querySelector('.topbar');if(bar)requestAnimationFrame(()=>document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px'));window.scrollTo({top:0});ensureWorldViewClouds();if(window.matchMedia('(orientation: portrait)').matches&&mapZoomBehavior){const svg=d3.select('#worldMap'),k=1.45,t=d3.zoomIdentity.translate((1000-1000*k)/2,(520-520*k)/2).scale(k);mapZoomBehavior.scaleExtent([.55,56]);svg.call(mapZoomBehavior.transform,t)}else if(mapZoomBehavior){mapZoomBehavior.scaleExtent([1,56])}};
  await withWorldMapMorph(update);
  try{await screen.orientation?.lock?.('landscape')}catch(e){}
- // Apply the closer start only when the device actually remains portrait.
- // If landscape lock succeeds, this does nothing and baseline landscape is untouched.
- requestAnimationFrame(()=>setPortraitMapInitialZoom());
 }
 async function showSection(target){
   if(target==='home')return showHome();
@@ -806,7 +793,7 @@ function requestWorldViewName(){
 }
 window.addEventListener('load',requestWorldViewName,{once:true});
 window.matchMedia('(display-mode: standalone)').addEventListener?.('change',applyWorldViewName);
-window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewName();window.dispatchEvent(new Event('resize'))},180));
+window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewName();if(document.body.classList.contains('map-view')&&mapZoomBehavior){const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?.55:1,56]);if(!portrait){const svg=d3.select('#worldMap');svg.call(mapZoomBehavior.transform,d3.zoomIdentity)}}window.dispatchEvent(new Event('resize'))},180));
 applyWorldViewName();
 
 (function(){if(document.getElementById('wozza-hotfix-048-style'))return;const st=document.createElement('style');st.id='wozza-hotfix-048-style';st.textContent=`
