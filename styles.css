@@ -4008,7 +4008,28 @@ body.map-view #mapClose.map-close{display:none!important}
 /* Trip multi-select focus mode */
 .trip-selection-bar{left:50%!important;right:auto!important;transform:translateX(-50%)!important;margin:0!important;width:max-content!important;gap:10px!important}
 .trip-selection-cancel{width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#52666f;font-size:28px;line-height:1;display:grid;place-items:center;box-shadow:0 8px 22px rgba(9,38,47,.16)}
-body.trip-selection-focus::after{content:'';position:fixed;inset:0;z-index:20;background:rgba(3,67,82,.28);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);pointer-events:none}
+body.trip-selection-focus::after{content:'';position:fixed;inset:0;z-index:20;background:rgba(3,67,82,.34);pointer-events:none}
 body.trip-selection-focus #tripList{position:relative;z-index:21}
 body.trip-selection-focus #tripList .trip-card{position:relative!important;z-index:22;filter:none!important}
 body.trip-selection-focus .trip-selection-bar{position:sticky!important;z-index:23!important;filter:none!important}
+
+/* Selection focus v2: blur individual background UI, never the trip cards/actions */
+body.trip-selection-focus .app-header,
+body.trip-selection-focus header,
+body.trip-selection-focus [data-screen="trips"] > .trips-actions,
+body.trip-selection-focus #tripList .trip-category-head,
+body.trip-selection-focus #tripList .rearview-handnote,
+body.trip-selection-focus #tripList .rearview-filter-panel,
+body.trip-selection-focus #tripList .trip-category-empty{
+  filter:blur(5px);
+  opacity:.58;
+}
+body.trip-selection-focus #tripList,
+body.trip-selection-focus #tripList .trip-category,
+body.trip-selection-focus #tripList .trip-category-list,
+body.trip-selection-focus #tripList .trip-card,
+body.trip-selection-focus .trip-selection-bar,
+body.trip-selection-focus .trip-selection-bar *{
+  filter:none!important;
+  opacity:1!important;
+}
