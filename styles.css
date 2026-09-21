@@ -4157,3 +4157,22 @@ body.trip-selection-focus .trip-selection-bin{
   position:relative!important;
   z-index:100000!important;
 }
+
+/* Trip selection: hide header/banner divider while controls sit over it.
+   Position, cards and blur behaviour remain unchanged. */
+body.trip-selection-focus .topbar,
+body.trip-selection-focus .app-header,
+body.trip-selection-focus header{
+  border-bottom-color:transparent!important;
+  box-shadow:none!important;
+}
+body.trip-selection-focus .topbar::after,
+body.trip-selection-focus .app-header::after,
+body.trip-selection-focus header::after,
+body.trip-selection-focus .topbar::before,
+body.trip-selection-focus .app-header::before,
+body.trip-selection-focus header::before{
+  border-bottom-color:transparent!important;
+  border-top-color:transparent!important;
+  box-shadow:none!important;
+}
