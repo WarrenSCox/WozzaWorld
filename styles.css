@@ -4146,3 +4146,14 @@ body.trip-selection-focus .trip-selection-bar{
   display:grid!important;
   place-items:center!important;
 }
+
+/* Hotfix: keep trip multi-select controls above all blurred/banner layers */
+body.trip-selection-focus .trip-selection-bar{
+  z-index:99999!important;
+  isolation:isolate!important;
+}
+body.trip-selection-focus .trip-selection-cancel,
+body.trip-selection-focus .trip-selection-bin{
+  position:relative!important;
+  z-index:100000!important;
+}
