@@ -200,7 +200,7 @@ function updateCountryLabels(transform){
   const pt=transform.apply(d.centroid);
   const baseW=d.bounds[1][0]-d.bounds[0][0],baseH=d.bounds[1][1]-d.bounds[0][1],baseArea=baseW*baseH;
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
-  const vietnamDx=d.name==='Vietnam'?Math.max(0,Math.min(78,(k-2.15)/(5.35-2.15)*78)):0;
+  const vietnamDx=d.name==='Vietnam'?Math.max(0,Math.min(34,(k-2.15)/(4.6-2.15)*34)):0;
   d3.select(this).attr('x',pt[0]+vietnamDx).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
 }function clearPortraitWorldCopies(){svg.selectAll('.portrait-world-copy').remove()}
@@ -1176,9 +1176,9 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   st.id='fast-facts-flag-chart-shadow-hotfix';
   st.textContent=`
     #countryInfoFlag{cursor:pointer}
-    .passport-stats-slide .stats-show-more{margin-bottom:24px!important;overflow:visible!important}
-    .passport-mini-list{overflow:visible!important;padding-bottom:16px!important}
-    .passport-stats-carousel.stats-expanded .passport-stats-slide.is-active{overflow:visible!important}
+    .passport-stats-slide .stats-show-more{display:grid!important;place-items:center!important;margin:26px auto 38px!important;overflow:visible!important;filter:none!important;box-shadow:0 10px 18px rgba(5,107,137,.22)!important}
+    .passport-mini-list{overflow:visible!important;padding-bottom:28px!important}
+    .passport-stats-carousel.stats-expanded .passport-stats-slide.is-active{overflow:visible!important;padding-bottom:28px!important}
   `;
   document.getElementById(st.id)?.remove();
   document.head.appendChild(st);
