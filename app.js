@@ -200,7 +200,7 @@ function updateCountryLabels(transform){
   const pt=transform.apply(d.centroid);
   const baseW=d.bounds[1][0]-d.bounds[0][0],baseH=d.bounds[1][1]-d.bounds[0][1],baseArea=baseW*baseH;
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
-  d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
+  d3.select(this).attr('x',pt[0]+(d.name==='Vietnam'?42:0)).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
 }function clearPortraitWorldCopies(){svg.selectAll('.portrait-world-copy').remove()}
 function ensurePortraitOcean(){
@@ -1048,7 +1048,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 ;(()=>{
  if(window.__wozzaFactsImageViewerV3)return;window.__wozzaFactsImageViewerV3=true;
  const style=document.createElement('style');style.id='wozza-facts-image-viewer-style';style.textContent=`
- .wozza-image-viewer{position:fixed;inset:0;z-index:2147483647;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#087b8c;overflow:hidden;place-items:center;touch-action:none}\n .wozza-image-viewer[open]{display:grid}\n .wozza-image-viewer::backdrop{background:transparent}
+ .wozza-image-viewer{position:fixed;inset:0;z-index:2147483647;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0!important;border-radius:0!important;box-shadow:none!important;background:#087b8c;overflow:hidden;place-items:center;touch-action:none}\n .wozza-image-viewer[open]{display:grid}\n .wozza-image-viewer::backdrop{background:transparent}
  .wozza-image-viewer .sky-clouds{position:absolute!important;inset:-20px!important;width:calc(100% + 40px)!important;height:calc(100% + 40px)!important;pointer-events:none!important;filter:blur(4px)!important;opacity:.78!important;z-index:0!important}
  .wozza-image-viewer::after{content:'';position:absolute;inset:0;background:rgba(0,91,108,.16);backdrop-filter:blur(1px);z-index:1;pointer-events:none}
  .wozza-image-viewer-stage{position:absolute;inset:0;z-index:2;display:grid;place-items:center;overflow:hidden;touch-action:none}
