@@ -161,12 +161,6 @@ function attachCountryEvents(){$$('.country').forEach(p=>{
   };
 })}
 let mapZoomBehavior=null;
-function applyPortraitInitialMapZoom(){
- if(!mapZoomBehavior||!document.body.classList.contains('map-view')||!window.matchMedia('(orientation: portrait)').matches)return;
- const svg=d3.select('#worldMap'),k=1.70,cx=500,cy=260;
- const initial=d3.zoomIdentity.translate(cx*(1-k),cy*(1-k)).scale(k);
- svg.call(mapZoomBehavior.transform,initial);
-}
 function resetMapZoom(animate=true){const svg=d3.select('#worldMap');svg.select('#sphere').attr('transform',null);svg.select('#countries').attr('transform',null);svg.select('#countryLabels').selectAll('text').style('display','none').attr('transform',null);if(!mapZoomBehavior)return;svg.property('__zoom',d3.zoomIdentity);if(document.body.classList.contains('map-view'))svg.transition().duration(animate?260:0).call(mapZoomBehavior.transform,d3.zoomIdentity)}
 async function buildMap(){try{const world=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(r=>r.json()),features=topojson.feature(world,world.objects.countries).features;availableCountries=features.map(d=>d.properties.name).filter(Boolean).sort();const svg=d3.select('#worldMap'),projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'}),path=d3.geoPath(projection);const sphereD=path({type:'Sphere'});svg.select('#sphere').attr('d',sphereD);let defs=svg.select('defs');if(defs.empty())defs=svg.insert('defs',':first-child');let globeClip=defs.select('#worldGlobeClip');if(globeClip.empty())globeClip=defs.append('clipPath').attr('id','worldGlobeClip');globeClip.selectAll('path').data([null]).join('path').attr('d',sphereD);svg.select('#countries').attr('clip-path','url(#worldGlobeClip)');svg.select('#countries').selectAll('path').data(features).join('path').attr('class','country').attr('d',path).attr('data-country',d=>d.properties.name).attr('tabindex','0').attr('aria-label',d=>d.properties.name);function labelFeature(f){if(f.geometry?.type!=='MultiPolygon')return f;const polys=f.geometry.coordinates.map(coords=>({type:'Feature',properties:f.properties,geometry:{type:'Polygon',coordinates:coords}}));return polys.sort((a,b)=>d3.geoArea(b)-d3.geoArea(a))[0]||f}const labelData=features.map(f=>{const lf=labelFeature(f);return{feature:lf,name:f.properties.name,centroid:path.centroid(lf),bounds:path.bounds(lf)}}).filter(x=>Number.isFinite(x.centroid[0])&&Number.isFinite(x.centroid[1]));
 const kaliningradPt=projection([20.52,54.71]);
@@ -199,7 +193,7 @@ function updateCountryLabels(transform){
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
   d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
-}mapZoomBehavior=d3.zoom().scaleExtent([0.55,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
+}mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
@@ -391,12 +385,24 @@ async function showHome(){
  if(fromMap)await withWorldMapMorph(update);else await update();
  requestAnimationFrame(()=>requestAnimationFrame(()=>setCountrySlide(0,false)));
 }
+function setPortraitMapInitialZoom(){
+ if(!mapZoomBehavior||!document.body.classList.contains('map-view'))return;
+ if(!window.matchMedia('(orientation: portrait)').matches)return;
+ const svg=d3.select('#worldMap'),k=1.55,cx=500,cy=250;
+ // Portrait gets a closer starting view only. The zoom behaviour itself keeps
+ // the baseline [1,56] scale extent, so pinching out still reaches the normal
+ // full-world view and landscape keeps its original limits/behaviour.
+ const initial=d3.zoomIdentity.translate(cx*(1-k),cy*(1-k)).scale(k);
+ svg.call(mapZoomBehavior.transform,initial);
+}
 async function showMap(){
  if(document.body.classList.contains('map-view'))return;
  const update=()=>{document.body.classList.remove('trips-view');document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='map'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));const bar=document.querySelector('.topbar');if(bar)requestAnimationFrame(()=>document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px'));window.scrollTo({top:0});ensureWorldViewClouds()};
  await withWorldMapMorph(update);
- applyPortraitInitialMapZoom();
  try{await screen.orientation?.lock?.('landscape')}catch(e){}
+ // Apply the closer start only when the device actually remains portrait.
+ // If landscape lock succeeds, this does nothing and baseline landscape is untouched.
+ requestAnimationFrame(()=>setPortraitMapInitialZoom());
 }
 async function showSection(target){
   if(target==='home')return showHome();
