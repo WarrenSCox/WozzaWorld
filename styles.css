@@ -4213,3 +4213,10 @@ body.trip-selection-focus header{
   z-index:auto!important;
   isolation:auto!important;
 }
+
+/* Home country-removal dialog: match the app's established modal blur treatment */
+#removeDialog::backdrop{
+  background:rgba(8,27,39,.58)!important;
+  -webkit-backdrop-filter:blur(3px)!important;
+  backdrop-filter:blur(3px)!important;
+}
