@@ -42,7 +42,7 @@ function attachListRowEvents(){
       row.onclick=e=>{if(e.target.closest('button')||longPress)return;openCountry(c)};
       row.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('button')){e.preventDefault();openCountry(c)}};
       if(id!=='bucketCountries'){
-        row.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;longPress=false;startX=e.clientX;startY=e.clientY;timer=setTimeout(()=>{longPress=true;openRemoveDialog(c,id==='visitedCountries'?'visited':'going')},600)});
+        row.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;longPress=false;startX=e.clientX;startY=e.clientY;timer=setTimeout(()=>{longPress=true;navigator.vibrate?.(20);openRemoveDialog(c,id==='visitedCountries'?'visited':'going')},600)});
         row.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-startX,e.clientY-startY)>10){clearTimeout(timer);timer=null}});
         row.addEventListener('pointerup',()=>{clearTimeout(timer);timer=null;setTimeout(()=>{longPress=false},0)});
         row.addEventListener('pointercancel',()=>{clearTimeout(timer);timer=null;longPress=false});
