@@ -4114,3 +4114,14 @@ body.trip-selection-focus .trip-selection-bar{
   align-items:center!important;
   width:max-content!important;
 }
+
+/* Trip selection v5: position-only polish */
+body.trip-selection-focus .trip-selection-bar{
+  position:fixed!important;
+  top:128px!important;
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  margin:0!important;
+  z-index:2000!important;
+}
