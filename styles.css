@@ -4033,3 +4033,40 @@ body.trip-selection-focus .trip-selection-bar *{
   filter:none!important;
   opacity:1!important;
 }
+
+/* Trip selection presentation v3: zero layout shift, cards/actions stay fully vivid */
+body.trip-selection-focus .trip-selection-bar{
+  position:fixed!important;
+  top:205px!important;
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  margin:0!important;
+  z-index:1002!important;
+  filter:none!important;
+  opacity:1!important;
+  pointer-events:auto;
+}
+body.trip-selection-focus .trip-selection-bin,
+body.trip-selection-focus .trip-selection-cancel,
+body.trip-selection-focus .trip-selection-bin *,
+body.trip-selection-focus .trip-selection-cancel *{
+  filter:none!important;
+  opacity:1!important;
+}
+body.trip-selection-focus #tripList .trip-card,
+body.trip-selection-focus #tripList .trip-card *{
+  filter:none!important;
+  opacity:1!important;
+}
+body.trip-selection-focus::after{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(3,67,82,.30)!important;
+}
+/* Do not blur/fade the trip-list container: only surrounding blue-page UI is subdued. */
+body.trip-selection-focus #tripList,
+body.trip-selection-focus #tripList *{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
