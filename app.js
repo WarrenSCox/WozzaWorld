@@ -193,19 +193,24 @@ function updateCountryLabels(transform){
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
   d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
-}let portraitWrapX=0;
-function portraitWrappedTransform(t){
- if(!window.matchMedia('(orientation: portrait)').matches||t.k<=.38)return t;
+}function clearPortraitWorldCopies(){svg.selectAll('.portrait-world-copy').remove()}
+function renderPortraitWorldCopies(t){
+ clearPortraitWorldCopies();
+ if(!window.matchMedia('(orientation: portrait)').matches||t.k<=1)return;
  const period=952*t.k;
- if(period<=0)return t;
- const centre=500;
- let x=t.x;
- while(x>centre+period/2)x-=period;
- while(x<centre-period/2)x+=period;
- portraitWrapX=x;
- return d3.zoomIdentity.translate(x,t.y).scale(t.k)
+ [-1,1].forEach(dir=>{
+  const dx=dir*period;
+  const s=svg.select('#sphere').node().cloneNode(true);
+  s.removeAttribute('id');s.setAttribute('class','portrait-world-copy portrait-sphere-copy');s.setAttribute('pointer-events','none');
+  const c=svg.select('#countries').node().cloneNode(true);
+  c.removeAttribute('id');c.setAttribute('class','portrait-world-copy portrait-countries-copy');c.setAttribute('pointer-events','none');
+  svg.node().insertBefore(s,svg.select('#countryLabels').node());
+  svg.node().insertBefore(c,svg.select('#countryLabels').node());
+  d3.select(s).attr('transform',`translate(${t.x+dx},${t.y}) scale(${t.k})`);
+  d3.select(c).attr('transform',`translate(${t.x+dx},${t.y}) scale(${t.k})`)
+ })
 }
-mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[-1e9,0],[1e9,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?.38:1,56]).translateExtent(portrait?[[-1e9,0],[1e9,520]]:[[0,0],[1000,520]])}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;const t=portraitWrappedTransform(event.transform);svg.select('#sphere').attr('transform',t);svg.select('#countries').attr('transform',t);updateCountryLabels(t)});
+mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?.38:1,56]).translateExtent(portrait?[[-1e9,0],[1e9,520]]:[[0,0],[1000,520]]);if(!portrait)clearPortraitWorldCopies()}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;let t=event.transform;if(window.matchMedia('(orientation: portrait)').matches&&t.k>1){const period=952*t.k,centre=500;let x=t.x;while(x>centre+period/2)x-=period;while(x<centre-period/2)x+=period;if(Math.abs(x-t.x)>.01){t=d3.zoomIdentity.translate(x,t.y).scale(t.k);svg.property('__zoom',t)}}svg.select('#sphere').attr('transform',t);svg.select('#countries').attr('transform',t);renderPortraitWorldCopies(t);updateCountryLabels(t)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
