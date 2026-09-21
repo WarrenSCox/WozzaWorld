@@ -387,7 +387,7 @@ async function showHome(){
 }
 async function showMap(){
  if(document.body.classList.contains('map-view'))return;
- const update=()=>{document.body.classList.remove('trips-view');document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='map'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));const bar=document.querySelector('.topbar');if(bar)requestAnimationFrame(()=>document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px'));window.scrollTo({top:0});ensureWorldViewClouds();if(window.matchMedia('(orientation: portrait)').matches&&mapZoomBehavior){const svg=d3.select('#worldMap'),k=1.45,t=d3.zoomIdentity.translate((1000-1000*k)/2,(520-520*k)/2).scale(k);mapZoomBehavior.scaleExtent([.55,56]);svg.call(mapZoomBehavior.transform,t)}else if(mapZoomBehavior){mapZoomBehavior.scaleExtent([1,56])}};
+ const update=()=>{document.body.classList.remove('trips-view');document.body.classList.add('map-view');$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='map'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));const bar=document.querySelector('.topbar');if(bar)requestAnimationFrame(()=>document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px'));window.scrollTo({top:0});ensureWorldViewClouds();if(window.matchMedia('(orientation: portrait)').matches&&mapZoomBehavior){const svg=d3.select('#worldMap'),k=1.52,t=d3.zoomIdentity.translate((1000-1000*k)/2,(520-520*k)/2).scale(k);mapZoomBehavior.scaleExtent([.45,56]);svg.call(mapZoomBehavior.transform,t)}else if(mapZoomBehavior){mapZoomBehavior.scaleExtent([1,56])}};
  await withWorldMapMorph(update);
  try{await screen.orientation?.lock?.('landscape')}catch(e){}
 }
@@ -793,7 +793,7 @@ function requestWorldViewName(){
 }
 window.addEventListener('load',requestWorldViewName,{once:true});
 window.matchMedia('(display-mode: standalone)').addEventListener?.('change',applyWorldViewName);
-window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewName();if(document.body.classList.contains('map-view')&&mapZoomBehavior){const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?.55:1,56]);if(!portrait){const svg=d3.select('#worldMap');svg.call(mapZoomBehavior.transform,d3.zoomIdentity)}}window.dispatchEvent(new Event('resize'))},180));
+window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewName();if(document.body.classList.contains('map-view')&&mapZoomBehavior){const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?.45:1,56]);if(!portrait){const svg=d3.select('#worldMap');svg.call(mapZoomBehavior.transform,d3.zoomIdentity)}}window.dispatchEvent(new Event('resize'))},180));
 applyWorldViewName();
 
 (function(){if(document.getElementById('wozza-hotfix-048-style'))return;const st=document.createElement('style');st.id='wozza-hotfix-048-style';st.textContent=`
