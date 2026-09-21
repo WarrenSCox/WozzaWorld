@@ -200,24 +200,29 @@ function ensurePortraitOcean(){
  const sphereFill=getComputedStyle(svg.select('#sphere').node()).fill;
  ocean.attr('fill',sphereFill).style('display',document.body.classList.contains('map-view')&&window.matchMedia('(orientation: portrait)').matches?null:'none')
 }
+function ensurePortraitWorldCopies(){
+ if(!document.body.classList.contains('map-view')||!window.matchMedia('(orientation: portrait)').matches)return;
+ if(!svg.select('.portrait-countries-copy-left').empty())return;
+ [-1,1].forEach(dir=>{
+  const c=svg.select('#countries').node().cloneNode(true);
+  c.removeAttribute('id');c.setAttribute('class',`portrait-world-copy portrait-countries-copy portrait-countries-copy-${dir<0?'left':'right'}`);c.setAttribute('pointer-events','none');c.setAttribute('aria-hidden','true');
+  svg.node().insertBefore(c,svg.select('#countryLabels').node());
+  const l=svg.select('#countryLabels').node().cloneNode(true);
+  l.removeAttribute('id');l.setAttribute('class',`portrait-world-copy portrait-label-copy portrait-label-copy-${dir<0?'left':'right'}`);l.setAttribute('pointer-events','none');l.setAttribute('aria-hidden','true');
+  svg.node().appendChild(l)
+ })
+}
 function renderPortraitWorldCopies(t){
- clearPortraitWorldCopies();ensurePortraitOcean();
+ ensurePortraitOcean();ensurePortraitWorldCopies();
  if(!document.body.classList.contains('map-view')||!window.matchMedia('(orientation: portrait)').matches)return;
  const period=952*t.k;
  [-1,1].forEach(dir=>{
-  const dx=dir*period;
-  const c=svg.select('#countries').node().cloneNode(true);
-  c.removeAttribute('id');c.setAttribute('class','portrait-world-copy portrait-countries-copy');c.setAttribute('pointer-events','none');c.setAttribute('aria-hidden','true');
-  svg.node().insertBefore(c,svg.select('#countryLabels').node());
-  d3.select(c).attr('transform',`translate(${t.x+dx},${t.y}) scale(${t.k})`);
-  const lg=svg.select('#countryLabels').node().cloneNode(true);
-  lg.removeAttribute('id');lg.setAttribute('class','portrait-world-copy portrait-label-copy');lg.setAttribute('pointer-events','none');lg.setAttribute('aria-hidden','true');
-  svg.node().appendChild(lg);
-  d3.select(lg).selectAll('text').each(function(_,i){
-   const source=labels.nodes()[i];
-   if(!source)return;
-   const x=parseFloat(source.getAttribute('x'));
-   const y=parseFloat(source.getAttribute('y'));
+  const suffix=dir<0?'left':'right',dx=dir*period;
+  svg.select(`.portrait-countries-copy-${suffix}`).attr('transform',`translate(${t.x+dx},${t.y}) scale(${t.k})`);
+  const copy=svg.select(`.portrait-label-copy-${suffix}`);
+  copy.selectAll('text').each(function(_,i){
+   const source=labels.nodes()[i];if(!source)return;
+   const x=parseFloat(source.getAttribute('x')),y=parseFloat(source.getAttribute('y'));
    d3.select(this).attr('x',Number.isFinite(x)?x+dx:0).attr('y',Number.isFinite(y)?y:0).style('display',source.style.display)
   })
  })
