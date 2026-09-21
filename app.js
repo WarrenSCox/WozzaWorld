@@ -1048,7 +1048,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 ;(()=>{
  if(window.__wozzaFactsImageViewerV3)return;window.__wozzaFactsImageViewerV3=true;
  const style=document.createElement('style');style.id='wozza-facts-image-viewer-style';style.textContent=`
- .wozza-image-viewer{position:fixed;inset:0;z-index:2147483647;background:#087b8c;overflow:hidden;display:grid;place-items:center;touch-action:none}
+ .wozza-image-viewer{position:fixed;inset:0;z-index:2147483647;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#087b8c;overflow:hidden;place-items:center;touch-action:none}\n .wozza-image-viewer[open]{display:grid}\n .wozza-image-viewer::backdrop{background:transparent}
  .wozza-image-viewer .sky-clouds{position:absolute!important;inset:-20px!important;width:calc(100% + 40px)!important;height:calc(100% + 40px)!important;pointer-events:none!important;filter:blur(4px)!important;opacity:.78!important;z-index:0!important}
  .wozza-image-viewer::after{content:'';position:absolute;inset:0;background:rgba(0,91,108,.16);backdrop-filter:blur(1px);z-index:1;pointer-events:none}
  .wozza-image-viewer-stage{position:absolute;inset:0;z-index:2;display:grid;place-items:center;overflow:hidden;touch-action:none}
@@ -1058,13 +1058,13 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  function countryFromFacts(facts){let c=(facts.dataset.country||facts.dataset.countryName||'').trim();if(!c){const n=facts.querySelector('[data-country-name],.country-name,.facts-country-name,.fast-facts-country,h1,h2');if(n)c=(n.dataset.countryName||n.textContent||'').trim()}if(!c&&typeof currentCountry!=='undefined')c=String(currentCountry||'').trim();return c.replace(/\s*FAST FACTS\s*/ig,' ').replace(/\s+/g,' ').trim()}
  function googleImages(c){if(!c)return;const u='https://www.google.com/search?tbm=isch&q='+encodeURIComponent(c);if(typeof openExternalLink==='function')openExternalLink(u);else if(typeof openExternal==='function')openExternal(u);else window.open(u,'_blank','noopener,noreferrer')}
  function openViewer(img){
-  const viewer=document.createElement('div');viewer.className='wozza-image-viewer';viewer.setAttribute('role','dialog');viewer.setAttribute('aria-modal','true');viewer.setAttribute('aria-label','Full screen country image');
+  const viewer=document.createElement('dialog');viewer.className='wozza-image-viewer';viewer.setAttribute('aria-label','Full screen country image');
   const source=document.querySelector('.passport-page .sky-clouds, .passport-view .sky-clouds, .sky-clouds');if(source){const clouds=source.cloneNode(true);clouds.removeAttribute('hidden');clouds.setAttribute('aria-hidden','true');viewer.appendChild(clouds)}
   const stage=document.createElement('div');stage.className='wozza-image-viewer-stage';const big=document.createElement('img');big.className='wozza-image-viewer-img';big.src=img.currentSrc||img.src;big.alt=img.alt||'';big.draggable=false;stage.appendChild(big);
-  const close=document.createElement('button');close.type='button';close.className='wozza-image-viewer-close';close.setAttribute('aria-label','Close image');close.textContent='×';viewer.append(stage,close);document.body.appendChild(viewer);
+  const close=document.createElement('button');close.type='button';close.className='wozza-image-viewer-close';close.setAttribute('aria-label','Close image');close.textContent='×';viewer.append(stage,close);document.body.appendChild(viewer);viewer.showModal();
   let scale=1,x=0,y=0,startX=0,startY=0,baseX=0,baseY=0,pinchStart=0,pinchScale=1;const pts=new Map();
   const draw=()=>{big.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`};
-  const shut=()=>viewer.remove();close.onclick=shut;
+  const shut=()=>{if(viewer.open)viewer.close();viewer.remove()};close.onclick=shut;viewer.addEventListener('cancel',e=>{e.preventDefault();shut()});
   stage.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});stage.setPointerCapture?.(e.pointerId);if(pts.size===1){startX=e.clientX;startY=e.clientY;baseX=x;baseY=y}else if(pts.size===2){const a=[...pts.values()];pinchStart=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);pinchScale=scale}}, {passive:false});
   stage.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;e.preventDefault();pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===2){const a=[...pts.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);scale=Math.max(1,Math.min(5,pinchScale*(d/Math.max(1,pinchStart))));if(scale===1)x=y=0;draw()}else if(pts.size===1&&scale>1){x=baseX+(e.clientX-startX);y=baseY+(e.clientY-startY);draw()}}, {passive:false});
   const up=e=>{pts.delete(e.pointerId);if(pts.size===1){const a=[...pts.values()][0];startX=a.x;startY=a.y;baseX=x;baseY=y}};stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
