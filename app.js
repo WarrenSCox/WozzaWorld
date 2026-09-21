@@ -171,7 +171,7 @@ async function buildMap(){try{const world=await fetch('https://cdn.jsdelivr.net/
 'Socialist Republic of Viet Nam','Viet Nam','Republic of Yemen',
 'Republic of South Africa'
 ].includes(c))
-])].sort();const svg=d3.select('#worldMap'),projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'}),path=d3.geoPath(projection);const sphereD=path({type:'Sphere'});svg.select('#sphere').attr('d',sphereD);let defs=svg.select('defs');if(defs.empty())defs=svg.insert('defs',':first-child');let globeClip=defs.select('#worldGlobeClip');if(globeClip.empty())globeClip=defs.append('clipPath').attr('id','worldGlobeClip');globeClip.selectAll('path').data([null]).join('path').attr('d',sphereD);svg.select('#countries').attr('clip-path','url(#worldGlobeClip)');svg.select('#countries').selectAll('path').data(features).join('path').attr('class','country').attr('d',path).attr('data-country',d=>d.properties.name).attr('tabindex','0').attr('aria-label',d=>d.properties.name);function labelFeature(f){if(f.geometry?.type!=='MultiPolygon')return f;const polys=f.geometry.coordinates.map(coords=>({type:'Feature',properties:f.properties,geometry:{type:'Polygon',coordinates:coords}}));return polys.sort((a,b)=>d3.geoArea(b)-d3.geoArea(a))[0]||f}const labelData=features.map(f=>{const lf=labelFeature(f);return{feature:lf,name:f.properties.name,centroid:path.centroid(lf),bounds:path.bounds(lf)}}).filter(x=>Number.isFinite(x.centroid[0])&&Number.isFinite(x.centroid[1]));
+])].sort();const svg=d3.select('#worldMap'),projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'}),path=d3.geoPath(projection);const sphereD=path({type:'Sphere'});svg.select('#sphere').attr('d',sphereD);let defs=svg.select('defs');if(defs.empty())defs=svg.insert('defs',':first-child');let globeClip=defs.select('#worldGlobeClip');if(globeClip.empty())globeClip=defs.append('clipPath').attr('id','worldGlobeClip');globeClip.selectAll('path').data([null]).join('path').attr('d',sphereD);svg.select('#countries').attr('clip-path','url(#worldGlobeClip)');svg.select('#countries').selectAll('path').data(features).join('path').attr('class','country').attr('d',path).attr('data-country',d=>d.properties.name).attr('tabindex','0').attr('aria-label',d=>d.properties.name);function labelFeature(f){if(f.geometry?.type!=='MultiPolygon')return f;const polys=f.geometry.coordinates.map(coords=>({type:'Feature',properties:f.properties,geometry:{type:'Polygon',coordinates:coords}}));return polys.sort((a,b)=>d3.geoArea(b)-d3.geoArea(a))[0]||f}const labelData=features.map(f=>{const lf=labelFeature(f);return{feature:lf,name:f.properties.name==='eSwatini'?'Eswatini':f.properties.name,centroid:path.centroid(lf),bounds:path.bounds(lf)}}).filter(x=>Number.isFinite(x.centroid[0])&&Number.isFinite(x.centroid[1]));
 const kaliningradPt=projection([20.52,54.71]);
 if(kaliningradPt)labelData.push({name:'Kaliningrad',country:'Russia',centroid:kaliningradPt,bounds:[[kaliningradPt[0]-7,kaliningradPt[1]-4],[kaliningradPt[0]+7,kaliningradPt[1]+4]]});const labels=svg.select('#countryLabels').selectAll('text').data(labelData).join('text').attr('class','map-country-label').text(d=>d.name).attr('text-anchor','middle').attr('dominant-baseline','central').style('display','none').attr('tabindex','0').attr('role','button').attr('aria-label',d=>d.name).on('click',(event,d)=>{if(!document.body.classList.contains('map-view'))return;event.preventDefault();event.stopPropagation();openCountry(d.country||d.name,{type:'map'})}).on('keydown',(event,d)=>{if(!document.body.classList.contains('map-view'))return;if(event.key==='Enter'||event.key===' '){event.preventDefault();openCountry(d.country||d.name,{type:'map'})}});let portraitLabelBand=0;
 function updateCountryLabels(transform){
@@ -1046,24 +1046,38 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 
 
 ;(()=>{
- if(window.__wozzaFactsImageSearchV2)return;window.__wozzaFactsImageSearchV2=true;
- document.addEventListener('click',function(e){
-  const img=e.target.closest&&e.target.closest('img');if(!img)return;
-  const facts=img.closest('#countryInfoDialog,#fastFactsDialog,.country-info-dialog,.fast-facts-dialog,.country-facts-modal,[class*="fast-fact"],[class*="country-fact"]');
-  if(!facts)return;
-  const hero=img.closest('.country-info-hero,.fast-facts-hero,.country-facts-hero,.facts-hero,[class*="fast-fact"],[class*="country-fact"]');
-  if(!hero)return;
-  let c=(facts.dataset.country||facts.dataset.countryName||'').trim();
-  if(!c){const n=facts.querySelector('[data-country-name],.country-name,.facts-country-name,.fast-facts-country,h1,h2');if(n)c=(n.dataset.countryName||n.textContent||'').trim()}
-  if(!c&&typeof currentCountry!=='undefined')c=String(currentCountry||'').trim();
-  c=c.replace(/\s*FAST FACTS\s*/ig,' ').replace(/\s+/g,' ').trim();if(!c)return;
-  e.preventDefault();e.stopPropagation();
-  const u='https://www.google.com/search?tbm=isch&q='+encodeURIComponent(c);
-  if(typeof openExternalLink==='function')openExternalLink(u);
-  else if(typeof openExternal==='function')openExternal(u);
-  else window.open(u,'_blank','noopener,noreferrer');
- },true);
-})();
+ if(window.__wozzaFactsImageViewerV3)return;window.__wozzaFactsImageViewerV3=true;
+ const style=document.createElement('style');style.id='wozza-facts-image-viewer-style';style.textContent=`
+ .wozza-image-viewer{position:fixed;inset:0;z-index:2147483647;background:#087b8c;overflow:hidden;display:grid;place-items:center;touch-action:none}
+ .wozza-image-viewer .sky-clouds{position:absolute!important;inset:-20px!important;width:calc(100% + 40px)!important;height:calc(100% + 40px)!important;pointer-events:none!important;filter:blur(4px)!important;opacity:.78!important;z-index:0!important}
+ .wozza-image-viewer::after{content:'';position:absolute;inset:0;background:rgba(0,91,108,.16);backdrop-filter:blur(1px);z-index:1;pointer-events:none}
+ .wozza-image-viewer-stage{position:absolute;inset:0;z-index:2;display:grid;place-items:center;overflow:hidden;touch-action:none}
+ .wozza-image-viewer-img{display:block;max-width:94vw;max-height:90vh;width:auto;height:auto;object-fit:contain;border-radius:18px;box-shadow:0 16px 50px rgba(0,35,48,.35);transform-origin:center;will-change:transform;user-select:none;-webkit-user-drag:none;touch-action:none}
+ .wozza-image-viewer-close{position:absolute;top:max(16px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));z-index:4;width:48px;height:48px;border:0;border-radius:50%;background:rgba(248,246,240,.94);font:400 34px/1 sans-serif;color:#111;display:grid;place-items:center;box-shadow:0 5px 18px rgba(0,0,0,.16)}
+ `;document.head.appendChild(style);
+ function countryFromFacts(facts){let c=(facts.dataset.country||facts.dataset.countryName||'').trim();if(!c){const n=facts.querySelector('[data-country-name],.country-name,.facts-country-name,.fast-facts-country,h1,h2');if(n)c=(n.dataset.countryName||n.textContent||'').trim()}if(!c&&typeof currentCountry!=='undefined')c=String(currentCountry||'').trim();return c.replace(/\s*FAST FACTS\s*/ig,' ').replace(/\s+/g,' ').trim()}
+ function googleImages(c){if(!c)return;const u='https://www.google.com/search?tbm=isch&q='+encodeURIComponent(c);if(typeof openExternalLink==='function')openExternalLink(u);else if(typeof openExternal==='function')openExternal(u);else window.open(u,'_blank','noopener,noreferrer')}
+ function openViewer(img){
+  const viewer=document.createElement('div');viewer.className='wozza-image-viewer';viewer.setAttribute('role','dialog');viewer.setAttribute('aria-modal','true');viewer.setAttribute('aria-label','Full screen country image');
+  const source=document.querySelector('.passport-page .sky-clouds, .passport-view .sky-clouds, .sky-clouds');if(source){const clouds=source.cloneNode(true);clouds.removeAttribute('hidden');clouds.setAttribute('aria-hidden','true');viewer.appendChild(clouds)}
+  const stage=document.createElement('div');stage.className='wozza-image-viewer-stage';const big=document.createElement('img');big.className='wozza-image-viewer-img';big.src=img.currentSrc||img.src;big.alt=img.alt||'';big.draggable=false;stage.appendChild(big);
+  const close=document.createElement('button');close.type='button';close.className='wozza-image-viewer-close';close.setAttribute('aria-label','Close image');close.textContent='×';viewer.append(stage,close);document.body.appendChild(viewer);
+  let scale=1,x=0,y=0,startX=0,startY=0,baseX=0,baseY=0,pinchStart=0,pinchScale=1;const pts=new Map();
+  const draw=()=>{big.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`};
+  const shut=()=>viewer.remove();close.onclick=shut;
+  stage.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});stage.setPointerCapture?.(e.pointerId);if(pts.size===1){startX=e.clientX;startY=e.clientY;baseX=x;baseY=y}else if(pts.size===2){const a=[...pts.values()];pinchStart=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);pinchScale=scale}}, {passive:false});
+  stage.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;e.preventDefault();pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===2){const a=[...pts.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);scale=Math.max(1,Math.min(5,pinchScale*(d/Math.max(1,pinchStart))));if(scale===1)x=y=0;draw()}else if(pts.size===1&&scale>1){x=baseX+(e.clientX-startX);y=baseY+(e.clientY-startY);draw()}}, {passive:false});
+  const up=e=>{pts.delete(e.pointerId);if(pts.size===1){const a=[...pts.values()][0];startX=a.x;startY=a.y;baseX=x;baseY=y}};stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+  stage.addEventListener('dblclick',e=>{e.preventDefault();scale=scale>1?1:2;x=y=0;draw()});
+  viewer.addEventListener('click',e=>{if(e.target===viewer)shut()});
+ }
+ let hold=null,sx=0,sy=0,held=false,target=null,country='';
+ document.addEventListener('pointerdown',e=>{const img=e.target.closest&&e.target.closest('.country-guide-photo img');if(!img)return;const facts=img.closest('#countryInfoDialog,#fastFactsDialog,.country-info-dialog,.fast-facts-dialog,.country-facts-modal,[class*="fast-fact"],[class*="country-fact"]');if(!facts)return;target=img;country=countryFromFacts(facts);sx=e.clientX;sy=e.clientY;held=false;clearTimeout(hold);hold=setTimeout(()=>{held=true;navigator.vibrate?.(20);googleImages(country)},600)},true);
+ document.addEventListener('pointermove',e=>{if(target&&Math.hypot(e.clientX-sx,e.clientY-sy)>12){clearTimeout(hold);hold=null}},true);
+ const cancel=()=>{clearTimeout(hold);hold=null};document.addEventListener('pointercancel',cancel,true);
+ document.addEventListener('pointerup',e=>{if(!target)return;clearTimeout(hold);const img=target;target=null;if(held){held=false;e.preventDefault();e.stopImmediatePropagation();return}if(Math.hypot(e.clientX-sx,e.clientY-sy)<=12){e.preventDefault();e.stopImmediatePropagation();openViewer(img)}},true);
+ document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.country-guide-photo img')){e.preventDefault();e.stopImmediatePropagation()}},true);
+})();;
 
 
 
