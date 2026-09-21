@@ -193,7 +193,7 @@ function updateCountryLabels(transform){
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
   d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
-}mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{mapZoomBehavior.scaleExtent([window.matchMedia('(orientation: portrait)').matches?.55:1,56])}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
+}mapZoomBehavior=d3.zoom().scaleExtent([1,56]).translateExtent([[0,0],[1000,520]]).extent([[0,0],[1000,520]]).filter(event=>document.body.classList.contains('map-view')&&(!event.ctrlKey||event.type==='wheel')).on('start',()=>{mapZoomBehavior.scaleExtent([window.matchMedia('(orientation: portrait)').matches?.45:1,56])}).on('zoom',event=>{if(!document.body.classList.contains('map-view'))return;svg.select('#sphere').attr('transform',event.transform);svg.select('#countries').attr('transform',event.transform);updateCountryLabels(event.transform)});
 svg.call(mapZoomBehavior).on('dblclick.zoom',null);
 $('#mapLoading').classList.add('hidden');attachCountryEvents();render()}catch(e){$('#mapLoading').textContent='Map could not load — check your connection'}}
 let countryCardOrigin=null;
