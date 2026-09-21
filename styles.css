@@ -3977,3 +3977,23 @@ body.map-view #mapClose.map-close{display:none!important}
     margin:0 auto!important;
   }
 }
+
+
+/* v0.18.96 - Portrait World View polish.
+   Portrait only: enlarge the existing map so it uses the screen more fully.
+   Landscape remains governed by the existing landscape rules below/above. */
+@media (orientation:portrait){
+  body.map-view .map-stage{
+    overflow:hidden!important;
+  }
+  body.map-view #worldMap{
+    position:absolute!important;
+    left:50%!important;
+    top:var(--worldview-header-height,112px)!important;
+    width:260vw!important;
+    max-width:none!important;
+    height:calc(100dvh - var(--worldview-header-height,112px))!important;
+    transform:translateX(-50%)!important;
+    transform-origin:center center!important;
+  }
+}
