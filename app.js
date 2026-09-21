@@ -1168,3 +1168,25 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   st.textContent=`@media (orientation:landscape){body.map-view #countrySheet.sheet{left:calc(50% + clamp(41px,5vw,56px))!important}}`;
   document.head.appendChild(st);
 })();
+
+// Fast Facts flag Google search + expanded chart collapse shadow polish
+(()=>{
+  const st=document.createElement('style');
+  st.id='fast-facts-flag-chart-shadow-hotfix';
+  st.textContent=`
+    #countryInfoFlag{cursor:pointer}
+    .passport-stats-slide .stats-show-more{margin-bottom:18px!important;overflow:visible!important}
+    .passport-mini-list{overflow:visible!important}
+  `;
+  document.getElementById(st.id)?.remove();
+  document.head.appendChild(st);
+
+  document.addEventListener('click',e=>{
+    const flag=e.target.closest('#countryInfoFlag');
+    if(!flag||!currentCountry)return;
+    e.preventDefault();
+    e.stopPropagation();
+    const country=canonicalCountry(currentCountry)||currentCountry;
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(country)}`,'_blank','noopener');
+  });
+})();
