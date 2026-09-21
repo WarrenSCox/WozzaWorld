@@ -4176,3 +4176,40 @@ body.trip-selection-focus header::before{
   border-top-color:transparent!important;
   box-shadow:none!important;
 }
+
+/* Trip selection composition fix:
+   blur/fade only the background UI. Keep action controls in their own clean layer. */
+body.trip-selection-focus .trip-selection-bar{
+  position:fixed!important;
+  top:68px!important;
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%) translateZ(0)!important;
+  z-index:2147483647!important;
+  isolation:isolate!important;
+  filter:none!important;
+  opacity:1!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  mix-blend-mode:normal!important;
+  will-change:transform;
+}
+
+body.trip-selection-focus .trip-selection-bar,
+body.trip-selection-focus .trip-selection-bar *,
+body.trip-selection-focus .trip-selection-cancel,
+body.trip-selection-focus .trip-selection-bin{
+  filter:none!important;
+  opacity:1!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  mix-blend-mode:normal!important;
+}
+
+/* Ensure the blurred header/content cannot create a compositing layer over the actions. */
+body.trip-selection-focus .app-header,
+body.trip-selection-focus .topbar,
+body.trip-selection-focus header{
+  z-index:auto!important;
+  isolation:auto!important;
+}
