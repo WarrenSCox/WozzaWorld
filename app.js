@@ -172,6 +172,7 @@ async function buildMap(){try{const world=await fetch('https://cdn.jsdelivr.net/
 'Republic of South Africa'
 ].includes(c))
 ])].sort();const svg=d3.select('#worldMap'),projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'}),path=d3.geoPath(projection);const sphereD=path({type:'Sphere'});svg.select('#sphere').attr('d',sphereD);let defs=svg.select('defs');if(defs.empty())defs=svg.insert('defs',':first-child');let globeClip=defs.select('#worldGlobeClip');if(globeClip.empty())globeClip=defs.append('clipPath').attr('id','worldGlobeClip');globeClip.selectAll('path').data([null]).join('path').attr('d',sphereD);svg.select('#countries').attr('clip-path','url(#worldGlobeClip)');svg.select('#countries').selectAll('path').data(features).join('path').attr('class','country').attr('d',path).attr('data-country',d=>d.properties.name).attr('tabindex','0').attr('aria-label',d=>d.properties.name);function labelFeature(f){if(f.geometry?.type!=='MultiPolygon')return f;const polys=f.geometry.coordinates.map(coords=>({type:'Feature',properties:f.properties,geometry:{type:'Polygon',coordinates:coords}}));return polys.sort((a,b)=>d3.geoArea(b)-d3.geoArea(a))[0]||f}const labelData=features.map(f=>{const lf=labelFeature(f);return{feature:lf,name:f.properties.name==='eSwatini'?'Eswatini':f.properties.name,centroid:path.centroid(lf),bounds:path.bounds(lf)}}).filter(x=>Number.isFinite(x.centroid[0])&&Number.isFinite(x.centroid[1]));
+const vietnamLabel=labelData.find(d=>d.name==='Vietnam');if(vietnamLabel){const vietnamAnchor=projection([106.3,16.2]);if(vietnamAnchor)vietnamLabel.centroid=vietnamAnchor;}
 const kaliningradPt=projection([20.52,54.71]);
 if(kaliningradPt)labelData.push({name:'Kaliningrad',country:'Russia',centroid:kaliningradPt,bounds:[[kaliningradPt[0]-7,kaliningradPt[1]-4],[kaliningradPt[0]+7,kaliningradPt[1]+4]]});const labels=svg.select('#countryLabels').selectAll('text').data(labelData).join('text').attr('class','map-country-label').text(d=>d.name).attr('text-anchor','middle').attr('dominant-baseline','central').style('display','none').attr('tabindex','0').attr('role','button').attr('aria-label',d=>d.name).on('click',(event,d)=>{if(!document.body.classList.contains('map-view'))return;event.preventDefault();event.stopPropagation();openCountry(d.country||d.name,{type:'map'})}).on('keydown',(event,d)=>{if(!document.body.classList.contains('map-view'))return;if(event.key==='Enter'||event.key===' '){event.preventDefault();openCountry(d.country||d.name,{type:'map'})}});let portraitLabelBand=0;
 function updateCountryLabels(transform){
@@ -200,8 +201,7 @@ function updateCountryLabels(transform){
   const pt=transform.apply(d.centroid);
   const baseW=d.bounds[1][0]-d.bounds[0][0],baseH=d.bounds[1][1]-d.bounds[0][1],baseArea=baseW*baseH;
   const show=portraitLabelBand===3||(portraitLabelBand===2&&baseArea>=28)||(portraitLabelBand===1&&baseArea>=115);
-  const vietnamDx=d.name==='Vietnam'?Math.max(0,Math.min(78,(k-2.15)/(4.6-2.15)*78)):0;
-  d3.select(this).attr('x',pt[0]+vietnamDx).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
+  d3.select(this).attr('x',pt[0]).attr('y',pt[1]-(d.name==='Croatia'?(transform.k>=12?68:34):0)).style('display',show?null:'none')
  })
 }function clearPortraitWorldCopies(){svg.selectAll('.portrait-world-copy').remove()}
 function ensurePortraitOcean(){
