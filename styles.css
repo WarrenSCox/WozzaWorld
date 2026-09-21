@@ -4070,3 +4070,47 @@ body.trip-selection-focus #tripList *{
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
 }
+
+/* Trip selection presentation v4: no overlay can wash out trip cards */
+body.trip-selection-focus::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Subdue only the surrounding/non-card UI directly. */
+body.trip-selection-focus .app-header,
+body.trip-selection-focus header,
+body.trip-selection-focus [data-screen="trips"] > :not(#tripList):not(.trip-selection-bar),
+body.trip-selection-focus #tripList > :not(.trip-card):not(.trip-category):not(.trip-selection-bar){
+  filter:blur(5px)!important;
+  opacity:.58!important;
+}
+
+/* Trip cards and everything inside them retain their exact normal rendering. */
+body.trip-selection-focus #tripList .trip-card,
+body.trip-selection-focus #tripList .trip-card *,
+body.trip-selection-focus .trip-selection-bar,
+body.trip-selection-focus .trip-selection-bar *{
+  filter:none!important;
+  opacity:1!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Controls float at the top of the Trips viewport and never consume layout space. */
+body.trip-selection-focus .trip-selection-bar{
+  position:fixed!important;
+  top:188px!important;
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  margin:0!important;
+  z-index:2000!important;
+  display:flex!important;
+  gap:10px!important;
+  align-items:center!important;
+  width:max-content!important;
+}
