@@ -84,7 +84,7 @@ function attachBucketRanking(){
     try{dropped.releasePointerCapture?.(pointerId)}catch{}
     state.bucketOrder=rows().map(x=>x.dataset.bucketCountry);
     localStorage.setItem('wozzaworld-state',JSON.stringify(state));
-    updateRanks();held=null;pointerId=null;suppressClick=true;
+    updateRanks();held=null;pointerId=null;window.__wozzaBucketReorderActive=false;suppressClick=true;
     dropped.classList.add('bucket-settle');setTimeout(()=>dropped.classList.remove('bucket-settle'),240);
     setTimeout(()=>{suppressClick=false},80);
   };
@@ -93,7 +93,7 @@ function attachBucketRanking(){
       if(e.target.closest('button'))return;
       cancelHold();held=null;manualScroll=false;pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;lastY=e.clientY;
       timer=setTimeout(()=>{
-        held=row;row.classList.add('bucket-dragging');
+        held=row;window.__wozzaBucketReorderActive=true;row.classList.add('bucket-dragging');
         try{row.setPointerCapture?.(pointerId)}catch{}
         if(navigator.vibrate)navigator.vibrate(20);
       },420);
@@ -689,6 +689,7 @@ const carousel=$('#countryCarousel');if(carousel){
     sx=e.clientX;sy=e.clientY;drag=true;direction=null;
   };
   carousel.onpointermove=e=>{
+    if(window.__wozzaBucketReorderActive){drag=false;direction=null;return}
     if(!drag||direction)return;
     const dx=e.clientX-sx,dy=e.clientY-sy;
     if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
@@ -696,6 +697,7 @@ const carousel=$('#countryCarousel');if(carousel){
     else direction='horizontal';
   };
   carousel.onpointerup=e=>{
+    if(window.__wozzaBucketReorderActive){drag=false;direction=null;return}
     if(!drag||direction==='vertical'){drag=false;direction=null;return}
     const dx=e.clientX-sx,dy=e.clientY-sy;
     drag=false;direction=null;
@@ -902,15 +904,20 @@ function fitWorldViewStampName(){
 function fitHomeWorldOverviewTitle(){
   const title=document.getElementById('homeWorldOverviewTitle');
   if(!title)return;
-  title.style.removeProperty('font-size');
   requestAnimationFrame(()=>{
-    const available=Math.max(180,title.parentElement.clientWidth-36);
-    let size=parseFloat(getComputedStyle(title).fontSize)||34;
-    const min=16;
-    while(title.scrollWidth>available&&size>min){
-      size=Math.max(min,size-.5);
-      title.style.fontSize=size+'px';
+    const cs=getComputedStyle(title);
+    const pad=(parseFloat(cs.paddingLeft)||0)+(parseFloat(cs.paddingRight)||0);
+    const available=Math.max(150,title.clientWidth-pad);
+    const min=14,max=42;
+    let lo=min,hi=max,best=min;
+    // Always start large, then find the largest size that fits on one line.
+    title.style.setProperty('font-size',max+'px','important');
+    for(let i=0;i<9;i++){
+      const mid=(lo+hi)/2;
+      title.style.setProperty('font-size',mid+'px','important');
+      if(title.scrollWidth<=title.clientWidth+1){best=mid;lo=mid}else hi=mid;
     }
+    title.style.setProperty('font-size',best.toFixed(2)+'px','important');
   });
 }
 function ensureHomeWorldOverviewTitle(){
