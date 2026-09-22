@@ -4438,43 +4438,104 @@ body.trip-selection-focus header{
 }
 
 
-/* v0.20.3 - approved startup artwork
-   Built directly from WozzaWorld-main (3) baseline.
-   Uses the user's approved reference artwork exactly.
-   Existing startup duration / app logic remains untouched. */
+/* v0.20.4 - approved photographic sky + classic WozzaWorld cloud-field
+   Built from WozzaWorld-main (3).zip.
+   Exact supplied sky background. Exact supplied WozzaWorld logo.
+   Existing launch duration / app logic untouched. */
 
 .launch-splash{
-  background:#075e78!important;
+  background:url("startup-sky-approved.jpg") center center / cover no-repeat!important;
   overflow:hidden!important;
+  isolation:isolate!important;
 }
 
-/* Exact approved artwork fills the startup screen.
-   Very gentle movement gives life without manufacturing fake cloud assets. */
-.launch-splash::before{
-  content:""!important;
-  position:absolute!important;
-  inset:-2.5%!important;
-  z-index:1!important;
-  pointer-events:none!important;
-  background:url("wozzaworld-startup-approved.jpg") center center / cover no-repeat!important;
-  transform:scale(1.035);
-  animation:wwApprovedSkyDrift 3.4s ease-out both!important;
+/* Keep the supplied sky fixed and cinematic. */
+.launch-splash::before{content:none!important}
+
+/* Logo: clean supplied artwork, pop-in only. */
+.launch-splash>.launch-logo{
+  content:url("wozzaworld-startup-logo-approved.png")!important;
+  position:relative!important;
+  z-index:4!important;
+  opacity:1!important;
+  visibility:visible!important;
+  animation:wwLogoPop .62s cubic-bezier(.2,.9,.25,1.18) both!important;
+}
+@keyframes wwLogoPop{
+  0%{opacity:0;transform:scale(.78)}
+  65%{opacity:1;transform:scale(1.035)}
+  100%{opacity:1;transform:scale(1)}
 }
 
-@keyframes wwApprovedSkyDrift{
-  from{transform:scale(1.055) translate3d(-.4%,.25%,0)}
-  to{transform:scale(1.025) translate3d(.35%,-.2%,0)}
-}
-
-/* The approved artwork already contains the exact logo and cloud composition,
-   so suppress the old duplicated logo/cloud objects only on the launch screen. */
-.launch-splash>.launch-logo,
+/* The cloud field is already populated from frame one. */
 .launch-splash>.splash-cloud-bank{
-  opacity:0!important;
-  visibility:hidden!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:5!important;
+  opacity:1!important;
+  visibility:visible!important;
+  overflow:hidden!important;
   pointer-events:none!important;
 }
+
+/* Far clouds: smaller, sharper, slow short drift. */
+.launch-splash .cloud-l1{
+  left:-8%!important;top:7%!important;width:43vw!important;
+  opacity:.38!important;filter:blur(.5px)!important;
+  animation:wwFarL 4.8s linear both!important;
+}
+.launch-splash .cloud-r3{
+  right:-10%!important;top:14%!important;width:45vw!important;
+  opacity:.36!important;filter:blur(.6px)!important;
+  animation:wwFarR 5.0s linear both!important;
+}
+
+/* Mid clouds. */
+.launch-splash .cloud-l2{
+  left:-24%!important;top:39%!important;width:65vw!important;
+  opacity:.42!important;filter:blur(2.2px)!important;
+  animation:wwMidL 3.8s linear both!important;
+}
+.launch-splash .cloud-r1{
+  right:-27%!important;top:35%!important;width:66vw!important;
+  opacity:.40!important;filter:blur(2.6px)!important;
+  animation:wwMidR 4.0s linear both!important;
+}
+
+/* Foreground: deliberately soft, partly off-screen, faster. */
+.launch-splash .cloud-l3{
+  left:-45%!important;bottom:-8%!important;width:100vw!important;
+  opacity:.42!important;filter:blur(7px)!important;
+  animation:wwNearL 3.0s linear both!important;
+}
+.launch-splash .cloud-r2{
+  right:-48%!important;bottom:4%!important;width:102vw!important;
+  opacity:.40!important;filter:blur(7.5px)!important;
+  animation:wwNearR 3.15s linear both!important;
+}
+
+/* Two subtle perimeter actors for fullness without crowding the logo. */
+.launch-splash .cloud-l4{
+  left:22%!important;bottom:-18%!important;width:48vw!important;
+  opacity:.28!important;filter:blur(3.2px)!important;
+  animation:wwLowC 4.4s linear both!important;
+}
+.launch-splash .cloud-r4{
+  right:-14%!important;top:-9%!important;width:50vw!important;
+  opacity:.30!important;filter:blur(1.4px)!important;
+  animation:wwHighR 4.7s linear both!important;
+}
+
+@keyframes wwFarL{from{translate:-3vw 0}to{translate:7vw 1vh}}
+@keyframes wwFarR{from{translate:4vw 0}to{translate:-7vw -1vh}}
+@keyframes wwMidL{from{translate:-5vw 1vh}to{translate:11vw -1vh}}
+@keyframes wwMidR{from{translate:6vw -1vh}to{translate:-10vw 1vh}}
+@keyframes wwNearL{from{translate:-8vw 1vh}to{translate:15vw -2vh}}
+@keyframes wwNearR{from{translate:9vw -1vh}to{translate:-16vw 2vh}}
+@keyframes wwLowC{from{translate:-4vw 0}to{translate:6vw -1vh}}
+@keyframes wwHighR{from{translate:4vw 0}to{translate:-6vw 1vh}}
 
 @media(prefers-reduced-motion:reduce){
-  .launch-splash::before{animation:none!important;transform:scale(1.025)!important}
+  .launch-splash>.launch-logo,
+  .launch-splash .splash-cloud-img{animation:none!important}
 }
