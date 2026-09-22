@@ -4521,3 +4521,60 @@ body.trip-selection-focus header{
 @media(prefers-reduced-motion:reduce){
  .recycle-dialog .recycle-tumble-empty .recycle-tumbleweed{animation:wozzaEmptyTumbleRoll 9s linear .45s infinite!important}
 }
+
+/* v0.18 recycle-bin scene repair — baseline (6)
+   Keep the tumbleweed inside the desert artwork instead of rendering as a second large image. */
+#recycleDialog .recycle-empty-state.recycle-desert-empty{
+  display:block!important;
+  width:100%!important;
+  padding:8px 0 12px!important;
+  overflow:hidden!important;
+}
+#recycleDialog .recycle-desert-scene{
+  position:relative!important;
+  width:min(100%,680px)!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+}
+#recycleDialog .recycle-desert-scene > .recycle-desert-bg{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  object-fit:contain!important;
+  border-radius:0!important;
+}
+#recycleDialog .recycle-desert-scene > .recycle-tumbleweed{
+  display:block!important;
+  position:absolute!important;
+  z-index:4!important;
+  width:11%!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  left:-13%!important;
+  bottom:12%!important;
+  margin:0!important;
+  object-fit:contain!important;
+  border-radius:0!important;
+  transform-origin:50% 50%!important;
+  animation:wozzaRecycleTumbleweed 6.2s linear .55s infinite!important;
+  will-change:transform,opacity!important;
+  pointer-events:none!important;
+}
+@keyframes wozzaRecycleTumbleweed{
+  0%{transform:translateX(0) rotate(0deg);opacity:0}
+  5%{opacity:1}
+  82%{opacity:1}
+  94%{opacity:.55}
+  100%{transform:translateX(1030%) rotate(1260deg);opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+  #recycleDialog .recycle-desert-scene > .recycle-tumbleweed{
+    animation:none!important;
+    left:76%!important;
+    opacity:.75!important;
+  }
+}
