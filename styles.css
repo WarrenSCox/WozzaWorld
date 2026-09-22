@@ -4459,36 +4459,33 @@ body.trip-selection-focus header{
   display:none!important;
 }
 
-/* Independent SVG status sag.
-   Existing <i> remains as layout spacer only; SVG owns all drawing. */
+/* Independent self-contained SVG sag bars.
+   Baseline bars remain visible until ALL SVGs successfully initialise. */
 .map-summary .summary{position:relative!important}
-.map-summary .summary > i{
-  visibility:hidden!important;
-}
 .map-summary .summary .status-sag-host{
+  display:none;
   position:absolute!important;
   left:50%!important;
-  bottom:0!important;
+  bottom:-1px!important;
   width:82px!important;
-  height:20px!important;
+  height:22px!important;
   transform:translateX(-50%)!important;
-  display:block!important;
   pointer-events:none!important;
   overflow:visible!important;
 }
-.map-summary .summary .status-sag-host svg{
-  display:block!important;
+.map-summary.sag-ready .summary > i{visibility:hidden!important}
+.map-summary.sag-ready .summary .status-sag-host{display:block!important}
+.map-summary .status-sag-host svg{
   width:100%!important;
-  height:20px!important;
+  height:22px!important;
+  display:block!important;
   overflow:visible!important;
 }
-.map-summary .summary .status-sag-path{
+.map-summary .status-sag-host path{
   fill:none!important;
   stroke-width:6!important;
   stroke-linecap:round!important;
   stroke-linejoin:round!important;
   vector-effect:non-scaling-stroke!important;
+  transition:d .44s cubic-bezier(.22,.78,.24,1)!important;
 }
-.map-summary .summary.visited .status-sag-path{stroke:#10aa8b!important}
-.map-summary .summary.going .status-sag-path{stroke:#f6a51c!important}
-.map-summary .summary.bucket .status-sag-path{stroke:#19bdd6!important}

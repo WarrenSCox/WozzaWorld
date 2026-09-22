@@ -113,7 +113,7 @@ function attachBucketRanking(){
   });
 }
 function setCountrySlide(i,animate=true,direction='next'){countrySlide=(i+3)%3;
-if(window.WozzaStatusSag)window.WozzaStatusSag.set(countrySlide,animate);const t=$('#carouselTrack'),carousel=$('#countryCarousel');if(!t)return;t.style.transition='none';t.style.transform=`translateX(-${countrySlide*33.333333}%)`;requestAnimationFrame(()=>{const panel=t.children[countrySlide];if(carousel&&panel)carousel.style.height=panel.scrollHeight+'px'});if(animate){const s=$('#countryCarousel');s.classList.remove('list-in-next','list-in-prev');void s.offsetWidth;s.classList.add(direction==='next'?'list-in-next':'list-in-prev');setTimeout(()=>s.classList.remove('list-in-next','list-in-prev'),230)}}
+if(window.WozzaSagBars)window.WozzaSagBars.set(countrySlide,animate);const t=$('#carouselTrack'),carousel=$('#countryCarousel');if(!t)return;t.style.transition='none';t.style.transform=`translateX(-${countrySlide*33.333333}%)`;requestAnimationFrame(()=>{const panel=t.children[countrySlide];if(carousel&&panel)carousel.style.height=panel.scrollHeight+'px'});if(animate){const s=$('#countryCarousel');s.classList.remove('list-in-next','list-in-prev');void s.offsetWidth;s.classList.add(direction==='next'?'list-in-next':'list-in-prev');setTimeout(()=>s.classList.remove('list-in-next','list-in-prev'),230)}}
 function tripSortUpcoming(a,b){const ad=orderedTripDates(a),bd=orderedTripDates(b),da=ad.start||'',db=bd.start||'';if(da&&db)return da.localeCompare(db);if(da)return-1;if(db)return 1;return String(a.id||'').localeCompare(String(b.id||''))}
 function tripSortRearview(a,b){const ad=orderedTripDates(a),bd=orderedTripDates(b),da=ad.start||ad.end||'',db=bd.start||bd.end||'';if(da&&db)return db.localeCompare(da);if(da)return-1;if(db)return 1;return String(b.id||'').localeCompare(String(a.id||''))}
 function tripIsOnHorizon(t){const td=orderedTripDates(t),today=new Date();today.setHours(0,0,0,0);const start=td.start?new Date(td.start+'T00:00:00'):null,end=td.end?new Date(td.end+'T00:00:00'):null;if(end)return end>=today;if(start)return start>=today;const status=String(t.status||'').toLowerCase(),countries=tripCountries(t);return status==='upcoming'||status==='planning'||countries.some(c=>countryHasStatus(c,'going'))}function reconcileTripCountryStatuses(countries){[...new Set((countries||[]).filter(Boolean))].forEach(c=>{const trips=countryTrips(c),hasUpcoming=trips.some(tripIsOnHorizon),hasPast=trips.some(t=>!tripIsOnHorizon(t));setCountryStatus(c,'going',hasUpcoming);if(hasPast){setCountryStatus(c,'visited',true);if(!state.visitHistory.some(x=>sameCountry(x,c)))state.visitHistory.push(c)}})}
@@ -1196,54 +1196,55 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   });
 })();
 
-/* Independent Home status sag component */
+/* Self-contained SVG sag bars. Originals stay visible unless all replacements initialise. */
 (function(){
-  const STRAIGHT=[2,5,28,5,38,5,43,5,47,5,53,5,57,5,62,5,72,5,98,5];
-  const SAG=[2,5,28,5,36,5,41,6,45,7,45,15,50,15,55,15,55,7,59,6,64,5,72,5,98,5];
-  let hosts=[], paths=[], state=[0,0,0], rafs=[0,0,0];
+  const files=['status-sag-visited.svg','status-sag-visiting.svg','status-sag-bucket.svg'];
+  const straight='M3 5 C28 5 36 5 42 5 C46 5 47 5 50 5 C53 5 54 5 58 5 C64 5 72 5 97 5';
+  const sag='M3 5 C28 5 35 5 40 6 C44 7 45 15 50 15 C55 15 56 7 60 6 C65 5 72 5 97 5';
+  const paths=[];
+  let active=0;
 
-  function d(v){
-    return `M${v[0]} ${v[1]} C${v[2]} ${v[3]} ${v[4]} ${v[5]} ${v[6]} ${v[7]} C${v[8]} ${v[9]} ${v[10]} ${v[11]} ${v[12]} ${v[13]} C${v[14]} ${v[15]} ${v[16]} ${v[17]} ${v[18]} ${v[19]} C${v[20]} ${v[21]} ${v[22]} ${v[23]} ${v[24]} ${v[25]}`;
+  function setShape(path, on, animate){
+    if(!path)return;
+    if(!animate){
+      path.style.transition='none';
+      path.setAttribute('d',on?sag:straight);
+      path.getBoundingClientRect();
+      path.style.transition='';
+      return;
+    }
+    path.setAttribute('d',on?sag:straight);
   }
-  function shape(t){
-    const a=STRAIGHT,b=SAG,out=[];
-    for(let i=0;i<a.length;i++) out.push(a[i]+(b[i]-a[i])*t);
-    return out;
-  }
-  function ease(t){return 1-Math.pow(1-t,3);}
-  function tween(idx,to,animate=true){
-    const p=paths[idx]; if(!p)return;
-    cancelAnimationFrame(rafs[idx]);
-    const from=state[idx];
-    if(!animate){state[idx]=to;p.setAttribute('d',d(shape(to)));return;}
-    const start=performance.now(), dur=420;
-    const tick=(now)=>{
-      const q=Math.min(1,(now-start)/dur);
-      const v=from+(to-from)*ease(q);
-      state[idx]=v;p.setAttribute('d',d(shape(v)));
-      if(q<1)rafs[idx]=requestAnimationFrame(tick);
-    };
-    rafs[idx]=requestAnimationFrame(tick);
-  }
+
   async function init(){
-    hosts=[...document.querySelectorAll('.status-sag-host')];
+    const hosts=[...document.querySelectorAll('.status-sag-host')];
     if(hosts.length!==3)return;
-    let svgText='';
-    try{svgText=await fetch('status-sag-line.svg',{cache:'no-store'}).then(r=>r.text());}
-    catch(e){return;}
-    hosts.forEach((h,i)=>{
-      h.innerHTML=svgText;
-      const svg=h.querySelector('svg'),p=h.querySelector('path');
-      if(svg)svg.setAttribute('aria-hidden','true');
-      if(p){p.classList.add('status-sag-path');paths[i]=p;p.setAttribute('d',d(shape(0)));}
-    });
-    window.WozzaStatusSag.set(window.countrySlide||0,false);
+    try{
+      const svgs=await Promise.all(files.map(f=>fetch(f,{cache:'no-store'}).then(r=>{
+        if(!r.ok)throw new Error(f);
+        return r.text();
+      })));
+      svgs.forEach((txt,i)=>{
+        hosts[i].innerHTML=txt;
+        const p=hosts[i].querySelector('path');
+        if(!p)throw new Error('missing path');
+        p.classList.add('status-sag-path');
+        paths[i]=p;
+      });
+      document.querySelector('.map-summary')?.classList.add('sag-ready');
+      window.WozzaSagBars.set(typeof countrySlide==='number'?countrySlide:0,false);
+    }catch(e){
+      /* Fail safe: baseline bars remain visible. */
+    }
   }
-  window.WozzaStatusSag={
-    set(active,animate=true){
-      for(let i=0;i<3;i++)tween(i,i===active?1:0,animate);
+
+  window.WozzaSagBars={
+    set(idx,animate=true){
+      active=idx;
+      paths.forEach((p,i)=>setShape(p,i===active,animate));
     }
   };
+
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
