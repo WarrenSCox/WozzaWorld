@@ -1197,13 +1197,3 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     window.open(`https://www.google.com/search?q=${encodeURIComponent(country)}`,'_blank','noopener');
   });
 })();
-
-(function ensureStatusLineSvgs(){
-  document.querySelectorAll('.map-summary .summary').forEach((summary)=>{
-    const bar=summary.querySelector('i');
-    if(!bar || bar.querySelector('.status-line-svg')) return;
-    bar.insertAdjacentHTML('beforeend',
-      '<svg class="status-line-svg" viewBox="0 0 100 22" preserveAspectRatio="none" aria-hidden="true"><path d="M2 3 C30 3 39 3 50 3 C61 3 70 3 98 3"></path></svg>');
-  });
-})();
-
