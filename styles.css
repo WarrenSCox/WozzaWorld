@@ -4303,3 +4303,35 @@ body.trip-selection-focus header{
 .launch-splash .splash-cloud-img:nth-child(5){animation-delay:-7.3s!important}
 .launch-splash .splash-cloud-img:nth-child(7){animation-delay:-3.1s!important}
 .launch-splash .splash-cloud-img:nth-child(8){animation-delay:-6.7s!important}
+
+
+/* v0.19.8 - cinematic cloud spacing, same startup duration
+   More obvious near/mid/far depth without delaying entry to the app. */
+
+/* Far layer: noticeably smaller, crisp and restrained */
+.launch-splash .splash-cloud-img:nth-child(3n+1){
+  opacity:.44!important;
+  filter:blur(.6px) drop-shadow(0 6px 16px rgba(7,94,120,.07))!important;
+  scale:.78!important;
+}
+
+/* Mid layer */
+.launch-splash .splash-cloud-img:nth-child(3n+2){
+  opacity:.61!important;
+  filter:blur(2.8px) drop-shadow(0 8px 20px rgba(7,94,120,.09))!important;
+  scale:.96!important;
+}
+
+/* Foreground: larger, softer and more translucent */
+.launch-splash .splash-cloud-img:nth-child(3n){
+  opacity:.58!important;
+  filter:blur(7.5px) drop-shadow(0 12px 28px rgba(7,94,120,.10))!important;
+  scale:1.22!important;
+}
+
+/* Break up the visual rhythm further so adjacent clouds don't feel cloned. */
+.launch-splash .splash-cloud-img:nth-child(2){scale:.88!important;opacity:.54!important}
+.launch-splash .splash-cloud-img:nth-child(4){scale:1.12!important;opacity:.56!important}
+.launch-splash .splash-cloud-img:nth-child(5){scale:.82!important;opacity:.48!important}
+.launch-splash .splash-cloud-img:nth-child(7){scale:1.18!important;opacity:.55!important}
+.launch-splash .splash-cloud-img:nth-child(8){scale:.86!important;opacity:.50!important}
