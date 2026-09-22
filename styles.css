@@ -4460,54 +4460,51 @@ body.trip-selection-focus header{
 }
 
 
-/* Active status dip FIX2 - one thin line, centre bends DOWN. */
+/* Smooth status sag - exact visual behaviour:
+   inactive = straight; active = the same line smoothly sags in the centre. */
 .map-summary .summary i{
+  display:block!important;
   position:relative!important;
+  height:18px!important;
+  max-width:82px!important;
+  margin:4px auto -3px!important;
   overflow:visible!important;
   background:none!important;
-  box-shadow:none!important;
+  border-radius:0!important;
 }
-
-/* Remove any baseline/pseudo paint and redraw exactly one continuous line. */
 .map-summary .summary i::before,
 .map-summary .summary i::after{
-  content:""!important;
+  content:none!important;
+  display:none!important;
+}
+.status-sag-line{
   display:block!important;
-  position:absolute!important;
-  top:50%!important;
-  width:50.5%!important;
-  height:6px!important;
-  background:currentColor!important;
-  border-radius:999px!important;
-  z-index:1!important;
-  transition:transform .44s cubic-bezier(.2,.8,.25,1)!important;
+  width:100%!important;
+  height:18px!important;
+  overflow:visible!important;
+  pointer-events:none!important;
 }
-.map-summary .summary i::before{
-  left:0!important;
-  transform-origin:left center!important;
-  transform:translateY(-50%) rotate(0deg)!important;
+.status-sag-line path{
+  fill:none!important;
+  stroke-width:6!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  vector-effect:non-scaling-stroke;
+  d:path("M2 3 C30 3 38 3 44 3 C48 3 52 3 56 3 C62 3 70 3 98 3");
+  transition:d .46s cubic-bezier(.22,.78,.24,1)!important;
 }
-.map-summary .summary i::after{
-  right:0!important;
-  transform-origin:right center!important;
-  transform:translateY(-50%) rotate(0deg)!important;
-}
-
-/* Outer ends stay fixed; the two inner ends drop together.
-   This makes a broad V/dip rather than an attached pointer. */
-.map-summary .summary.status-active i::before{
-  transform:translateY(-50%) rotate(7deg)!important;
-}
-.map-summary .summary.status-active i::after{
-  transform:translateY(-50%) rotate(-7deg)!important;
+/* Wide localised rounded sag: long straight shoulders, soft bottom, no point. */
+.map-summary .summary.status-active .status-sag-line path{
+  d:path("M2 3 C27 3 34 3 39 4 C43 5 44 12 50 13 C56 12 57 5 61 4 C66 3 73 3 98 3");
 }
 
-/* Existing status colours. */
-.map-summary .summary:nth-child(1) i{color:#10aa8b!important}
-.map-summary .summary:nth-child(2) i{color:#f6a51c!important}
-.map-summary .summary:nth-child(3) i{color:#13bed5!important}
+.map-summary .summary.visited .status-sag-line path{stroke:var(--green)!important}
+.map-summary .summary.going .status-sag-line path{stroke:var(--orange)!important}
+.map-summary .summary.bucket .status-sag-line path{stroke:var(--yellow)!important}
+
+/* Current Home design uses cyan for Bucket List: preserve that established visual. */
+.map-summary .summary:nth-child(3) .status-sag-line path{stroke:#19bdd6!important}
 
 @media(prefers-reduced-motion:reduce){
-  .map-summary .summary i::before,
-  .map-summary .summary i::after{transition:none!important}
+  .status-sag-line path{transition:none!important}
 }
