@@ -4489,3 +4489,10 @@ body.trip-selection-focus header{
   vector-effect:non-scaling-stroke!important;
   transition:d .44s cubic-bezier(.22,.78,.24,1)!important;
 }
+
+
+/* Loading screen polish: lift the existing logo/slogan lockup slightly so the slogan
+   clears the lower-left photographic cloud. Pop animation itself is unchanged. */
+.launch-splash .launch-brand-lockup{
+  top:-24px!important;
+}
