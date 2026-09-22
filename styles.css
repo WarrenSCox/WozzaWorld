@@ -4247,3 +4247,34 @@ body.trip-selection-focus header{
   opacity:.72!important;
   filter:blur(7px) drop-shadow(0 10px 24px rgba(7,94,120,.12))!important;
 }
+
+
+/* v0.19.6 - startup cloud depth-of-field / parallax
+   Existing cloud positions and movement remain intact.
+   Different clouds now sit at subtly different visual depths. */
+
+/* Base cloud behaviour */
+.launch-splash .splash-cloud-img{
+  will-change:transform,filter,opacity!important;
+}
+
+/* Far/background clouds: smaller, crisper, fainter */
+.launch-splash .splash-cloud-img:nth-child(3n+1){
+  opacity:.50!important;
+  filter:blur(.8px) drop-shadow(0 7px 18px rgba(7,94,120,.08))!important;
+  scale:.92;
+}
+
+/* Mid-depth clouds: soft mist */
+.launch-splash .splash-cloud-img:nth-child(3n+2){
+  opacity:.66!important;
+  filter:blur(3.2px) drop-shadow(0 9px 22px rgba(7,94,120,.10))!important;
+  scale:1;
+}
+
+/* Foreground clouds: larger and deliberately out of focus */
+.launch-splash .splash-cloud-img:nth-child(3n){
+  opacity:.72!important;
+  filter:blur(7px) drop-shadow(0 12px 28px rgba(7,94,120,.12))!important;
+  scale:1.08;
+}
