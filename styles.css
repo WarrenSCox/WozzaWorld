@@ -4459,52 +4459,36 @@ body.trip-selection-focus header{
   display:none!important;
 }
 
-
-/* Smooth status sag - exact visual behaviour:
-   inactive = straight; active = the same line smoothly sags in the centre. */
-.map-summary .summary i{
+/* Independent SVG status sag.
+   Existing <i> remains as layout spacer only; SVG owns all drawing. */
+.map-summary .summary{position:relative!important}
+.map-summary .summary > i{
+  visibility:hidden!important;
+}
+.map-summary .summary .status-sag-host{
+  position:absolute!important;
+  left:50%!important;
+  bottom:0!important;
+  width:82px!important;
+  height:20px!important;
+  transform:translateX(-50%)!important;
   display:block!important;
-  position:relative!important;
-  height:18px!important;
-  max-width:82px!important;
-  margin:4px auto -3px!important;
+  pointer-events:none!important;
   overflow:visible!important;
-  background:none!important;
-  border-radius:0!important;
 }
-.map-summary .summary i::before,
-.map-summary .summary i::after{
-  content:none!important;
-  display:none!important;
-}
-.status-sag-line{
+.map-summary .summary .status-sag-host svg{
   display:block!important;
   width:100%!important;
-  height:18px!important;
+  height:20px!important;
   overflow:visible!important;
-  pointer-events:none!important;
 }
-.status-sag-line path{
+.map-summary .summary .status-sag-path{
   fill:none!important;
   stroke-width:6!important;
   stroke-linecap:round!important;
   stroke-linejoin:round!important;
-  vector-effect:non-scaling-stroke;
-  d:path("M2 3 C30 3 38 3 44 3 C48 3 52 3 56 3 C62 3 70 3 98 3");
-  transition:d .46s cubic-bezier(.22,.78,.24,1)!important;
+  vector-effect:non-scaling-stroke!important;
 }
-/* Wide localised rounded sag: long straight shoulders, soft bottom, no point. */
-.map-summary .summary.status-active .status-sag-line path{
-  d:path("M2 3 C27 3 34 3 39 4 C43 5 44 12 50 13 C56 12 57 5 61 4 C66 3 73 3 98 3");
-}
-
-.map-summary .summary.visited .status-sag-line path{stroke:var(--green)!important}
-.map-summary .summary.going .status-sag-line path{stroke:var(--orange)!important}
-.map-summary .summary.bucket .status-sag-line path{stroke:var(--yellow)!important}
-
-/* Current Home design uses cyan for Bucket List: preserve that established visual. */
-.map-summary .summary:nth-child(3) .status-sag-line path{stroke:#19bdd6!important}
-
-@media(prefers-reduced-motion:reduce){
-  .status-sag-line path{transition:none!important}
-}
+.map-summary .summary.visited .status-sag-path{stroke:#10aa8b!important}
+.map-summary .summary.going .status-sag-path{stroke:#f6a51c!important}
+.map-summary .summary.bucket .status-sag-path{stroke:#19bdd6!important}
