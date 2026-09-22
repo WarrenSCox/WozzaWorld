@@ -697,8 +697,8 @@ if(homeStatusSummary&&!homeStatusSummary.dataset.cycleSwipeReady){
 }
 
 
-/* Country list panel: same cyclic status swipe as the summary tabs.
-   Keeps the current vertical scroll position and ignores controls. */
+/* Country list panel: cyclic horizontal status swipe with vertical-scroll direction lock.
+   Vertical movement is abandoned immediately so native page scrolling remains smooth. */
 (function(){
   const getListPanel=()=>document.querySelector('.country-list-card, .country-list, #countryList') ||
     document.querySelector('#countryCarousel')?.closest('.card, section, .panel');
@@ -707,10 +707,12 @@ if(homeStatusSummary&&!homeStatusSummary.dataset.cycleSwipeReady){
     const panel=getListPanel();
     if(!panel || panel.dataset.cycleStatusSwipeReady)return;
     panel.dataset.cycleStatusSwipeReady='1';
+    panel.style.touchAction='pan-y';
 
-    let x=0,y=0,tracking=false;
+    let x=0,y=0,tracking=false,direction=null;
 
     panel.addEventListener('pointerdown',e=>{
+      if(e.pointerType==='mouse' && e.button!==0)return;
       if(e.target.closest('button,a,input,select,textarea,[role="button"]')){
         tracking=false;
         return;
@@ -718,20 +720,46 @@ if(homeStatusSummary&&!homeStatusSummary.dataset.cycleSwipeReady){
       x=e.clientX;
       y=e.clientY;
       tracking=true;
+      direction=null;
     },{passive:true});
 
-    panel.addEventListener('pointerup',e=>{
-      if(!tracking)return;
-      tracking=false;
+    panel.addEventListener('pointermove',e=>{
+      if(!tracking || direction)return;
       const dx=e.clientX-x,dy=e.clientY-y;
-      if(Math.abs(dx)>48 && Math.abs(dx)>Math.abs(dy)*1.2){
-        const scrollY=window.scrollY;
-        setCountrySlide(countrySlide+(dx<0?1:-1),true,dx<0?'next':'prev');
-        requestAnimationFrame(()=>window.scrollTo({top:scrollY,left:0,behavior:'instant'}));
+      if(Math.abs(dx)<8 && Math.abs(dy)<8)return;
+
+      if(Math.abs(dy)>=Math.abs(dx)){
+        /* Vertical intent: stop tracking completely and leave native scrolling alone. */
+        direction='vertical';
+        tracking=false;
+      }else{
+        direction='horizontal';
       }
     },{passive:true});
 
-    panel.addEventListener('pointercancel',()=>tracking=false,{passive:true});
+    panel.addEventListener('pointerup',e=>{
+      if(!tracking || direction==='vertical'){
+        tracking=false;
+        direction=null;
+        return;
+      }
+      const dx=e.clientX-x,dy=e.clientY-y;
+      tracking=false;
+      direction=null;
+
+      if(Math.abs(dx)>48 && Math.abs(dx)>Math.abs(dy)*1.35){
+        const scrollY=window.scrollY;
+        setCountrySlide(countrySlide+(dx<0?1:-1),true,dx<0?'next':'prev');
+        requestAnimationFrame(()=>{
+          if(Math.abs(window.scrollY-scrollY)>1) window.scrollTo(0,scrollY);
+        });
+      }
+    },{passive:true});
+
+    panel.addEventListener('pointercancel',()=>{
+      tracking=false;
+      direction=null;
+    },{passive:true});
   }
 
   if(document.readyState==='loading'){
