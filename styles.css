@@ -4612,3 +4612,37 @@ body.trip-selection-focus header{
 @media(prefers-reduced-motion:reduce){
   .recycle-dialog .recycle-desert-scene .recycle-tumbleweed-back{animation:none!important;left:68%!important;opacity:.35!important}
 }
+
+/* Recycle bin depth tumbleweed visibility fix.
+   ID-level selectors override the base scene tumbleweed rule so the two instances animate independently. */
+#recycleDialog .recycle-desert-scene > .recycle-tumbleweed-front{
+  z-index:4!important;
+  width:11%!important;
+  left:-13%!important;
+  bottom:12%!important;
+  filter:none!important;
+  animation:wozzaRecycleTumbleweed 6.2s linear .55s infinite!important;
+}
+#recycleDialog .recycle-desert-scene > .recycle-tumbleweed-back{
+  z-index:3!important;
+  width:6.5%!important;
+  left:-9%!important;
+  bottom:35%!important;
+  opacity:0;
+  filter:blur(1.2px)!important;
+  animation:wozzaTumbleweedBackRoll 7.6s linear 1.45s infinite!important;
+}
+@keyframes wozzaTumbleweedBackRoll{
+  0%{transform:translateX(0) rotate(0deg);opacity:0}
+  6%{opacity:.48}
+  82%{opacity:.48}
+  94%{opacity:.28}
+  100%{transform:translateX(1680%) rotate(1080deg);opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+  #recycleDialog .recycle-desert-scene > .recycle-tumbleweed-back{
+    animation:none!important;
+    left:70%!important;
+    opacity:.35!important;
+  }
+}
