@@ -4438,94 +4438,102 @@ body.trip-selection-focus header{
 }
 
 
-/* v0.20.9 - real-alpha photographic cloud choreography.
-   Uses the EXISTING startup background and EXISTING logo.
-   No background or logo asset is replaced. */
+
+/* WozzaWorld cloud rebuild v4
+   Asset-first rebuild: true transparent edges, much brighter clouds,
+   restrained parallax and dedicated foreground mist above the logo.
+   Existing sky and logo remain untouched. */
+
 .launch-splash{
   overflow:hidden!important;
   isolation:isolate!important;
 }
 
-/* Remove baseline cartoon cloud children but retain their bank as our depth container. */
+/* Old cloud artwork/children stay suppressed. */
 .launch-splash>.splash-cloud-bank{
   display:block!important;
   position:absolute!important;
   inset:0!important;
   z-index:2!important;
-  opacity:1!important;
   pointer-events:none!important;
+  opacity:1!important;
   visibility:visible!important;
+  background:url("cloud-far-v4.png") -18vw 5vh/43vw auto no-repeat!important;
+  animation:wwEcho4 4.1s ease-in-out both!important;
 }
 .launch-splash>.splash-cloud-bank>*{display:none!important}
 
-/* Far plane: relatively sharp, small, slow, behind logo. */
+/* Far plane - almost stationary, sharpest. */
 .launch-splash>.splash-cloud-bank::before{
   content:""!important;
   position:absolute!important;
-  width:62vw!important;
-  height:31vh!important;
-  right:-19vw!important;
-  top:14vh!important;
-  background:url("cloud-far.png") center/contain no-repeat!important;
-  opacity:.58!important;
-  filter:blur(.5px)!important;
-  animation:wwFarReal 4.2s ease-in-out both!important;
+  width:58vw!important;height:29vh!important;
+  right:-15vw!important;top:11vh!important;
+  background:url("cloud-far-v4.png") center/contain no-repeat!important;
+  opacity:.72!important;
+  filter:brightness(1.13) blur(.15px)!important;
+  animation:wwFar4 4.1s ease-in-out both!important;
 }
-@keyframes wwFarReal{
-  from{transform:translate3d(2vw,0,0) scale(.94)}
-  to{transform:translate3d(-5vw,.7vh,0) scale(.97)}
+@keyframes wwFar4{
+  from{transform:translate3d(0,0,0) scale(.96)}
+  to{transform:translate3d(-1vw,.12vh,0) scale(.965)}
 }
 
-/* Mid plane: softer and larger, behind logo. */
+/* Mid plane - larger, softer, short drift. */
 .launch-splash>.splash-cloud-bank::after{
   content:""!important;
   position:absolute!important;
-  width:88vw!important;
-  height:46vh!important;
-  left:-34vw!important;
-  top:26vh!important;
-  background:url("cloud-mid.png") center/contain no-repeat!important;
-  opacity:.64!important;
-  filter:blur(2.4px)!important;
-  animation:wwMidReal 3.7s ease-in-out both!important;
+  width:84vw!important;height:43vh!important;
+  left:-30vw!important;top:27vh!important;
+  background:url("cloud-mid-v4.png") center/contain no-repeat!important;
+  opacity:.74!important;
+  filter:brightness(1.12) blur(1px)!important;
+  animation:wwMid4 3.65s ease-in-out both!important;
 }
-@keyframes wwMidReal{
-  from{transform:translate3d(-2vw,1vh,0) scale(1)}
-  to{transform:translate3d(7vw,-.7vh,0) scale(1.035)}
+@keyframes wwMid4{
+  from{transform:translate3d(0,.2vh,0) scale(1)}
+  to{transform:translate3d(2.4vw,-.15vh,0) scale(1.008)}
 }
 
+/* Logo stays crisp between rear clouds and foreground atmosphere. */
 .launch-splash>.launch-logo{
   position:relative!important;
   z-index:4!important;
 }
 
-/* Near plane: deliberately defocused, partly in front of the logo. */
+/* Foreground composite: a defined near cloud + a broad mist patch.
+   This layer is ABOVE the logo to create real depth. */
 .launch-splash::after{
   content:""!important;
   position:absolute!important;
   z-index:6!important;
   pointer-events:none!important;
-  width:132vw!important;
-  height:49vh!important;
-  left:-53vw!important;
-  bottom:-16vh!important;
-  background:url("cloud-near.png") center/contain no-repeat!important;
-  opacity:.55!important;
-  filter:blur(7px)!important;
-  animation:wwNearReal 3.15s ease-in-out both!important;
+  width:132vw!important;height:49vh!important;
+  left:-50vw!important;bottom:-13vh!important;
+  background:
+    url("cloud-logo-mist-v4.png") 68vw 1vh/72vw auto no-repeat,
+    url("cloud-near-v4.png") center/contain no-repeat!important;
+  opacity:.68!important;
+  filter:brightness(1.12) blur(2.1px)!important;
+  animation:wwNear4 3.15s ease-in-out both!important;
 }
-@keyframes wwNearReal{
-  from{transform:translate3d(-3vw,2vh,0) scale(1.07)}
-  to{transform:translate3d(11vw,-1vh,0) scale(1.13)}
+@keyframes wwNear4{
+  from{transform:translate3d(0,.6vh,0) scale(1.065)}
+  to{transform:translate3d(3.8vw,-.25vh,0) scale(1.08)}
 }
 
 @media(max-width:600px){
-  .launch-splash>.splash-cloud-bank::before{width:72vw!important;right:-26vw!important}
-  .launch-splash>.splash-cloud-bank::after{width:101vw!important;left:-44vw!important}
-  .launch-splash::after{width:145vw!important;left:-61vw!important}
+ .launch-splash>.splash-cloud-bank{
+   background-size:51vw auto!important;
+   background-position:-23vw 5vh!important;
+ }
+ .launch-splash>.splash-cloud-bank::before{width:68vw!important;right:-22vw!important}
+ .launch-splash>.splash-cloud-bank::after{width:96vw!important;left:-39vw!important}
+ .launch-splash::after{
+   width:146vw!important;left:-59vw!important;
+   background:
+     url("cloud-logo-mist-v4.png") 76vw 1vh/80vw auto no-repeat,
+     url("cloud-near-v4.png") center/contain no-repeat!important;
+ }
 }
-@media(prefers-reduced-motion:reduce){
-  .launch-splash>.splash-cloud-bank::before,
-  .launch-splash>.splash-cloud-bank::after,
-  .launch-splash::after{animation:none!important}
-}
+
