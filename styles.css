@@ -4460,52 +4460,49 @@ body.trip-selection-focus header{
 }
 
 
-/* Status indicator morph FIX
-   Preserve the baseline bar dimensions. The thin line itself bends; no blocks/triangles. */
+/* Active status dip FIX2 - one thin line, centre bends DOWN. */
 .map-summary .summary i{
   position:relative!important;
   overflow:visible!important;
-  /* retain the baseline element's width/height/margins; only hide its own paint */
-  background:transparent!important;
+  background:none!important;
+  box-shadow:none!important;
 }
 
-/* Two thin halves form the original straight line. */
+/* Remove any baseline/pseudo paint and redraw exactly one continuous line. */
 .map-summary .summary i::before,
 .map-summary .summary i::after{
   content:""!important;
   display:block!important;
   position:absolute!important;
   top:50%!important;
-  width:50%!important;
+  width:50.5%!important;
   height:6px!important;
   background:currentColor!important;
   border-radius:999px!important;
-  transition:
-    transform .42s cubic-bezier(.22,.8,.28,1),
-    top .42s cubic-bezier(.22,.8,.28,1)!important;
   z-index:1!important;
+  transition:transform .44s cubic-bezier(.2,.8,.25,1)!important;
 }
 .map-summary .summary i::before{
   left:0!important;
-  transform-origin:right center!important;
+  transform-origin:left center!important;
   transform:translateY(-50%) rotate(0deg)!important;
 }
 .map-summary .summary i::after{
   right:0!important;
-  transform-origin:left center!important;
+  transform-origin:right center!important;
   transform:translateY(-50%) rotate(0deg)!important;
 }
 
-/* Active: the SAME two line halves hinge downward at their shared centre.
-   This produces a broad animated V, then reverses smoothly when focus changes. */
+/* Outer ends stay fixed; the two inner ends drop together.
+   This makes a broad V/dip rather than an attached pointer. */
 .map-summary .summary.status-active i::before{
-  transform:translateY(-50%) rotate(8deg)!important;
+  transform:translateY(-50%) rotate(7deg)!important;
 }
 .map-summary .summary.status-active i::after{
-  transform:translateY(-50%) rotate(-8deg)!important;
+  transform:translateY(-50%) rotate(-7deg)!important;
 }
 
-/* Use the existing three status colours. */
+/* Existing status colours. */
 .map-summary .summary:nth-child(1) i{color:#10aa8b!important}
 .map-summary .summary:nth-child(2) i{color:#f6a51c!important}
 .map-summary .summary:nth-child(3) i{color:#13bed5!important}
