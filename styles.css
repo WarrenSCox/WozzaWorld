@@ -4673,3 +4673,9 @@ body.trip-selection-focus header{
     opacity:.35!important;
   }
 }
+
+/* Recycle bin subtitle spacing polish: bring subtitle directly beneath heading. */
+#recycleDialog .recycle-empty-subtitle{
+  top:-13px!important;
+  margin-bottom:-3px!important;
+}
