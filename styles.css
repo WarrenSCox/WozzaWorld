@@ -4438,86 +4438,52 @@ body.trip-selection-focus header{
 }
 
 
-/* v0.20.7 - GOOD CLOUDS ONLY
-   Surgical CSS-only pass from WozzaWorld-main (3).
-   Keep the established cloud-field motion, but remove the cloud actors
-   identified as the flat/cartoon-looking ones in the approved reference. */
-
-/* Make sure the cloud field is active again. */
-.launch-splash > .splash-cloud-bank{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  z-index:5!important;
-  animation:none!important;
+/* Photographic startup hotfix - exact supplied sky artwork.
+   Existing baseline startup logo remains untouched. */
+.launch-splash{
+  overflow:hidden!important;
+  isolation:isolate!important;
+  background:#118da7 url("wozzaworld-startup-sky.png") center center / cover no-repeat!important;
 }
 
-/* Remove the obvious blob/scalloped actors:
-   upper-left, upper-right, right-middle and the two heavy lower-edge clouds. */
-.launch-splash .cloud-l1,
-.launch-splash .cloud-r1,
-.launch-splash .cloud-r2,
-.launch-splash .cloud-l4,
-.launch-splash .cloud-r4{
+/* Do not show the old illustrated/cartoon cloud actors. */
+.launch-splash .splash-cloud-bank,
+.launch-splash [class*="cloud-l"],
+.launch-splash [class*="cloud-r"]{
   display:none!important;
 }
 
-/* Retain only the three cloud actors that read softest in the liked composition. */
-.launch-splash .cloud-l2{
-  display:block!important;
-  left:-30%!important;
-  top:29%!important;
-  width:72vw!important;
-  opacity:.46!important;
-  scale:.92!important;
-  filter:blur(3.4px) drop-shadow(0 8px 20px rgba(7,94,120,.07))!important;
-  animation:wwGoodCloudLeft 3.9s linear both!important;
+/* Tiny movement of the photographic scene itself - no fake cloud artwork. */
+.launch-splash::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-2.5%!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background:url("wozzaworld-startup-sky.png") center center / cover no-repeat!important;
+  animation:wwPhotoSkyDrift 3.4s ease-out both!important;
+  will-change:transform;
 }
 
-.launch-splash .cloud-r3{
-  display:block!important;
-  right:-27%!important;
-  bottom:18%!important;
-  width:68vw!important;
-  opacity:.42!important;
-  scale:.90!important;
-  filter:blur(3.8px) drop-shadow(0 8px 20px rgba(7,94,120,.07))!important;
-  animation:wwGoodCloudRight 4.25s linear both!important;
+@keyframes wwPhotoSkyDrift{
+  from{transform:scale(1.045) translate3d(-.3%,.25%,0)}
+  to{transform:scale(1.015) translate3d(.2%,-.15%,0)}
 }
 
-.launch-splash .cloud-l3{
-  display:block!important;
-  left:-47%!important;
-  bottom:-3%!important;
-  width:100vw!important;
-  opacity:.34!important;
-  scale:1.12!important;
-  filter:blur(9px) drop-shadow(0 11px 26px rgba(7,94,120,.06))!important;
-  animation:wwGoodCloudNear 3.15s linear both!important;
+/* Keep the baseline logo above the photographic scene and only animate the element. */
+.launch-splash > .launch-logo{
+  position:relative!important;
+  z-index:3!important;
+  animation:wwPhotoLogoPop .46s cubic-bezier(.18,.86,.28,1.08) both!important;
 }
 
-/* Short atmospheric drift - no marching right across the screen. */
-@keyframes wwGoodCloudLeft{
-  from{translate:-5vw 1vh}
-  to{translate:10vw -1vh}
-}
-@keyframes wwGoodCloudRight{
-  from{translate:6vw -1vh}
-  to{translate:-9vw 1vh}
-}
-@keyframes wwGoodCloudNear{
-  from{translate:-8vw 1vh}
-  to{translate:14vw -2vh}
-}
-
-@media(max-width:620px){
-  .launch-splash .cloud-l2{left:-39%!important;width:82vw!important}
-  .launch-splash .cloud-r3{right:-36%!important;width:80vw!important}
-  .launch-splash .cloud-l3{left:-61%!important;width:116vw!important}
+@keyframes wwPhotoLogoPop{
+  0%{opacity:0;transform:scale(.89)}
+  55%{opacity:1;transform:scale(1.018)}
+  100%{opacity:1;transform:scale(1)}
 }
 
 @media(prefers-reduced-motion:reduce){
-  .launch-splash .cloud-l2,
-  .launch-splash .cloud-r3,
-  .launch-splash .cloud-l3{animation:none!important}
+  .launch-splash::before,
+  .launch-splash > .launch-logo{animation:none!important}
 }
