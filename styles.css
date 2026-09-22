@@ -4220,3 +4220,7 @@ body.trip-selection-focus header{
   -webkit-backdrop-filter:blur(3px)!important;
   backdrop-filter:blur(3px)!important;
 }
+
+
+/* v0.18.94 - launch clouds pass in front of the logo. */
+.launch-splash .splash-cloud-bank{z-index:5!important}
