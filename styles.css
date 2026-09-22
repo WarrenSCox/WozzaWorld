@@ -4459,27 +4459,35 @@ body.trip-selection-focus header{
   display:none!important;
 }
 
-/* v0.21.0 — active Home status bar pointer */
+
+/* Active Home status pointer v2
+   The existing coloured bar stays straight for inactive statuses.
+   The active bar gains a centred downward V that points to the panel below. */
 .map-summary .summary i{
   position:relative!important;
   overflow:visible!important;
-  transition:border-radius .18s ease!important;
 }
-.map-summary .summary i::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:calc(100% - 1px);
-  width:20px;
-  height:12px;
-  transform:translateX(-50%) scaleY(0);
-  transform-origin:top center;
-  background:inherit;
-  clip-path:polygon(0 0,100% 0,50% 100%);
-  opacity:0;
-  transition:transform .18s ease,opacity .14s ease;
+.map-summary .summary.status-active i::after{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:1px!important;
+  width:18px!important;
+  height:18px!important;
+  transform:translateX(-50%) rotate(45deg)!important;
+  background:inherit!important;
+  border-radius:0 0 3px 0!important;
+  z-index:1!important;
 }
-.map-summary .summary.active i::after{
-  transform:translateX(-50%) scaleY(1);
-  opacity:1;
+/* Cover the upper half of the rotated square so it reads as a clean downward dip,
+   while preserving the original bar thickness. */
+.map-summary .summary.status-active i::before{
+  content:""!important;
+  position:absolute!important;
+  left:calc(50% - 15px)!important;
+  top:-8px!important;
+  width:30px!important;
+  height:11px!important;
+  background:rgba(255,255,255,.94)!important;
+  z-index:2!important;
 }
