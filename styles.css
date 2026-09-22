@@ -4679,3 +4679,26 @@ body.trip-selection-focus header{
   top:-13px!important;
   margin-bottom:-3px!important;
 }
+
+/* v0.19.4 — Home World Overview header. The passport stamp component is retained in
+   the DOM/CSS for future reuse, but is no longer shown on the Home overview. */
+.screen[data-screen="home"] > .map-card > .world-view-signature{display:none!important}
+.home-world-overview-title{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  padding:2px 12px 13px;
+  color:var(--atlas-ink,#111a3b);
+  font-family:"Archivo Black",Impact,sans-serif;
+  font-size:clamp(25px,4.7vw,40px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.01em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  overflow:visible;
+}
+@media(max-width:620px){
+  .home-world-overview-title{padding:1px 10px 11px;font-size:clamp(22px,5.6vw,34px)}
+}
+body.map-view .home-world-overview-title{display:none!important}
