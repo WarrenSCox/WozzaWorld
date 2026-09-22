@@ -4221,14 +4221,18 @@ body.trip-selection-focus header{
   backdrop-filter:blur(3px)!important;
 }
 
-
-/* v0.18.94 - launch clouds pass in front of the logo. */
+/* v0.19.3 - final WozzaWorld branding system */
+.launch-splash{background:#075E78!important}
+.launch-brand-lockup{z-index:4!important;width:min(84vw,410px)!important;gap:0!important}
+.launch-brand-lockup .launch-logo{width:min(78vw,370px)!important;height:auto!important;object-fit:contain!important}
+.launch-tagline{display:none!important}
 .launch-splash .splash-cloud-bank{z-index:5!important}
-
-/* v0.18.95 - keep the WozzaWorld header logo in scale with the nav icons. */
-.brand-main-logo.restored-logo{
-  width:auto!important;
-  height:64px!important;
-  max-width:112px!important;
-  object-fit:contain!important;
+.launch-splash .splash-cloud-img{
+  opacity:.78!important;
+  filter:blur(1.8px) drop-shadow(0 10px 24px rgba(7,94,120,.16))!important;
 }
+.ecosystem-brand .brand-main-logo{
+  width:88px!important;height:64px!important;max-width:100%!important;object-fit:contain!important
+}
+@media(max-width:560px){.ecosystem-brand .brand-main-logo{width:76px!important;height:58px!important}}
+@media(max-width:390px){.ecosystem-brand .brand-main-logo{width:70px!important;height:54px!important}}
