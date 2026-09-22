@@ -4436,3 +4436,45 @@ body.trip-selection-focus header{
 @media(prefers-reduced-motion:reduce){
   .launch-splash .splash-cloud-img{animation:none!important}
 }
+
+
+/* v0.20.3 - approved startup artwork
+   Built directly from WozzaWorld-main (3) baseline.
+   Uses the user's approved reference artwork exactly.
+   Existing startup duration / app logic remains untouched. */
+
+.launch-splash{
+  background:#075e78!important;
+  overflow:hidden!important;
+}
+
+/* Exact approved artwork fills the startup screen.
+   Very gentle movement gives life without manufacturing fake cloud assets. */
+.launch-splash::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-2.5%!important;
+  z-index:1!important;
+  pointer-events:none!important;
+  background:url("wozzaworld-startup-approved.jpg") center center / cover no-repeat!important;
+  transform:scale(1.035);
+  animation:wwApprovedSkyDrift 3.4s ease-out both!important;
+}
+
+@keyframes wwApprovedSkyDrift{
+  from{transform:scale(1.055) translate3d(-.4%,.25%,0)}
+  to{transform:scale(1.025) translate3d(.35%,-.2%,0)}
+}
+
+/* The approved artwork already contains the exact logo and cloud composition,
+   so suppress the old duplicated logo/cloud objects only on the launch screen. */
+.launch-splash>.launch-logo,
+.launch-splash>.splash-cloud-bank{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .launch-splash::before{animation:none!important;transform:scale(1.025)!important}
+}
