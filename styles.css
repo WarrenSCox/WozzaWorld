@@ -4589,3 +4589,26 @@ body.trip-selection-focus header{
   font-weight:500!important;
   text-align:left!important;
 }
+
+/* Recycle bin depth pass: a second, smaller tumbleweed rolls further back in the desert. */
+.recycle-dialog .recycle-desert-scene .recycle-tumbleweed-front{
+  z-index:3!important;
+}
+.recycle-dialog .recycle-desert-scene .recycle-tumbleweed-back{
+  z-index:2!important;
+  width:7.5%!important;
+  left:-10%!important;
+  bottom:35%!important;
+  opacity:0;
+  filter:blur(1.4px);
+  animation:wozzaTumbleweedBackRoll 7.2s linear 1.65s infinite!important;
+}
+@keyframes wozzaTumbleweedBackRoll{
+  0%{transform:translateX(0) rotate(0deg);opacity:0}
+  7%{opacity:.52}
+  82%{opacity:.52}
+  100%{transform:translateX(1450%) rotate(1080deg);opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .recycle-dialog .recycle-desert-scene .recycle-tumbleweed-back{animation:none!important;left:68%!important;opacity:.35!important}
+}
