@@ -4236,3 +4236,14 @@ body.trip-selection-focus header{
 }
 @media(max-width:560px){.ecosystem-brand .brand-main-logo{width:76px!important;height:58px!important}}
 @media(max-width:390px){.ecosystem-brand .brand-main-logo{width:70px!important;height:54px!important}}
+
+/* v0.19.4 - fractionally smaller header logo */
+.ecosystem-brand .brand-main-logo{width:82px!important;height:60px!important}
+@media(max-width:560px){.ecosystem-brand .brand-main-logo{width:71px!important;height:54px!important}}
+@media(max-width:390px){.ecosystem-brand .brand-main-logo{width:66px!important;height:51px!important}}
+
+/* v0.19.5 - startup clouds: stronger mist blur to match in-app cloud treatment */
+.launch-splash .splash-cloud-img{
+  opacity:.72!important;
+  filter:blur(7px) drop-shadow(0 10px 24px rgba(7,94,120,.12))!important;
+}
