@@ -4578,3 +4578,14 @@ body.trip-selection-focus header{
     opacity:.75!important;
   }
 }
+
+
+/* Recycle bin empty-state subtitle */
+#recycleDialog .recycle-empty-subtitle{
+  margin:0 0 10px!important;
+  color:#667077!important;
+  font-size:16px!important;
+  line-height:1.3!important;
+  font-weight:500!important;
+  text-align:left!important;
+}
