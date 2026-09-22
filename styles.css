@@ -4278,3 +4278,28 @@ body.trip-selection-focus header{
   filter:blur(7px) drop-shadow(0 12px 28px rgba(7,94,120,.12))!important;
   scale:1.08;
 }
+
+
+/* v0.19.7 - startup cloud motion polish
+   Spread the layers out and give the three depths subtly different movement. */
+
+/* Offset the cloud layers so they don't bunch around the logo together. */
+.launch-splash .splash-cloud-img:nth-child(3n+1){
+  animation-delay:-1.4s!important;
+  animation-duration:9.8s!important;
+}
+.launch-splash .splash-cloud-img:nth-child(3n+2){
+  animation-delay:-3.7s!important;
+  animation-duration:8.4s!important;
+}
+.launch-splash .splash-cloud-img:nth-child(3n){
+  animation-delay:-6.1s!important;
+  animation-duration:7.2s!important;
+}
+
+/* Extra staggering across repeated clouds, preserving the existing animation itself. */
+.launch-splash .splash-cloud-img:nth-child(2){animation-delay:-2.2s!important}
+.launch-splash .splash-cloud-img:nth-child(4){animation-delay:-5.0s!important}
+.launch-splash .splash-cloud-img:nth-child(5){animation-delay:-7.3s!important}
+.launch-splash .splash-cloud-img:nth-child(7){animation-delay:-3.1s!important}
+.launch-splash .splash-cloud-img:nth-child(8){animation-delay:-6.7s!important}
