@@ -4438,52 +4438,94 @@ body.trip-selection-focus header{
 }
 
 
-/* Photographic startup hotfix - exact supplied sky artwork.
-   Existing baseline startup logo remains untouched. */
+/* v0.20.9 - real-alpha photographic cloud choreography.
+   Uses the EXISTING startup background and EXISTING logo.
+   No background or logo asset is replaced. */
 .launch-splash{
   overflow:hidden!important;
   isolation:isolate!important;
-  background:#118da7 url("wozzaworld-startup-sky.png") center center / cover no-repeat!important;
 }
 
-/* Do not show the old illustrated/cartoon cloud actors. */
-.launch-splash .splash-cloud-bank,
-.launch-splash [class*="cloud-l"],
-.launch-splash [class*="cloud-r"]{
-  display:none!important;
+/* Remove baseline cartoon cloud children but retain their bank as our depth container. */
+.launch-splash>.splash-cloud-bank{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  visibility:visible!important;
 }
+.launch-splash>.splash-cloud-bank>*{display:none!important}
 
-/* Tiny movement of the photographic scene itself - no fake cloud artwork. */
-.launch-splash::before{
+/* Far plane: relatively sharp, small, slow, behind logo. */
+.launch-splash>.splash-cloud-bank::before{
   content:""!important;
   position:absolute!important;
-  inset:-2.5%!important;
-  z-index:0!important;
-  pointer-events:none!important;
-  background:url("wozzaworld-startup-sky.png") center center / cover no-repeat!important;
-  animation:wwPhotoSkyDrift 3.4s ease-out both!important;
-  will-change:transform;
+  width:62vw!important;
+  height:31vh!important;
+  right:-19vw!important;
+  top:14vh!important;
+  background:url("cloud-far.png") center/contain no-repeat!important;
+  opacity:.58!important;
+  filter:blur(.5px)!important;
+  animation:wwFarReal 4.2s ease-in-out both!important;
+}
+@keyframes wwFarReal{
+  from{transform:translate3d(2vw,0,0) scale(.94)}
+  to{transform:translate3d(-5vw,.7vh,0) scale(.97)}
 }
 
-@keyframes wwPhotoSkyDrift{
-  from{transform:scale(1.045) translate3d(-.3%,.25%,0)}
-  to{transform:scale(1.015) translate3d(.2%,-.15%,0)}
+/* Mid plane: softer and larger, behind logo. */
+.launch-splash>.splash-cloud-bank::after{
+  content:""!important;
+  position:absolute!important;
+  width:88vw!important;
+  height:46vh!important;
+  left:-34vw!important;
+  top:26vh!important;
+  background:url("cloud-mid.png") center/contain no-repeat!important;
+  opacity:.64!important;
+  filter:blur(2.4px)!important;
+  animation:wwMidReal 3.7s ease-in-out both!important;
+}
+@keyframes wwMidReal{
+  from{transform:translate3d(-2vw,1vh,0) scale(1)}
+  to{transform:translate3d(7vw,-.7vh,0) scale(1.035)}
 }
 
-/* Keep the baseline logo above the photographic scene and only animate the element. */
-.launch-splash > .launch-logo{
+.launch-splash>.launch-logo{
   position:relative!important;
-  z-index:3!important;
-  animation:wwPhotoLogoPop .46s cubic-bezier(.18,.86,.28,1.08) both!important;
+  z-index:4!important;
 }
 
-@keyframes wwPhotoLogoPop{
-  0%{opacity:0;transform:scale(.89)}
-  55%{opacity:1;transform:scale(1.018)}
-  100%{opacity:1;transform:scale(1)}
+/* Near plane: deliberately defocused, partly in front of the logo. */
+.launch-splash::after{
+  content:""!important;
+  position:absolute!important;
+  z-index:6!important;
+  pointer-events:none!important;
+  width:132vw!important;
+  height:49vh!important;
+  left:-53vw!important;
+  bottom:-16vh!important;
+  background:url("cloud-near.png") center/contain no-repeat!important;
+  opacity:.55!important;
+  filter:blur(7px)!important;
+  animation:wwNearReal 3.15s ease-in-out both!important;
+}
+@keyframes wwNearReal{
+  from{transform:translate3d(-3vw,2vh,0) scale(1.07)}
+  to{transform:translate3d(11vw,-1vh,0) scale(1.13)}
 }
 
+@media(max-width:600px){
+  .launch-splash>.splash-cloud-bank::before{width:72vw!important;right:-26vw!important}
+  .launch-splash>.splash-cloud-bank::after{width:101vw!important;left:-44vw!important}
+  .launch-splash::after{width:145vw!important;left:-61vw!important}
+}
 @media(prefers-reduced-motion:reduce){
-  .launch-splash::before,
-  .launch-splash > .launch-logo{animation:none!important}
+  .launch-splash>.splash-cloud-bank::before,
+  .launch-splash>.splash-cloud-bank::after,
+  .launch-splash::after{animation:none!important}
 }
