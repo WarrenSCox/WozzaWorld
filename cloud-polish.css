@@ -1,0 +1,77 @@
+
+/* WozzaWorld photographic cloud polish v2
+   Apply AFTER the real-transparent-clouds hotfix.
+   Focus: cleaner masks, shorter drift, stronger parallax, less milky foreground. */
+
+/* FAR: barely moving, relatively sharp. */
+.launch-splash>.splash-cloud-bank::before{
+  width:57vw!important;
+  height:28vh!important;
+  right:-13vw!important;
+  top:11vh!important;
+  opacity:.48!important;
+  filter:blur(.25px)!important;
+  animation:wwFarPolish 4.1s ease-in-out both!important;
+}
+@keyframes wwFarPolish{
+  from{transform:translate3d(0,0,0) scale(.95)}
+  to{transform:translate3d(-1.8vw,.25vh,0) scale(.958)}
+}
+
+/* MID: restrained drift, softer than far layer. */
+.launch-splash>.splash-cloud-bank::after{
+  width:83vw!important;
+  height:42vh!important;
+  left:-29vw!important;
+  top:27vh!important;
+  opacity:.56!important;
+  filter:blur(1.7px)!important;
+  animation:wwMidPolish 3.65s ease-in-out both!important;
+}
+@keyframes wwMidPolish{
+  from{transform:translate3d(0,.3vh,0) scale(1)}
+  to{transform:translate3d(3.6vw,-.25vh,0) scale(1.012)}
+}
+
+/* NEAR: still deliberately defocused, but no longer a milky fog bank. */
+.launch-splash::after{
+  width:126vw!important;
+  height:45vh!important;
+  left:-49vw!important;
+  bottom:-14vh!important;
+  opacity:.49!important;
+  filter:blur(4.6px)!important;
+  animation:wwNearPolish 3.15s ease-in-out both!important;
+}
+@keyframes wwNearPolish{
+  from{transform:translate3d(0,1vh,0) scale(1.075)}
+  to{transform:translate3d(6vw,-.45vh,0) scale(1.095)}
+}
+
+/* A second distant presence, using the cleaned far photographic cloud asset.
+   It remains behind the logo and is deliberately subtle. */
+.launch-splash>.splash-cloud-bank{
+  background:
+    url("cloud-far.png") -20vw 4vh / 45vw auto no-repeat!important;
+  animation:wwBankFarEcho 4.2s ease-in-out both!important;
+}
+@keyframes wwBankFarEcho{
+  from{background-position:-20vw 4vh}
+  to{background-position:-18.5vw 4.2vh}
+}
+
+@media(max-width:600px){
+  .launch-splash>.splash-cloud-bank::before{width:66vw!important;right:-19vw!important}
+  .launch-splash>.splash-cloud-bank::after{width:94vw!important;left:-38vw!important}
+  .launch-splash::after{width:137vw!important;left:-57vw!important}
+  .launch-splash>.splash-cloud-bank{
+    background-size:53vw auto!important;
+    background-position:-25vw 5vh!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .launch-splash>.splash-cloud-bank{animation:none!important}
+  .launch-splash>.splash-cloud-bank::before,
+  .launch-splash>.splash-cloud-bank::after,
+  .launch-splash::after{animation:none!important}
+}
