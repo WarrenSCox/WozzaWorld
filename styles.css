@@ -4436,3 +4436,43 @@ body.trip-selection-focus header{
 @media(prefers-reduced-motion:reduce){
   .launch-splash .splash-cloud-img{animation:none!important}
 }
+
+
+/* v0.20.1 - SAFE curated cloud artwork
+   Built on the complete known-good rebuilt-cloud-field stylesheet.
+   Cloud engine, positions, timing, logo and all non-cloud app CSS remain intact. */
+
+.launch-splash .cloud-l1,
+.launch-splash .cloud-r3{
+  content:url("cloud-fluffy-a.png")!important;
+}
+.launch-splash .cloud-l4,
+.launch-splash .cloud-r4{
+  content:url("cloud-fluffy-d.png")!important;
+}
+.launch-splash .cloud-l2,
+.launch-splash .cloud-r1{
+  content:url("cloud-fluffy-b.png")!important;
+}
+.launch-splash .cloud-l3{
+  content:url("cloud-fluffy-c.png")!important;
+}
+.launch-splash .cloud-r2{
+  content:url("cloud-fluffy-b.png")!important;
+}
+
+/* Keep the established far / mid / near depth treatment. */
+.launch-splash .cloud-l1,
+.launch-splash .cloud-r3,
+.launch-splash .cloud-l4{
+  filter:blur(.5px) drop-shadow(0 5px 14px rgba(7,94,120,.06))!important;
+}
+.launch-splash .cloud-l2,
+.launch-splash .cloud-r1,
+.launch-splash .cloud-r4{
+  filter:blur(2.8px) drop-shadow(0 8px 20px rgba(7,94,120,.08))!important;
+}
+.launch-splash .cloud-l3,
+.launch-splash .cloud-r2{
+  filter:blur(7.5px) drop-shadow(0 11px 26px rgba(7,94,120,.08))!important;
+}
