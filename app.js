@@ -696,6 +696,51 @@ if(homeStatusSummary&&!homeStatusSummary.dataset.cycleSwipeReady){
   homeStatusSummary.addEventListener('pointercancel',()=>statusSwipe=false);
 }
 
+
+/* Country list panel: same cyclic status swipe as the summary tabs.
+   Keeps the current vertical scroll position and ignores controls. */
+(function(){
+  const getListPanel=()=>document.querySelector('.country-list-card, .country-list, #countryList') ||
+    document.querySelector('#countryCarousel')?.closest('.card, section, .panel');
+
+  function initCountryListSwipe(){
+    const panel=getListPanel();
+    if(!panel || panel.dataset.cycleStatusSwipeReady)return;
+    panel.dataset.cycleStatusSwipeReady='1';
+
+    let x=0,y=0,tracking=false;
+
+    panel.addEventListener('pointerdown',e=>{
+      if(e.target.closest('button,a,input,select,textarea,[role="button"]')){
+        tracking=false;
+        return;
+      }
+      x=e.clientX;
+      y=e.clientY;
+      tracking=true;
+    },{passive:true});
+
+    panel.addEventListener('pointerup',e=>{
+      if(!tracking)return;
+      tracking=false;
+      const dx=e.clientX-x,dy=e.clientY-y;
+      if(Math.abs(dx)>48 && Math.abs(dx)>Math.abs(dy)*1.2){
+        const scrollY=window.scrollY;
+        setCountrySlide(countrySlide+(dx<0?1:-1),true,dx<0?'next':'prev');
+        requestAnimationFrame(()=>window.scrollTo({top:scrollY,left:0,behavior:'instant'}));
+      }
+    },{passive:true});
+
+    panel.addEventListener('pointercancel',()=>tracking=false,{passive:true});
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initCountryListSwipe,{once:true});
+  }else{
+    initCountryListSwipe();
+  }
+})();
+
 // v0.15.2 — quiet plane animation layer on the HOME map overview only.
 const travelAnim=$('#travelAnimations');
 const NS='http://www.w3.org/2000/svg';
