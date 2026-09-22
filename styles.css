@@ -4460,34 +4460,46 @@ body.trip-selection-focus header{
 }
 
 
-/* Active Home status pointer v2
-   The existing coloured bar stays straight for inactive statuses.
-   The active bar gains a centred downward V that points to the panel below. */
+/* Animated bending status bars.
+   The coloured line itself morphs between straight and a broad centre dip. */
 .map-summary .summary i{
   position:relative!important;
   overflow:visible!important;
+  background:transparent!important;
+  height:22px!important;
 }
-.map-summary .summary.status-active i::after{
-  content:""!important;
-  position:absolute!important;
-  left:50%!important;
-  top:1px!important;
-  width:18px!important;
-  height:18px!important;
-  transform:translateX(-50%) rotate(45deg)!important;
-  background:inherit!important;
-  border-radius:0 0 3px 0!important;
-  z-index:1!important;
+.map-summary .summary i::before,
+.map-summary .summary i::after{
+  content:none!important;
+  display:none!important;
 }
-/* Cover the upper half of the rotated square so it reads as a clean downward dip,
-   while preserving the original bar thickness. */
-.map-summary .summary.status-active i::before{
-  content:""!important;
+.map-summary .summary .status-line-svg{
+  display:block!important;
   position:absolute!important;
-  left:calc(50% - 15px)!important;
-  top:-8px!important;
-  width:30px!important;
-  height:11px!important;
-  background:rgba(255,255,255,.94)!important;
-  z-index:2!important;
+  left:0!important;
+  top:0!important;
+  width:100%!important;
+  height:22px!important;
+  overflow:visible!important;
+  pointer-events:none!important;
+}
+.map-summary .summary .status-line-svg path{
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:3.5!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  vector-effect:non-scaling-stroke;
+  d:path("M2 3 C30 3 39 3 50 3 C61 3 70 3 98 3");
+  transition:d .42s cubic-bezier(.22,.8,.28,1)!important;
+}
+.map-summary .summary.status-active .status-line-svg path{
+  d:path("M2 3 C27 3 36 3 42 9 C46 14 48 18 50 18 C52 18 54 14 58 9 C64 3 73 3 98 3");
+}
+.map-summary .summary:nth-child(1) i{color:#10aa8b!important}
+.map-summary .summary:nth-child(2) i{color:#f6a51c!important}
+.map-summary .summary:nth-child(3) i{color:#13bed5!important}
+
+@media(prefers-reduced-motion:reduce){
+  .map-summary .summary .status-line-svg path{transition:none!important}
 }
