@@ -908,7 +908,9 @@ function fitHomeWorldOverviewTitle(){
     const cs=getComputedStyle(title);
     const pad=(parseFloat(cs.paddingLeft)||0)+(parseFloat(cs.paddingRight)||0);
     const available=Math.max(120,title.clientWidth-pad-2);
-    const min=12,max=26;
+    // Fit the complete label to the card width: short names grow, long names shrink.
+    // Keep a tiny lower bound only as a safety net; never clip the text at a preset minimum.
+    const min=6,max=34;
 
     // Measure the full, unclipped label independently from the fixed-width title box.
     const probe=document.createElement('span');
@@ -922,7 +924,7 @@ function fitHomeWorldOverviewTitle(){
     document.body.appendChild(probe);
 
     let lo=min,hi=max,best=min;
-    for(let i=0;i<10;i++){
+    for(let i=0;i<14;i++){
       const mid=(lo+hi)/2;
       probe.style.fontSize=mid+'px';
       if(probe.getBoundingClientRect().width<=available){best=mid;lo=mid}else hi=mid;
