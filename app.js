@@ -907,16 +907,27 @@ function fitHomeWorldOverviewTitle(){
   requestAnimationFrame(()=>{
     const cs=getComputedStyle(title);
     const pad=(parseFloat(cs.paddingLeft)||0)+(parseFloat(cs.paddingRight)||0);
-    const available=Math.max(150,title.clientWidth-pad);
-    const min=14,max=42;
+    const available=Math.max(120,title.clientWidth-pad-2);
+    const min=12,max=26;
+
+    // Measure the full, unclipped label independently from the fixed-width title box.
+    const probe=document.createElement('span');
+    probe.textContent=title.textContent;
+    probe.style.cssText='position:absolute;visibility:hidden;pointer-events:none;white-space:nowrap;width:max-content;left:-99999px;top:-99999px;';
+    probe.style.fontFamily=cs.fontFamily;
+    probe.style.fontWeight=cs.fontWeight;
+    probe.style.fontStyle=cs.fontStyle;
+    probe.style.letterSpacing=cs.letterSpacing;
+    probe.style.textTransform=cs.textTransform;
+    document.body.appendChild(probe);
+
     let lo=min,hi=max,best=min;
-    // Always start large, then find the largest size that fits on one line.
-    title.style.setProperty('font-size',max+'px','important');
-    for(let i=0;i<9;i++){
+    for(let i=0;i<10;i++){
       const mid=(lo+hi)/2;
-      title.style.setProperty('font-size',mid+'px','important');
-      if(title.scrollWidth<=title.clientWidth+1){best=mid;lo=mid}else hi=mid;
+      probe.style.fontSize=mid+'px';
+      if(probe.getBoundingClientRect().width<=available){best=mid;lo=mid}else hi=mid;
     }
+    probe.remove();
     title.style.setProperty('font-size',best.toFixed(2)+'px','important');
   });
 }
