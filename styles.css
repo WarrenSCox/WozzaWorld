@@ -4458,3 +4458,28 @@ body.trip-selection-focus header{
   content:none!important;
   display:none!important;
 }
+
+/* v0.21.0 — active Home status bar pointer */
+.map-summary .summary i{
+  position:relative!important;
+  overflow:visible!important;
+  transition:border-radius .18s ease!important;
+}
+.map-summary .summary i::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:calc(100% - 1px);
+  width:20px;
+  height:12px;
+  transform:translateX(-50%) scaleY(0);
+  transform-origin:top center;
+  background:inherit;
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  opacity:0;
+  transition:transform .18s ease,opacity .14s ease;
+}
+.map-summary .summary.active i::after{
+  transform:translateX(-50%) scaleY(1);
+  opacity:1;
+}
