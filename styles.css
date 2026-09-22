@@ -4224,3 +4224,11 @@ body.trip-selection-focus header{
 
 /* v0.18.94 - launch clouds pass in front of the logo. */
 .launch-splash .splash-cloud-bank{z-index:5!important}
+
+/* v0.18.95 - keep the WozzaWorld header logo in scale with the nav icons. */
+.brand-main-logo.restored-logo{
+  width:auto!important;
+  height:64px!important;
+  max-width:112px!important;
+  object-fit:contain!important;
+}
