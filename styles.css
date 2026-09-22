@@ -4646,3 +4646,30 @@ body.trip-selection-focus header{
     opacity:.35!important;
   }
 }
+
+/* Recycle bin polish: background tumbleweed emerges from suitcase edge and moves a little slower. */
+#recycleDialog .recycle-desert-scene > .recycle-tumbleweed-back{
+  left:34%!important;
+  animation:wozzaTumbleweedBackRollSuitcase 8.8s linear 1.45s infinite!important;
+}
+@keyframes wozzaTumbleweedBackRollSuitcase{
+  0%{transform:translateX(0) rotate(0deg);opacity:0}
+  6%{opacity:.48}
+  82%{opacity:.48}
+  94%{opacity:.28}
+  100%{transform:translateX(980%) rotate(1080deg);opacity:0}
+}
+
+/* Pull the empty-state subtitle a touch closer to the Recycle bin heading. */
+#recycleDialog .recycle-empty-subtitle{
+  position:relative!important;
+  top:-5px!important;
+  margin-bottom:5px!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #recycleDialog .recycle-desert-scene > .recycle-tumbleweed-back{
+    animation:none!important;
+    left:70%!important;
+    opacity:.35!important;
+  }
+}
