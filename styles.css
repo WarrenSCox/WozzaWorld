@@ -4496,74 +4496,28 @@ body.trip-selection-focus header{
 .launch-splash .launch-brand-lockup{
   top:-24px!important;
 }
-\n\n/* Empty recycle bin: desert suitcase + rolling tumbleweed */\n.recycle-dialog .recycle-empty-state.recycle-desert-empty{padding:8px 0 12px!important;overflow:hidden!important;width:100%!important}\n.recycle-dialog .recycle-desert-scene{position:relative;width:min(100%,680px);margin:0 auto;overflow:hidden}\n.recycle-dialog .recycle-desert-bg{display:block!important;width:100%!important;max-height:none!important;height:auto!important;object-fit:contain!important;border-radius:0!important}\n.recycle-dialog .recycle-tumbleweed{position:absolute!important;z-index:3;width:13%!important;height:auto!important;max-height:none!important;left:-16%;bottom:14%;border-radius:0!important;object-fit:contain!important;animation:wozzaTumbleweedRoll 5.4s linear .55s infinite;will-change:transform,opacity}\n@keyframes wozzaTumbleweedRoll{0%{transform:translateX(0) rotate(0deg);opacity:0}5%{opacity:1}82%{opacity:1}100%{transform:translateX(900%) rotate(1080deg);opacity:0}}\n@media(prefers-reduced-motion:reduce){.recycle-dialog .recycle-tumbleweed{animation:none!important;left:72%!important;opacity:.8!important}}\n/* Country lists: vertical scrolling stays native; horizontal swipe is handled after the gesture. */\n#visitedCountries,#goingCountries,#bucketCountries,#visitedCountries .country-row,#goingCountries .country-row,#bucketCountries .country-row{touch-action:pan-y!important}\n\n\n/* Recycle bin empty state hotfix — clean panel, smaller rolling/fading tumbleweed. */
-.recycle-dialog .recycle-empty-state{
-  width:100%!important;
-  min-height:360px!important;
-  padding:58px 0 30px!important;
-  overflow:hidden!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  background:transparent!important;
+\n\n/* Empty recycle bin: desert suitcase + rolling tumbleweed */\n.recycle-dialog .recycle-empty-state.recycle-desert-empty{padding:8px 0 12px!important;overflow:hidden!important;width:100%!important}\n.recycle-dialog .recycle-desert-scene{position:relative;width:min(100%,680px);margin:0 auto;overflow:hidden}\n.recycle-dialog .recycle-desert-bg{display:block!important;width:100%!important;max-height:none!important;height:auto!important;object-fit:contain!important;border-radius:0!important}\n.recycle-dialog .recycle-tumbleweed{position:absolute!important;z-index:3;width:13%!important;height:auto!important;max-height:none!important;left:-16%;bottom:14%;border-radius:0!important;object-fit:contain!important;animation:wozzaTumbleweedRoll 5.4s linear .55s infinite;will-change:transform,opacity}\n@keyframes wozzaTumbleweedRoll{0%{transform:translateX(0) rotate(0deg);opacity:0}5%{opacity:1}82%{opacity:1}100%{transform:translateX(900%) rotate(1080deg);opacity:0}}\n@media(prefers-reduced-motion:reduce){.recycle-dialog .recycle-tumbleweed{animation:none!important;left:72%!important;opacity:.8!important}}\n/* Country lists: vertical scrolling stays native; horizontal swipe is handled after the gesture. */\n#visitedCountries,#goingCountries,#bucketCountries,#visitedCountries .country-row,#goingCountries .country-row,#bucketCountries .country-row{touch-action:pan-y!important}\n\n\n/* Recycle bin empty state — no desert artwork, only copy + rolling tumbleweed. */
+.recycle-dialog .recycle-empty-state.recycle-tumble-empty{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  justify-content:center!important;min-height:520px!important;width:100%!important;
+  padding:36px 0 24px!important;overflow:hidden!important;background:none!important;
 }
-.recycle-dialog .recycle-empty-copy{
-  position:relative!important;
-  z-index:2!important;
-  text-align:center!important;
-  color:var(--navy)!important;
-  padding:0 22px!important;
+.recycle-dialog .recycle-empty-copy{text-align:center!important;padding:0 24px 34px!important}
+.recycle-dialog .recycle-empty-copy strong{display:block!important;color:var(--navy)!important;font-size:26px!important;line-height:1.15!important;font-weight:900!important}
+.recycle-dialog .recycle-empty-copy span{display:block!important;margin-top:9px!important;color:#6f8087!important;font-size:17px!important;line-height:1.25!important;font-weight:800!important}
+.recycle-dialog .recycle-tumble-track{position:relative!important;width:100%!important;height:150px!important;overflow:hidden!important}
+.recycle-dialog .recycle-tumble-empty .recycle-tumbleweed{
+  display:block!important;position:absolute!important;z-index:2!important;width:92px!important;height:92px!important;
+  max-height:none!important;left:-110px!important;bottom:20px!important;border-radius:0!important;object-fit:contain!important;
+  animation:wozzaEmptyTumbleRoll 5.8s linear .45s infinite!important;will-change:transform,opacity!important;
 }
-.recycle-dialog .recycle-empty-copy strong{
-  display:block!important;
-  font-size:20px!important;
-  line-height:1.2!important;
-  font-weight:900!important;
-}
-.recycle-dialog .recycle-empty-copy span{
-  display:block!important;
-  margin-top:6px!important;
-  color:var(--soft-ink)!important;
-  font-size:13px!important;
-  font-weight:650!important;
-}
-.recycle-dialog .recycle-tumbleweed-track{
-  position:relative!important;
-  width:100%!important;
-  height:170px!important;
-  margin-top:38px!important;
-  overflow:hidden!important;
-  pointer-events:none!important;
-}
-.recycle-dialog .recycle-tumbleweed{
-  position:absolute!important;
-  z-index:1!important;
-  width:92px!important;
-  height:92px!important;
-  max-width:none!important;
-  max-height:none!important;
-  left:-110px!important;
-  bottom:18px!important;
-  object-fit:contain!important;
-  border-radius:0!important;
-  opacity:0!important;
-  transform-origin:50% 50%!important;
-  animation:wozzaRecycleTumbleweed 6.2s linear .45s infinite!important;
-  will-change:transform,opacity!important;
-}
-@keyframes wozzaRecycleTumbleweed{
-  0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0}
+@keyframes wozzaEmptyTumbleRoll{
+  0%{transform:translateX(0) rotate(0deg);opacity:0}
   7%{opacity:1}
-  68%{opacity:1}
-  84%{opacity:.55}
-  100%{transform:translate3d(calc(100vw + 230px),0,0) rotate(1260deg);opacity:0}
-}
-@media(max-width:520px){
-  .recycle-dialog .recycle-empty-state{min-height:330px!important;padding-top:48px!important}
-  .recycle-dialog .recycle-tumbleweed-track{height:155px!important;margin-top:32px!important}
-  .recycle-dialog .recycle-tumbleweed{width:78px!important;height:78px!important;left:-96px!important}
+  72%{opacity:1}
+  88%{opacity:.55}
+  100%{transform:translateX(calc(100vw + 220px)) rotate(1260deg);opacity:0}
 }
 @media(prefers-reduced-motion:reduce){
-  .recycle-dialog .recycle-tumbleweed{animation:wozzaRecycleTumbleweed 6.2s linear .45s infinite!important}
+ .recycle-dialog .recycle-tumble-empty .recycle-tumbleweed{animation:wozzaEmptyTumbleRoll 9s linear .45s infinite!important}
 }
