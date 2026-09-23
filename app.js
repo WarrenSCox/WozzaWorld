@@ -94,7 +94,7 @@ function attachBucketRanking(){
       Object.assign(row.style,{left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0'});
       list.appendChild(row);navigator.vibrate?.(20);
     };
-    const moveDrag=(x,y)=>{if(!dragging)return;row.style.top=`${y-grabY}px`;placeMarker(y)};
+    const moveDrag=(x,y)=>{if(!dragging)return;const top=y-grabY;row.style.top=`${top}px`;placeMarker(top+(row.getBoundingClientRect().height/2))};
     const finishDrag=()=>{
       clearHold();
       if(!dragging){activeTouchId=null;return}
