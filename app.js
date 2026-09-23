@@ -1509,7 +1509,49 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     const ranked=Object.keys(FACTORS).map(k=>({key:k,label:FACTORS[k].label,value:components[k]})).sort((a,b)=>b.value-a.value);
     const strength=ranked[0],weakest=ranked[ranked.length-1];
     const strengthText={world:'Strong geographical breadth across your travel story.',variety:'A varied mix of trip styles and ways to travel.',depth:'You tend to explore destinations in real depth.',momentum:'You have built a strong, sustained travel history.',discovery:'You keep expanding your travel footprint.'}[strength.key];
-    const recommendation={world:'Broaden your map with new countries and continents.',variety:'Mix in new trip styles or ways of travelling.',depth:'Spend more time exploring multiple places within each destination.',momentum:'Keep building your travel story with future adventures.',discovery:'Mix favourite returns with somewhere completely new.'}[weakest.key];
+    // Recommendations interpret the travel pattern rather than simply repeating the weakest statistic.
+    // Keep this rules-based and deterministic so the same travel history always gets a sensible explanation.
+    function recommendationFor(){
+      const countryCount=e.countries.size,continentCount=e.continents.size,tripCount=e.trips.length;
+      const styleCount=e.vibes.size,modeCount=e.modes.size,multiStop=e.multiStopTrips,repeatCount=e.repeatTouches;
+      const values=ranked.map(x=>x.value),spread=values[0]-values[values.length-1];
+
+      if(tripCount<=2 || countryCount<=2){
+        return 'Your travel story is just getting started, so almost every new adventure can add something different. New countries, trip styles and ways of getting there will all help shape it.';
+      }
+      if(tripCount>=8 && continentCount<=2 && countryCount<=18){
+        return `You’re a seasoned traveller, but your adventures are concentrated in a relatively small corner of the map. Your biggest opportunity is somewhere completely new${continentCount<6?' - especially a new continent.':'.'}`;
+      }
+      if(components.world>=65 && components.variety<48){
+        return 'You’ve covered an impressive amount of the map, but you tend to experience it in similar ways. Trying a different style of trip or way of travelling could add a completely new dimension to your travel story.';
+      }
+      if(components.world>=55 && components.depth<48 && multiStop<=Math.max(1,Math.floor(tripCount*.2))){
+        return 'You’ve explored broadly and built a strong footprint. Going deeper could be your next frontier - a longer or multi-stop adventure would add something your travel history currently has less of.';
+      }
+      if(repeatCount>countryCount*.7 && components.discovery<55){
+        return 'You clearly have places worth returning to, but repeat visits now add less to your score than fresh discoveries. Somewhere completely new would make a bigger difference to your travel story.';
+      }
+      if(countryCount>=12 && continentCount<=2){
+        return 'You’ve explored plenty of destinations, but most sit within the same part of the world. A new continent would add more breadth now than simply adding another nearby country.';
+      }
+      if(styleCount<=2 && tripCount>=6){
+        return 'You’ve built plenty of travel experience, but your trips follow a fairly consistent style. Trying a different kind of adventure would add more variety than simply doing more of the same.';
+      }
+      if(modeCount<=2 && tripCount>=6 && components.variety<55){
+        return 'Your travel history is growing nicely, but the way you get around is still fairly familiar. A different mode of travel could add a new dimension without needing to chase another country.';
+      }
+      if(spread<16 && values[values.length-1]>=55){
+        return 'There isn’t one obvious gap in your travel story anymore. From here, your score grows through breadth, depth and variety together rather than any single type of trip.';
+      }
+      return {
+        world:'Your travel experience is established, but geographical breadth is the area with most room to grow. A genuinely new part of the map would add more now than another familiar destination.',
+        variety:'Your map is building well, but there is more room to vary how you experience it. A different trip style or way of travelling would add something your current travel story has less of.',
+        depth:'You’ve collected destinations well; the bigger opportunity now is depth. Exploring more than one place within a trip would add more than simply ticking off another stop.',
+        momentum:'You have a varied travel story already. Building it across more trips and travel years is now the area with the most room to grow - and your existing score will never decay while you do.',
+        discovery:'You’ve built experience through both new and familiar places. At this point, a fresh destination would add more to your discovery score than another return visit.'
+      }[weakest.key];
+    }
+    const recommendation=recommendationFor();
     const party=[...e.partyContexts].map(x=>x==='solo'?'solo':x==='duo'?'two-person':'group').join(', ');
     const evidence={
       world:`${e.countries.size} ${e.countries.size===1?'country':'countries'} · ${e.continents.size} ${e.continents.size===1?'continent':'continents'} · ${(e.countries.size/195*100).toFixed(1)}% of world`,
@@ -1525,7 +1567,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     let card=$('#travelHealthCard');
     if(!card){card=document.createElement('section');card.id='travelHealthCard';card.className='travel-health-card';const anchor=name.closest('.passport-name-card,.passport-name,.name-card,.passport-profile-name')||name.parentElement;anchor?.insertAdjacentElement('afterend',card)}
     const d=travelScoreData(),angle=-90+(d.score/100)*180;
-    card.innerHTML=`<div class="travel-health-kicker">YOUR TRAVEL SCORE</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" style="transform:translateX(-50%) rotate(${angle}deg)"></div><div class="travel-health-score"><strong>${d.score}</strong><span>/ 100</span></div></div><div class="travel-health-band">${d.band}</div><div class="travel-score-guidance"><p><b>Your strengths:</b> ${d.strengthText}</p><p><b>Recommendations:</b> ${d.recommendation}</p></div><details class="travel-score-details"><summary>How is my score calculated?</summary><div class="travel-score-breakdown">${Object.keys(FACTORS).map(k=>`<div class="travel-score-factor"><div><b>${FACTORS[k].label}</b><span>${Math.round(FACTORS[k].weight*100)}%</span></div><p>${d.evidence[k]}</p></div>`).join('')}<p class="travel-score-note">Your score uses diminishing returns and rewards balance across your travel story. Time alone never reduces it.</p></div></details>`;
+    card.innerHTML=`<div class="travel-health-kicker">YOUR TRAVEL SCORE</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" style="transform:translateX(-50%) rotate(${angle}deg)"></div><div class="travel-health-score"><strong>${d.score}</strong><span>/ 100</span></div></div><div class="travel-health-band">${d.band}</div><div class="travel-score-guidance"><p><b>Your strengths:</b> ${d.strengthText}</p><p><b>What would grow your score?</b> ${d.recommendation}</p></div><details class="travel-score-details"><summary>How is my score calculated?</summary><div class="travel-score-breakdown">${Object.keys(FACTORS).map(k=>`<div class="travel-score-factor"><div><b>${FACTORS[k].label}</b><span>${Math.round(FACTORS[k].weight*100)}%</span></div><p>${d.evidence[k]}</p></div>`).join('')}<p class="travel-score-note">Your score uses diminishing returns and rewards balance across your travel story. Time alone never reduces it.</p></div></details>`;
   }
   const css=document.createElement('style');css.id='wozza-travel-score-v2-style';css.textContent=`
     .travel-health-card{margin:14px 16px 22px;padding:18px 18px 16px;border-radius:22px;background:rgba(255,255,255,.92);box-shadow:0 10px 26px rgba(8,62,78,.13);text-align:center;color:#073f52;overflow:hidden}
