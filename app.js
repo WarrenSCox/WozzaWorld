@@ -70,7 +70,14 @@ function attachBucketRanking(){
       #bucketCountries .bucket-remove-btn svg{width:22px!important;height:22px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
       #bucketCountries>.bucket-drag-marker{display:block!important;box-sizing:border-box!important;border:0!important;background:transparent!important;padding:0!important;visibility:hidden!important}
       .bucket-drag-live{display:grid!important;position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important}
-      @media(max-width:620px){#bucketCountries .bucket-rank-row{grid-template-columns:50px 72px minmax(0,1fr) 42px!important}#bucketCountries .bucket-rank{width:50px!important;min-width:50px!important;font-size:29px!important}}
+      .bucket-drag-live{grid-template-columns:52px 76px minmax(0,1fr) 42px!important;align-items:center!important;column-gap:0!important;padding-left:4px!important;padding-right:28px!important}
+      .bucket-drag-live .bucket-rank{background:none!important;border:0!important;border-radius:0!important;width:52px!important;min-width:52px!important;height:auto!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;color:#0b1d3b!important;font-size:30px!important;line-height:1!important;font-weight:900!important;box-shadow:none!important;font-variant-numeric:tabular-nums}
+      .bucket-drag-live .overview-flag{justify-self:start!important;margin-left:4px!important}
+      .bucket-drag-live .country-row-copy{justify-self:start!important;min-width:0!important}
+      .bucket-drag-live .row-metrics{grid-column:4!important;justify-self:end!important;margin-left:0!important}
+      .bucket-drag-live .bucket-remove-btn{margin-left:auto!important;width:42px!important;height:42px!important;min-width:42px!important;padding:9px!important;border:0!important;border-radius:0!important;background:transparent!important;color:#9aa4aa!important;opacity:.72!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-shadow:none!important}
+      .bucket-drag-live .bucket-remove-btn svg{width:22px!important;height:22px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+      @media(max-width:620px){#bucketCountries .bucket-rank-row,.bucket-drag-live{grid-template-columns:50px 72px minmax(0,1fr) 42px!important}#bucketCountries .bucket-rank,.bucket-drag-live .bucket-rank{width:50px!important;min-width:50px!important;font-size:29px!important}}
     `;document.head.appendChild(style)
   }
   const rows=()=>[...list.querySelectorAll('[data-bucket-country]')];
