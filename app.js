@@ -1379,3 +1379,66 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
+
+/* v0.20.0 hotfix: deliberate top-pull main-page cycle without owning normal scroll/map gestures. */
+(()=>{
+  if(window.__wozzaTopPullCycleV3)return;
+  window.__wozzaTopPullCycleV3=true;
+
+  /* CSS blocks the browser's refresh action; JS below never prevents normal touch scrolling. */
+  const style=document.createElement('style');
+  style.id='wozza-top-pull-cycle-v3-style';
+  style.textContent='html,body{overscroll-behavior-y:none}';
+  document.head.appendChild(style);
+
+  const cycle=['home','map','trips','me'];
+  let gesture=null;
+
+  const currentPage=()=>{
+    if(document.body.classList.contains('map-view'))return 'map';
+    return document.querySelector('.screen.active')?.dataset.screen||'home';
+  };
+  const blockedTarget=el=>!!el?.closest?.('dialog[open],.sheet.open,#sheetBackdrop.open,button,input,select,textarea,a,[contenteditable="true"],#countryCarousel,.trip-card,.editable-trip,.country-row,.passport-stats-carousel');
+  const reset=()=>{gesture=null};
+
+  document.addEventListener('touchstart',e=>{
+    reset();
+    if(e.touches.length!==1)return;
+    if(window.__wozzaBucketReorderActive)return;
+    if(document.querySelector('dialog[open],.sheet.open,#sheetBackdrop.open'))return;
+    if(window.scrollY>1)return;
+
+    const page=currentPage(),target=e.target;
+    /* The map owns its entire canvas. On World View, page cycling is available only
+       from the header, so pan/pinch/zoom can never become a navigation gesture. */
+    if(page==='map'&&!target.closest('.topbar'))return;
+    if(target.closest('#mapStage,#worldMap,.travel-animations'))return;
+    if(blockedTarget(target))return;
+
+    const t=e.touches[0];
+    gesture={page,startX:t.clientX,startY:t.clientY,lastX:t.clientX,lastY:t.clientY,eligible:true,multi:false};
+  },{passive:true,capture:true});
+
+  document.addEventListener('touchmove',e=>{
+    if(!gesture)return;
+    if(e.touches.length!==1){gesture.multi=true;gesture.eligible=false;return}
+    const t=e.touches[0],dx=t.clientX-gesture.startX,dy=t.clientY-gesture.startY;
+    gesture.lastX=t.clientX;gesture.lastY=t.clientY;
+    /* Horizontal intent is never page navigation. No preventDefault: ordinary page
+       scrolling remains fully native throughout the gesture. */
+    if(Math.abs(dx)>24&&Math.abs(dx)>Math.abs(dy)*0.8)gesture.eligible=false;
+    if(dy< -18)gesture.eligible=false;
+  },{passive:true,capture:true});
+
+  document.addEventListener('touchend',()=>{
+    const g=gesture;reset();
+    if(!g||!g.eligible||g.multi)return;
+    if(currentPage()!==g.page)return;
+    const dx=g.lastX-g.startX,dy=g.lastY-g.startY;
+    if(dy<105||Math.abs(dx)>55||dy<Math.abs(dx)*1.6)return;
+    const i=cycle.indexOf(g.page),next=cycle[(i+1)%cycle.length];
+    showSection(next);
+  },{passive:true,capture:true});
+
+  document.addEventListener('touchcancel',reset,{passive:true,capture:true});
+})();
