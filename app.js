@@ -480,60 +480,39 @@ async function showSection(target){
   };
   await withWorldMapMorph(update);
 }
-// Installed-app main-page Back cycle.
-// Keep one permanent anchor immediately behind a guard entry. Android's system Back
-// moves guard -> anchor; we cycle the visible top-level page, then move forward to
-// the SAME guard again. This avoids consuming/piling up history entries on each swipe.
-const WOZZA_MAIN_CYCLE=['home','map','trips','passport'];
-let wozzaMainBackBusy=false;
-function currentWozzaMainPage(){
- if(document.body.classList.contains('map-view'))return 'map';
- const active=document.querySelector('.screen.active')?.dataset.screen;
- return WOZZA_MAIN_CYCLE.includes(active)?active:'home';
-}
-function wozzaDeepUiOpen(){
- return !!(document.querySelector('#countrySheet.open')||document.querySelector('dialog[open]')||document.querySelector('.wozza-select-overlay')||document.querySelector('.country-search:not([hidden])'));
-}
-function closeWozzaDeepUiFromBack(){
- if(wozzaSelectOverlay){closeWozzaSelect(true);return true}
- const picker=document.querySelector('.country-search:not([hidden])');
- if(picker){closeCountrySearchPickers(true);return true}
- if(document.querySelector('#countrySheet.open')){closeSheet();return true}
- const d=document.querySelector('dialog[open]');
- if(d){
-  if(d.id==='tripDialog'){requestCloseTripEditor();return true}
-  try{d.close()}catch(e){}
-  return true
- }
- return false;
-}
-async function cycleWozzaMainFromSystemBack(){
- const current=currentWozzaMainPage();
- const next=WOZZA_MAIN_CYCLE[(WOZZA_MAIN_CYCLE.indexOf(current)+1)%WOZZA_MAIN_CYCLE.length];
- await showSection(next);
-}
-function armWozzaMainBackLoop(){
- const marker=history.state?.wozzaMainCycle;
- if(marker==='guard')return;
- if(marker==='anchor'){history.pushState({...history.state,wozzaMainCycle:'guard'},'');return}
- history.replaceState({...history.state,wozzaMainCycle:'anchor'},'');
- history.pushState({...history.state,wozzaMainCycle:'guard'},'');
-}
-window.addEventListener('popstate',async e=>{
- if(e.state?.wozzaMainCycle!=='anchor'||wozzaMainBackBusy)return;
- wozzaMainBackBusy=true;
- try{
-  if(wozzaDeepUiOpen())closeWozzaDeepUiFromBack();
-  else await cycleWozzaMainFromSystemBack();
-  // Return to the existing guard instead of creating another history entry.
-  history.forward();
- }finally{
-  setTimeout(()=>{wozzaMainBackBusy=false},120);
- }
-});
-armWozzaMainBackLoop();
 window.addEventListener('resize',()=>{if(document.body.classList.contains('map-view')){const bar=document.querySelector('.topbar');if(bar)document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px')}});
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
+
+// WozzaWatch-style right-edge pull navigation for the four top-level pages.
+// Intentionally mirrors the proven lightweight touchstart/touchend pattern:
+// no history manipulation and no touchmove interception.
+(function initMainPageEdgeCycle(){
+  const order=['home','map','trips','me'];
+  let edge=null;
+  const topLevel=()=>{
+    if(document.querySelector('dialog[open], .sheet.open, .modal.open, .wozza-select-overlay'))return false;
+    return true;
+  };
+  const current=()=>{
+    if(document.body.classList.contains('map-view'))return 'map';
+    const active=document.querySelector('.header-nav-item.active');
+    return active?.dataset.target||'home';
+  };
+  document.addEventListener('touchstart',e=>{
+    if(!topLevel()||e.touches.length!==1){edge=null;return;}
+    const t=e.touches[0];
+    if(t.clientX>innerWidth-28)edge={x:t.clientX,y:t.clientY};
+    else edge=null;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!edge||!topLevel()||e.changedTouches.length!==1){edge=null;return;}
+    const start=edge,t=e.changedTouches[0];edge=null;
+    if(start.x-t.clientX<=70||Math.abs(t.clientY-start.y)>=80)return;
+    const here=current(),i=order.indexOf(here),next=order[(i<0?0:i+1)%order.length];
+    showSection(next);
+  },{passive:true});
+  document.addEventListener('touchcancel',()=>{edge=null},{passive:true});
+})();
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
 $('#countryInfoBody')?.addEventListener('click',e=>{
