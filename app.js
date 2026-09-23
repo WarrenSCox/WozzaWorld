@@ -497,8 +497,20 @@ function initTopPullSectionCycle(){
     return order.includes(active)?active:null;
   };
   const blocked=target=>!!target?.closest?.('dialog[open],.sheet.open,.trip-selection-bar,input,textarea,select,[contenteditable="true"]');
+  // On the World Map, a downward drag while zoomed in belongs to D3 map panning,
+  // not top-level navigation. Keep pull-to-cycle available at the normal map view.
+  const mapIsZoomedIn=()=>{
+    if(!document.body.classList.contains('map-view'))return false;
+    try{
+      const node=document.querySelector('#worldMap');
+      if(!node||typeof d3==='undefined')return false;
+      const k=d3.zoomTransform(node).k||1;
+      const normalK=window.matchMedia('(orientation: portrait)').matches?1.52:1;
+      return k>normalK+0.06;
+    }catch(e){return false;}
+  };
   window.addEventListener('touchstart',e=>{
-    if(e.touches.length!==1||window.scrollY>1||blocked(e.target)||!current())return;
+    if(e.touches.length!==1||window.scrollY>1||blocked(e.target)||!current()||mapIsZoomedIn())return;
     const t=e.touches[0];
     startY=t.clientY;startX=t.clientX;distance=0;pulling=true;
   },{passive:true,capture:true});
