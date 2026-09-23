@@ -1451,6 +1451,11 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     const current=activeMain();
     if(!MAIN.includes(current))return;
     const next=MAIN[(MAIN.indexOf(current)+1)%MAIN.length];
-    Promise.resolve(showSection(next)).finally(()=>setTimeout(armGuard,0));
+
+    // Re-arm synchronously while handling the pop. Waiting until after the page
+    // transition leaves a brief moment where Android can see the real history
+    // boundary, so a second edge-back can exit the installed app.
+    armGuard();
+    Promise.resolve(showSection(next)).catch(()=>{});
   });
 })();
