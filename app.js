@@ -1435,11 +1435,20 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   else init();
 })();
 
-// WozzaWorld Travel Health — Milestone 1 prototype
+// WozzaWorld Travel Score — Milestone 2 calibrated, modular model
 (function(){
   const clamp=(n,min=0,max=100)=>Math.max(min,Math.min(max,n));
   const sat=(n,k)=>100*(1-Math.exp(-Math.max(0,n)/k));
   const yearOf=v=>{const m=String(v||'').match(/(19|20)\d{2}/);return m?Number(m[0]):0};
+  const MODEL_VERSION=2;
+  // Presentation is deliberately separate from the maths so a future Admin Portal can own it.
+  const SCORE_LEVELS=[
+    {min:0,max:20,title:'STARTING OUT'},
+    {min:21,max:40,title:'FINDING YOUR FEET'},
+    {min:41,max:60,title:'WELL TRAVELLED'},
+    {min:61,max:80,title:'SEASONED EXPLORER'},
+    {min:81,max:100,title:'WORLDLY'}
+  ];
   const continentSets={
     Europe:['United Kingdom','Ireland','France','Spain','Portugal','Italy','Germany','Belgium','Netherlands','Denmark','Norway','Sweden','Finland','Iceland','Poland','Austria','Switzerland','Greece','Croatia','Czechia','Slovakia','Hungary','Romania','Bulgaria','Serbia','Slovenia','Estonia','Latvia','Lithuania','Belarus','Ukraine','Moldova','Malta','Cyprus','Bosnia and Herzegovina','Montenegro','Albania','North Macedonia','Luxembourg','Liechtenstein','Monaco','Andorra','San Marino','Vatican City'],
     Africa:['Morocco','Egypt','South Africa','Kenya','Tanzania','Tunisia','Algeria','Ghana','Nigeria','Niger','Ethiopia','Uganda','Rwanda','Botswana','Namibia','Mauritius','Seychelles','Madagascar','Senegal','Gambia','Cabo Verde'],
@@ -1448,60 +1457,79 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     'South America':['Brazil','Argentina','Chile','Peru','Colombia','Venezuela','Ecuador','Bolivia','Uruguay','Paraguay','Guyana','Suriname'],
     Oceania:['Australia','New Zealand','Fiji','Papua New Guinea','Samoa','Tonga','Vanuatu']
   };
-  function travelHealthData(){
-    const trips=Array.isArray(state?.trips)?state.trips:[];
+  const FACTORS={
+    world:{weight:.35,label:'World explored'},
+    variety:{weight:.25,label:'Travel variety'},
+    depth:{weight:.20,label:'Depth of travel'},
+    momentum:{weight:.10,label:'Travel momentum'},
+    discovery:{weight:.10,label:'Discovery'}
+  };
+  const uniq=a=>new Set(a.filter(Boolean).map(x=>String(x).trim().toLowerCase()));
+  function collectTravelEvidence(){
+    const trips=(Array.isArray(state?.trips)?state.trips:[]).filter(t=>!(typeof tripIsOnHorizon==='function'&&tripIsOnHorizon(t)));
     const visited=typeof countryRows==='function'?countryRows('visited'):[];
-    const uniqueCountries=new Set(visited.map(String));
-    const continents=new Set();
-    uniqueCountries.forEach(c=>{for(const [continent,names] of Object.entries(continentSets)){if(names.some(n=>typeof sameCountry==='function'?sameCountry(n,c):n===c)){continents.add(continent);break}}});
-    const vibes=new Set(),modes=new Set(),cities=new Set(),years=new Set();
-    let countryTouches=0,datedTrips=0,recentTrips=0,stopCount=0;
-    const nowYear=new Date().getFullYear();
+    const countries=new Set(visited.map(String)),continents=new Set(),vibes=new Set(),modes=new Set(),cities=new Set(),years=new Set(),partyContexts=new Set();
+    let countryTouches=0,stopCount=0,multiStopTrips=0,repeatTouches=0;
+    countries.forEach(c=>{for(const [continent,names] of Object.entries(continentSets)){if(names.some(n=>typeof sameCountry==='function'?sameCountry(n,c):n===c)){continents.add(continent);break}}});
     trips.forEach(t=>{
-      (t.vibes||[]).forEach(v=>vibes.add(String(v).toLowerCase()));
-      const stops=(t.destinations||[]).filter(Boolean); stopCount+=Math.max(1,stops.length);
-      const tc=typeof tripCountries==='function'?tripCountries(t):(t.countries||[]); countryTouches+=tc.length;
-      stops.forEach(d=>{if(d.travelMode)modes.add(String(d.travelMode).toLowerCase());if(d.mode)modes.add(String(d.mode).toLowerCase());if(d.name)cities.add(String(d.name).toLowerCase());const y=yearOf(d.start||d.end);if(y)years.add(y)});
-      Object.values(t.cities||{}).flat().forEach(c=>cities.add(String(c).toLowerCase()));
-      const y=yearOf(t.start||t.end);if(y){years.add(y);datedTrips++;if(y>=nowYear-2)recentTrips++}
+      (t.vibes||[]).forEach(v=>vibes.add(String(v).trim().toLowerCase()));
+      const companions=uniq(t.companions||[]).size;partyContexts.add(companions===0?'solo':companions===1?'duo':'group');
+      const stops=(t.destinations||[]).filter(Boolean);stopCount+=Math.max(1,stops.length);if(stops.length>1)multiStopTrips++;
+      const tc=typeof tripCountries==='function'?tripCountries(t):(t.countries||[]);countryTouches+=tc.length;
+      stops.forEach(d=>{const mode=d.travelMode||d.mode;if(mode)modes.add(String(mode).trim().toLowerCase());if(d.name)cities.add(String(d.name).trim().toLowerCase());const y=yearOf(d.start||d.end);if(y)years.add(y)});
+      Object.values(t.cities||{}).flat().forEach(c=>cities.add(String(c).trim().toLowerCase()));
+      const y=yearOf(t.start||t.end);if(y)years.add(y);
     });
-    const world=clamp(sat(uniqueCountries.size,22)*.78 + sat(continents.size,3)*.22);
-    const variety=clamp(sat(vibes.size,5)*.55 + sat(modes.size,4)*.45);
-    const depth=clamp(sat(cities.size,18)*.45 + sat(stopCount,22)*.35 + sat(Math.max(0,countryTouches-uniqueCountries.size),10)*.20);
-    const momentum=trips.length?clamp(sat(years.size,5)*.45 + sat(datedTrips,12)*.30 + sat(recentTrips,4)*.25):0;
-    const discovery=countryTouches?clamp((uniqueCountries.size/countryTouches)*70 + sat(uniqueCountries.size,18)*30/100):0;
-    const score=Math.round(world*.30+variety*.25+depth*.20+momentum*.15+discovery*.10);
-    const band=score<=20?'STARTING OUT':score<=40?'FINDING YOUR FEET':score<=60?'WELL TRAVELLED':score<=80?'SEASONED EXPLORER':'WORLDLY';
-    const factors=[['World explored',world],['Travel variety',variety],['Depth of travel',depth],['Travel momentum',momentum],['Discovery',discovery]].sort((a,b)=>b[1]-a[1]);
-    const strength=factors[0][0].toLowerCase(),boost=factors[factors.length-1][0].toLowerCase();
-    return {score,band,strength,boost};
+    repeatTouches=Math.max(0,countryTouches-countries.size);
+    return {trips,countries,continents,vibes,modes,cities,years,partyContexts,countryTouches,stopCount,multiStopTrips,repeatTouches};
   }
-  function ensureTravelHealth(){
+  function calculateComponents(e){
+    // World: country count matters, but continental/geographical spread has enough weight to prevent one-continent volume dominating.
+    const world=clamp(sat(e.countries.size,30)*.58 + sat(e.continents.size,3.2)*.42);
+    // Variety: social/party context is intentionally small and capped; modes and trip styles do the heavy lifting.
+    const variety=clamp(sat(e.vibes.size,6)*.46 + sat(e.modes.size,5)*.44 + sat(e.partyContexts.size,2.4)*.10);
+    const depth=clamp(sat(e.cities.size,30)*.42 + sat(e.stopCount,35)*.23 + sat(e.multiStopTrips,8)*.20 + sat(e.repeatTouches,16)*.15);
+    // Momentum is accumulated history only. No current date/recent-trip term: inactivity can never cause decay.
+    const momentum=e.trips.length?clamp(sat(e.years.size,7)*.52 + sat(e.trips.length,18)*.48):0;
+    // Discovery combines footprint size with how much of the established travel history expanded that footprint.
+    const discoveryRate=e.countryTouches?e.countries.size/Math.max(e.countryTouches,e.countries.size):0;
+    const discovery=clamp(sat(e.countries.size,24)*.62 + (discoveryRate*100)*.38* Math.min(1,e.countries.size/8));
+    return {world,variety,depth,momentum,discovery};
+  }
+  function balancedScore(c){
+    let raw=0;Object.entries(FACTORS).forEach(([k,v])=>raw+=c[k]*v.weight);
+    // Upper scores increasingly require strength across several dimensions, without hard continent gates.
+    const vals=Object.keys(FACTORS).map(k=>c[k]).sort((a,b)=>a-b),balance=(vals[0]+vals[1])/2;
+    if(raw>60){const pressure=(raw-60)/40;raw-=pressure*Math.max(0,62-balance)*.20}
+    return Math.round(clamp(raw));
+  }
+  function levelFor(score){return SCORE_LEVELS.find(x=>score>=x.min&&score<=x.max)||SCORE_LEVELS[SCORE_LEVELS.length-1]}
+  function travelScoreData(){
+    const e=collectTravelEvidence(),components=calculateComponents(e),score=balancedScore(components),level=levelFor(score);
+    const ranked=Object.keys(FACTORS).map(k=>({key:k,label:FACTORS[k].label,value:components[k]})).sort((a,b)=>b.value-a.value);
+    const strength=ranked[0],weakest=ranked[ranked.length-1];
+    const strengthText={world:'Strong geographical breadth across your travel story.',variety:'A varied mix of trip styles and ways to travel.',depth:'You tend to explore destinations in real depth.',momentum:'You have built a strong, sustained travel history.',discovery:'You keep expanding your travel footprint.'}[strength.key];
+    const recommendation={world:'Broaden your map with new countries and continents.',variety:'Mix in new trip styles or ways of travelling.',depth:'Spend more time exploring multiple places within each destination.',momentum:'Keep building your travel story with future adventures.',discovery:'Mix favourite returns with somewhere completely new.'}[weakest.key];
+    const party=[...e.partyContexts].map(x=>x==='solo'?'solo':x==='duo'?'two-person':'group').join(', ');
+    const evidence={
+      world:`${e.countries.size} ${e.countries.size===1?'country':'countries'} · ${e.continents.size} ${e.continents.size===1?'continent':'continents'} · ${(e.countries.size/195*100).toFixed(1)}% of world`,
+      variety:`${e.vibes.size} trip ${e.vibes.size===1?'style':'styles'} · ${e.modes.size} transport ${e.modes.size===1?'mode':'modes'}${party?` · ${e.partyContexts.size} travel ${e.partyContexts.size===1?'context':'contexts'}`:''}`,
+      depth:`${e.cities.size} ${e.cities.size===1?'city/stop':'cities/stops'} · ${e.multiStopTrips} multi-stop ${e.multiStopTrips===1?'trip':'trips'} · ${e.repeatTouches} repeat destination ${e.repeatTouches===1?'visit':'visits'}`,
+      momentum:`${e.trips.length} completed ${e.trips.length===1?'trip':'trips'} · travel recorded across ${e.years.size} ${e.years.size===1?'year':'years'} · never decays with inactivity`,
+      discovery:`${e.countries.size} unique ${e.countries.size===1?'country':'countries'} across ${e.countryTouches||0} recorded country ${e.countryTouches===1?'visit':'visits'}`
+    };
+    return {modelVersion:MODEL_VERSION,score,band:level.title,strengthText,recommendation,components,evidence};
+  }
+  function ensureTravelScore(){
     const name=$('#passportName');if(!name)return;
     let card=$('#travelHealthCard');
-    if(!card){
-      card=document.createElement('section');card.id='travelHealthCard';card.className='travel-health-card';
-      const anchor=name.closest('.passport-name-card,.passport-name,.name-card,.passport-profile-name')||name.parentElement;
-      anchor?.insertAdjacentElement('afterend',card);
-    }
-    const d=travelHealthData(),angle=-90+(d.score/100)*180;
-    card.innerHTML=`<div class="travel-health-kicker">TRAVEL HEALTH</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" style="transform:translateX(-50%) rotate(${angle}deg)"></div><div class="travel-health-hub"></div><div class="travel-health-score"><strong>${d.score}</strong><span>/ 100</span></div></div><div class="travel-health-band">${d.band}</div><p class="travel-health-copy"><b>Your strength:</b> ${d.strength}. <b>Next boost:</b> build your ${d.boost}.</p><div class="travel-health-prototype">Your score grows as your WozzaWorld does.</div>`;
+    if(!card){card=document.createElement('section');card.id='travelHealthCard';card.className='travel-health-card';const anchor=name.closest('.passport-name-card,.passport-name,.name-card,.passport-profile-name')||name.parentElement;anchor?.insertAdjacentElement('afterend',card)}
+    const d=travelScoreData(),angle=-90+(d.score/100)*180;
+    card.innerHTML=`<div class="travel-health-kicker">YOUR TRAVEL SCORE</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" style="transform:translateX(-50%) rotate(${angle}deg)"></div><div class="travel-health-score"><strong>${d.score}</strong><span>/ 100</span></div></div><div class="travel-health-band">${d.band}</div><div class="travel-score-guidance"><p><b>Your strengths:</b> ${d.strengthText}</p><p><b>Recommendations:</b> ${d.recommendation}</p></div><details class="travel-score-details"><summary>How is my score calculated?</summary><div class="travel-score-breakdown">${Object.keys(FACTORS).map(k=>`<div class="travel-score-factor"><div><b>${FACTORS[k].label}</b><span>${Math.round(FACTORS[k].weight*100)}%</span></div><p>${d.evidence[k]}</p></div>`).join('')}<p class="travel-score-note">Your score uses diminishing returns and rewards balance across your travel story. Time alone never reduces it.</p></div></details>`;
   }
-  const css=document.createElement('style');css.textContent=`
+  const css=document.createElement('style');css.id='wozza-travel-score-v2-style';css.textContent=`
     .travel-health-card{margin:14px 16px 22px;padding:18px 18px 16px;border-radius:22px;background:rgba(255,255,255,.92);box-shadow:0 10px 26px rgba(8,62,78,.13);text-align:center;color:#073f52;overflow:hidden}
-    .travel-health-kicker{font-weight:900;letter-spacing:1.6px;font-size:13px;margin-bottom:6px}
-    .travel-health-gauge{position:relative;width:min(280px,86vw);height:150px;margin:0 auto -2px;overflow:hidden}
-    .travel-health-arc{position:absolute;left:50%;bottom:-122px;width:250px;height:250px;transform:translateX(-50%);border-radius:50%;background:conic-gradient(from 270deg,#d9534f 0deg,#e78a3c 48deg,#d9b43b 90deg,#72a85a 135deg,#08788b 180deg,transparent 180deg)}
-    .travel-health-mask{position:absolute;left:50%;bottom:-94px;width:194px;height:194px;transform:translateX(-50%);border-radius:50%;background:#fff}
-    .travel-health-needle{position:absolute;left:50%;bottom:19px;width:3px;height:91px;background:#073f52;border-radius:4px;transform-origin:50% 100%;transition:transform .65s ease}
-    .travel-health-hub{position:absolute;left:50%;bottom:12px;width:17px;height:17px;border-radius:50%;background:#073f52;transform:translateX(-50%)}
-    .travel-health-score{position:absolute;left:50%;bottom:27px;transform:translateX(-50%);display:flex;align-items:baseline;gap:3px;background:#fff;padding:1px 7px;border-radius:10px}
-    .travel-health-score strong{font-size:31px;line-height:1;font-weight:950}.travel-health-score span{font-size:11px;font-weight:800;opacity:.55}
-    .travel-health-band{font-weight:950;font-size:18px;letter-spacing:.6px;margin-top:2px}
-    .travel-health-copy{font-size:12.5px;line-height:1.45;margin:7px auto 4px;max-width:310px;color:#315d69}.travel-health-copy b{color:#073f52}
-    .travel-health-prototype{font-size:10.5px;font-weight:800;opacity:.48;margin-top:8px}
-  `;document.head.appendChild(css);
-  const originalRender=window.render;
-  if(typeof originalRender==='function'){window.render=function(){const r=originalRender.apply(this,arguments);requestAnimationFrame(ensureTravelHealth);return r}}
-  requestAnimationFrame(ensureTravelHealth);
+    .travel-health-kicker{font-weight:900;letter-spacing:1.6px;font-size:13px;margin-bottom:6px}.travel-health-gauge{position:relative;width:min(280px,86vw);height:150px;margin:0 auto -2px;overflow:hidden}.travel-health-arc{position:absolute;left:50%;bottom:-122px;width:250px;height:250px;transform:translateX(-50%);border-radius:50%;background:conic-gradient(from 270deg,#d9534f 0deg,#e78a3c 48deg,#d9b43b 90deg,#72a85a 135deg,#08788b 180deg,transparent 180deg)}.travel-health-mask{position:absolute;left:50%;bottom:-94px;width:194px;height:194px;transform:translateX(-50%);border-radius:50%;background:#fff}.travel-health-needle{position:absolute;left:50%;bottom:19px;width:3px;height:91px;background:#073f52;border-radius:4px;transform-origin:50% 100%;transition:transform .65s ease}.travel-health-score{position:absolute;left:50%;bottom:27px;transform:translateX(-50%);display:flex;align-items:baseline;gap:3px;background:#fff;padding:1px 7px;border-radius:10px}.travel-health-score strong{font-size:31px;line-height:1;font-weight:950}.travel-health-score span{font-size:11px;font-weight:800;opacity:.55}.travel-health-band{font-weight:950;font-size:18px;letter-spacing:.6px;margin-top:2px}.travel-score-guidance{text-align:left;font-size:12.5px;line-height:1.45;margin:9px auto 5px;max-width:330px;color:#315d69}.travel-score-guidance p{margin:6px 0}.travel-score-guidance b{color:#073f52}.travel-score-details{margin:12px auto 0;max-width:330px;text-align:left;border-top:1px solid rgba(7,63,82,.14);padding-top:4px}.travel-score-details summary{cursor:pointer;list-style:none;position:relative;padding:11px 26px 8px 0;font-size:12.5px;font-weight:900;color:#073f52}.travel-score-details summary::-webkit-details-marker{display:none}.travel-score-details summary:after{content:'+';position:absolute;right:2px;top:7px;font-size:20px;font-weight:800}.travel-score-details[open] summary:after{content:'−'}.travel-score-breakdown{padding:1px 0 3px}.travel-score-factor{padding:8px 0;border-top:1px solid rgba(7,63,82,.09)}.travel-score-factor>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.travel-score-factor b{font-size:12px}.travel-score-factor span{font-size:10px;font-weight:900;opacity:.55}.travel-score-factor p,.travel-score-note{margin:3px 0 0;font-size:11px;line-height:1.35;color:#52727b}.travel-score-note{margin-top:8px;font-style:italic}
+  `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
+  const originalRender=window.render;if(typeof originalRender==='function'){window.render=function(){const r=originalRender.apply(this,arguments);requestAnimationFrame(ensureTravelScore);return r}}requestAnimationFrame(ensureTravelScore);
 })();
