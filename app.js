@@ -1588,3 +1588,61 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
   const originalRender=window.render;if(typeof originalRender==='function'){window.render=function(){const r=originalRender.apply(this,arguments);requestAnimationFrame(ensureTravelScore);return r}}requestAnimationFrame(ensureTravelScore);
 })();
+
+/* v0.19.0 — Passport Travel Insights: icon tabs + Home-style active sag */
+(()=>{
+  if(window.__wozzaPassportInsightsV1)return;window.__wozzaPassportInsightsV1=true;
+  const ICONS={
+    score:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M8 39a24 24 0 0 1 48 0"/><path d="M32 39 44 19"/><circle cx="32" cy="39" r="3"/></svg>',
+    stats:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="14" y="10" width="36" height="32" rx="5"/><path d="M25 10V7h14v3M22 20l3 3 5-6M34 21h9M22 30l3 3 5-6M34 31h9"/></svg>',
+    charts:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M13 8v32h40"/><path d="M22 34V23M32 34V15M42 34V20M52 34V11"/></svg>'
+  };
+  function setup(){
+    const screen=document.querySelector('.screen[data-screen="me"]'),score=document.getElementById('travelHealthCard'),grid=screen?.querySelector('.stats-grid'),charts=screen?.querySelector('.passport-stats-carousel'),milestones=document.getElementById('milestonesCard');
+    if(!screen||!score||!grid||!charts||!milestones)return false;
+    let shell=document.getElementById('passportInsights');
+    if(!shell){
+      shell=document.createElement('section');shell.id='passportInsights';shell.className='passport-insights';
+      shell.innerHTML='<div class="passport-insights-title">TRAVEL INSIGHTS</div><div class="passport-insights-tabs" role="tablist" aria-label="Travel insights"><button type="button" class="passport-insights-tab is-active" data-insights-tab="score" role="tab" aria-selected="true" aria-label="Travel score">'+ICONS.score+'<span class="insights-underline"></span></button><button type="button" class="passport-insights-tab" data-insights-tab="stats" role="tab" aria-selected="false" aria-label="Stats">'+ICONS.stats+'<span class="insights-underline"></span></button><button type="button" class="passport-insights-tab" data-insights-tab="charts" role="tab" aria-selected="false" aria-label="Charts">'+ICONS.charts+'<span class="insights-underline"></span></button></div><div class="passport-insights-body"></div>';
+      score.before(shell);const body=shell.querySelector('.passport-insights-body');
+      [score,grid,charts].forEach((el,i)=>{const panel=document.createElement('div');panel.className='passport-insights-panel'+(i===0?' is-active':'');panel.dataset.insightsPanel=['score','stats','charts'][i];panel.hidden=i!==0;body.appendChild(panel);panel.appendChild(el)});
+      shell.after(milestones);
+      screen.querySelectorAll('.passport-section-heading').forEach(h=>{if(/^(STATS|CHARTS)$/i.test(h.textContent.trim()))h.hidden=true});
+      const choose=key=>{
+        shell.querySelectorAll('.passport-insights-tab').forEach(b=>{const on=b.dataset.insightsTab===key;b.classList.toggle('is-active',on);b.setAttribute('aria-selected',on?'true':'false')});
+        shell.querySelectorAll('.passport-insights-panel').forEach(p=>{const on=p.dataset.insightsPanel===key;p.classList.toggle('is-active',on);p.hidden=!on});
+        try{sessionStorage.setItem('wozza-passport-insights-tab',key)}catch(e){}
+      };
+      shell.querySelectorAll('.passport-insights-tab').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.insightsTab)));
+      let remembered='score';try{remembered=sessionStorage.getItem('wozza-passport-insights-tab')||'score'}catch(e){}if(!['score','stats','charts'].includes(remembered))remembered='score';choose(remembered);
+    }else{
+      screen.querySelectorAll('.passport-section-heading').forEach(h=>{if(/^(STATS|CHARTS)$/i.test(h.textContent.trim()))h.hidden=true});
+      if(milestones.previousElementSibling!==shell)shell.after(milestones);
+    }
+    return true;
+  }
+  const css=document.createElement('style');css.id='wozza-passport-insights-style';css.textContent=`
+    .passport-insights{margin:14px 0 22px;padding:18px 16px 16px;border-radius:26px;background:rgba(239,248,249,.76);border:1px solid rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 22px rgba(0,53,68,.09);-webkit-backdrop-filter:blur(12px) saturate(115%);backdrop-filter:blur(12px) saturate(115%);color:#073f52;overflow:hidden}
+    .passport-insights-title{font-family:"Archivo Black",Impact,sans-serif;font-size:clamp(20px,6vw,29px);font-weight:950;letter-spacing:.02em;margin:0 4px 8px;color:#073f52}
+    .passport-insights-tabs{display:grid;grid-template-columns:repeat(3,1fr);align-items:end;gap:8px;margin:0 2px 14px}
+    .passport-insights-tab{appearance:none;border:0;background:transparent;padding:3px 7px 13px;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;color:#073f52;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
+    .passport-insights-tab svg{width:50px;height:40px;overflow:visible;fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;transition:transform .22s ease,opacity .22s ease;opacity:.72}
+    .passport-insights-tab.is-active svg{transform:translateY(-2px);opacity:1}
+    .insights-underline{position:absolute;left:8%;right:8%;bottom:1px;height:8px;border-radius:999px;background:#f2ad21;transition:height .24s ease,border-radius .24s ease,transform .24s ease;transform-origin:center top}
+    .passport-insights-tab[data-insights-tab="stats"] .insights-underline{background:#16b98f}.passport-insights-tab[data-insights-tab="charts"] .insights-underline{background:#16bfd1}
+    .insights-underline:after{content:"";position:absolute;left:50%;top:3px;width:0;height:0;transform:translateX(-50%);background:inherit;border-radius:0 0 999px 999px;transition:width .25s ease,height .25s ease,top .25s ease,border-radius .25s ease}
+    .passport-insights-tab.is-active .insights-underline:after{width:28px;height:17px;top:1px;border-radius:4px 4px 18px 18px;transform:translateX(-50%) rotate(45deg);clip-path:polygon(0 0,100% 100%,0 100%)}
+    .passport-insights-tab.is-active .insights-underline{height:8px}
+    .passport-insights-panel[hidden]{display:none!important}.passport-insights-panel.is-active{display:block}
+    .passport-insights .travel-health-card{margin:0!important;padding:10px 2px 4px!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+    .passport-insights .travel-health-kicker{margin-top:2px}
+    .passport-insights .stats-grid{margin:2px 0 0!important}
+    .passport-insights .passport-stats-carousel{margin:2px 0 0!important;background:rgba(255,255,255,.22)!important}
+    .passport-insights-panel[data-insights-panel="charts"] .passport-stats-carousel{border-radius:22px!important}
+    .passport-insights-panel[data-insights-panel="charts"] .passport-charts-heading{display:none!important}
+    @media(max-width:380px){.passport-insights{padding:16px 12px 14px}.passport-insights-tabs{gap:3px}.passport-insights-tab{min-height:66px;padding-left:4px;padding-right:4px}.passport-insights-tab svg{width:44px;height:36px}}
+    @media(prefers-reduced-motion:reduce){.passport-insights-tab svg,.insights-underline,.insights-underline:after{transition:none!important}}
+  `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
+  let tries=0;const timer=setInterval(()=>{if(setup()||++tries>30)clearInterval(timer)},80);requestAnimationFrame(setup);
+  const observer=new MutationObserver(()=>setup());const me=document.querySelector('.screen[data-screen="me"]');if(me)observer.observe(me,{childList:true,subtree:false});
+})();
