@@ -480,6 +480,58 @@ async function showSection(target){
   };
   await withWorldMapMorph(update);
 }
+// Installed-app main-page Back cycle.
+// Keep one permanent anchor immediately behind a guard entry. Android's system Back
+// moves guard -> anchor; we cycle the visible top-level page, then move forward to
+// the SAME guard again. This avoids consuming/piling up history entries on each swipe.
+const WOZZA_MAIN_CYCLE=['home','map','trips','passport'];
+let wozzaMainBackBusy=false;
+function currentWozzaMainPage(){
+ if(document.body.classList.contains('map-view'))return 'map';
+ const active=document.querySelector('.screen.active')?.dataset.screen;
+ return WOZZA_MAIN_CYCLE.includes(active)?active:'home';
+}
+function wozzaDeepUiOpen(){
+ return !!(document.querySelector('#countrySheet.open')||document.querySelector('dialog[open]')||document.querySelector('.wozza-select-overlay')||document.querySelector('.country-search:not([hidden])'));
+}
+function closeWozzaDeepUiFromBack(){
+ if(wozzaSelectOverlay){closeWozzaSelect(true);return true}
+ const picker=document.querySelector('.country-search:not([hidden])');
+ if(picker){closeCountrySearchPickers(true);return true}
+ if(document.querySelector('#countrySheet.open')){closeSheet();return true}
+ const d=document.querySelector('dialog[open]');
+ if(d){
+  if(d.id==='tripDialog'){requestCloseTripEditor();return true}
+  try{d.close()}catch(e){}
+  return true
+ }
+ return false;
+}
+async function cycleWozzaMainFromSystemBack(){
+ const current=currentWozzaMainPage();
+ const next=WOZZA_MAIN_CYCLE[(WOZZA_MAIN_CYCLE.indexOf(current)+1)%WOZZA_MAIN_CYCLE.length];
+ await showSection(next);
+}
+function armWozzaMainBackLoop(){
+ const marker=history.state?.wozzaMainCycle;
+ if(marker==='guard')return;
+ if(marker==='anchor'){history.pushState({...history.state,wozzaMainCycle:'guard'},'');return}
+ history.replaceState({...history.state,wozzaMainCycle:'anchor'},'');
+ history.pushState({...history.state,wozzaMainCycle:'guard'},'');
+}
+window.addEventListener('popstate',async e=>{
+ if(e.state?.wozzaMainCycle!=='anchor'||wozzaMainBackBusy)return;
+ wozzaMainBackBusy=true;
+ try{
+  if(wozzaDeepUiOpen())closeWozzaDeepUiFromBack();
+  else await cycleWozzaMainFromSystemBack();
+  // Return to the existing guard instead of creating another history entry.
+  history.forward();
+ }finally{
+  setTimeout(()=>{wozzaMainBackBusy=false},120);
+ }
+});
+armWozzaMainBackLoop();
 window.addEventListener('resize',()=>{if(document.body.classList.contains('map-view')){const bar=document.querySelector('.topbar');if(bar)document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px')}});
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
@@ -1378,84 +1430,4 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
-})();
-
-// v0.16.x — Android edge-back guard on top-level WozzaWorld pages only.
-// Keep native back behaviour for temporary/deeper UI history entries, but when the
-// user is already on Home / Map / Trips / Passport, keep them inside WozzaWorld
-// and cycle to the next main section instead of allowing the PWA to exit.
-(()=>{
-  if(window.__wozzaMainEdgeBackGuard)return;
-  window.__wozzaMainEdgeBackGuard=true;
-
-  const MAIN=['home','map','trips','me'];
-  const SUBSTATE_KEYS=['wozzaCountryPicker'];
-  let rearming=false;
-  let lastState=history.state||{};
-
-  const nativePush=history.pushState.bind(history);
-  const nativeReplace=history.replaceState.bind(history);
-  history.pushState=function(state,title,url){lastState=state||{};return nativePush(state,title,url)};
-  history.replaceState=function(state,title,url){lastState=state||{};return nativeReplace(state,title,url)};
-
-  function activeMain(){
-    if(document.body.classList.contains('map-view'))return'map';
-    const active=document.querySelector('.header-nav-item.active[data-target]')?.dataset.target;
-    return MAIN.includes(active)?active:'home';
-  }
-  function deeperUiOpen(){
-    return !!(
-      document.querySelector('dialog[open]') ||
-      document.querySelector('.wozza-alert-overlay') ||
-      document.body.classList.contains('wozza-select-open') ||
-      document.querySelector('.country-search:not([hidden])')
-    );
-  }
-  function wasSubstate(state){
-    return !!state && SUBSTATE_KEYS.some(k=>state[k]);
-  }
-  function armGuard(){
-    if(rearming)return;
-    rearming=true;
-    const clean={...(history.state||{})};
-    delete clean.wozzaMainGuard;
-    clean.wozzaMainBase=true;
-    nativeReplace(clean,'');
-    const guard={...clean,wozzaMainGuard:true};
-    nativePush(guard,'');
-    lastState=guard;
-    rearming=false;
-  }
-
-  // Create one sacrificial history step. Android's edge-back gesture consumes this
-  // instead of leaving the installed app.
-  const initial={...(history.state||{}),wozzaMainBase:true};
-  nativeReplace(initial,'');
-  const guard={...initial,wozzaMainGuard:true};
-  nativePush(guard,'');
-  lastState=guard;
-
-  window.addEventListener('popstate',e=>{
-    if(rearming)return;
-    const previous=lastState||{};
-    lastState=e.state||{};
-
-    // A picker/select/deeper UI deliberately added its own history entry. Let its
-    // existing back handler do its normal job; just restore our outer safety step.
-    if(wasSubstate(previous)||deeperUiOpen()){
-      setTimeout(armGuard,0);
-      return;
-    }
-
-    // Only own back when we are on one of the four top-level sections.
-    const current=activeMain();
-    if(!MAIN.includes(current))return;
-    const next=MAIN[(MAIN.indexOf(current)+1)%MAIN.length];
-
-    // Re-arm synchronously while handling the pop. Waiting until after the page
-    // transition leaves a brief moment where Android can see the real history
-    // boundary, so a second edge-back can exit the installed app.
-    armGuard();
-    Promise.resolve(showSection(next)).catch(()=>{});
-  });
 })();
