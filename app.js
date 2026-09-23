@@ -61,72 +61,69 @@ function attachBucketRanking(){
   const list=$('#bucketCountries');if(!list)return;
   if(!document.getElementById('bucket-ranking-style')){
     const style=document.createElement('style');style.id='bucket-ranking-style';style.textContent=`
-      #bucketCountries .bucket-rank-row{transition:transform .16s ease,box-shadow .16s ease,opacity .16s ease;cursor:grab;-webkit-user-select:none;user-select:none;touch-action:pan-y;-webkit-touch-callout:none;display:grid!important;grid-template-columns:46px 82px minmax(0,1fr) 42px!important;align-items:center!important;column-gap:0!important;padding-left:8px!important;padding-right:28px!important}
-      #bucketCountries .bucket-rank-row .overview-flag{justify-self:start!important;margin-left:4px!important}
+      #bucketCountries .bucket-rank-row{cursor:grab;-webkit-user-select:none;user-select:none;touch-action:pan-y;-webkit-touch-callout:none;display:grid!important;grid-template-columns:34px 76px minmax(0,1fr) 42px!important;align-items:center!important;column-gap:0!important;padding-left:4px!important;padding-right:28px!important}
+      #bucketCountries .bucket-rank-row .overview-flag{justify-self:start!important}
       #bucketCountries .bucket-rank-row .country-row-copy{justify-self:start!important;min-width:0!important}
       #bucketCountries .bucket-rank-row .row-metrics{grid-column:4!important;justify-self:end!important;margin-left:0!important}
-      #bucketCountries .bucket-rank{background:none!important;border:0!important;border-radius:0!important;width:46px!important;min-width:46px!important;height:auto!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;color:#0b1d3b!important;font-size:30px!important;line-height:1!important;font-weight:900!important;box-shadow:none!important;font-variant-numeric:tabular-nums}
+      #bucketCountries .bucket-rank{background:none!important;border:0!important;width:34px!important;min-width:34px!important;height:auto!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;color:#0b1d3b!important;font-size:30px!important;line-height:1!important;font-weight:900!important;box-shadow:none!important}
       #bucketCountries .bucket-remove-btn{margin-left:auto!important;width:42px!important;height:42px!important;min-width:42px!important;padding:9px!important;border:0!important;background:transparent!important;color:#9aa4aa!important;opacity:.72!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
       #bucketCountries .bucket-remove-btn svg{width:22px!important;height:22px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
-      #bucketCountries .bucket-drag-placeholder{box-sizing:border-box;border:2px dashed rgba(10,79,96,.24);background:rgba(255,255,255,.16)}
-      #bucketCountries .bucket-rank-row.bucket-drag-live{transform:scale(1.025);box-shadow:0 18px 38px rgba(0,35,55,.28)!important;opacity:.97!important;cursor:grabbing;will-change:top;overflow:hidden;background:#fff;pointer-events:none!important}
-      #bucketCountries .bucket-rank-row.bucket-settle{animation:bucketSettle .22s ease-out}
-      @keyframes bucketSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}
-      @media(max-width:620px){#bucketCountries .bucket-rank-row{grid-template-columns:44px 72px minmax(0,1fr) 42px!important;padding-left:8px!important}#bucketCountries .bucket-rank{width:44px!important;min-width:44px!important;font-size:29px!important}#bucketCountries .bucket-rank-row .overview-flag{margin-left:3px!important}}
-      @media(prefers-reduced-motion:reduce){#bucketCountries .bucket-rank-row{transition:none!important}#bucketCountries .bucket-rank-row.bucket-settle{animation:none!important}}
+      #bucketCountries>.bucket-drag-marker{display:block!important;box-sizing:border-box!important;border:2px dashed rgba(10,79,96,.24)!important;border-radius:18px!important;background:rgba(255,255,255,.16)!important;padding:0!important;overflow:hidden!important;flex:0 0 auto!important}
+      #bucketCountries>.bucket-drag-live{display:grid!important;position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;transform:scale(1.025)!important;box-shadow:0 18px 38px rgba(0,35,55,.28)!important;will-change:top,left!important}
+      #bucketCountries .bucket-drag-settle{animation:bucketDragSettle .22s ease-out}
+      @keyframes bucketDragSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}
+      @media(prefers-reduced-motion:reduce){#bucketCountries .bucket-drag-settle{animation:none!important}}
     `;document.head.appendChild(style)
   }
-  let held=null,holdTimer=null,startX=0,startY=0,grabY=0,marker=null,activeTouchId=null,suppressClick=false,priorStyle='';
   const rows=()=>[...list.querySelectorAll('[data-bucket-country]')];
   const updateRanks=()=>rows().forEach((row,i)=>{const n=row.querySelector('.bucket-rank');if(n)n.textContent=i+1});
-  const clearHold=()=>{clearTimeout(holdTimer);holdTimer=null};
-  const touchPoint=e=>[...(e.touches||[]),...(e.changedTouches||[])].find(t=>activeTouchId==null||t.identifier===activeTouchId)||null;
-  const placeMarker=y=>{
-    const candidates=rows().filter(r=>r!==held);let before=null;
-    for(const row of candidates){const r=row.getBoundingClientRect();if(y<r.top+r.height/2){before=row;break}}
-    if(before)list.insertBefore(marker,before);else{const jump=list.querySelector('.jump-top-wrap');jump?list.insertBefore(marker,jump):list.appendChild(marker)}
-  };
-  const startDrag=(row,x,y)=>{
-    if(!row?.isConnected)return;
-    held=row;window.__wozzaBucketReorderActive=true;
-    const r=row.getBoundingClientRect(),cs=getComputedStyle(row);grabY=Math.max(10,Math.min(r.height-10,y-r.top));
-    marker=document.createElement('div');marker.className='bucket-drag-placeholder';marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;width:100%;box-sizing:border-box;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;
-    list.insertBefore(marker,row);priorStyle=row.getAttribute('style')||'';row.classList.add('bucket-drag-live');
-    Object.assign(row.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647'});
-    document.body.appendChild(row);navigator.vibrate?.(20);
-  };
-  const moveDrag=y=>{
-    if(!held)return;held.style.top=`${y-grabY}px`;placeMarker(y);
-    const edge=80;if(y<edge)window.scrollBy(0,-Math.min(14,Math.max(4,(edge-y)/5)));else if(y>innerHeight-edge)window.scrollBy(0,Math.min(14,Math.max(4,(y-(innerHeight-edge))/5)));
-  };
-  const finishDrag=()=>{
-    clearHold();if(!held){activeTouchId=null;return}
-    const dropped=held;if(marker?.parentNode)marker.parentNode.insertBefore(dropped,marker);marker?.remove();marker=null;
-    dropped.classList.remove('bucket-drag-live');if(priorStyle)dropped.setAttribute('style',priorStyle);else dropped.removeAttribute('style');priorStyle='';
-    state.bucketOrder=rows().map(r=>r.dataset.bucketCountry);localStorage.setItem('wozzaworld-state',JSON.stringify(state));updateRanks();
-    dropped.classList.add('bucket-settle');setTimeout(()=>dropped.classList.remove('bucket-settle'),240);
-    held=null;activeTouchId=null;suppressClick=true;setTimeout(()=>{window.__wozzaBucketReorderActive=false},0);setTimeout(()=>{suppressClick=false},160);
-  };
   rows().forEach(row=>{
+    let holdTimer=null,startX=0,startY=0,dragging=false,marker=null,grabY=0,activeTouchId=null,suppressClick=false,priorStyle='';
+    const clearHold=()=>{clearTimeout(holdTimer);holdTimer=null};
+    const pointFromTouch=e=>{const a=[...(e.touches||[]),...(e.changedTouches||[])];return a.find(t=>activeTouchId==null||t.identifier===activeTouchId)||a[0]||null};
+    const placeMarker=y=>{
+      const cards=rows().filter(el=>el!==row);let before=null;
+      for(const card of cards){const r=card.getBoundingClientRect();if(y<r.top+r.height/2){before=card;break}}
+      if(before)list.insertBefore(marker,before);else list.appendChild(marker);
+    };
+    const startDrag=(x,y)=>{
+      if(dragging)return;dragging=true;window.__wozzaBucketReorderActive=true;
+      const r=row.getBoundingClientRect(),cs=getComputedStyle(row);grabY=Math.max(10,Math.min(r.height-10,y-r.top));
+      marker=document.createElement('div');marker.className='bucket-drag-marker';marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;width:${r.width}px;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;
+      list.insertBefore(marker,row);priorStyle=row.getAttribute('style')||'';row.classList.add('bucket-drag-live');
+      Object.assign(row.style,{left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0'});
+      document.body.appendChild(row);navigator.vibrate?.(20);
+    };
+    const moveDrag=(x,y)=>{if(!dragging)return;row.style.top=`${y-grabY}px`;placeMarker(y)};
+    const finishDrag=()=>{
+      clearHold();
+      if(!dragging){activeTouchId=null;return}
+      dragging=false;if(marker?.parentNode)marker.parentNode.insertBefore(row,marker);marker?.remove();marker=null;
+      row.classList.remove('bucket-drag-live');if(priorStyle)row.setAttribute('style',priorStyle);else row.removeAttribute('style');
+      state.bucketOrder=rows().map(x=>x.dataset.bucketCountry);localStorage.setItem('wozzaworld-state',JSON.stringify(state));updateRanks();
+      window.__wozzaBucketReorderActive=false;activeTouchId=null;suppressClick=true;row.classList.add('bucket-drag-settle');setTimeout(()=>row.classList.remove('bucket-drag-settle'),240);setTimeout(()=>{suppressClick=false},120);
+    };
     row.addEventListener('touchstart',e=>{
-      if(e.target.closest('button,input,select,textarea,a')||e.touches.length!==1)return;
-      const t=e.touches[0];activeTouchId=t.identifier;startX=t.clientX;startY=t.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(row,startX,startY),420);
+      if(e.target.closest('button')||e.touches.length!==1)return;
+      const t=e.touches[0];activeTouchId=t.identifier;startX=t.clientX;startY=t.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420);
     },{passive:true});
+    document.addEventListener('touchmove',e=>{
+      if(activeTouchId==null)return;const t=pointFromTouch(e);if(!t)return;
+      if(dragging){e.preventDefault();e.stopPropagation();moveDrag(t.clientX,t.clientY);return}
+      if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)clearHold();
+    },{passive:false,capture:true});
+    document.addEventListener('touchend',e=>{if(activeTouchId==null)return;if(dragging){e.preventDefault();e.stopPropagation()}finishDrag()},{passive:false,capture:true});
+    document.addEventListener('touchcancel',finishDrag,{capture:true});
     row.addEventListener('pointerdown',e=>{
-      if(e.pointerType==='touch'||e.target.closest('button,input,select,textarea,a'))return;
-      startX=e.clientX;startY=e.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(row,startX,startY),420);
-      const move=ev=>{if(held){ev.preventDefault();moveDrag(ev.clientY)}else if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>10)clearHold()};
-      const up=()=>{document.removeEventListener('pointermove',move);finishDrag()};document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true});
+      if(e.pointerType==='touch'||e.target.closest('button'))return;startX=e.clientX;startY=e.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420);
+      const move=ev=>{if(dragging){ev.preventDefault();moveDrag(ev.clientX,ev.clientY)}else if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>10)clearHold()};
+      const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);finishDrag()};
+      document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true});
     });
     row.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation()}},true);
   });
-  if(!list.dataset.bucketTouchReorderReady){
-    list.dataset.bucketTouchReorderReady='1';
-    document.addEventListener('touchmove',e=>{if(activeTouchId==null)return;const t=touchPoint(e);if(!t)return;if(held){e.preventDefault();e.stopPropagation();moveDrag(t.clientY);return}if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)clearHold()},{passive:false,capture:true});
-    document.addEventListener('touchend',e=>{if(activeTouchId!=null){if(held){e.preventDefault();e.stopPropagation()}finishDrag()}},{passive:false,capture:true});
-    document.addEventListener('touchcancel',()=>{if(activeTouchId!=null)finishDrag()},{capture:true});
-  }
 }
+
 function setCountrySlide(i,animate=true,direction='next'){countrySlide=(i+3)%3;
 if(window.WozzaSagBars)window.WozzaSagBars.set(countrySlide,animate);const t=$('#carouselTrack'),carousel=$('#countryCarousel');if(!t)return;t.style.transition='none';t.style.transform=`translateX(-${countrySlide*33.333333}%)`;requestAnimationFrame(()=>{const panel=t.children[countrySlide];if(carousel&&panel)carousel.style.height=panel.scrollHeight+'px'});if(animate){const s=$('#countryCarousel');s.classList.remove('list-in-next','list-in-prev');void s.offsetWidth;s.classList.add(direction==='next'?'list-in-next':'list-in-prev');setTimeout(()=>s.classList.remove('list-in-next','list-in-prev'),230)}}
 function tripSortUpcoming(a,b){const ad=orderedTripDates(a),bd=orderedTripDates(b),da=ad.start||'',db=bd.start||'';if(da&&db)return da.localeCompare(db);if(da)return-1;if(db)return 1;return String(a.id||'').localeCompare(String(b.id||''))}
