@@ -481,6 +481,53 @@ async function showSection(target){
   await withWorldMapMorph(update);
 }
 window.addEventListener('resize',()=>{if(document.body.classList.contains('map-view')){const bar=document.querySelector('.topbar');if(bar)document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px')}});
+// Main-page pull-down navigation: Overview > Map > Trips > Passport > Overview.
+// Only owns a deliberate downward pull that starts at the top of a main page.
+// Normal scrolling, horizontal status swipes, reordering and modal gestures are left alone.
+(function installMainPagePullCycle(){
+ if(window.__wozzaMainPagePullCycle)return;
+ window.__wozzaMainPagePullCycle=true;
+ const order=['home','map','trips','me'];
+ const TRIGGER=92,LOCK=14,MAX_SIDE_RATIO=.72;
+ let active=false,startX=0,startY=0,dy=0,dx=0,owned=false;
+ const modalOpen=()=>!!document.querySelector('dialog[open],.wozza-select-overlay,.sheet.open,.sheet.show,.sheet-backdrop.show');
+ const blockedTarget=t=>!!t?.closest?.('input,textarea,select,button,a,[contenteditable="true"],.bucket-drag-ghost,.stop-drag-ghost,.trip-drag-ghost');
+ const currentPage=()=>{
+  if(document.body.classList.contains('map-view'))return 'map';
+  if(document.body.classList.contains('trips-view'))return 'trips';
+  const activeScreen=document.querySelector('.screen.active')?.dataset.screen;
+  return activeScreen==='me'?'me':'home';
+ };
+ const reset=()=>{active=false;owned=false;dx=dy=0};
+ document.documentElement.style.overscrollBehaviorY='none';
+ document.body.style.overscrollBehaviorY='none';
+ document.addEventListener('touchstart',e=>{
+  reset();
+  if(e.touches.length!==1||modalOpen()||blockedTarget(e.target)||window.__wozzaBucketReorderActive)return;
+  if((window.scrollY||document.documentElement.scrollTop||0)>1)return;
+  const t=e.touches[0];startX=t.clientX;startY=t.clientY;active=true;
+ },{passive:true,capture:true});
+ document.addEventListener('touchmove',e=>{
+  if(!active||e.touches.length!==1)return;
+  if(window.__wozzaBucketReorderActive){reset();return}
+  const t=e.touches[0];dx=t.clientX-startX;dy=t.clientY-startY;
+  if(!owned){
+   if(Math.abs(dx)<LOCK&&Math.abs(dy)<LOCK)return;
+   if(dy<=0||Math.abs(dx)>dy*MAX_SIDE_RATIO){reset();return}
+   owned=true;
+  }
+  if(owned){e.preventDefault();e.stopPropagation()}
+ },{passive:false,capture:true});
+ document.addEventListener('touchend',e=>{
+  if(!active)return;
+  const shouldGo=owned&&dy>=TRIGGER;
+  reset();
+  if(!shouldGo)return;
+  const current=currentPage(),i=order.indexOf(current),next=order[(i<0?0:i+1)%order.length];
+  showSection(next);
+ },{passive:true,capture:true});
+ document.addEventListener('touchcancel',reset,{passive:true,capture:true});
+})();
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
