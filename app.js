@@ -501,7 +501,7 @@ function initTopPullSectionCycle(){
     if(e.touches.length!==1||window.scrollY>1||blocked(e.target)||!current())return;
     const t=e.touches[0];
     startY=t.clientY;startX=t.clientX;distance=0;pulling=true;
-  },{passive:true});
+  },{passive:true,capture:true});
   window.addEventListener('touchmove',e=>{
     if(!pulling||e.touches.length!==1)return;
     const t=e.touches[0],dy=t.clientY-startY,dx=t.clientX-startX;
@@ -509,7 +509,7 @@ function initTopPullSectionCycle(){
     if(window.scrollY>1||Math.abs(dx)>dy*.85){pulling=false;distance=0;return;}
     distance=dy;
     e.preventDefault();
-  },{passive:false});
+  },{passive:false,capture:true});
   const finish=()=>{
     if(!pulling)return;
     pulling=false;
@@ -519,8 +519,8 @@ function initTopPullSectionCycle(){
     const next=order[(order.indexOf(from)+1)%order.length];
     showSection(next);
   };
-  window.addEventListener('touchend',finish,{passive:true});
-  window.addEventListener('touchcancel',()=>{pulling=false;distance=0;},{passive:true});
+  window.addEventListener('touchend',finish,{passive:true,capture:true});
+  window.addEventListener('touchcancel',()=>{pulling=false;distance=0;},{passive:true,capture:true});
 }
 initTopPullSectionCycle();
 
