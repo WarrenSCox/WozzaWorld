@@ -1434,3 +1434,74 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
+
+// WozzaWorld Travel Health — Milestone 1 prototype
+(function(){
+  const clamp=(n,min=0,max=100)=>Math.max(min,Math.min(max,n));
+  const sat=(n,k)=>100*(1-Math.exp(-Math.max(0,n)/k));
+  const yearOf=v=>{const m=String(v||'').match(/(19|20)\d{2}/);return m?Number(m[0]):0};
+  const continentSets={
+    Europe:['United Kingdom','Ireland','France','Spain','Portugal','Italy','Germany','Belgium','Netherlands','Denmark','Norway','Sweden','Finland','Iceland','Poland','Austria','Switzerland','Greece','Croatia','Czechia','Slovakia','Hungary','Romania','Bulgaria','Serbia','Slovenia','Estonia','Latvia','Lithuania','Belarus','Ukraine','Moldova','Malta','Cyprus','Bosnia and Herzegovina','Montenegro','Albania','North Macedonia','Luxembourg','Liechtenstein','Monaco','Andorra','San Marino','Vatican City'],
+    Africa:['Morocco','Egypt','South Africa','Kenya','Tanzania','Tunisia','Algeria','Ghana','Nigeria','Niger','Ethiopia','Uganda','Rwanda','Botswana','Namibia','Mauritius','Seychelles','Madagascar','Senegal','Gambia','Cabo Verde'],
+    Asia:['China','Japan','Thailand','India','Vietnam','Viet Nam','Indonesia','Singapore','Malaysia','South Korea','United Arab Emirates','Turkey','Türkiye','Pakistan','Nepal','Sri Lanka','Cambodia','Laos','Philippines','Qatar','Jordan','Israel','Oman','Saudi Arabia'],
+    'North America':['United States','United States of America','Canada','Mexico','Cuba','Jamaica','Costa Rica','Dominican Republic','Bahamas','Barbados','Grenada','Saint Lucia','Antigua and Barbuda'],
+    'South America':['Brazil','Argentina','Chile','Peru','Colombia','Venezuela','Ecuador','Bolivia','Uruguay','Paraguay','Guyana','Suriname'],
+    Oceania:['Australia','New Zealand','Fiji','Papua New Guinea','Samoa','Tonga','Vanuatu']
+  };
+  function travelHealthData(){
+    const trips=Array.isArray(state?.trips)?state.trips:[];
+    const visited=typeof countryRows==='function'?countryRows('visited'):[];
+    const uniqueCountries=new Set(visited.map(String));
+    const continents=new Set();
+    uniqueCountries.forEach(c=>{for(const [continent,names] of Object.entries(continentSets)){if(names.some(n=>typeof sameCountry==='function'?sameCountry(n,c):n===c)){continents.add(continent);break}}});
+    const vibes=new Set(),modes=new Set(),cities=new Set(),years=new Set();
+    let countryTouches=0,datedTrips=0,recentTrips=0,stopCount=0;
+    const nowYear=new Date().getFullYear();
+    trips.forEach(t=>{
+      (t.vibes||[]).forEach(v=>vibes.add(String(v).toLowerCase()));
+      const stops=(t.destinations||[]).filter(Boolean); stopCount+=Math.max(1,stops.length);
+      const tc=typeof tripCountries==='function'?tripCountries(t):(t.countries||[]); countryTouches+=tc.length;
+      stops.forEach(d=>{if(d.travelMode)modes.add(String(d.travelMode).toLowerCase());if(d.mode)modes.add(String(d.mode).toLowerCase());if(d.name)cities.add(String(d.name).toLowerCase());const y=yearOf(d.start||d.end);if(y)years.add(y)});
+      Object.values(t.cities||{}).flat().forEach(c=>cities.add(String(c).toLowerCase()));
+      const y=yearOf(t.start||t.end);if(y){years.add(y);datedTrips++;if(y>=nowYear-2)recentTrips++}
+    });
+    const world=clamp(sat(uniqueCountries.size,22)*.78 + sat(continents.size,3)*.22);
+    const variety=clamp(sat(vibes.size,5)*.55 + sat(modes.size,4)*.45);
+    const depth=clamp(sat(cities.size,18)*.45 + sat(stopCount,22)*.35 + sat(Math.max(0,countryTouches-uniqueCountries.size),10)*.20);
+    const momentum=trips.length?clamp(sat(years.size,5)*.45 + sat(datedTrips,12)*.30 + sat(recentTrips,4)*.25):0;
+    const discovery=countryTouches?clamp((uniqueCountries.size/countryTouches)*70 + sat(uniqueCountries.size,18)*30/100):0;
+    const score=Math.round(world*.30+variety*.25+depth*.20+momentum*.15+discovery*.10);
+    const band=score<=20?'STARTING OUT':score<=40?'FINDING YOUR FEET':score<=60?'WELL TRAVELLED':score<=80?'SEASONED EXPLORER':'WORLDLY';
+    const factors=[['World explored',world],['Travel variety',variety],['Depth of travel',depth],['Travel momentum',momentum],['Discovery',discovery]].sort((a,b)=>b[1]-a[1]);
+    const strength=factors[0][0].toLowerCase(),boost=factors[factors.length-1][0].toLowerCase();
+    return {score,band,strength,boost};
+  }
+  function ensureTravelHealth(){
+    const name=$('#passportName');if(!name)return;
+    let card=$('#travelHealthCard');
+    if(!card){
+      card=document.createElement('section');card.id='travelHealthCard';card.className='travel-health-card';
+      const anchor=name.closest('.passport-name-card,.passport-name,.name-card,.passport-profile-name')||name.parentElement;
+      anchor?.insertAdjacentElement('afterend',card);
+    }
+    const d=travelHealthData(),angle=-90+(d.score/100)*180;
+    card.innerHTML=`<div class="travel-health-kicker">TRAVEL HEALTH</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" style="transform:translateX(-50%) rotate(${angle}deg)"></div><div class="travel-health-hub"></div><div class="travel-health-score"><strong>${d.score}</strong><span>/ 100</span></div></div><div class="travel-health-band">${d.band}</div><p class="travel-health-copy"><b>Your strength:</b> ${d.strength}. <b>Next boost:</b> build your ${d.boost}.</p><div class="travel-health-prototype">Your score grows as your WozzaWorld does.</div>`;
+  }
+  const css=document.createElement('style');css.textContent=`
+    .travel-health-card{margin:14px 16px 22px;padding:18px 18px 16px;border-radius:22px;background:rgba(255,255,255,.92);box-shadow:0 10px 26px rgba(8,62,78,.13);text-align:center;color:#073f52;overflow:hidden}
+    .travel-health-kicker{font-weight:900;letter-spacing:1.6px;font-size:13px;margin-bottom:6px}
+    .travel-health-gauge{position:relative;width:min(280px,86vw);height:150px;margin:0 auto -2px;overflow:hidden}
+    .travel-health-arc{position:absolute;left:50%;bottom:-122px;width:250px;height:250px;transform:translateX(-50%);border-radius:50%;background:conic-gradient(from 270deg,#d9534f 0deg,#e78a3c 48deg,#d9b43b 90deg,#72a85a 135deg,#08788b 180deg,transparent 180deg)}
+    .travel-health-mask{position:absolute;left:50%;bottom:-94px;width:194px;height:194px;transform:translateX(-50%);border-radius:50%;background:#fff}
+    .travel-health-needle{position:absolute;left:50%;bottom:19px;width:3px;height:91px;background:#073f52;border-radius:4px;transform-origin:50% 100%;transition:transform .65s ease}
+    .travel-health-hub{position:absolute;left:50%;bottom:12px;width:17px;height:17px;border-radius:50%;background:#073f52;transform:translateX(-50%)}
+    .travel-health-score{position:absolute;left:50%;bottom:27px;transform:translateX(-50%);display:flex;align-items:baseline;gap:3px;background:#fff;padding:1px 7px;border-radius:10px}
+    .travel-health-score strong{font-size:31px;line-height:1;font-weight:950}.travel-health-score span{font-size:11px;font-weight:800;opacity:.55}
+    .travel-health-band{font-weight:950;font-size:18px;letter-spacing:.6px;margin-top:2px}
+    .travel-health-copy{font-size:12.5px;line-height:1.45;margin:7px auto 4px;max-width:310px;color:#315d69}.travel-health-copy b{color:#073f52}
+    .travel-health-prototype{font-size:10.5px;font-weight:800;opacity:.48;margin-top:8px}
+  `;document.head.appendChild(css);
+  const originalRender=window.render;
+  if(typeof originalRender==='function'){window.render=function(){const r=originalRender.apply(this,arguments);requestAnimationFrame(ensureTravelHealth);return r}}
+  requestAnimationFrame(ensureTravelHealth);
+})();
