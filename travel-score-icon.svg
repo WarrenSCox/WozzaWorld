@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 72" role="img" aria-label="Travel score">
+  <g fill="#17213D">
+    <path d="M8 55A42 42 0 0 1 26 20l9 12A27 27 0 0 0 23 55H8Z"/>
+    <path d="M30 17A42 42 0 0 1 48 8v15a27 27 0 0 0-10 5L30 17Z"/>
+    <path d="M52 8a42 42 0 0 1 18 9L62 28a27 27 0 0 0-10-5V8Z"/>
+    <path d="M74 20A42 42 0 0 1 92 55H77a27 27 0 0 0-12-23l9-12Z"/>
+    <path d="M47 57 63 29c1-2 4 0 3 2L55 61a8 8 0 1 1-8-4Z"/>
+  </g>
+</svg>

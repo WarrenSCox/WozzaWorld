@@ -1646,3 +1646,94 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   let tries=0;const timer=setInterval(()=>{if(setup()||++tries>30)clearInterval(timer)},80);requestAnimationFrame(setup);
   const observer=new MutationObserver(()=>setup());const me=document.querySelector('.screen[data-screen="me"]');if(me)observer.observe(me,{childList:true,subtree:false});
 })();
+
+/* v0.19.1 — Travel Insights corrective polish: reuse Home sag blueprint, swipe tabs, branded assets, chart buttons */
+(()=>{
+  if(window.__wozzaPassportInsightsV2)return;window.__wozzaPassportInsightsV2=true;
+  const keys=['score','stats','charts'];
+  const iconFiles={score:'travel-score-icon.svg',stats:'travel-stats-icon.svg',charts:'travel-charts-icon.svg'};
+  const straight='M3 5 C28 5 36 5 42 5 C46 5 47 5 50 5 C53 5 54 5 58 5 C64 5 72 5 97 5';
+  const sag='M3 5 C28 5 35 5 40 6 C44 7 45 15 50 15 C55 15 56 7 60 6 C65 5 72 5 97 5';
+  let chartObserver=null,insightsObserver=null;
+
+  function activeKey(shell){return shell.querySelector('.passport-insights-tab.is-active')?.dataset.insightsTab||'score'}
+  function setSag(shell,key,animate=true){
+    shell.querySelectorAll('.passport-insights-tab').forEach(btn=>{
+      const p=btn.querySelector('.insights-sag-path');if(!p)return;
+      if(!animate){p.style.transition='none';p.setAttribute('d',btn.dataset.insightsTab===key?sag:straight);p.getBoundingClientRect();p.style.transition=''}
+      else p.setAttribute('d',btn.dataset.insightsTab===key?sag:straight);
+    });
+  }
+  function choose(shell,key){
+    const btn=shell.querySelector(`.passport-insights-tab[data-insights-tab="${key}"]`);if(!btn)return;
+    btn.click();setSag(shell,key,true);
+  }
+  function installIconsAndSag(shell){
+    shell.querySelectorAll('.passport-insights-tab').forEach(btn=>{
+      const key=btn.dataset.insightsTab;
+      if(!btn.querySelector('.insights-brand-icon')){
+        btn.querySelector('svg')?.remove();
+        const img=document.createElement('img');img.className='insights-brand-icon';img.src=iconFiles[key];img.alt='';img.setAttribute('aria-hidden','true');btn.prepend(img);
+      }
+      let old=btn.querySelector('.insights-underline');
+      if(old&&!old.classList.contains('insights-home-sag')){
+        const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 100 22');svg.setAttribute('aria-hidden','true');svg.classList.add('insights-underline','insights-home-sag');
+        const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',straight);p.classList.add('insights-sag-path');svg.appendChild(p);old.replaceWith(svg);
+      }
+    });
+    setSag(shell,activeKey(shell),false);
+  }
+  function installInsightSwipe(shell){
+    if(shell.dataset.swipeV2)return;shell.dataset.swipeV2='1';
+    const body=shell.querySelector('.passport-insights-body');if(!body)return;
+    let sx=0,sy=0,tracking=false;
+    body.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;sx=e.clientX;sy=e.clientY;tracking=true},{passive:true});
+    body.addEventListener('pointerup',e=>{if(!tracking)return;tracking=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)<48||Math.abs(dx)<=Math.abs(dy)*1.2)return;const now=keys.indexOf(activeKey(shell));choose(shell,keys[(now+(dx<0?1:-1)+keys.length)%keys.length])},{passive:true});
+    body.addEventListener('pointercancel',()=>{tracking=false},{passive:true});
+  }
+  function rebuildChartButtons(){
+    const dots=document.getElementById('passportStatsDots'),track=document.getElementById('passportStatsTrack');if(!dots||!track)return;
+    const slides=[...track.querySelectorAll('.passport-stats-slide')];if(!slides.length)return;
+    const active=Math.max(0,slides.findIndex(s=>s.classList.contains('is-active')));
+    if(dots.querySelectorAll('.passport-chart-dot-btn').length!==slides.length){
+      dots.textContent='';slides.forEach((slide,i)=>{const b=document.createElement('button');b.type='button';b.className='passport-chart-dot-btn';b.setAttribute('aria-label',`Show chart ${i+1}`);b.onclick=e=>{e.stopPropagation();if(typeof setPassportStatsSlide==='function')setPassportStatsSlide(i);if(typeof restartPassportStatsAuto==='function')restartPassportStatsAuto();queueMicrotask(rebuildChartButtons)};dots.appendChild(b)});
+    }
+    [...dots.querySelectorAll('.passport-chart-dot-btn')].forEach((b,i)=>{const on=i===active;b.classList.toggle('is-active',on);b.setAttribute('aria-current',on?'true':'false')});
+    // Charts no longer own horizontal swipe; Travel Insights owns it.
+    track.onpointerdown=null;track.onpointerup=null;track.onpointercancel=null;track.style.touchAction='pan-y';
+  }
+  function watchCharts(){
+    const dots=document.getElementById('passportStatsDots'),track=document.getElementById('passportStatsTrack');if(!dots||!track)return;
+    rebuildChartButtons();
+    if(!chartObserver){chartObserver=new MutationObserver(()=>queueMicrotask(rebuildChartButtons));chartObserver.observe(dots,{childList:true,characterData:true,subtree:true});chartObserver.observe(track,{attributes:true,subtree:true,attributeFilter:['class']})}
+  }
+  function apply(){
+    const shell=document.getElementById('passportInsights');if(!shell)return false;
+    installIconsAndSag(shell);installInsightSwipe(shell);watchCharts();
+    if(!insightsObserver){insightsObserver=new MutationObserver(()=>setSag(shell,activeKey(shell),true));shell.querySelector('.passport-insights-tabs')&&insightsObserver.observe(shell.querySelector('.passport-insights-tabs'),{attributes:true,subtree:true,attributeFilter:['class']})}
+    return true;
+  }
+  const css=document.createElement('style');css.id='wozza-passport-insights-v2-style';css.textContent=`
+    .passport-insights{background:rgba(255,255,255,.94)!important;border:1px solid rgba(255,255,255,.48)!important;color:#17213D!important}
+    .passport-insights-title{color:#17213D!important}
+    .passport-insights-tab{color:#17213D!important}
+    .passport-insights-tab .insights-brand-icon{display:block;width:58px;height:50px;object-fit:contain;opacity:.82;transition:transform .22s ease,opacity .22s ease;pointer-events:none}
+    .passport-insights-tab.is-active .insights-brand-icon{transform:translateY(-2px);opacity:1}
+    .passport-insights-tab>svg:not(.insights-home-sag){display:none!important}
+    .passport-insights-tab .insights-home-sag{position:absolute!important;left:8%!important;right:8%!important;bottom:-5px!important;width:84%!important;height:22px!important;overflow:visible!important;background:none!important;border-radius:0!important;transform:none!important}
+    .passport-insights-tab .insights-home-sag:after{display:none!important;content:none!important}
+    .passport-insights-tab .insights-sag-path{fill:none!important;stroke:#F2AD21;stroke-width:6!important;stroke-linecap:round!important;stroke-linejoin:round!important;vector-effect:non-scaling-stroke!important;transition:d .44s cubic-bezier(.22,.78,.24,1)!important}
+    .passport-insights-tab[data-insights-tab="stats"] .insights-sag-path{stroke:#16B98F!important}
+    .passport-insights-tab[data-insights-tab="charts"] .insights-sag-path{stroke:#16BFD1!important}
+    .passport-insights-body{touch-action:pan-y}
+    .passport-insights-panel[data-insights-panel="charts"] .passport-stats-carousel{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-radius:0!important;margin:0!important;padding-left:0!important;padding-right:0!important}
+    .passport-insights-panel[data-insights-panel="charts"] .passport-stats-slide{background:transparent!important;border:0!important;box-shadow:none!important}
+    .passport-insights-panel[data-insights-panel="charts"] .passport-stats-head{height:34px!important;min-height:34px!important;margin:0 0 6px!important;position:relative!important;display:flex!important;justify-content:center!important;align-items:center!important}
+    .passport-insights-panel[data-insights-panel="charts"] #passportStatsDots{position:static!important;transform:none!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:9px!important;letter-spacing:0!important;width:100%!important}
+    .passport-chart-dot-btn{appearance:none;width:13px;height:13px;min-width:13px;padding:0;border-radius:50%;border:2px solid rgba(23,33,61,.46);background:transparent;box-shadow:none;transition:transform .18s ease,background .18s ease,border-color .18s ease;-webkit-tap-highlight-color:transparent}
+    .passport-chart-dot-btn.is-active{background:#17213D;border-color:#17213D;transform:scale(1.12)}
+    @media(max-width:380px){.passport-insights-tab .insights-brand-icon{width:52px;height:45px}}
+    @media(prefers-reduced-motion:reduce){.passport-insights-tab .insights-sag-path,.passport-insights-tab .insights-brand-icon,.passport-chart-dot-btn{transition:none!important}}
+  `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
+  let tries=0;const t=setInterval(()=>{if(apply()||++tries>40)clearInterval(t)},100);requestAnimationFrame(apply);
+})();
