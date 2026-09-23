@@ -4703,3 +4703,6 @@ body.trip-selection-focus header{
   .home-world-overview-title{padding:1px 10px 11px}
 }
 body.map-view .home-world-overview-title{display:none!important}
+
+/* Main-page pull navigation v4: stop browser pull-to-refresh without taking over normal scrolling. */
+html,body{overscroll-behavior-y:none;}

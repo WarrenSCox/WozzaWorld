@@ -482,6 +482,62 @@ async function showSection(target){
 }
 window.addEventListener('resize',()=>{if(document.body.classList.contains('map-view')){const bar=document.querySelector('.topbar');if(bar)document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px')}});
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
+
+
+// Main-page pull navigation (v4): a deliberate held downward drag from the top.
+// Native scrolling remains native. The full-screen World Map is never a gesture surface;
+// only its narrow top chrome zone can start this navigation gesture.
+(()=>{
+  if(window.__wozzaMainPullNavV4)return;
+  window.__wozzaMainPullNavV4=true;
+  const cycle=['home','map','trips','me'];
+  let g=null;
+  const activeTarget=()=>{
+    if(document.body.classList.contains('map-view'))return 'map';
+    return document.querySelector('.header-nav-item.active')?.dataset.target||'home';
+  };
+  const modalOpen=()=>!!document.querySelector('dialog[open],.sheet.open,.modal.open,.wozza-confirm.open,[aria-modal="true"]:not([hidden])');
+  const interactive=t=>!!t?.closest?.('button,a,input,textarea,select,[contenteditable="true"],[role="button"],.country-row,.trip-card,.country-trip-card,.passport-stats-carousel,.country-carousel');
+  const blocked=t=>{
+    if(modalOpen()||window.__wozzaBucketReorderActive)return true;
+    if(interactive(t))return true;
+    // The overview map preview and all map content keep their own gestures/clicks.
+    if(!document.body.classList.contains('map-view')&&t?.closest?.('#mapStage,#worldMap'))return true;
+    return false;
+  };
+  document.addEventListener('touchstart',e=>{
+    g=null;
+    if(e.touches.length!==1)return;
+    const touch=e.touches[0], current=activeTarget();
+    if(current==='map'){
+      // Full-screen map owns every gesture except a deliberate pull beginning in
+      // the slim title/chrome zone at the very top. Never start from the SVG/map body.
+      if(touch.clientY>58||e.target.closest?.('#mapClose'))return;
+    }else{
+      if(window.scrollY>2||blocked(e.target))return;
+    }
+    g={x:touch.clientX,y:touch.clientY,lastX:touch.clientX,lastY:touch.clientY,start:performance.now(),current,cancelled:false};
+  },{passive:true,capture:true});
+  document.addEventListener('touchmove',e=>{
+    if(!g)return;
+    if(e.touches.length!==1){g.cancelled=true;return}
+    const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
+    g.lastX=t.clientX;g.lastY=t.clientY;
+    if(dy<-18||Math.abs(dx)>Math.max(52,Math.abs(dy)*.72))g.cancelled=true;
+  },{passive:true,capture:true});
+  const finish=e=>{
+    if(!g)return;
+    const x=g.lastX,y=g.lastY,dx=x-g.x,dy=y-g.y,elapsed=performance.now()-g.start,current=g.current,cancelled=g.cancelled;
+    g=null;
+    // A pull, not a flick: substantial travel, held for a moment, strongly vertical.
+    if(cancelled||dy<118||elapsed<220||elapsed>2200||Math.abs(dx)>dy*.55)return;
+    if(current!=='map'&&window.scrollY>3)return;
+    const i=cycle.indexOf(current),next=cycle[(i+1+cycle.length)%cycle.length];
+    showSection(next);
+  };
+  document.addEventListener('touchend',finish,{passive:true,capture:true});
+  document.addEventListener('touchcancel',()=>{g=null},{passive:true,capture:true});
+})();
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
 $('#countryInfoBody')?.addEventListener('click',e=>{
@@ -1378,67 +1434,4 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
-})();
-
-/* v0.20.0 hotfix: deliberate top-pull main-page cycle without owning normal scroll/map gestures. */
-(()=>{
-  if(window.__wozzaTopPullCycleV3)return;
-  window.__wozzaTopPullCycleV3=true;
-
-  /* CSS blocks the browser's refresh action; JS below never prevents normal touch scrolling. */
-  const style=document.createElement('style');
-  style.id='wozza-top-pull-cycle-v3-style';
-  style.textContent='html,body{overscroll-behavior-y:none}';
-  document.head.appendChild(style);
-
-  const cycle=['home','map','trips','me'];
-  let gesture=null;
-
-  const currentPage=()=>{
-    if(document.body.classList.contains('map-view'))return 'map';
-    return document.querySelector('.screen.active')?.dataset.screen||'home';
-  };
-  const blockedTarget=el=>!!el?.closest?.('dialog[open],.sheet.open,#sheetBackdrop.open,button,input,select,textarea,a,[contenteditable="true"],#countryCarousel,.trip-card,.editable-trip,.country-row,.passport-stats-carousel');
-  const reset=()=>{gesture=null};
-
-  document.addEventListener('touchstart',e=>{
-    reset();
-    if(e.touches.length!==1)return;
-    if(window.__wozzaBucketReorderActive)return;
-    if(document.querySelector('dialog[open],.sheet.open,#sheetBackdrop.open'))return;
-    if(window.scrollY>1)return;
-
-    const page=currentPage(),target=e.target;
-    /* The map owns its entire canvas. On World View, page cycling is available only
-       from the header, so pan/pinch/zoom can never become a navigation gesture. */
-    if(page==='map'&&!target.closest('.topbar'))return;
-    if(target.closest('#mapStage,#worldMap,.travel-animations'))return;
-    if(blockedTarget(target))return;
-
-    const t=e.touches[0];
-    gesture={page,startX:t.clientX,startY:t.clientY,lastX:t.clientX,lastY:t.clientY,eligible:true,multi:false};
-  },{passive:true,capture:true});
-
-  document.addEventListener('touchmove',e=>{
-    if(!gesture)return;
-    if(e.touches.length!==1){gesture.multi=true;gesture.eligible=false;return}
-    const t=e.touches[0],dx=t.clientX-gesture.startX,dy=t.clientY-gesture.startY;
-    gesture.lastX=t.clientX;gesture.lastY=t.clientY;
-    /* Horizontal intent is never page navigation. No preventDefault: ordinary page
-       scrolling remains fully native throughout the gesture. */
-    if(Math.abs(dx)>24&&Math.abs(dx)>Math.abs(dy)*0.8)gesture.eligible=false;
-    if(dy< -18)gesture.eligible=false;
-  },{passive:true,capture:true});
-
-  document.addEventListener('touchend',()=>{
-    const g=gesture;reset();
-    if(!g||!g.eligible||g.multi)return;
-    if(currentPage()!==g.page)return;
-    const dx=g.lastX-g.startX,dy=g.lastY-g.startY;
-    if(dy<105||Math.abs(dx)>55||dy<Math.abs(dx)*1.6)return;
-    const i=cycle.indexOf(g.page),next=cycle[(i+1)%cycle.length];
-    showSection(next);
-  },{passive:true,capture:true});
-
-  document.addEventListener('touchcancel',reset,{passive:true,capture:true});
 })();
