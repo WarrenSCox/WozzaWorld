@@ -1651,7 +1651,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 (()=>{
   if(window.__wozzaPassportInsightsV2)return;window.__wozzaPassportInsightsV2=true;
   const keys=['score','stats','charts'];
-  const iconFiles={score:'travel-score-icon.svg',stats:'travel-stats-icon.svg',charts:'travel-charts-icon.svg'};
+  const iconFiles={score:'travel-score-icon.png',stats:'stats-icon.png',charts:'charts-icon.png'};
   const straight='M3 5 C28 5 36 5 42 5 C46 5 47 5 50 5 C53 5 54 5 58 5 C64 5 72 5 97 5';
   const sag='M3 5 C28 5 35 5 40 6 C44 7 45 15 50 15 C55 15 56 7 60 6 C65 5 72 5 97 5';
   let chartObserver=null,insightsObserver=null;
@@ -1691,12 +1691,25 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     body.addEventListener('pointerup',e=>{if(!tracking)return;tracking=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)<48||Math.abs(dx)<=Math.abs(dy)*1.2)return;const now=keys.indexOf(activeKey(shell));choose(shell,keys[(now+(dx<0?1:-1)+keys.length)%keys.length])},{passive:true});
     body.addEventListener('pointercancel',()=>{tracking=false},{passive:true});
   }
+  function enforceChartOrder(){
+    const track=document.getElementById('passportStatsTrack');if(!track)return;
+    const slides=[...track.querySelectorAll('.passport-stats-slide')];if(slides.length<2)return;
+    const title=slide=>String(slide.querySelector('h4')?.textContent||'').trim().toLowerCase();
+    const companion=slides.find(s=>title(s).includes('travel companions'));
+    const stops=slides.find(s=>title(s)==='stops per year');
+    const mostVisited=slides.find(s=>title(s).includes('most visited destinations'));
+    const pinned=new Set([companion,stops,mostVisited].filter(Boolean));
+    const middle=slides.filter(s=>!pinned.has(s));
+    const ordered=[companion,stops,...middle,mostVisited].filter(Boolean);
+    if(ordered.length!==slides.length)return;
+    if(ordered.some((slide,i)=>slide!==slides[i])){ordered.forEach(slide=>track.appendChild(slide));if(typeof setPassportStatsSlide==='function')setPassportStatsSlide(0);}
+  }
   function rebuildChartButtons(){
     const dots=document.getElementById('passportStatsDots'),track=document.getElementById('passportStatsTrack');if(!dots||!track)return;
     const slides=[...track.querySelectorAll('.passport-stats-slide')];if(!slides.length)return;
     const active=Math.max(0,slides.findIndex(s=>s.classList.contains('is-active')));
     if(dots.querySelectorAll('.passport-chart-dot-btn').length!==slides.length){
-      dots.textContent='';slides.forEach((slide,i)=>{const b=document.createElement('button');b.type='button';b.className='passport-chart-dot-btn';b.setAttribute('aria-label',`Show chart ${i+1}`);b.onclick=e=>{e.stopPropagation();if(typeof setPassportStatsSlide==='function')setPassportStatsSlide(i);if(typeof restartPassportStatsAuto==='function')restartPassportStatsAuto();queueMicrotask(rebuildChartButtons)};dots.appendChild(b)});
+      dots.textContent='';slides.forEach((slide,i)=>{const b=document.createElement('button');b.type='button';b.className='passport-chart-dot-btn';b.setAttribute('aria-label',`Show chart ${i+1}`);b.onclick=e=>{e.stopPropagation();if(typeof setPassportStatsSlide==='function')setPassportStatsSlide(i);queueMicrotask(rebuildChartButtons)};dots.appendChild(b)});
     }
     [...dots.querySelectorAll('.passport-chart-dot-btn')].forEach((b,i)=>{const on=i===active;b.classList.toggle('is-active',on);b.setAttribute('aria-current',on?'true':'false')});
     // Charts no longer own horizontal swipe; Travel Insights owns it.
@@ -1704,7 +1717,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   }
   function watchCharts(){
     const dots=document.getElementById('passportStatsDots'),track=document.getElementById('passportStatsTrack');if(!dots||!track)return;
-    rebuildChartButtons();
+    enforceChartOrder();rebuildChartButtons();
     if(!chartObserver){chartObserver=new MutationObserver(()=>queueMicrotask(rebuildChartButtons));chartObserver.observe(dots,{childList:true,characterData:true,subtree:true});chartObserver.observe(track,{attributes:true,subtree:true,attributeFilter:['class']})}
   }
   function apply(){
@@ -1713,6 +1726,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     if(!insightsObserver){insightsObserver=new MutationObserver(()=>setSag(shell,activeKey(shell),true));shell.querySelector('.passport-insights-tabs')&&insightsObserver.observe(shell.querySelector('.passport-insights-tabs'),{attributes:true,subtree:true,attributeFilter:['class']})}
     return true;
   }
+  clearInterval(passportStatsAutoTimer);restartPassportStatsAuto=function(){clearInterval(passportStatsAutoTimer);passportStatsAutoTimer=0};
   const css=document.createElement('style');css.id='wozza-passport-insights-v2-style';css.textContent=`
     .passport-insights{background:rgba(255,255,255,.94)!important;border:1px solid rgba(255,255,255,.48)!important;color:#17213D!important}
     .passport-insights-title{color:#17213D!important}
