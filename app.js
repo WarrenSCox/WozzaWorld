@@ -68,7 +68,7 @@ function attachBucketRanking(){
       #bucketCountries .bucket-rank{background:none!important;border:0!important;width:46px!important;min-width:46px!important;height:auto!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;color:#0b1d3b!important;font-size:30px!important;line-height:1!important;font-weight:900!important;box-shadow:none!important}
       #bucketCountries .bucket-remove-btn{margin-left:auto!important;width:42px!important;height:42px!important;min-width:42px!important;padding:9px!important;border:0!important;background:transparent!important;color:#9aa4aa!important;opacity:.72!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
       #bucketCountries .bucket-remove-btn svg{width:22px!important;height:22px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
-      #bucketCountries>.bucket-drag-marker{display:block!important;box-sizing:border-box!important;border:0!important;border-radius:0!important;background:transparent!important;padding:0!important;overflow:hidden!important;flex:0 0 auto!important;visibility:hidden!important}
+      #bucketCountries>.bucket-drag-marker{display:block!important;box-sizing:border-box!important;border:0!important;border-radius:0!important;background:transparent!important;padding:0!important;margin:0!important;overflow:hidden!important;flex-grow:0!important;flex-shrink:0!important;align-self:auto!important;position:relative!important;visibility:hidden!important}
       #bucketCountries>.bucket-drag-live{display:grid!important;position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;transform:scale(1.025)!important;box-shadow:0 18px 38px rgba(0,35,55,.28)!important;will-change:top,left!important}
       #bucketCountries .bucket-drag-settle{animation:bucketDragSettle .22s ease-out}
       @keyframes bucketDragSettle{0%{transform:scale(1.012)}65%{transform:scale(.996)}100%{transform:scale(1)}}
@@ -89,7 +89,7 @@ function attachBucketRanking(){
     const startDrag=(x,y)=>{
       if(dragging)return;dragging=true;window.__wozzaBucketReorderActive=true;
       const r=row.getBoundingClientRect(),cs=getComputedStyle(row);grabY=Math.max(10,Math.min(r.height-10,y-r.top));
-      marker=document.createElement('div');marker.className='bucket-drag-marker';marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;width:${r.width}px;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;
+      marker=document.createElement('div');marker.className='bucket-drag-marker';marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;flex-basis:${r.height}px;width:${r.width}px;min-width:${r.width}px;max-width:${r.width}px;margin:0;`;
       list.insertBefore(marker,row);priorStyle=row.getAttribute('style')||'';row.classList.add('bucket-drag-live');
       Object.assign(row.style,{left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0'});
       list.appendChild(row);navigator.vibrate?.(20);
