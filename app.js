@@ -1570,7 +1570,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
       world:`${e.countries.size} ${e.countries.size===1?'country':'countries'} · ${e.continents.size} ${e.continents.size===1?'continent':'continents'} · ${(e.countries.size/195*100).toFixed(1)}% of world`,
       variety:`${e.vibes.size} trip ${e.vibes.size===1?'style':'styles'} · ${e.modes.size} transport ${e.modes.size===1?'mode':'modes'}${party?` · ${e.partyContexts.size} travel ${e.partyContexts.size===1?'context':'contexts'}`:''}`,
       depth:`${e.cities.size} ${e.cities.size===1?'city/stop':'cities/stops'} · ${e.multiStopTrips} multi-stop ${e.multiStopTrips===1?'trip':'trips'} · ${e.repeatTouches} repeat destination ${e.repeatTouches===1?'visit':'visits'}`,
-      momentum:`${e.trips.length} completed ${e.trips.length===1?'trip':'trips'} · travel recorded across ${e.years.size} ${e.years.size===1?'year':'years'} · never decays with inactivity`,
+      momentum:`${e.trips.length} completed ${e.trips.length===1?'trip':'trips'} · travel recorded across ${e.years.size} ${e.years.size===1?'year':'years'}`,
       discovery:`${e.countries.size} unique ${e.countries.size===1?'country':'countries'} across ${e.countryTouches||0} recorded country ${e.countryTouches===1?'visit':'visits'}`
     };
     return {modelVersion:MODEL_VERSION,score,band:level.title,strengthText,recommendation,components,evidence,awardedPoints};
