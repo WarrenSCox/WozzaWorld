@@ -1712,6 +1712,9 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
       dots.textContent='';slides.forEach((slide,i)=>{const b=document.createElement('button');b.type='button';b.className='passport-chart-dot-btn';b.setAttribute('aria-label',`Show chart ${i+1}`);b.onclick=e=>{e.stopPropagation();if(typeof setPassportStatsSlide==='function')setPassportStatsSlide(i);queueMicrotask(rebuildChartButtons)};dots.appendChild(b)});
     }
     [...dots.querySelectorAll('.passport-chart-dot-btn')].forEach((b,i)=>{const on=i===active;b.classList.toggle('is-active',on);b.setAttribute('aria-current',on?'true':'false')});
+    // Keep the companion chart's show-more control in the pager row, after the chart dots.
+    const companionMore=document.querySelector('#companionStats .stats-show-more');
+    if(companionMore){companionMore.classList.add('passport-chart-more-btn');dots.appendChild(companionMore)}
     // Charts no longer own horizontal swipe; Travel Insights owns it.
     track.onpointerdown=null;track.onpointerup=null;track.onpointercancel=null;track.style.touchAction='pan-y';
   }
@@ -1735,7 +1738,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     .passport-insights-title{color:#17213D!important}
     .passport-insights-tab{color:#17213D!important}
     .passport-insights-tab .insights-brand-icon{display:block;height:50px;object-fit:contain;opacity:.82;transition:transform .22s ease,opacity .22s ease;pointer-events:none;position:absolute;bottom:22px;left:50%;transform:translateX(-50%)}
-    .passport-insights-tab[data-insights-tab="score"] .insights-brand-icon{width:58px}
+    .passport-insights-tab[data-insights-tab="score"] .insights-brand-icon{width:58px;bottom:17px}
     .passport-insights-tab[data-insights-tab="stats"] .insights-brand-icon{width:51px}
     .passport-insights-tab[data-insights-tab="charts"] .insights-brand-icon{width:49px}
     .passport-insights-tab.is-active .insights-brand-icon{transform:translateX(-50%) translateY(-2px);opacity:1}
@@ -1749,9 +1752,10 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-carousel{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-radius:0!important;margin:0!important;padding-left:0!important;padding-right:0!important}
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-slide{background:transparent!important;border:0!important;box-shadow:none!important}
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-head{height:34px!important;min-height:34px!important;margin:0 0 6px!important;position:relative!important;display:flex!important;justify-content:center!important;align-items:center!important}
-    .passport-insights-panel[data-insights-panel="charts"] #passportStatsDots{position:static!important;transform:none!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:9px!important;letter-spacing:0!important;width:100%!important;margin:22px 0 4px!important;padding:0!important;order:99!important}
-    .passport-chart-dot-btn{appearance:none;width:13px;height:13px;min-width:13px;padding:0;border-radius:50%;border:2px solid rgba(0,151,167,.62);background:rgba(0,151,167,.08);box-shadow:none;transition:transform .18s ease,background .18s ease,border-color .18s ease;-webkit-tap-highlight-color:transparent}
-    .passport-chart-dot-btn.is-active{background:rgba(0,151,167,.72);border-color:rgba(0,151,167,.88);transform:scale(1.12)}
+    .passport-insights-panel[data-insights-panel="charts"] #passportStatsDots{position:static!important;transform:none!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:12px!important;letter-spacing:0!important;width:100%!important;margin:22px 0 4px!important;padding:0!important;order:99!important}
+    .passport-chart-dot-btn{appearance:none;width:26px;height:26px;min-width:26px;padding:0;border-radius:50%;border:3px solid rgba(0,151,167,.62);background:rgba(0,151,167,.08);box-shadow:none;transition:transform .18s ease,background .18s ease,border-color .18s ease;-webkit-tap-highlight-color:transparent}
+    .passport-chart-dot-btn.is-active{background:rgba(0,151,167,.72);border-color:rgba(0,151,167,.88);transform:scale(1.06)}
+    .passport-insights-panel[data-insights-panel="charts"] #passportStatsDots .passport-chart-more-btn{appearance:none!important;position:static!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;margin:0!important;padding:0!important;border-radius:50%!important;font-size:25px!important;line-height:1!important;font-weight:400!important;box-shadow:none!important;transform:none!important}
 
     /* v0.19.2 — Travel Insights visual alignment + chart polish */
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-carousel{padding:0!important}
