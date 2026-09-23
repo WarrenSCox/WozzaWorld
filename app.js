@@ -481,38 +481,50 @@ async function showSection(target){
   await withWorldMapMorph(update);
 }
 window.addEventListener('resize',()=>{if(document.body.classList.contains('map-view')){const bar=document.querySelector('.topbar');if(bar)document.documentElement.style.setProperty('--worldview-header-height',bar.getBoundingClientRect().height+'px')}});
-$$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 
-// WozzaWatch-style right-edge pull navigation for the four top-level pages.
-// Intentionally mirrors the proven lightweight touchstart/touchend pattern:
-// no history manipulation and no touchmove interception.
-(function initMainPageEdgeCycle(){
+// WozzaWatch-style top pull navigation: when already at the top, a deliberate
+// downward pull cycles the four top-level WozzaWorld sections and suppresses
+// the browser/PWA pull-to-refresh gesture.
+function initTopPullSectionCycle(){
+  if(window.__wozzaTopPullSectionCycle)return;
+  window.__wozzaTopPullSectionCycle=true;
   const order=['home','map','trips','me'];
-  let edge=null;
-  const topLevel=()=>{
-    if(document.querySelector('dialog[open], .sheet.open, .modal.open, .wozza-select-overlay'))return false;
-    return true;
-  };
+  const threshold=92;
+  let startY=0,startX=0,pulling=false,distance=0;
   const current=()=>{
-    if(document.body.classList.contains('map-view'))return 'map';
-    const active=document.querySelector('.header-nav-item.active');
-    return active?.dataset.target||'home';
+    if(document.body.classList.contains('map-view'))return'map';
+    const active=document.querySelector('.header-nav-item.active')?.dataset?.target;
+    return order.includes(active)?active:null;
   };
-  document.addEventListener('touchstart',e=>{
-    if(!topLevel()||e.touches.length!==1){edge=null;return;}
+  const blocked=target=>!!target?.closest?.('dialog[open],.sheet.open,.trip-selection-bar,input,textarea,select,[contenteditable="true"]');
+  window.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1||window.scrollY>1||blocked(e.target)||!current())return;
     const t=e.touches[0];
-    if(t.clientX>innerWidth-28)edge={x:t.clientX,y:t.clientY};
-    else edge=null;
+    startY=t.clientY;startX=t.clientX;distance=0;pulling=true;
   },{passive:true});
-  document.addEventListener('touchend',e=>{
-    if(!edge||!topLevel()||e.changedTouches.length!==1){edge=null;return;}
-    const start=edge,t=e.changedTouches[0];edge=null;
-    if(start.x-t.clientX<=70||Math.abs(t.clientY-start.y)>=80)return;
-    const here=current(),i=order.indexOf(here),next=order[(i<0?0:i+1)%order.length];
+  window.addEventListener('touchmove',e=>{
+    if(!pulling||e.touches.length!==1)return;
+    const t=e.touches[0],dy=t.clientY-startY,dx=t.clientX-startX;
+    if(dy<=0){distance=0;return;}
+    if(window.scrollY>1||Math.abs(dx)>dy*.85){pulling=false;distance=0;return;}
+    distance=dy;
+    e.preventDefault();
+  },{passive:false});
+  const finish=()=>{
+    if(!pulling)return;
+    pulling=false;
+    const from=current(),travel=distance;
+    distance=0;
+    if(travel<threshold||!from)return;
+    const next=order[(order.indexOf(from)+1)%order.length];
     showSection(next);
-  },{passive:true});
-  document.addEventListener('touchcancel',()=>{edge=null},{passive:true});
-})();
+  };
+  window.addEventListener('touchend',finish,{passive:true});
+  window.addEventListener('touchcancel',()=>{pulling=false;distance=0;},{passive:true});
+}
+initTopPullSectionCycle();
+
+$$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
 $('#countryInfoBody')?.addEventListener('click',e=>{
