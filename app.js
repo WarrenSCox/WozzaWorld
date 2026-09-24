@@ -718,67 +718,8 @@ function sizeTripTodoScribble(row){const input=row?.querySelector('.trip-todo-in
 function autoSizeTripTodo(input){input.style.height='auto';const cs=getComputedStyle(input),lh=parseFloat(cs.lineHeight)||22,pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),max=lh*3+pad;input.style.height=`${Math.min(input.scrollHeight,max)}px`;input.style.overflowY=input.scrollHeight>max?'auto':'hidden'}
 function todoRowMarkup(item={text:'',done:false},i=0){const text=String(item.text||''),done=!!item.done;return `<div class="trip-todo-row${text?' has-text':''}${done?' is-done':''}" data-scribble="${i%5}"><textarea class="trip-todo-input" rows="1" placeholder="Type here..." aria-label="To do action ${i+1}">${esc(text)}</textarea>${done?todoScribbleMarkup(i):''}<button type="button" class="trip-todo-check status-tick${done?' selected':''}" aria-label="${done?'Mark incomplete':'Mark complete'}" aria-pressed="${done}"></button><button type="button" class="trip-todo-remove" aria-label="Remove to do action">×</button></div>`}
 function bindTripTodoRow(row){const input=row.querySelector('.trip-todo-input'),check=row.querySelector('.trip-todo-check'),remove=row.querySelector('.trip-todo-remove');const scribbleIndex=()=>Number(row.dataset.scribble||0)%5;const syncScribble=()=>{row.querySelector('.trip-todo-scribble')?.remove();if(row.classList.contains('is-done')&&input.value.trim()){input.insertAdjacentHTML('afterend',todoScribbleMarkup(scribbleIndex()));requestAnimationFrame(()=>sizeTripTodoScribble(row))}};const sync=()=>{autoSizeTripTodo(input);row.classList.toggle('has-text',!!input.value.trim());if(!input.value.trim()){row.classList.remove('is-done');check.classList.remove('selected');check.setAttribute('aria-pressed','false')}syncScribble();updateTripTodoSummary()};input.addEventListener('input',sync);input.addEventListener('change',sync);input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const text=input.value.trim();if(!text)return;if(!row.classList.contains('has-text'))sync();let next=row.nextElementSibling;if(!next||next.classList.contains('has-text')){addTripTodoRow();next=$('#tripTodoList')?.lastElementChild}else next.querySelector('.trip-todo-input')?.focus()}});check.onclick=()=>{if(!input.value.trim())return;const done=!row.classList.contains('is-done');row.classList.toggle('is-done',done);check.classList.toggle('selected',done);check.setAttribute('aria-pressed',String(done));check.setAttribute('aria-label',done?'Mark incomplete':'Mark complete');syncScribble();updateTripTodoSummary()};remove.onclick=()=>{row.remove();if(!$('#tripTodoList')?.children.length)addTripTodoRow();updateTripTodoSummary()};autoSizeTripTodo(input);if(row.classList.contains('is-done'))requestAnimationFrame(()=>sizeTripTodoScribble(row))}
-function attachTripTodoReorder(){
- const list=$('#tripTodoList');if(!list)return;
- if(!document.getElementById('trip-todo-reorder-style')){
-  const style=document.createElement('style');style.id='trip-todo-reorder-style';style.textContent=`
-   #tripTodoList .trip-todo-row{cursor:grab;-webkit-touch-callout:none}
-   #tripTodoList>.trip-todo-drag-marker{display:block!important;box-sizing:border-box!important;border:0!important;background:transparent!important;padding:0!important;visibility:hidden!important}
-   .trip-todo-drag-live{position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important}
-  `;document.head.appendChild(style)
- }
- const rows=()=>[...list.querySelectorAll('.trip-todo-row')];
- rows().forEach(row=>{
-  if(row.dataset.todoReorderBound==='1')return;row.dataset.todoReorderBound='1';
-  let holdTimer=null,startX=0,startY=0,dragging=false,marker=null,grabY=0,activeTouchId=null,suppressClick=false;
-  const clearHold=()=>{clearTimeout(holdTimer);holdTimer=null};
-  const pointFromTouch=e=>{const a=[...(e.touches||[]),...(e.changedTouches||[])];return a.find(t=>activeTouchId==null||t.identifier===activeTouchId)||a[0]||null};
-  const placeMarker=y=>{
-   const cards=rows().filter(el=>el!==row);let before=null;
-   for(const card of cards){const r=card.getBoundingClientRect();if(y<r.top+r.height/2){before=card;break}}
-   if(before)list.insertBefore(marker,before);else list.appendChild(marker)
-  };
-  const startDrag=(x,y)=>{
-   dragging=true;window.__wozzaTodoReorderActive=true;
-   const r=row.getBoundingClientRect(),cs=getComputedStyle(row);
-   grabY=Math.max(10,Math.min(r.height-10,y-r.top));
-   marker=document.createElement('div');marker.className='trip-todo-drag-marker';
-   marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;flex:0 0 ${r.height}px;width:100%;box-sizing:border-box;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;
-   list.insertBefore(marker,row);
-   row.dataset.todoDragStyle=row.getAttribute('style')||'';row.classList.add('trip-todo-drag-live');
-   Object.assign(row.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647',pointerEvents:'none',opacity:'.94',boxShadow:'0 10px 24px rgba(0,35,55,.22)'});
-   document.body.appendChild(row);navigator.vibrate?.(20)
-  };
-  const moveDrag=(x,y)=>{if(!dragging)return;row.style.top=`${y-grabY}px`;placeMarker(y)};
-  const finishDrag=()=>{
-   clearHold();if(!dragging){activeTouchId=null;return}
-   dragging=false;if(marker?.parentNode)marker.parentNode.insertBefore(row,marker);marker?.remove();marker=null;
-   const prior=row.dataset.todoDragStyle||'';row.classList.remove('trip-todo-drag-live');if(prior)row.setAttribute('style',prior);else row.removeAttribute('style');delete row.dataset.todoDragStyle;
-   updateTripTodoSummary();window.__wozzaTodoReorderActive=false;activeTouchId=null;suppressClick=true;setTimeout(()=>{suppressClick=false},120)
-  };
-  row.addEventListener('touchstart',e=>{
-   if(e.target.closest('button')||e.touches.length!==1)return;
-   const t=e.touches[0];activeTouchId=t.identifier;startX=t.clientX;startY=t.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420)
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-   if(activeTouchId==null)return;const t=pointFromTouch(e);if(!t)return;
-   if(dragging){e.preventDefault();e.stopPropagation();moveDrag(t.clientX,t.clientY);return}
-   if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)clearHold()
-  },{passive:false,capture:true});
-  document.addEventListener('touchend',e=>{if(activeTouchId!=null){if(dragging){e.preventDefault();e.stopPropagation()}finishDrag()}},{passive:false,capture:true});
-  document.addEventListener('touchcancel',finishDrag,{capture:true});
-  row.addEventListener('pointerdown',e=>{
-   if(e.pointerType==='touch'||e.target.closest('button'))return;
-   startX=e.clientX;startY=e.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420);
-   const move=ev=>{if(dragging){ev.preventDefault();moveDrag(ev.clientX,ev.clientY)}else if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>10)clearHold()};
-   const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);finishDrag()};
-   document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true})
-  });
-  row.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation()}},true)
- })
-}
-function renderTripTodos(items=[]){const list=$('#tripTodoList');if(!list)return;const vals=normaliseTripTodos(items);list.innerHTML=vals.map((v,i)=>todoRowMarkup(v,i)).join('');$$('.trip-todo-row',list).forEach(bindTripTodoRow);attachTripTodoReorder();updateTripTodoSummary()}
-function addTripTodoRow(value=''){const list=$('#tripTodoList');if(!list)return;const item=typeof value==='string'?{text:value,done:false}:value;const wrap=document.createElement('div');wrap.innerHTML=todoRowMarkup(item,list.children.length);const row=wrap.firstElementChild;list.appendChild(row);bindTripTodoRow(row);attachTripTodoReorder();row.querySelector('.trip-todo-input')?.focus();updateTripTodoSummary()}
+function renderTripTodos(items=[]){const list=$('#tripTodoList');if(!list)return;const vals=normaliseTripTodos(items);list.innerHTML=vals.map((v,i)=>todoRowMarkup(v,i)).join('');$$('.trip-todo-row',list).forEach(bindTripTodoRow);updateTripTodoSummary()}
+function addTripTodoRow(value=''){const list=$('#tripTodoList');if(!list)return;const item=typeof value==='string'?{text:value,done:false}:value;const wrap=document.createElement('div');wrap.innerHTML=todoRowMarkup(item,list.children.length);const row=wrap.firstElementChild;list.appendChild(row);bindTripTodoRow(row);row.querySelector('.trip-todo-input')?.focus();updateTripTodoSummary()}
 function collectTripTodos(){return $$('.trip-todo-row').map(row=>({text:row.querySelector('.trip-todo-input')?.value.trim()||'',done:row.classList.contains('is-done')})).filter(x=>x.text)}
 function updateTripTodoSummary(){const summary=$('#tripTodoSummary');if(!summary)return;const items=collectTripTodos().filter(x=>!x.done);summary.textContent=items.map(x=>x.text).join(', ');summary.hidden=!items.length}
 function setTripTodoCollapsed(collapsed){const section=document.querySelector('.trip-todo-section'),body=$('#tripTodoBody'),b=$('#tripTodoToggle');if(!section||!body||!b)return;section.classList.toggle('collapsed',collapsed);body.hidden=collapsed;b.textContent=collapsed?'+':'−';b.setAttribute('aria-expanded',String(!collapsed));b.setAttribute('aria-label',collapsed?'Expand to do list':'Minimise to do list');updateTripTodoSummary();if(!collapsed)requestAnimationFrame(()=>{$$('.trip-todo-row',body).forEach(row=>{const input=row.querySelector('.trip-todo-input');if(input)autoSizeTripTodo(input);if(row.classList.contains('is-done')){if(!row.querySelector('.trip-todo-scribble'))input?.insertAdjacentHTML('afterend',todoScribbleMarkup(Number(row.dataset.scribble||0)));sizeTripTodoScribble(row)}})})}
@@ -2139,7 +2080,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  s.textContent=`
    /* Needle: faster sweep, then a clearly visible mechanical settle. */
    .needle-v6.go-v6{
-     animation:wozzaNeedleLiveV12 1.62s linear both!important;
+     animation:wozzaNeedleLiveV12 1.45s linear both!important;
    }
    @keyframes wozzaNeedleLiveV12{
      0%{transform:rotate(-82deg)}
@@ -2169,4 +2110,82 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    .passport-insights-tab[data-insights-tab="charts"].is-active .chart-v6 .bar-right-v10{height:44%!important}
  `;
  document.head.appendChild(s);
+})();
+
+
+/* Backup download prototype v2 — deliberately dormant until the user clicks Download Backup File.
+   No backup collection, JSON serialization, Blob creation or download work occurs during startup. */
+(()=>{
+  if(window.__wozzaBackupDownloadPrototypeV2)return;
+  window.__wozzaBackupDownloadPrototypeV2=true;
+
+  const backupKeys=[
+    'wozzaworld-state',
+    'wozzaworld-first-name',
+    'wozzaAddStopStyle',
+    'myworld-state'
+  ];
+
+  function ordinal(n){
+    const m=n%100;
+    if(m>=11&&m<=13)return n+'th';
+    return n+({1:'st',2:'nd',3:'rd'}[n%10]||'th');
+  }
+  function displayDate(d){
+    return `${ordinal(d.getDate())} of ${d.toLocaleString('en-GB',{month:'long'})} ${d.getFullYear()}`;
+  }
+  function fileDate(d){
+    const pad=n=>String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function makeBackup(){
+    const now=new Date();
+    const storage={};
+    for(const key of backupKeys){
+      const value=localStorage.getItem(key);
+      if(value!==null)storage[key]=value;
+    }
+    const payload={
+      format:'WozzaWorld Backup',
+      backupVersion:1,
+      createdAt:now.toISOString(),
+      storage
+    };
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`WozzaWorld-Backup-${fileDate(now)}.json`;
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+    localStorage.setItem('wozzaworld-last-backup',now.toISOString());
+    const label=document.querySelector('#backupRestoreDialog .backup-last-date');
+    if(label)label.textContent=`You last made a backup on the ${displayDate(now)}.`;
+  }
+
+  document.addEventListener('click',e=>{
+    const opener=e.target.closest?.('#openBackupRestore');
+    if(opener){
+      const raw=localStorage.getItem('wozzaworld-last-backup');
+      if(raw){
+        const d=new Date(raw);
+        if(!Number.isNaN(d.getTime())){
+          const label=document.querySelector('#backupRestoreDialog .backup-last-date');
+          if(label)label.textContent=`You last made a backup on the ${displayDate(d)}.`;
+        }
+      }
+      return;
+    }
+    const button=e.target.closest?.('#backupRestoreDialog .backup-restore-actions button');
+    if(!button)return;
+    const buttons=[...document.querySelectorAll('#backupRestoreDialog .backup-restore-actions button')];
+    if(button===buttons[0]){
+      e.preventDefault();
+      makeBackup();
+    }
+  },false);
 })();
