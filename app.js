@@ -1684,11 +1684,37 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     setSag(shell,activeKey(shell),false);
   }
   function installInsightSwipe(shell){
-    if(shell.dataset.swipeV2)return;shell.dataset.swipeV2='1';
+    if(shell.dataset.swipeV3)return;shell.dataset.swipeV3='1';
     const body=shell.querySelector('.passport-insights-body');if(!body)return;
     let sx=0,sy=0,tracking=false;
-    body.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;sx=e.clientX;sy=e.clientY;tracking=true},{passive:true});
-    body.addEventListener('pointerup',e=>{if(!tracking)return;tracking=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)<48||Math.abs(dx)<=Math.abs(dy)*1.2)return;const now=keys.indexOf(activeKey(shell));choose(shell,keys[(now+(dx<0?1:-1)+keys.length)%keys.length])},{passive:true});
+    body.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;if(e.target.closest('button,input,select,textarea,a'))return;sx=e.clientX;sy=e.clientY;tracking=true},{passive:true});
+    body.addEventListener('pointerup',e=>{
+      if(!tracking)return;tracking=false;
+      const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)<48||Math.abs(dx)<=Math.abs(dy)*1.2)return;
+      const forward=dx<0,key=activeKey(shell);
+      if(key==='charts'){
+        const track=document.getElementById('passportStatsTrack');
+        const slides=track?[...track.querySelectorAll('.passport-stats-slide')]:[];
+        if(slides.length){
+          let current=slides.findIndex(slide=>slide.classList.contains('is-active'));if(current<0)current=0;
+          if(forward&&current<slides.length-1){setPassportStatsSlide(current+1);queueMicrotask(rebuildChartButtons);return;}
+          if(!forward&&current>0){setPassportStatsSlide(current-1);queueMicrotask(rebuildChartButtons);return;}
+          if(forward){setPassportStatsSlide(0);choose(shell,'score');queueMicrotask(rebuildChartButtons);return;}
+          setPassportStatsSlide(slides.length-1);choose(shell,'stats');queueMicrotask(rebuildChartButtons);return;
+        }
+      }
+      if(forward){
+        if(key==='score')choose(shell,'stats');
+        else if(key==='stats'){setPassportStatsSlide(0);choose(shell,'charts');queueMicrotask(rebuildChartButtons);}
+      }else{
+        if(key==='stats')choose(shell,'score');
+        else if(key==='score'){
+          const slides=[...document.querySelectorAll('#passportStatsTrack .passport-stats-slide')];
+          if(slides.length)setPassportStatsSlide(slides.length-1);
+          choose(shell,'charts');queueMicrotask(rebuildChartButtons);
+        }
+      }
+    },{passive:true});
     body.addEventListener('pointercancel',()=>{tracking=false},{passive:true});
   }
   function enforceChartOrder(){
