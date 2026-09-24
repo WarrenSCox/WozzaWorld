@@ -1752,24 +1752,11 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   function choose(shell,key){
     const btn=shell.querySelector(`.passport-insights-tab[data-insights-tab="${key}"]`);if(!btn)return;
     btn.click();setSag(shell,key,true);
-    if(key==='score'){
-      const needle=btn.querySelector('.insights-score-meter-needle');
-      if(needle){needle.classList.remove('is-sweeping');void needle.offsetWidth;needle.classList.add('is-sweeping')}
-    }
   }
   function installIconsAndSag(shell){
     shell.querySelectorAll('.passport-insights-tab').forEach(btn=>{
       const key=btn.dataset.insightsTab;
-      if(key==='score'){
-        if(!btn.querySelector('.insights-score-meter')){
-          btn.querySelector('.insights-brand-icon')?.remove();
-          btn.querySelector('svg:not(.insights-home-sag)')?.remove();
-          const meter=document.createElement('span');meter.className='insights-score-meter';meter.setAttribute('aria-hidden','true');
-          const body=document.createElement('img');body.className='insights-score-meter-body';body.src='meter-body-no-needle.png';body.alt='';
-          const needle=document.createElement('img');needle.className='insights-score-meter-needle';needle.src='meter-needle.png';needle.alt='';
-          meter.append(body,needle);btn.prepend(meter);
-        }
-      }else if(!btn.querySelector('.insights-brand-icon')){
+      if(!btn.querySelector('.insights-brand-icon')){
         btn.querySelector('svg')?.remove();
         const img=document.createElement('img');img.className='insights-brand-icon';img.src=iconFiles[key];img.alt='';img.setAttribute('aria-hidden','true');btn.prepend(img);
       }
@@ -1872,13 +1859,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   function apply(){
     const shell=document.getElementById('passportInsights');if(!shell)return false;
     installIconsAndSag(shell);installInsightSwipe(shell);watchCharts();
-    if(!insightsObserver){insightsObserver=new MutationObserver(()=>{
-      const key=activeKey(shell);setSag(shell,key,true);
-      if(key==='score'){
-        const needle=shell.querySelector('.passport-insights-tab[data-insights-tab="score"] .insights-score-meter-needle');
-        if(needle){needle.classList.remove('is-sweeping');void needle.offsetWidth;needle.classList.add('is-sweeping')}
-      }
-    });shell.querySelector('.passport-insights-tabs')&&insightsObserver.observe(shell.querySelector('.passport-insights-tabs'),{attributes:true,subtree:true,attributeFilter:['class']})}
+    if(!insightsObserver){insightsObserver=new MutationObserver(()=>setSag(shell,activeKey(shell),true));shell.querySelector('.passport-insights-tabs')&&insightsObserver.observe(shell.querySelector('.passport-insights-tabs'),{attributes:true,subtree:true,attributeFilter:['class']})}
     return true;
   }
   clearInterval(passportStatsAutoTimer);restartPassportStatsAuto=function(){clearInterval(passportStatsAutoTimer);passportStatsAutoTimer=0};
@@ -1888,12 +1869,6 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     .passport-insights-tab{color:#17213D!important}
     .passport-insights-tab .insights-brand-icon{display:block;height:50px;object-fit:contain;opacity:.82;transition:transform .22s ease,opacity .22s ease;pointer-events:none;position:absolute;bottom:22px;left:50%;transform:translateX(-50%)}
     .passport-insights-tab[data-insights-tab="score"] .insights-brand-icon{width:58px;bottom:16px}
-    .passport-insights-tab .insights-score-meter{display:block;width:58px;height:50px;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);opacity:.82;pointer-events:none}
-    .passport-insights-tab .insights-score-meter img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
-    .passport-insights-tab.is-active .insights-score-meter{transform:translateX(-50%) translateY(-2px);opacity:1}
-    .passport-insights-tab .insights-score-meter-needle{transform-origin:50% 68%;will-change:transform}
-    .passport-insights-tab .insights-score-meter-needle.is-sweeping{animation:wozzaMeterNeedleSweep .58s cubic-bezier(.22,.78,.24,1)}
-    @keyframes wozzaMeterNeedleSweep{0%{transform:rotate(-52deg)}58%{transform:rotate(12deg)}78%{transform:rotate(-5deg)}100%{transform:rotate(0deg)}}
     .passport-insights-tab[data-insights-tab="stats"] .insights-brand-icon{width:51px}
     .passport-insights-tab[data-insights-tab="charts"] .insights-brand-icon{width:46px;height:47px;bottom:17px}
     .passport-insights-tab.is-active .insights-brand-icon{transform:translateX(-50%) translateY(-2px);opacity:1}
@@ -1936,11 +1911,10 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     @media(max-width:380px){
       .passport-insights-tab .insights-brand-icon{height:45px}
       .passport-insights-tab[data-insights-tab="score"] .insights-brand-icon{width:52px}
-      .passport-insights-tab .insights-score-meter{width:52px;height:45px}
       .passport-insights-tab[data-insights-tab="stats"] .insights-brand-icon{width:46px}
       .passport-insights-tab[data-insights-tab="charts"] .insights-brand-icon{width:41px;height:42px;bottom:17px}
     }
-    @media(prefers-reduced-motion:reduce){.passport-insights-tab .insights-sag-path,.passport-insights-tab .insights-brand-icon,.passport-chart-dot-btn{transition:none!important}.passport-insights-tab .insights-score-meter-needle{animation:none!important}}
+    @media(prefers-reduced-motion:reduce){.passport-insights-tab .insights-sag-path,.passport-insights-tab .insights-brand-icon,.passport-chart-dot-btn{transition:none!important}}
   `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
   let tries=0;const t=setInterval(()=>{if(apply()||++tries>40)clearInterval(t)},100);requestAnimationFrame(apply);
 })();
