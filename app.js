@@ -1972,120 +1972,123 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 })();
 
 
-/* Surgical Travel Score meter v2:
-   visual replacement + one-time-on-first-focus needle animation only.
-   No swipe/touch/navigation/sag functions are modified. */
+/* Surgical Travel Score meter v3:
+   isolated visual replacement + mechanical needle flick on EVERY score-tab visit.
+   No existing swipe/touch/choose/setSag/navigation code is edited. */
 (()=>{
-  if(window.__wozzaScoreMeterFocusOnceV2)return;
-  window.__wozzaScoreMeterFocusOnceV2=true;
+  if(window.__wozzaScoreMeterRevisitV3)return;
+  window.__wozzaScoreMeterRevisitV3=true;
 
   const css=document.createElement('style');
-  css.id='wozza-score-meter-focus-once-v2-style';
+  css.id='wozza-score-meter-revisit-v3-style';
   css.textContent=`
-    .passport-insights-tab[data-insights-tab="score"] > .insights-brand-icon{
-      display:none!important;
-    }
-    .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v2{
+    .passport-insights-tab[data-insights-tab="score"] > .insights-brand-icon{display:none!important}
+    .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v3{
       display:block;width:58px;height:50px;position:absolute;bottom:16px;left:50%;
       transform:translateX(-50%);opacity:.82;pointer-events:none;
       transition:transform .22s ease,opacity .22s ease;
     }
-    .passport-insights-tab[data-insights-tab="score"].is-active .wozza-score-meter-v2{
+    .passport-insights-tab[data-insights-tab="score"].is-active .wozza-score-meter-v3{
       transform:translateX(-50%) translateY(-2px);opacity:1;
     }
-    .wozza-score-meter-v2 img{
+    .wozza-score-meter-v3 img{
       display:block!important;position:absolute!important;inset:0!important;
       width:100%!important;height:100%!important;object-fit:contain!important;
       pointer-events:none!important;
     }
-    .wozza-score-meter-v2 .wozza-score-meter-body-v2{transform:none!important}
-    .wozza-score-meter-v2 .wozza-score-meter-needle-v2{
+    .wozza-score-meter-v3 .wozza-score-body-v3{transform:none!important}
+    .wozza-score-meter-v3 .wozza-score-needle-v3{
       transform:rotate(0deg);
       transform-origin:50% 68%!important;
       will-change:transform;
     }
-    .wozza-score-meter-v2 .wozza-score-meter-needle-v2.wozza-first-focus-sweep{
-      animation:wozzaFirstFocusNeedleSweep .72s cubic-bezier(.22,.78,.24,1) both;
+    .wozza-score-meter-v3 .wozza-score-needle-v3.wozza-meter-flick-v3{
+      animation:wozzaMeterMechanicalFlickV3 .86s cubic-bezier(.2,.75,.22,1) both;
     }
-    @keyframes wozzaFirstFocusNeedleSweep{
-      0%{transform:rotate(-48deg)}
-      55%{transform:rotate(9deg)}
-      78%{transform:rotate(-3deg)}
+    @keyframes wozzaMeterMechanicalFlickV3{
+      0%{transform:rotate(-82deg)}
+      42%{transform:rotate(12deg)}
+      57%{transform:rotate(-8deg)}
+      69%{transform:rotate(6deg)}
+      80%{transform:rotate(-3deg)}
+      90%{transform:rotate(1.5deg)}
       100%{transform:rotate(0deg)}
     }
     @media(max-width:380px){
-      .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v2{width:52px;height:45px}
+      .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v3{width:52px;height:45px}
     }
     @media(prefers-reduced-motion:reduce){
-      .wozza-score-meter-v2 .wozza-score-meter-needle-v2.wozza-first-focus-sweep{animation:none!important}
+      .wozza-score-meter-v3 .wozza-score-needle-v3.wozza-meter-flick-v3{animation:none!important}
     }
   `;
   document.head.appendChild(css);
 
-  let currentBtn=null;
-  let classObserver=null;
-  let playedForCurrentView=false;
+  let btn=null;
+  let tabObserver=null;
+  let wasActive=false;
 
-  function animateOnceIfFocused(btn){
-    if(!btn || playedForCurrentView || !btn.classList.contains('is-active'))return;
-    const needle=btn.querySelector('.wozza-score-meter-needle-v2');
+  function fire(){
+    const needle=btn?.querySelector('.wozza-score-needle-v3');
     if(!needle)return;
-    playedForCurrentView=true;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      needle.classList.add('wozza-first-focus-sweep');
-    }));
+    needle.classList.remove('wozza-meter-flick-v3');
+    void needle.offsetWidth;
+    needle.classList.add('wozza-meter-flick-v3');
+  }
+
+  function bindScoreButton(nextBtn){
+    if(btn===nextBtn)return;
+    if(tabObserver)tabObserver.disconnect();
+    btn=nextBtn;
+    wasActive=false;
+
+    tabObserver=new MutationObserver(()=>{
+      const active=btn.classList.contains('is-active');
+      // Rising edge only: one animation per visit to Score.
+      if(active && !wasActive) fire();
+      // Leaving Score rearms it for the next revisit.
+      wasActive=active;
+    });
+    tabObserver.observe(btn,{attributes:true,attributeFilter:['class']});
+
+    // If Score is already focused when Passport/Insights renders, that counts as a visit.
+    const active=btn.classList.contains('is-active');
+    wasActive=active;
+    if(active) requestAnimationFrame(()=>requestAnimationFrame(fire));
   }
 
   function install(){
-    const btn=document.querySelector('.passport-insights-tab[data-insights-tab="score"]');
-    if(!btn)return;
+    const nextBtn=document.querySelector('.passport-insights-tab[data-insights-tab="score"]');
+    if(!nextBtn)return;
 
-    // Remove any previously appended experimental meter if a browser cache retained it.
-    btn.querySelector('.wozza-score-meter')?.remove();
+    // Remove only remnants of our earlier experimental layers, never baseline navigation.
+    nextBtn.querySelector('.wozza-score-meter')?.remove();
+    nextBtn.querySelector('.wozza-score-meter-v2')?.remove();
 
-    let meter=btn.querySelector('.wozza-score-meter-v2');
-    if(!meter){
-      meter=document.createElement('span');
-      meter.className='wozza-score-meter-v2';
+    if(!nextBtn.querySelector('.wozza-score-meter-v3')){
+      const meter=document.createElement('span');
+      meter.className='wozza-score-meter-v3';
       meter.setAttribute('aria-hidden','true');
 
       const body=document.createElement('img');
-      body.src='meter-body-no-needle.png';
-      body.alt='';
-      body.className='wozza-score-meter-body-v2';
+      body.src='meter-body-no-needle.png'; body.alt=''; body.className='wozza-score-body-v3';
 
       const needle=document.createElement('img');
-      needle.src='meter-needle.png';
-      needle.alt='';
-      needle.className='wozza-score-meter-needle-v2';
+      needle.src='meter-needle.png'; needle.alt=''; needle.className='wozza-score-needle-v3';
 
       meter.append(body,needle);
-      btn.prepend(meter);
+      nextBtn.prepend(meter);
     }
-
-    if(currentBtn!==btn){
-      if(classObserver)classObserver.disconnect();
-      currentBtn=btn;
-      playedForCurrentView=false;
-
-      classObserver=new MutationObserver(()=>{
-        // Observe only the already-existing visual active state.
-        // Never clicks, chooses, swipes or changes any navigation state.
-        animateOnceIfFocused(btn);
-      });
-      classObserver.observe(btn,{attributes:true,attributeFilter:['class']});
-    }
-
-    // Critical: also trigger when Score is ALREADY focused on initial render.
-    animateOnceIfFocused(btn);
+    bindScoreButton(nextBtn);
   }
 
   install();
 
-  // DOM presence watcher only, for screens that are rendered/re-rendered later.
-  // It never watches or changes navigation state.
+  // Presence-only watcher: handles Passport/Insights being removed and rendered again.
+  // It never changes active tabs or navigation state.
   const presenceObserver=new MutationObserver(()=>{
-    if(!document.documentElement.contains(currentBtn))currentBtn=null;
+    if(btn && !document.documentElement.contains(btn)){
+      tabObserver?.disconnect(); tabObserver=null; btn=null; wasActive=false;
+    }
     install();
   });
   presenceObserver.observe(document.body,{childList:true,subtree:true});
