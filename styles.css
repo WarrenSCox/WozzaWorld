@@ -4713,3 +4713,9 @@ html,body{overscroll-behavior-y:none;}
 .trip-unsaved-card .trip-unsaved-head h3{font-size:19px!important;line-height:1.2!important;margin:3px 0 0!important;min-width:0;}
 .trip-unsaved-close{position:static!important;flex:0 0 42px;width:42px!important;height:42px!important;min-width:42px!important;padding:0!important;color:#68767b!important;background:#fff!important;}
 .trip-unsaved-card>.trip-unsaved-head+p{margin-top:0!important;}
+
+/* Trip dialog alignment + shared warm dialog surface */
+.trip-unsaved-card{background:#fff0cf!important;}
+.trip-unsaved-head{align-items:center!important;}
+.trip-unsaved-card .trip-unsaved-head h3{margin:0!important;}
+.trip-unsaved-close{flex-basis:38px!important;width:38px!important;height:38px!important;min-width:38px!important;transform:translateY(-2px)!important;}
