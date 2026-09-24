@@ -1972,141 +1972,59 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 })();
 
 
-/* Surgical Travel Insights icon animation v4.
-   VISUAL-ONLY observer. It never calls click(), choose(), setSag(), changes is-active,
-   or attaches pointer/touch/swipe handlers. Existing navigation stays baseline-owned. */
+/* Surgical Travel Insights icon motion v5.
+   Visual-only. Existing swipe/touch/navigation/sag code is untouched. */
 (()=>{
-  if(window.__wozzaInsightsIconMotionV4)return;
-  window.__wozzaInsightsIconMotionV4=true;
+ if(window.__wozzaInsightsMotionV5)return; window.__wozzaInsightsMotionV5=true;
+ const s=document.createElement('style'); s.id='wozza-insights-motion-v5';
+ s.textContent=`
+ .passport-insights-tab[data-insights-tab="score"]>.insights-brand-icon{display:none!important}
+ .wozza-meter-v5{display:block;width:58px;height:50px;position:absolute;bottom:16px;left:50%;transform:translateX(-50%);opacity:.82;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
+ .passport-insights-tab[data-insights-tab="score"].is-active .wozza-meter-v5{transform:translateX(-50%) translateY(-2px);opacity:1}
+ .wozza-meter-v5 img,.wozza-chartflip-v5 img{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;display:block!important;pointer-events:none!important}
+ .wozza-meter-v5 .needle-v5{transform-origin:50% 68%!important;transform:rotate(0deg);will-change:transform}
+ .wozza-meter-v5 .needle-v5.go-v5{animation:meterV5 1.7s cubic-bezier(.2,.75,.22,1) both}
+ @keyframes meterV5{0%{transform:rotate(-82deg)}42%{transform:rotate(12deg)}57%{transform:rotate(-8deg)}69%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}90%{transform:rotate(1.5deg)}100%{transform:rotate(0deg)}}
 
-  const css=document.createElement('style');
-  css.id='wozza-insights-icon-motion-v4-style';
-  css.textContent=`
-    /* Score: hide baseline static icon and overlay the approved split meter assets. */
-    .passport-insights-tab[data-insights-tab="score"] > .insights-brand-icon{display:none!important}
-    .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v4{
-      display:block;width:58px;height:50px;position:absolute;bottom:16px;left:50%;
-      transform:translateX(-50%);opacity:.82;pointer-events:none;
-      transition:transform .22s ease,opacity .22s ease;
-    }
-    .passport-insights-tab[data-insights-tab="score"].is-active .wozza-score-meter-v4{
-      transform:translateX(-50%) translateY(-2px);opacity:1;
-    }
-    .wozza-score-meter-v4 img{
-      display:block!important;position:absolute!important;inset:0!important;
-      width:100%!important;height:100%!important;object-fit:contain!important;
-      pointer-events:none!important;
-    }
-    .wozza-score-meter-v4 .wozza-score-body-v4{transform:none!important}
-    .wozza-score-meter-v4 .wozza-score-needle-v4{
-      transform:rotate(0deg);transform-origin:50% 68%!important;will-change:transform;
-    }
-    .wozza-score-meter-v4 .wozza-score-needle-v4.wozza-meter-flick-v4{
-      animation:wozzaMeterFlickV4 1.15s cubic-bezier(.2,.75,.22,1) both;
-    }
-    @keyframes wozzaMeterFlickV4{
-      0%{transform:rotate(-82deg)}
-      42%{transform:rotate(12deg)}
-      57%{transform:rotate(-8deg)}
-      69%{transform:rotate(6deg)}
-      80%{transform:rotate(-3deg)}
-      90%{transform:rotate(1.5deg)}
-      100%{transform:rotate(0deg)}
-    }
+ .passport-insights-tab[data-insights-tab="stats"]>.insights-brand-icon.clipwig-v5{animation:clipwigV5 .72s ease-in-out;transform-origin:50% 58%}
+ @keyframes clipwigV5{0%{transform:translateX(-50%) translateY(-2px) rotate(0)}18%{transform:translateX(-50%) translateY(-2px) rotate(-7deg)}36%{transform:translateX(-50%) translateY(-2px) rotate(6deg)}54%{transform:translateX(-50%) translateY(-2px) rotate(-4deg)}72%{transform:translateX(-50%) translateY(-2px) rotate(2deg)}100%{transform:translateX(-50%) translateY(-2px) rotate(0)}}
 
-    /* Quick Stats: animate the EXISTING clipboard image only. No replacement asset. */
-    .passport-insights-tab[data-insights-tab="stats"] > .insights-brand-icon.wozza-clipboard-wiggle-v4{
-      animation:wozzaClipboardWiggleV4 .72s ease-in-out;
-      transform-origin:50% 58%;
-    }
-    @keyframes wozzaClipboardWiggleV4{
-      0%{transform:translateX(-50%) translateY(-2px) rotate(0deg)}
-      18%{transform:translateX(-50%) translateY(-2px) rotate(-7deg)}
-      36%{transform:translateX(-50%) translateY(-2px) rotate(6deg)}
-      54%{transform:translateX(-50%) translateY(-2px) rotate(-4deg)}
-      72%{transform:translateX(-50%) translateY(-2px) rotate(2deg)}
-      100%{transform:translateX(-50%) translateY(-2px) rotate(0deg)}
-    }
+ .passport-insights-tab[data-insights-tab="charts"]>.insights-brand-icon{display:none!important}
+ .wozza-chartflip-v5{display:block;width:46px;height:47px;position:absolute;bottom:17px;left:50%;transform:translateX(-50%);opacity:.82;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
+ .passport-insights-tab[data-insights-tab="charts"].is-active .wozza-chartflip-v5{transform:translateX(-50%) translateY(-2px);opacity:1}
+ .wozza-chartflip-v5 .chart2-v5{opacity:0}
+ .wozza-chartflip-v5.flip-v5 .chart1-v5{animation:chartOneV5 .82s ease-in-out both}
+ .wozza-chartflip-v5.flip-v5 .chart2-v5{animation:chartTwoV5 .82s ease-in-out both}
+ @keyframes chartOneV5{0%,35%{opacity:1;transform:scaleY(1)}52%,100%{opacity:0;transform:scaleY(.92)}}
+ @keyframes chartTwoV5{0%,35%{opacity:0;transform:scaleY(.92)}52%,82%{opacity:1;transform:scaleY(1.06)}100%{opacity:1;transform:scaleY(1)}}
+ @media(max-width:380px){.wozza-meter-v5{width:52px;height:45px}.wozza-chartflip-v5{width:41px;height:42px}}
+ @media(prefers-reduced-motion:reduce){.go-v5,.clipwig-v5,.flip-v5 img{animation:none!important}}
+ `; document.head.appendChild(s);
 
-    @media(max-width:380px){
-      .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v4{width:52px;height:45px}
-    }
-    @media(prefers-reduced-motion:reduce){
-      .wozza-score-meter-v4 .wozza-score-needle-v4.wozza-meter-flick-v4,
-      .passport-insights-tab[data-insights-tab="stats"] > .insights-brand-icon.wozza-clipboard-wiggle-v4{
-        animation:none!important
-      }
-    }
-  `;
-  document.head.appendChild(css);
-
-  let tabsRoot=null, observer=null;
-  let previousKey=null;
-
-  function activeKey(){
-    return tabsRoot?.querySelector('.passport-insights-tab.is-active')?.dataset.insightsTab || null;
-  }
-  function animateScore(){
-    const needle=tabsRoot?.querySelector('[data-insights-tab="score"] .wozza-score-needle-v4');
-    if(!needle)return;
-    needle.classList.remove('wozza-meter-flick-v4');
-    void needle.offsetWidth;
-    needle.classList.add('wozza-meter-flick-v4');
-  }
-  function animateStats(){
-    const icon=tabsRoot?.querySelector('[data-insights-tab="stats"] > .insights-brand-icon');
-    if(!icon)return;
-    icon.classList.remove('wozza-clipboard-wiggle-v4');
-    void icon.offsetWidth;
-    icon.classList.add('wozza-clipboard-wiggle-v4');
-  }
-  function reactToFocus(){
-    const key=activeKey();
-    if(!key || key===previousKey)return; // once per entry into each tab
-    previousKey=key;
-    if(key==='score')animateScore();
-    else if(key==='stats')animateStats();
-  }
-  function installMeter(scoreBtn){
-    if(scoreBtn.querySelector('.wozza-score-meter-v4'))return;
-    const meter=document.createElement('span');
-    meter.className='wozza-score-meter-v4';
-    meter.setAttribute('aria-hidden','true');
-    const body=document.createElement('img');
-    body.src='meter-body-no-needle.png';body.alt='';body.className='wozza-score-body-v4';
-    const needle=document.createElement('img');
-    needle.src='meter-needle.png';needle.alt='';needle.className='wozza-score-needle-v4';
-    meter.append(body,needle);
-    scoreBtn.prepend(meter);
-  }
-  function wire(){
-    const root=document.querySelector('.passport-insights-tabs');
-    if(!root)return false;
-    const score=root.querySelector('[data-insights-tab="score"]');
-    if(!score)return false;
-    installMeter(score);
-
-    if(root!==tabsRoot){
-      observer?.disconnect();
-      tabsRoot=root;
-      previousKey=null;
-      observer=new MutationObserver(reactToFocus);
-      observer.observe(tabsRoot,{attributes:true,subtree:true,attributeFilter:['class']});
-      // Existing focused tab counts as the first visit.
-      requestAnimationFrame(()=>requestAnimationFrame(reactToFocus));
-    }
-    return true;
-  }
-
-  wire();
-
-  // Presence watcher only: supports Passport/Travel Insights being destroyed and recreated.
-  // No navigation state is read/written except observing the already-rendered active class.
-  const presence=new MutationObserver(()=>{
-    if(tabsRoot && !document.documentElement.contains(tabsRoot)){
-      observer?.disconnect();observer=null;tabsRoot=null;previousKey=null;
-    }
-    wire();
-  });
-  presence.observe(document.body,{childList:true,subtree:true});
+ let root=null,obs=null,prev=null;
+ const key=()=>root?.querySelector('.passport-insights-tab.is-active')?.dataset.insightsTab||null;
+ function restart(el,c){if(!el)return;el.classList.remove(c);void el.offsetWidth;el.classList.add(c)}
+ function react(){
+   const k=key(); if(!k||k===prev)return; prev=k;
+   if(k==='score') restart(root.querySelector('.needle-v5'),'go-v5');
+   if(k==='stats') restart(root.querySelector('[data-insights-tab="stats"]>.insights-brand-icon'),'clipwig-v5');
+   if(k==='charts') restart(root.querySelector('.wozza-chartflip-v5'),'flip-v5');
+ }
+ function install(){
+   const r=document.querySelector('.passport-insights-tabs'); if(!r)return;
+   const score=r.querySelector('[data-insights-tab="score"]'), charts=r.querySelector('[data-insights-tab="charts"]'); if(!score||!charts)return;
+   if(!score.querySelector('.wozza-meter-v5')){
+     const m=document.createElement('span');m.className='wozza-meter-v5';m.setAttribute('aria-hidden','true');
+     const b=document.createElement('img');b.src='meter-body-no-needle.png';b.alt='';
+     const n=document.createElement('img');n.src='meter-needle.png';n.alt='';n.className='needle-v5';m.append(b,n);score.prepend(m);
+   }
+   if(!charts.querySelector('.wozza-chartflip-v5')){
+     const m=document.createElement('span');m.className='wozza-chartflip-v5';m.setAttribute('aria-hidden','true');
+     const a=document.createElement('img');a.src='charts-frame-1.png';a.alt='';a.className='chart1-v5';
+     const b=document.createElement('img');b.src='charts-frame-2.png';b.alt='';b.className='chart2-v5';m.append(a,b);charts.prepend(m);
+   }
+   if(root!==r){obs?.disconnect();root=r;prev=null;obs=new MutationObserver(react);obs.observe(root,{attributes:true,subtree:true,attributeFilter:['class']});requestAnimationFrame(()=>requestAnimationFrame(react))}
+ }
+ install();
+ new MutationObserver(()=>{if(root&&!document.documentElement.contains(root)){obs?.disconnect();obs=null;root=null;prev=null}install()}).observe(document.body,{childList:true,subtree:true});
 })();
