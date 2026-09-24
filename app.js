@@ -724,7 +724,15 @@ function attachTripTodoReorder(){
   const style=document.createElement('style');style.id='trip-todo-reorder-style';style.textContent=`
    #tripTodoList .trip-todo-row{cursor:grab;-webkit-touch-callout:none}
    #tripTodoList>.trip-todo-drag-marker{display:block!important;box-sizing:border-box!important;border:0!important;background:transparent!important;padding:0!important;visibility:hidden!important}
-   .trip-todo-drag-live{position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important}
+   .trip-todo-drag-live{display:grid!important;grid-template-columns:minmax(0,1fr) 34px 38px!important;gap:8px!important;align-items:center!important;position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important}
+   .trip-todo-drag-live .trip-todo-input{box-sizing:border-box!important;resize:none!important;min-height:44px!important;line-height:22px!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;margin:0!important;width:100%!important;background:#fff!important;color:#172f3a!important;border-color:rgba(7,94,120,.10)!important;font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;font-weight:500!important;text-transform:none!important;padding:12px 14px 10px!important;grid-column:1!important}
+   .trip-todo-drag-live .trip-todo-check{grid-column:2!important;position:relative;width:34px!important;height:34px!important;border:0!important;background:transparent!important;display:grid!important;place-items:center!important;padding:0!important}
+   .trip-todo-drag-live .trip-todo-check::before{content:"";width:27px;height:27px;border:2.6px solid #687781;border-radius:50%;box-sizing:border-box;background:transparent}
+   .trip-todo-drag-live .trip-todo-check.selected::before{background:#159b70;border-color:rgba(104,119,129,.58)}
+   .trip-todo-drag-live .trip-todo-check.selected::after{content:"✓";position:absolute;color:#fff;font-size:19px;font-weight:900;line-height:1}
+   .trip-todo-drag-live .trip-todo-remove{grid-column:3!important;width:38px!important;height:38px!important;border:0!important;border-radius:50%!important;background:#fff2ef!important;color:#b43831!important;font-size:23px!important;font-weight:800!important;display:grid!important;place-items:center!important;box-shadow:0 2px 7px rgba(9,38,47,.06)!important}
+   .trip-todo-drag-live:not(.has-text) .trip-todo-input{background:#e9bf2e!important;color:#172f3a!important;font-family:"Archivo Black",Impact,sans-serif!important;font-weight:900!important;text-transform:uppercase!important}
+   .trip-todo-drag-live:not(.has-text) .trip-todo-check{visibility:hidden!important}
   `;document.head.appendChild(style)
  }
  const rows=()=>[...list.querySelectorAll('.trip-todo-row')];
