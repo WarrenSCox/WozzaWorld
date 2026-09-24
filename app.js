@@ -1674,59 +1674,13 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   },{passive:true});
 })();
 
-
-/* Insights animated icon assets/support — observes visible tab state only; sag/swipe code untouched. */
-(()=>{
-  if(window.__wozzaAnimatedInsightsIconsV2)return;window.__wozzaAnimatedInsightsIconsV2=true;
-  const style=document.createElement('style');style.id='wozza-animated-insights-icons-v2';
-  style.textContent=`
-    .passport-insights-tab [data-moving-part="needle"]{transform-box:view-box;transform-origin:32px 39px}
-    .passport-insights-tab [data-moving-part="clipboard"]{transform-box:view-box;transform-origin:32px 25px}
-    .passport-insights-tab [data-bar]{transform-box:fill-box;transform-origin:center bottom}
-    .passport-insights-tab.wozza-icon-play [data-moving-part="needle"]{animation:wiNeedle .7s cubic-bezier(.3,.05,.2,1)}
-    .passport-insights-tab.wozza-icon-play [data-moving-part="clipboard"]{animation:wiClip .62s ease-in-out}
-    .passport-insights-tab.wozza-icon-play [data-bar="outer"]{animation:wiOuter .65s ease-in-out}
-    .passport-insights-tab.wozza-icon-play [data-bar="inner"]{animation:wiInner .65s ease-in-out}
-    @keyframes wiNeedle{0%{transform:rotate(-45deg)}55%{transform:rotate(38deg)}78%{transform:rotate(-7deg)}100%{transform:rotate(0)}}
-    @keyframes wiClip{0%,100%{transform:rotate(0)}20%{transform:rotate(-7deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-4deg)}80%{transform:rotate(2deg)}}
-    @keyframes wiOuter{0%,100%{transform:scaleY(1)}48%{transform:scaleY(.52)}72%{transform:scaleY(.84)}}
-    @keyframes wiInner{0%,100%{transform:scaleY(1)}48%{transform:scaleY(1.38)}72%{transform:scaleY(1.12)}}
-    @media(prefers-reduced-motion:reduce){.passport-insights-tab.wozza-icon-play *{animation:none!important}}
-  `;
-  document.getElementById(style.id)?.remove();document.head.appendChild(style);
-
-  const play=btn=>{
-    if(!btn)return;
-    btn.classList.remove('wozza-icon-play');
-    void btn.offsetWidth;
-    btn.classList.add('wozza-icon-play');
-  };
-  const wire=shell=>{
-    if(!shell||shell.dataset.iconAnimV2)return;
-    shell.dataset.iconAnimV2='1';
-    const tabs=[...shell.querySelectorAll('.passport-insights-tab')];
-    tabs.forEach(btn=>{
-      let wasActive=btn.classList.contains('is-active');
-      new MutationObserver(()=>{
-        const active=btn.classList.contains('is-active');
-        if(active&&!wasActive)play(btn);
-        wasActive=active;
-      }).observe(btn,{attributes:true,attributeFilter:['class']});
-      btn.addEventListener('click',()=>requestAnimationFrame(()=>{if(btn.classList.contains('is-active'))play(btn)}));
-    });
-  };
-  const scan=()=>document.querySelectorAll('.passport-insights-shell').forEach(wire);
-  new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
-  requestAnimationFrame(scan);
-})();
-
 /* v0.19.0 — Passport Travel Insights: icon tabs + Home-style active sag */
 (()=>{
   if(window.__wozzaPassportInsightsV1)return;window.__wozzaPassportInsightsV1=true;
   const ICONS={
-    score:'<svg class="insights-anim-svg" data-icon-kind="score" viewBox="0 0 64 48" aria-hidden="true"><path d="M8 39a24 24 0 0 1 48 0"/><g data-moving-part="needle"><path d="M32 39 44 19"/><circle cx="32" cy="39" r="3"/></g></svg>',
-    stats:'<svg class="insights-anim-svg" data-icon-kind="stats" viewBox="0 0 64 48" aria-hidden="true"><g data-moving-part="clipboard"><rect x="14" y="10" width="36" height="32" rx="5"/><path d="M25 10V7h14v3M22 20l3 3 5-6M34 21h9M22 30l3 3 5-6M34 31h9"/></g></svg>',
-    charts:'<svg class="insights-anim-svg" data-icon-kind="charts" viewBox="0 0 64 48" aria-hidden="true"><path d="M13 8v32h40"/><path data-bar="outer" d="M22 34V23"/><path data-bar="inner" d="M32 34V15"/><path data-bar="inner" d="M42 34V20"/><path data-bar="outer" d="M52 34V11"/></svg>'
+    score:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M8 39a24 24 0 0 1 48 0"/><path d="M32 39 44 19"/><circle cx="32" cy="39" r="3"/></svg>',
+    stats:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="14" y="10" width="36" height="32" rx="5"/><path d="M25 10V7h14v3M22 20l3 3 5-6M34 21h9M22 30l3 3 5-6M34 31h9"/></svg>',
+    charts:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M13 8v32h40"/><path d="M22 34V23M32 34V15M42 34V20M52 34V11"/></svg>'
   };
   function setup(){
     const screen=document.querySelector('.screen[data-screen="me"]'),score=document.getElementById('travelHealthCard'),grid=screen?.querySelector('.stats-grid'),charts=screen?.querySelector('.passport-stats-carousel'),milestones=document.getElementById('milestonesCard');
@@ -1794,17 +1748,31 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
       if(!animate){p.style.transition='none';p.setAttribute('d',btn.dataset.insightsTab===key?sag:straight);p.getBoundingClientRect();p.style.transition=''}
       else p.setAttribute('d',btn.dataset.insightsTab===key?sag:straight);
     });
+    if(animate){
+      const active=shell.querySelector(`.passport-insights-tab[data-insights-tab="${key}"]`);
+      if(active){
+        active.classList.remove('insights-icon-animate');
+        void active.offsetWidth;
+        active.classList.add('insights-icon-animate');
+      }
+    }
   }
   function choose(shell,key){
     const btn=shell.querySelector(`.passport-insights-tab[data-insights-tab="${key}"]`);if(!btn)return;
     btn.click();setSag(shell,key,true);
   }
   function installIconsAndSag(shell){
+    const svgMarkup={
+      score:'<svg class="insights-brand-svg" data-kind="score" viewBox="0 0 64 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 38a24 24 0 0 1 48 0"/><path d="M12 28l7 4M19 18l6 7M32 14v9M45 18l-6 7M52 28l-7 4"/><g class="insights-icon-needle"><path d="M32 38L44 19"/><circle cx="32" cy="38" r="3"/></g></g></svg>',
+      stats:'<svg class="insights-brand-svg" data-kind="stats" viewBox="0 0 64 48" aria-hidden="true"><g class="insights-icon-clipboard" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="10" width="36" height="32" rx="5"/><path d="M25 10V7h14v3M22 20l3 3 5-6M34 21h9M22 30l3 3 5-6M34 31h9"/></g></svg>',
+      charts:'<svg class="insights-brand-svg" data-kind="charts" viewBox="0 0 64 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8v32h40"/><path class="insights-icon-bar outer" d="M22 34V23"/><path class="insights-icon-bar inner" d="M32 34V15"/><path class="insights-icon-bar inner" d="M42 34V20"/><path class="insights-icon-bar outer" d="M52 34V11"/></g></svg>'
+    };
     shell.querySelectorAll('.passport-insights-tab').forEach(btn=>{
       const key=btn.dataset.insightsTab;
-      if(!btn.querySelector('.insights-brand-icon')){
-        btn.querySelector('svg')?.remove();
-        const img=document.createElement('img');img.className='insights-brand-icon';img.src=iconFiles[key];img.alt='';img.setAttribute('aria-hidden','true');btn.prepend(img);
+      btn.querySelector('.insights-brand-icon')?.remove();
+      if(!btn.querySelector('.insights-brand-svg')){
+        btn.querySelector('svg:not(.insights-home-sag)')?.remove();
+        btn.insertAdjacentHTML('afterbegin',svgMarkup[key]);
       }
       let old=btn.querySelector('.insights-underline');
       if(old&&!old.classList.contains('insights-home-sag')){
@@ -1925,6 +1893,25 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     .passport-insights-tab[data-insights-tab="stats"] .insights-sag-path{stroke:#16B98F!important}
     .passport-insights-tab[data-insights-tab="charts"] .insights-sag-path{stroke:#16BFD1!important}
     .passport-insights-body{touch-action:pan-y}
+
+    /* v0.19.1 icon renderer fix: these are the actual visible icons, not the old PNG replacement layer. */
+    .passport-insights-tab .insights-brand-svg{display:block!important;height:50px!important;width:50px!important;overflow:visible!important;opacity:.82;pointer-events:none;position:absolute;bottom:22px;left:50%;transform:translateX(-50%);transition:transform .22s ease,opacity .22s ease}
+    .passport-insights-tab[data-insights-tab="score"] .insights-brand-svg{width:58px!important;bottom:16px}
+    .passport-insights-tab[data-insights-tab="stats"] .insights-brand-svg{width:51px!important}
+    .passport-insights-tab[data-insights-tab="charts"] .insights-brand-svg{width:46px!important;height:47px!important;bottom:17px}
+    .passport-insights-tab.is-active .insights-brand-svg{transform:translateX(-50%) translateY(-2px);opacity:1}
+    .passport-insights-tab>svg.insights-brand-svg{display:block!important}
+    .insights-icon-needle{transform-box:view-box;transform-origin:32px 38px}
+    .insights-icon-clipboard{transform-box:view-box;transform-origin:32px 25px}
+    .insights-icon-bar{transform-box:fill-box;transform-origin:center bottom}
+    .passport-insights-tab.insights-icon-animate .insights-icon-needle{animation:insightsNeedleSweep .7s cubic-bezier(.22,.78,.24,1)}
+    .passport-insights-tab.insights-icon-animate .insights-icon-clipboard{animation:insightsClipboardWiggle .62s ease-in-out}
+    .passport-insights-tab.insights-icon-animate .insights-icon-bar.outer{animation:insightsBarDown .65s ease-in-out}
+    .passport-insights-tab.insights-icon-animate .insights-icon-bar.inner{animation:insightsBarUp .65s ease-in-out}
+    @keyframes insightsNeedleSweep{0%{transform:rotate(-48deg)}55%{transform:rotate(38deg)}78%{transform:rotate(-7deg)}100%{transform:rotate(0)}}
+    @keyframes insightsClipboardWiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-7deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-4deg)}80%{transform:rotate(2deg)}}
+    @keyframes insightsBarDown{0%,100%{transform:scaleY(1)}48%{transform:scaleY(.52)}72%{transform:scaleY(.84)}}
+    @keyframes insightsBarUp{0%,100%{transform:scaleY(1)}48%{transform:scaleY(1.38)}72%{transform:scaleY(1.12)}}
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-carousel{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-radius:0!important;margin:0!important;padding-left:0!important;padding-right:0!important}
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-slide{background:transparent!important;border:0!important;box-shadow:none!important}
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-head{height:34px!important;min-height:34px!important;margin:0 0 6px!important;position:relative!important;display:flex!important;justify-content:center!important;align-items:center!important}
