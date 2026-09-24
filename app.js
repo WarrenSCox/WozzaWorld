@@ -1828,6 +1828,12 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     /* Balance the future Backup & Restore control against Recycle Bin. */
     .recycle-launch{width:100%!important;justify-content:space-between!important;position:relative!important}
     .backup-restore-icon-btn{flex:0 0 42px}
+    .backup-restore-icon-btn img{width:22px;height:22px;object-fit:contain;display:block}
+    .backup-restore-dialog .backup-last-date{margin:4px 0 20px!important;color:var(--muted)!important;font-size:14px!important;line-height:1.5!important}
+    .backup-restore-actions{display:grid;gap:10px}
+    .backup-restore-actions button{width:100%;border:0;border-radius:999px;padding:12px 16px;background:#fff;color:var(--navy);font-weight:800;box-shadow:0 5px 16px rgba(16,33,63,.08)}
+    .backup-restore-actions button:first-child{background:var(--lime)}
+    .backup-restore-dialog form{position:relative}
   `;
   document.getElementById(css.id)?.remove();document.head.appendChild(css);
 
@@ -1837,7 +1843,8 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     const btn=document.createElement('button');
     btn.type='button';btn.id='openBackupRestore';btn.className='recycle-icon-btn backup-restore-icon-btn';
     btn.setAttribute('aria-label','Backup and restore');btn.title='Backup and restore';
-    btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 8.7A8 8 0 0 1 18 5.3L20.7 8"/><path d="M20.7 4.5V8H17.2"/><path d="M19.4 15.3A8 8 0 0 1 6 18.7L3.3 16"/><path d="M3.3 19.5V16h3.5"/><path d="M8 9.2h8v6.1H8z"/><path d="M10.1 9.2V7.5h3.8v1.7M10.3 12.2h3.4"/></svg>';
+    btn.innerHTML='<img src="backup-restore-icon.png" alt="" aria-hidden="true">';
+    btn.addEventListener('click',()=>document.getElementById('backupRestoreDialog')?.showModal());
     launch.insertBefore(btn,launch.firstChild);
   }
 
@@ -1858,5 +1865,6 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     if(document.querySelector('.recycle-launch')&&document.getElementById('passportStatsTrack'))clearInterval(timer);
     if(++tries>30)clearInterval(timer);
   },100);
+  document.getElementById('closeBackupRestoreDialog')?.addEventListener('click',()=>document.getElementById('backupRestoreDialog')?.close());
   requestAnimationFrame(()=>{installBackupButton();keepChartExpandButtons()});
 })();
