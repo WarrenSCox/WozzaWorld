@@ -1991,7 +1991,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    .passport-insights-tab[data-insights-tab="score"].is-active .meter-v6{transform:translateX(-50%) translateY(-2px);opacity:1}
    .meter-v6 img,.chart-v6 img{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;display:block!important;pointer-events:none!important}
    .needle-v6{transform:rotate(0deg);transform-origin:50% 68%!important;will-change:transform}
-   .needle-v6.go-v6{animation:meterSweepV6 2.6s linear both}
+   .needle-v6.go-v6{animation:meterSweepV6 2.25s linear both}
    /* Main sweep gets most of the duration; small flicks happen only near the end. */
    @keyframes meterSweepV6{
      0%{transform:rotate(-82deg)}
@@ -2010,16 +2010,18 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    .passport-insights-tab[data-insights-tab="stats"]>.insights-brand-icon.clip-v6{animation:clipV6 .72s ease-in-out;transform-origin:50% 58%}
    @keyframes clipV6{0%{transform:translateX(-50%) translateY(-2px) rotate(0)}18%{transform:translateX(-50%) translateY(-2px) rotate(-7deg)}36%{transform:translateX(-50%) translateY(-2px) rotate(6deg)}54%{transform:translateX(-50%) translateY(-2px) rotate(-4deg)}72%{transform:translateX(-50%) translateY(-2px) rotate(2deg)}100%{transform:translateX(-50%) translateY(-2px) rotate(0)}}
 
-   /* Charts: frame 1 while inactive, transition ONCE to frame 2 on entry, then hold. */
+   /* Charts: one icon whose bars physically morph in height. */
    .passport-insights-tab[data-insights-tab="charts"]>.insights-brand-icon{display:none!important}
    .chart-v6{display:block;width:46px;height:47px;position:absolute;bottom:17px;left:50%;transform:translateX(-50%);opacity:.82;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
    .passport-insights-tab[data-insights-tab="charts"].is-active .chart-v6{transform:translateX(-50%) translateY(-2px);opacity:1}
-   .chart-v6 .frame1-v6{opacity:1;transform:scaleY(1)}
-   .chart-v6 .frame2-v6{opacity:0;transform:scaleY(.94)}
-   .chart-v6.active-v6 .frame1-v6{animation:frame1V6 1.15s ease-in-out both}
-   .chart-v6.active-v6 .frame2-v6{animation:frame2V6 1.15s ease-in-out both}
-   @keyframes frame1V6{0%,38%{opacity:1;transform:scaleY(1)}60%,100%{opacity:0;transform:scaleY(.96)}}
-   @keyframes frame2V6{0%,38%{opacity:0;transform:scaleY(.94)}60%{opacity:1;transform:scaleY(1.05)}100%{opacity:1;transform:scaleY(1)}}
+   .chart-v6 svg{display:block;width:100%;height:100%;overflow:visible}
+   .chart-v6 .bar-v6{transform-box:fill-box;transform-origin:center bottom;will-change:transform}
+   .chart-v6.active-v6 .bar-left-v6{animation:barLeftV6 1.28s cubic-bezier(.45,0,.25,1) both}
+   .chart-v6.active-v6 .bar-mid-v6{animation:barMidV6 1.28s cubic-bezier(.45,0,.25,1) both}
+   .chart-v6.active-v6 .bar-right-v6{animation:barRightV6 1.28s cubic-bezier(.45,0,.25,1) both}
+   @keyframes barLeftV6{from{transform:scaleY(1)}to{transform:scaleY(1.55)}}
+   @keyframes barMidV6{from{transform:scaleY(1)}to{transform:scaleY(.72)}}
+   @keyframes barRightV6{from{transform:scaleY(1)}to{transform:scaleY(1.45)}}
 
    @media(max-width:380px){.meter-v6{width:52px;height:45px}.chart-v6{width:41px;height:42px}}
    @media(prefers-reduced-motion:reduce){.needle-v6.go-v6,.clip-v6,.chart-v6.active-v6 img{animation:none!important}}
@@ -2034,9 +2036,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    const old=previous;previous=k;
    // Leaving charts silently restores frame 1, with no reverse animation.
    if(old==='charts'){
-     const chart=root.querySelector('.chart-v6');
-     chart?.classList.remove('active-v6');
-     chart?.querySelectorAll('img').forEach(x=>{x.style.animation='none';void x.offsetWidth;x.style.animation=''});
+     root.querySelector('.chart-v6')?.classList.remove('active-v6');
    }
    if(k==='score')restart(root.querySelector('.needle-v6'),'go-v6');
    if(k==='stats')restart(root.querySelector('[data-insights-tab="stats"]>.insights-brand-icon'),'clip-v6');
@@ -2055,8 +2055,12 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    }
    if(!charts.querySelector('.chart-v6')){
      const m=document.createElement('span');m.className='chart-v6';m.setAttribute('aria-hidden','true');
-     const a=document.createElement('img');a.src='charts-frame-1.png';a.alt='';a.className='frame1-v6';
-     const b=document.createElement('img');b.src='charts-frame-2.png';b.alt='';b.className='frame2-v6';m.append(a,b);charts.prepend(m);
+     m.innerHTML=`<svg viewBox="0 0 100 100" aria-hidden="true">
+       <path d="M15 12 V84 H91" fill="none" stroke="#174f5a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+       <rect class="bar-v6 bar-left-v6" x="27" y="54" width="13" height="25" rx="2" fill="#174f5a"/>
+       <rect class="bar-v6 bar-mid-v6" x="48" y="30" width="13" height="49" rx="2" fill="#174f5a"/>
+       <rect class="bar-v6 bar-right-v6" x="69" y="49" width="13" height="30" rx="2" fill="#174f5a"/>
+     </svg>`;charts.prepend(m);
    }
    if(root!==r){
      obs?.disconnect();root=r;previous=null;
