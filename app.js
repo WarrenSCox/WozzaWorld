@@ -1580,54 +1580,98 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     let card=$('#travelHealthCard');
     if(!card){card=document.createElement('section');card.id='travelHealthCard';card.className='travel-health-card';const anchor=name.closest('.passport-name-card,.passport-name,.name-card,.passport-profile-name')||name.parentElement;anchor?.insertAdjacentElement('afterend',card)}
     const d=travelScoreData(),angle=-90+(d.score/100)*180;
-    const firstScorePaint=!window.__wozzaPassportScoreAnimated;
-    card.innerHTML=`<div class="travel-health-kicker" data-score-fit>YOUR TRAVEL SCORE: ${d.band}</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" data-score-needle style="transform:translateX(-50%) rotate(${firstScorePaint?-90:angle}deg)"></div><div class="travel-health-score"><strong data-score-number>${firstScorePaint?0:d.score}</strong><span>/ 100</span></div></div><div class="travel-score-guidance"><details class="travel-guidance-details"><summary>Strengths</summary><p>${d.strengthText}</p></details><details class="travel-guidance-details"><summary>Recommendations</summary><p>${d.recommendation}</p></details></div><details class="travel-score-details"><summary>How is my score calculated?</summary><div class="travel-score-breakdown">${Object.keys(FACTORS).map(k=>`<div class="travel-score-factor"><div><b>${FACTORS[k].label}</b></div><p>${d.evidence[k]} = ${Number.isInteger(d.awardedPoints[k])?d.awardedPoints[k]:d.awardedPoints[k].toFixed(1)} out of ${Math.round(FACTORS[k].weight*100)} points</p></div>`).join('')}</div></details>`;
-
-    const heading=card.querySelector('[data-score-fit]');
-    const fitHeading=()=>{
-      if(!heading)return;
-      heading.style.fontSize='28px';
-      const available=heading.clientWidth;
-      if(!available)return;
-      let lo=8,hi=28,best=8;
-      for(let i=0;i<14;i++){
-        const mid=(lo+hi)/2; heading.style.fontSize=mid+'px';
-        if(heading.scrollWidth<=available){best=mid;lo=mid}else hi=mid;
-      }
-      heading.style.fontSize=best.toFixed(2)+'px';
-    };
-    fitHeading(); requestAnimationFrame(fitHeading);
-
-    if(firstScorePaint){
-      window.__wozzaPassportScoreAnimated=true;
-      const needleEl=card.querySelector('[data-score-needle]');
-      const numberEl=card.querySelector('[data-score-number]');
-      if(needleEl&&numberEl){
-        const target=Math.max(0,Math.min(100,Number(d.score)||0));
-        const targetAngle=-90+(target/100)*180;
-        if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-          numberEl.textContent=String(target);
-          needleEl.style.transform=`translateX(-50%) rotate(${targetAngle}deg)`;
-        }else{
-          const duration=1400,start=performance.now();
-          const frame=now=>{
-            const p=Math.min(1,(now-start)/duration);
-            const eased=1-Math.pow(1-p,3);
-            numberEl.textContent=String(Math.round(target*eased));
-            needleEl.style.transform=`translateX(-50%) rotate(${-90+(targetAngle+90)*eased}deg)`;
-            if(p<1)requestAnimationFrame(frame);
-            else{numberEl.textContent=String(target);needleEl.style.transform=`translateX(-50%) rotate(${targetAngle}deg)`}
-          };
-          requestAnimationFrame(frame);
-        }
-      }
-    }
+    card.innerHTML=`<div class="travel-health-kicker" data-score-fit>YOUR TRAVEL SCORE: ${d.band}</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" data-score-needle style="transform:translateX(-50%) rotate(${angle}deg)"></div><div class="travel-health-score"><strong data-score-number>${d.score}</strong><span>/ 100</span></div></div><div class="travel-score-guidance"><details class="travel-guidance-details"><summary>Strengths</summary><p>${d.strengthText}</p></details><details class="travel-guidance-details"><summary>Recommendations</summary><p>${d.recommendation}</p></details></div><details class="travel-score-details"><summary>How is my score calculated?</summary><div class="travel-score-breakdown">${Object.keys(FACTORS).map(k=>`<div class="travel-score-factor"><div><b>${FACTORS[k].label}</b></div><p>${d.evidence[k]} = ${Number.isInteger(d.awardedPoints[k])?d.awardedPoints[k]:d.awardedPoints[k].toFixed(1)} out of ${Math.round(FACTORS[k].weight*100)} points</p></div>`).join('')}</div></details>`;
   }
   const css=document.createElement('style');css.id='wozza-travel-score-v2-style';css.textContent=`
     .travel-health-card{margin:14px 0 22px;padding:18px 18px 16px;border-radius:22px;background:rgba(255,255,255,.92);box-shadow:0 10px 26px rgba(8,62,78,.13);text-align:center;color:#073f52;overflow:hidden;width:auto;max-width:none;}
     .travel-health-kicker{font-weight:900;letter-spacing:1.25px;font-size:clamp(9px,3.05vw,13px);margin-bottom:6px;white-space:nowrap;width:100%;overflow:visible}.travel-health-gauge{position:relative;width:min(280px,86vw);height:150px;margin:0 auto -2px;overflow:hidden}.travel-health-arc{position:absolute;left:50%;bottom:-122px;width:250px;height:250px;transform:translateX(-50%);border-radius:50%;background:conic-gradient(from 270deg,#d9534f 0deg,#e78a3c 48deg,#d9b43b 90deg,#72a85a 135deg,#08788b 180deg,transparent 180deg)}.travel-health-mask{position:absolute;left:50%;bottom:-94px;width:194px;height:194px;transform:translateX(-50%);border-radius:50%;background:#fff;clip-path:inset(0 0 28px 0)}.travel-health-needle{position:absolute;left:50%;bottom:19px;width:3px;height:91px;background:#073f52;border-radius:4px;transform-origin:50% 100%;transition:transform .65s ease}.travel-health-score{position:absolute;left:50%;bottom:27px;transform:translateX(-50%);display:flex;align-items:center;gap:3px;background:#fff;padding:1px 7px;border-radius:10px;}.travel-health-score strong{font-size:31px;line-height:1;font-weight:950}.travel-health-score span{font-size:11px;font-weight:800;opacity:.55}.travel-health-band{font-weight:950;font-size:18px;letter-spacing:.6px;margin-top:8px}.travel-score-guidance{text-align:left;font-size:12.5px;line-height:1.45;margin:9px auto 0;max-width:330px;color:#315d69}.travel-guidance-details,.travel-score-details{margin:0 auto;max-width:330px;text-align:left;border-top:1px solid rgba(7,63,82,.14);padding:0}.travel-guidance-details:first-child{border-top:0}.travel-guidance-details summary,.travel-score-details summary{cursor:pointer;list-style:none;position:relative;box-sizing:border-box;min-height:48px;margin:0;padding:12px 30px 12px 0;display:flex;align-items:center;font-size:12.5px;font-weight:900;color:#073f52}.travel-guidance-details summary::-webkit-details-marker,.travel-score-details summary::-webkit-details-marker{display:none}.travel-guidance-details summary:after,.travel-score-details summary:after{content:'+';position:absolute;right:2px;top:50%;transform:translateY(-50%);font-size:20px;line-height:1;font-weight:800}.travel-guidance-details[open] summary:after,.travel-score-details[open] summary:after{content:'−'}.travel-guidance-details p{margin:0;padding:0 0 12px;color:#315d69}.travel-score-breakdown{padding:1px 0 3px}.travel-score-factor{padding:8px 0;border-top:1px solid rgba(7,63,82,.09)}.travel-score-factor>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.travel-score-factor b{font-size:12px}.travel-score-factor span{font-size:10px;font-weight:900;opacity:.55}.travel-score-factor p,.travel-score-note{margin:3px 0 0;font-size:11px;line-height:1.35;color:#52727b}.travel-score-note{margin-top:8px;font-style:italic}
   `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
   const originalRender=window.render;if(typeof originalRender==='function'){window.render=function(){const r=originalRender.apply(this,arguments);requestAnimationFrame(ensureTravelScore);return r}}requestAnimationFrame(ensureTravelScore);
+})();
+
+
+/* Travel Score presentation v3 — visibility-triggered, isolated from swipe navigation */
+(()=>{
+  if(window.__wozzaScorePresentationV3)return;window.__wozzaScorePresentationV3=true;
+  let played=false,observer=null;
+
+  function fitHeading(card){
+    const el=card&&card.querySelector('[data-score-fit]');
+    if(!el)return;
+    el.style.whiteSpace='nowrap';
+    el.style.overflow='visible';
+    el.style.width='100%';
+    /* Measure the COMPLETE string at a known size, then scale proportionally. */
+    const testSize=20;
+    el.style.fontSize=testSize+'px';
+    const textWidth=el.scrollWidth;
+    const available=el.clientWidth;
+    if(!textWidth||!available)return;
+    const fitted=Math.max(9,Math.min(24,testSize*(available/textWidth)*0.985));
+    el.style.fontSize=fitted.toFixed(2)+'px';
+  }
+
+  function animate(card){
+    if(played||!card)return;
+    const needle=card.querySelector('[data-score-needle]');
+    const number=card.querySelector('[data-score-number]');
+    if(!needle||!number)return;
+    const target=Math.max(0,Math.min(100,parseInt(number.textContent,10)||0));
+    played=true;
+    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+
+    /* Force a real zero frame first. */
+    needle.style.transition='none';
+    needle.style.transform='translateX(-50%) rotate(-90deg)';
+    number.textContent='0';
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const duration=1450,start=performance.now(),targetAngle=-90+(target/100)*180;
+        const tick=now=>{
+          const p=Math.min(1,(now-start)/duration);
+          const eased=1-Math.pow(1-p,3);
+          number.textContent=String(Math.round(target*eased));
+          needle.style.transform=`translateX(-50%) rotate(${-90+(targetAngle+90)*eased}deg)`;
+          if(p<1)requestAnimationFrame(tick);
+          else{
+            number.textContent=String(target);
+            needle.style.transform=`translateX(-50%) rotate(${targetAngle}deg)`;
+          }
+        };
+        requestAnimationFrame(tick);
+      });
+    });
+  }
+
+  function inspect(){
+    const card=document.querySelector('.passport-insights .travel-health-card, .passport-insights-shell .travel-health-card');
+    if(!card)return false;
+    fitHeading(card);
+    if(!observer&&'IntersectionObserver' in window){
+      observer=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting&&entry.intersectionRatio>0.25){
+            fitHeading(card);animate(card);
+          }
+        });
+      },{threshold:[0.25]});
+      observer.observe(card);
+    }else if(!observer){
+      /* Fallback for browsers without IntersectionObserver. */
+      const r=card.getBoundingClientRect();
+      if(r.bottom>0&&r.top<window.innerHeight)animate(card);
+    }
+    return true;
+  }
+
+  const mo=new MutationObserver(()=>{if(inspect()&&played)mo.disconnect()});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+  requestAnimationFrame(inspect);
+  window.addEventListener('resize',()=> {
+    const card=document.querySelector('.passport-insights .travel-health-card, .passport-insights-shell .travel-health-card');
+    if(card)fitHeading(card);
+  },{passive:true});
 })();
 
 /* v0.19.0 — Passport Travel Insights: icon tabs + Home-style active sag */
