@@ -2080,7 +2080,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  s.textContent=`
    /* Needle: faster sweep, then a clearly visible mechanical settle. */
    .needle-v6.go-v6{
-     animation:wozzaNeedleLiveV12 1.80s linear both!important;
+     animation:wozzaNeedleLiveV12 1.62s linear both!important;
    }
    @keyframes wozzaNeedleLiveV12{
      0%{transform:rotate(-82deg)}
