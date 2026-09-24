@@ -1991,18 +1991,19 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    .passport-insights-tab[data-insights-tab="score"].is-active .meter-v6{transform:translateX(-50%) translateY(-2px);opacity:1}
    .meter-v6 img,.chart-v6 img{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;display:block!important;pointer-events:none!important}
    .needle-v6{transform:rotate(0deg);transform-origin:50% 68%!important;will-change:transform}
-   .needle-v6.go-v6{animation:meterSweepV6 2.25s linear both}
+   .needle-v6.go-v6{animation:meterSweepV6 2.05s linear both}
    /* Main sweep gets most of the duration; small flicks happen only near the end. */
    @keyframes meterSweepV6{
      0%{transform:rotate(-82deg)}
-     18%{transform:rotate(-67deg)}
-     36%{transform:rotate(-49deg)}
-     54%{transform:rotate(-30deg)}
-     70%{transform:rotate(-12deg)}
-     79%{transform:rotate(8deg)}
-     85%{transform:rotate(-5deg)}
-     90%{transform:rotate(3deg)}
-     95%{transform:rotate(-1.5deg)}
+     18%{transform:rotate(-64deg)}
+     36%{transform:rotate(-45deg)}
+     54%{transform:rotate(-27deg)}
+     69%{transform:rotate(-10deg)}
+     78%{transform:rotate(7deg)}
+     84%{transform:rotate(-5deg)}
+     89%{transform:rotate(3.5deg)}
+     94%{transform:rotate(-2deg)}
+     97%{transform:rotate(1deg)}
      100%{transform:rotate(0deg)}
    }
 
@@ -2012,10 +2013,11 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 
    /* Charts: one icon whose bars physically morph in height. */
    .passport-insights-tab[data-insights-tab="charts"]>.insights-brand-icon{display:none!important}
-   .chart-v6{display:block;width:46px;height:47px;position:absolute;bottom:17px;left:50%;transform:translateX(-50%);opacity:.82;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
+   .chart-v6{display:block!important;width:46px!important;height:47px!important;position:absolute!important;bottom:17px!important;left:50%!important;z-index:3!important;transform:translateX(-50%);opacity:.82;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
    .passport-insights-tab[data-insights-tab="charts"].is-active .chart-v6{transform:translateX(-50%) translateY(-2px);opacity:1}
-   .chart-v6 svg{display:block;width:100%;height:100%;overflow:visible}
-   .chart-v6 .bar-v6{transform-box:fill-box;transform-origin:center bottom;will-change:transform}
+   .chart-v6 svg{display:block!important;width:46px!important;height:47px!important;overflow:visible!important;opacity:1!important;visibility:visible!important}
+   .chart-v6 .axis-v6{fill:none!important;stroke:#174f5a!important;stroke-width:7!important;stroke-linecap:round!important;stroke-linejoin:round!important;opacity:1!important}
+   .chart-v6 .bar-v6{fill:#174f5a!important;opacity:1!important;visibility:visible!important;transform-box:fill-box;transform-origin:center bottom;will-change:transform}
    .chart-v6.active-v6 .bar-left-v6{animation:barLeftV6 1.28s cubic-bezier(.45,0,.25,1) both}
    .chart-v6.active-v6 .bar-mid-v6{animation:barMidV6 1.28s cubic-bezier(.45,0,.25,1) both}
    .chart-v6.active-v6 .bar-right-v6{animation:barRightV6 1.28s cubic-bezier(.45,0,.25,1) both}
@@ -2056,7 +2058,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    if(!charts.querySelector('.chart-v6')){
      const m=document.createElement('span');m.className='chart-v6';m.setAttribute('aria-hidden','true');
      m.innerHTML=`<svg viewBox="0 0 100 100" aria-hidden="true">
-       <path d="M15 12 V84 H91" fill="none" stroke="#174f5a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+       <path class="axis-v6" d="M15 12 V84 H91" fill="none" stroke="#174f5a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
        <rect class="bar-v6 bar-left-v6" x="27" y="54" width="13" height="25" rx="2" fill="#174f5a"/>
        <rect class="bar-v6 bar-mid-v6" x="48" y="30" width="13" height="49" rx="2" fill="#174f5a"/>
        <rect class="bar-v6 bar-right-v6" x="69" y="49" width="13" height="30" rx="2" fill="#174f5a"/>
