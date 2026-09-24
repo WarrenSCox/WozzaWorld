@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48">
+  <g id="clipboard" class="clipboard" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="14" y="10" width="36" height="32" rx="5"/>
+    <path d="M25 10V7h14v3M22 20l3 3 5-6M34 21h9M22 30l3 3 5-6M34 31h9"/>
+  </g>
+</svg>
