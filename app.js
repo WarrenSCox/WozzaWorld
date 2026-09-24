@@ -1721,7 +1721,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   function watchCharts(){
     const dots=document.getElementById('passportStatsDots'),track=document.getElementById('passportStatsTrack');if(!dots||!track)return;
     enforceChartOrder();rebuildChartButtons();
-    track.querySelectorAll('.stats-show-more').forEach(btn=>btn.remove());
+    /* Keep chart expand controls; sizing/spacing is handled by v0.19.4 polish. */
     track.querySelectorAll('.is-stat-hidden').forEach(row=>row.classList.remove('is-stat-hidden'));
     const carousel=track.closest('.passport-stats-carousel');
     if(carousel&&dots.parentElement!==carousel)carousel.appendChild(dots);
@@ -1789,4 +1789,74 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     @media(prefers-reduced-motion:reduce){.passport-insights-tab .insights-sag-path,.passport-insights-tab .insights-brand-icon,.passport-chart-dot-btn{transition:none!important}}
   `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
   let tries=0;const t=setInterval(()=>{if(apply()||++tries>40)clearInterval(t)},100);requestAnimationFrame(apply);
+})();
+
+/* v0.19.4 — Passport divider, backup/restore placeholder, chart expand spacing */
+(()=>{
+  if(window.__wozzaPassportFinalPolishV194)return;window.__wozzaPassportFinalPolishV194=true;
+
+  const css=document.createElement('style');
+  css.id='wozza-passport-final-polish-v194';
+  css.textContent=`
+    /* Home-list style divider beneath the Travel Insights icon row. */
+    .passport-insights-tabs{
+      border-bottom:1px solid rgba(23,33,61,.12)!important;
+      padding-bottom:10px!important;
+      margin-bottom:14px!important;
+    }
+
+    /* Charts: keep the control close to the data, 20% smaller, with breathing room for its shadow. */
+    .passport-insights-panel[data-insights-panel="charts"] .passport-stats-slide{
+      overflow:visible!important;
+      padding-bottom:10px!important;
+    }
+    .passport-insights-panel[data-insights-panel="charts"] .passport-stats-track,
+    .passport-insights-panel[data-insights-panel="charts"] .passport-stats-carousel{
+      overflow:visible!important;
+    }
+    .passport-insights-panel[data-insights-panel="charts"] .stats-show-more.list-add,
+    .passport-insights-panel[data-insights-panel="charts"] .companion-more.list-add{
+      display:grid!important;
+      width:32px!important;height:32px!important;
+      min-width:32px!important;min-height:32px!important;
+      margin:7px auto 13px!important;
+      font-size:22px!important;
+      overflow:visible!important;
+      box-shadow:0 5px 14px rgba(0,63,82,.14)!important;
+    }
+
+    /* Balance the future Backup & Restore control against Recycle Bin. */
+    .recycle-launch{width:100%!important;justify-content:space-between!important;position:relative!important}
+    .backup-restore-icon-btn{flex:0 0 42px}
+  `;
+  document.getElementById(css.id)?.remove();document.head.appendChild(css);
+
+  function installBackupButton(){
+    const launch=document.querySelector('.recycle-launch');
+    if(!launch||document.getElementById('openBackupRestore'))return;
+    const btn=document.createElement('button');
+    btn.type='button';btn.id='openBackupRestore';btn.className='recycle-icon-btn backup-restore-icon-btn';
+    btn.setAttribute('aria-label','Backup and restore');btn.title='Backup and restore';
+    btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="4.6" ry="2.1"/><path d="M7.4 6v4c0 1.2 2.1 2.2 4.6 2.2M16.6 6v2.5"/><path d="M7.4 10v3.5c0 1.2 2.1 2.2 4.6 2.2"/><path d="M16.7 12.2a5 5 0 0 1 .5 6.1M18.4 17.9l-1.3.5-.5-1.4"/><path d="M14.6 20.1a5 5 0 0 1-5.9-1.2M7.7 19.1l.1-1.4 1.4.1"/></svg>';
+    launch.insertBefore(btn,launch.firstChild);
+  }
+
+  function keepChartExpandButtons(){
+    const track=document.getElementById('passportStatsTrack');if(!track)return;
+    // The renderers already create the controls where >5 rows exist. This pass only
+    // prevents the chart-polish observer from stripping them back out afterwards.
+    const observer=new MutationObserver(()=>{
+      track.querySelectorAll('.stats-show-more.list-add,.companion-more.list-add').forEach(btn=>{
+        btn.style.removeProperty('display');
+      });
+    });
+    observer.observe(track,{childList:true,subtree:true});
+  }
+
+  let tries=0;const timer=setInterval(()=>{
+    installBackupButton();keepChartExpandButtons();
+    if(document.querySelector('.recycle-launch')&&document.getElementById('passportStatsTrack'))clearInterval(timer);
+    if(++tries>30)clearInterval(timer);
+  },100);
+  requestAnimationFrame(()=>{installBackupButton();keepChartExpandButtons()});
 })();
