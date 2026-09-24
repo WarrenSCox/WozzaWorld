@@ -2070,3 +2070,44 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
  install();
  new MutationObserver(()=>{if(root&&!document.documentElement.contains(root)){obs?.disconnect();obs=null;root=null;previous=null}install()}).observe(document.body,{childList:true,subtree:true});
 })();
+
+
+/* v12 LIVE Travel Insights timing/morph override.
+   Deliberately last in app.js so it wins over earlier animation declarations. */
+(()=>{
+ const old=document.getElementById('wozza-insights-live-v12'); if(old) old.remove();
+ const s=document.createElement('style'); s.id='wozza-insights-live-v12';
+ s.textContent=`
+   /* Needle: faster sweep, then a clearly visible mechanical settle. */
+   .needle-v6.go-v6{
+     animation:wozzaNeedleLiveV12 1.80s linear both!important;
+   }
+   @keyframes wozzaNeedleLiveV12{
+     0%{transform:rotate(-82deg)}
+     16%{transform:rotate(-62deg)}
+     32%{transform:rotate(-41deg)}
+     48%{transform:rotate(-23deg)}
+     62%{transform:rotate(-8deg)}
+     72%{transform:rotate(8deg)}
+     80%{transform:rotate(-6deg)}
+     86%{transform:rotate(4deg)}
+     91%{transform:rotate(-2.5deg)}
+     96%{transform:rotate(1.3deg)}
+     100%{transform:rotate(0deg)}
+   }
+
+   /* Chart bars transition from the REAL tab state itself.
+      This gives the same smooth motion entering AND leaving Charts. */
+   .chart-v6 .bar-v10{
+     animation:none!important;
+     transition:height 1.28s cubic-bezier(.45,0,.25,1)!important;
+   }
+   .chart-v6 .bar-left-v10{height:25%!important}
+   .chart-v6 .bar-mid-v10{height:49%!important}
+   .chart-v6 .bar-right-v10{height:30%!important}
+   .passport-insights-tab[data-insights-tab="charts"].is-active .chart-v6 .bar-left-v10{height:39%!important}
+   .passport-insights-tab[data-insights-tab="charts"].is-active .chart-v6 .bar-mid-v10{height:35%!important}
+   .passport-insights-tab[data-insights-tab="charts"].is-active .chart-v6 .bar-right-v10{height:44%!important}
+ `;
+ document.head.appendChild(s);
+})();
