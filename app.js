@@ -1837,7 +1837,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     const btn=document.createElement('button');
     btn.type='button';btn.id='openBackupRestore';btn.className='recycle-icon-btn backup-restore-icon-btn';
     btn.setAttribute('aria-label','Backup and restore');btn.title='Backup and restore';
-    btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="4.6" ry="2.1"/><path d="M7.4 6v4c0 1.2 2.1 2.2 4.6 2.2M16.6 6v2.5"/><path d="M7.4 10v3.5c0 1.2 2.1 2.2 4.6 2.2"/><path d="M16.7 12.2a5 5 0 0 1 .5 6.1M18.4 17.9l-1.3.5-.5-1.4"/><path d="M14.6 20.1a5 5 0 0 1-5.9-1.2M7.7 19.1l.1-1.4 1.4.1"/></svg>';
+    btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 8.7A8 8 0 0 1 18 5.3L20.7 8"/><path d="M20.7 4.5V8H17.2"/><path d="M19.4 15.3A8 8 0 0 1 6 18.7L3.3 16"/><path d="M3.3 19.5V16h3.5"/><path d="M8 9.2h8v6.1H8z"/><path d="M10.1 9.2V7.5h3.8v1.7M10.3 12.2h3.4"/></svg>';
     launch.insertBefore(btn,launch.firstChild);
   }
 
