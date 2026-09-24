@@ -2113,75 +2113,79 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 })();
 
 
-/* v0.19.5 — Backup download prototype + small Travel Score needle speed polish */
+/* Backup download prototype v2 — deliberately dormant until the user clicks Download Backup File.
+   No backup collection, JSON serialization, Blob creation or download work occurs during startup. */
 (()=>{
-  if(window.__wozzaBackupDownloadPrototypeV195)return;window.__wozzaBackupDownloadPrototypeV195=true;
+  if(window.__wozzaBackupDownloadPrototypeV2)return;
+  window.__wozzaBackupDownloadPrototypeV2=true;
 
-  const BACKUP_FORMAT='WozzaWorld Backup';
-  const BACKUP_VERSION=1;
+  const backupKeys=[
+    'wozzaworld-state',
+    'wozzaworld-first-name',
+    'wozzaAddStopStyle',
+    'myworld-state'
+  ];
 
-  function backupDateStamp(d=new Date()){
-    const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
-    return `${y}-${m}-${day}`;
+  function ordinal(n){
+    const m=n%100;
+    if(m>=11&&m<=13)return n+'th';
+    return n+({1:'st',2:'nd',3:'rd'}[n%10]||'th');
   }
-
-  function collectWozzaStorage(){
-    const local={};
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i);
-      if(key && (key.startsWith('wozza') || key==='myworld-state')) local[key]=localStorage.getItem(key);
+  function displayDate(d){
+    return `${ordinal(d.getDate())} of ${d.toLocaleString('en-GB',{month:'long'})} ${d.getFullYear()}`;
+  }
+  function fileDate(d){
+    const pad=n=>String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function makeBackup(){
+    const now=new Date();
+    const storage={};
+    for(const key of backupKeys){
+      const value=localStorage.getItem(key);
+      if(value!==null)storage[key]=value;
     }
-    const session={};
-    for(let i=0;i<sessionStorage.length;i++){
-      const key=sessionStorage.key(i);
-      if(key && key.startsWith('wozza')) session[key]=sessionStorage.getItem(key);
-    }
-    return {localStorage:local,sessionStorage:session};
+    const payload={
+      format:'WozzaWorld Backup',
+      backupVersion:1,
+      createdAt:now.toISOString(),
+      storage
+    };
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`WozzaWorld-Backup-${fileDate(now)}.json`;
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+    localStorage.setItem('wozzaworld-last-backup',now.toISOString());
+    const label=document.querySelector('#backupRestoreDialog .backup-last-date');
+    if(label)label.textContent=`You last made a backup on the ${displayDate(now)}.`;
   }
 
-  function downloadBackup(){
-    const btn=document.querySelector('#backupRestoreDialog .backup-restore-actions button:first-child');
-    if(btn?.dataset.backupBusy==='1')return;
-    if(btn)btn.dataset.backupBusy='1';
-    try{
-      const now=new Date();
-      const backup={
-        format:BACKUP_FORMAT,
-        backupVersion:BACKUP_VERSION,
-        createdAt:now.toISOString(),
-        app:'WozzaWorld',
-        storage:collectWozzaStorage()
-      };
-      const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
-      const url=URL.createObjectURL(blob),a=document.createElement('a');
-      a.href=url;a.download=`WozzaWorld-Backup-${backupDateStamp(now)}.json`;
-      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-      localStorage.setItem('wozzaLastBackupAt',now.toISOString());
-      updateLastBackupCopy();
-      if(typeof toast==='function')toast('Backup downloaded ✓');
-    }catch(err){
-      console.error('WozzaWorld backup failed',err);
-      alert('WozzaWorld could not create the backup file. Please try again.');
-    }finally{
-      if(btn)setTimeout(()=>delete btn.dataset.backupBusy,500);
+  document.addEventListener('click',e=>{
+    const opener=e.target.closest?.('#openBackupRestore');
+    if(opener){
+      const raw=localStorage.getItem('wozzaworld-last-backup');
+      if(raw){
+        const d=new Date(raw);
+        if(!Number.isNaN(d.getTime())){
+          const label=document.querySelector('#backupRestoreDialog .backup-last-date');
+          if(label)label.textContent=`You last made a backup on the ${displayDate(d)}.`;
+        }
+      }
+      return;
     }
-  }
-
-  function updateLastBackupCopy(){
-    const copy=document.querySelector('#backupRestoreDialog .backup-last-date');if(!copy)return;
-    const raw=localStorage.getItem('wozzaLastBackupAt');
-    if(!raw){copy.textContent='No backup has been made on this device yet.';return;}
-    const d=new Date(raw);if(Number.isNaN(d.getTime()))return;
-    copy.textContent=`You last made a backup on ${d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}.`;
-  }
-
-  function install(){
-    const btn=document.querySelector('#backupRestoreDialog .backup-restore-actions button:first-child');
-    if(btn && btn.dataset.backupDownloadInstalled!=='1'){
-      btn.dataset.backupDownloadInstalled='1';btn.addEventListener('click',downloadBackup);
+    const button=e.target.closest?.('#backupRestoreDialog .backup-restore-actions button');
+    if(!button)return;
+    const buttons=[...document.querySelectorAll('#backupRestoreDialog .backup-restore-actions button')];
+    if(button===buttons[0]){
+      e.preventDefault();
+      makeBackup();
     }
-    updateLastBackupCopy();
-  }
-  install();
-  new MutationObserver(install).observe(document.body,{childList:true,subtree:true});
+  },false);
 })();
