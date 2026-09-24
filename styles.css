@@ -4706,3 +4706,10 @@ body.map-view .home-world-overview-title{display:none!important}
 
 /* Main-page pull navigation v4: stop browser pull-to-refresh without taking over normal scrolling. */
 html,body{overscroll-behavior-y:none;}
+
+/* Dialog consistency polish */
+.trip-unsaved-card{position:relative!important;}
+.trip-unsaved-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.trip-unsaved-card .trip-unsaved-head h3{font-size:19px!important;line-height:1.2!important;margin:3px 0 0!important;min-width:0;}
+.trip-unsaved-close{position:static!important;flex:0 0 42px;width:42px!important;height:42px!important;min-width:42px!important;padding:0!important;color:#68767b!important;background:#fff!important;}
+.trip-unsaved-card>.trip-unsaved-head+p{margin-top:0!important;}
