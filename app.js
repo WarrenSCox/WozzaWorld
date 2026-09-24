@@ -1580,7 +1580,48 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     let card=$('#travelHealthCard');
     if(!card){card=document.createElement('section');card.id='travelHealthCard';card.className='travel-health-card';const anchor=name.closest('.passport-name-card,.passport-name,.name-card,.passport-profile-name')||name.parentElement;anchor?.insertAdjacentElement('afterend',card)}
     const d=travelScoreData(),angle=-90+(d.score/100)*180;
-    card.innerHTML=`<div class="travel-health-kicker" data-score-heading>YOUR TRAVEL SCORE: ${d.band}</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" data-score-needle style="transform:translateX(-50%) rotate(${angle}deg)"></div><div class="travel-health-score"><strong data-score-number>${d.score}</strong><span>/ 100</span></div></div><div class="travel-score-guidance"><details class="travel-guidance-details"><summary>Strengths</summary><p>${d.strengthText}</p></details><details class="travel-guidance-details"><summary>Recommendations</summary><p>${d.recommendation}</p></details></div><details class="travel-score-details"><summary>How is my score calculated?</summary><div class="travel-score-breakdown">${Object.keys(FACTORS).map(k=>`<div class="travel-score-factor"><div><b>${FACTORS[k].label}</b></div><p>${d.evidence[k]} = ${Number.isInteger(d.awardedPoints[k])?d.awardedPoints[k]:d.awardedPoints[k].toFixed(1)} out of ${Math.round(FACTORS[k].weight*100)} points</p></div>`).join('')}</div></details>`;
+    const firstScorePaint=!window.__wozzaPassportScoreAnimated;
+    card.innerHTML=`<div class="travel-health-kicker" data-score-fit>YOUR TRAVEL SCORE: ${d.band}</div><div class="travel-health-gauge"><div class="travel-health-arc"></div><div class="travel-health-mask"></div><div class="travel-health-needle" data-score-needle style="transform:translateX(-50%) rotate(${firstScorePaint?-90:angle}deg)"></div><div class="travel-health-score"><strong data-score-number>${firstScorePaint?0:d.score}</strong><span>/ 100</span></div></div><div class="travel-score-guidance"><details class="travel-guidance-details"><summary>Strengths</summary><p>${d.strengthText}</p></details><details class="travel-guidance-details"><summary>Recommendations</summary><p>${d.recommendation}</p></details></div><details class="travel-score-details"><summary>How is my score calculated?</summary><div class="travel-score-breakdown">${Object.keys(FACTORS).map(k=>`<div class="travel-score-factor"><div><b>${FACTORS[k].label}</b></div><p>${d.evidence[k]} = ${Number.isInteger(d.awardedPoints[k])?d.awardedPoints[k]:d.awardedPoints[k].toFixed(1)} out of ${Math.round(FACTORS[k].weight*100)} points</p></div>`).join('')}</div></details>`;
+
+    const heading=card.querySelector('[data-score-fit]');
+    const fitHeading=()=>{
+      if(!heading)return;
+      heading.style.fontSize='28px';
+      const available=heading.clientWidth;
+      if(!available)return;
+      let lo=8,hi=28,best=8;
+      for(let i=0;i<14;i++){
+        const mid=(lo+hi)/2; heading.style.fontSize=mid+'px';
+        if(heading.scrollWidth<=available){best=mid;lo=mid}else hi=mid;
+      }
+      heading.style.fontSize=best.toFixed(2)+'px';
+    };
+    fitHeading(); requestAnimationFrame(fitHeading);
+
+    if(firstScorePaint){
+      window.__wozzaPassportScoreAnimated=true;
+      const needleEl=card.querySelector('[data-score-needle]');
+      const numberEl=card.querySelector('[data-score-number]');
+      if(needleEl&&numberEl){
+        const target=Math.max(0,Math.min(100,Number(d.score)||0));
+        const targetAngle=-90+(target/100)*180;
+        if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          numberEl.textContent=String(target);
+          needleEl.style.transform=`translateX(-50%) rotate(${targetAngle}deg)`;
+        }else{
+          const duration=1400,start=performance.now();
+          const frame=now=>{
+            const p=Math.min(1,(now-start)/duration);
+            const eased=1-Math.pow(1-p,3);
+            numberEl.textContent=String(Math.round(target*eased));
+            needleEl.style.transform=`translateX(-50%) rotate(${-90+(targetAngle+90)*eased}deg)`;
+            if(p<1)requestAnimationFrame(frame);
+            else{numberEl.textContent=String(target);needleEl.style.transform=`translateX(-50%) rotate(${targetAngle}deg)`}
+          };
+          requestAnimationFrame(frame);
+        }
+      }
+    }
   }
   const css=document.createElement('style');css.id='wozza-travel-score-v2-style';css.textContent=`
     .travel-health-card{margin:14px 0 22px;padding:18px 18px 16px;border-radius:22px;background:rgba(255,255,255,.92);box-shadow:0 10px 26px rgba(8,62,78,.13);text-align:center;color:#073f52;overflow:hidden;width:auto;max-width:none;}
@@ -1683,66 +1724,6 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
     });
     setSag(shell,activeKey(shell),false);
   }
-  
-  /* Travel Score entrance: visual only. It deliberately does not participate in
-     Insights swipe state, so the proven swipe behaviour remains untouched. */
-  let passportScoreEntrancePlayed=false;
-  function fitTravelScoreHeading(root){
-    const el=(root||document).querySelector('[data-score-heading]');
-    if(!el)return;
-    const parent=el.parentElement;
-    if(!parent)return;
-    el.style.fontSize='';
-    const available=Math.max(0,parent.clientWidth);
-    if(!available)return;
-    let lo=9,hi=28,best=9;
-    for(let i=0;i<12;i++){
-      const mid=(lo+hi)/2;
-      el.style.fontSize=mid+'px';
-      if(el.scrollWidth<=available){best=mid;lo=mid}else hi=mid;
-    }
-    el.style.fontSize=best.toFixed(2)+'px';
-  }
-  function playPassportScoreEntrance(root){
-    if(passportScoreEntrancePlayed)return;
-    const scope=root||document;
-    const needle=scope.querySelector('[data-score-needle]');
-    const number=scope.querySelector('[data-score-number]');
-    if(!needle||!number)return;
-    const target=Math.max(0,Math.min(100,parseInt(number.textContent,10)||0));
-    passportScoreEntrancePlayed=true;
-    fitTravelScoreHeading(scope);
-    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-    const duration=1350,startAngle=-90,endAngle=-90+(target/100)*180;
-    number.textContent='0';
-    needle.style.transition='none';
-    needle.style.transform='translateX(-50%) rotate(-90deg)';
-    needle.getBoundingClientRect();
-    const start=performance.now();
-    function frame(now){
-      const p=Math.min(1,(now-start)/duration);
-      const eased=1-Math.pow(1-p,3);
-      const value=Math.round(target*eased);
-      const angle=startAngle+(endAngle-startAngle)*eased;
-      number.textContent=String(value);
-      needle.style.transform=`translateX(-50%) rotate(${angle}deg)`;
-      if(p<1)requestAnimationFrame(frame);
-      else{
-        number.textContent=String(target);
-        needle.style.transform=`translateX(-50%) rotate(${endAngle}deg)`;
-      }
-    }
-    requestAnimationFrame(frame);
-  }
-  function initPassportScorePresentation(){
-    const shell=document.querySelector('.passport-insights-shell');
-    if(!shell)return;
-    fitTravelScoreHeading(shell);
-    playPassportScoreEntrance(shell);
-  }
-  requestAnimationFrame(initPassportScorePresentation);
-  window.addEventListener('resize',()=>fitTravelScoreHeading(document.querySelector('.passport-insights-shell')),{passive:true});
-
   function installInsightSwipe(shell){
     if(shell.dataset.swipeV2)return;shell.dataset.swipeV2='1';
     const body=shell.querySelector('.passport-insights-body');if(!body)return;
