@@ -2011,19 +2011,21 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    .passport-insights-tab[data-insights-tab="stats"]>.insights-brand-icon.clip-v6{animation:clipV6 .72s ease-in-out;transform-origin:50% 58%}
    @keyframes clipV6{0%{transform:translateX(-50%) translateY(-2px) rotate(0)}18%{transform:translateX(-50%) translateY(-2px) rotate(-7deg)}36%{transform:translateX(-50%) translateY(-2px) rotate(6deg)}54%{transform:translateX(-50%) translateY(-2px) rotate(-4deg)}72%{transform:translateX(-50%) translateY(-2px) rotate(2deg)}100%{transform:translateX(-50%) translateY(-2px) rotate(0)}}
 
-   /* Charts: one icon whose bars physically morph in height. */
+   /* Charts: transparent frame asset + three real bars that morph in height. */
    .passport-insights-tab[data-insights-tab="charts"]>.insights-brand-icon{display:none!important}
    .chart-v6{display:block!important;width:46px!important;height:47px!important;position:absolute!important;bottom:17px!important;left:50%!important;z-index:3!important;transform:translateX(-50%);opacity:.82;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
    .passport-insights-tab[data-insights-tab="charts"].is-active .chart-v6{transform:translateX(-50%) translateY(-2px);opacity:1}
-   .chart-v6 svg{display:block!important;width:46px!important;height:47px!important;overflow:visible!important;opacity:1!important;visibility:visible!important}
-   .chart-v6 .axis-v6{fill:none!important;stroke:#174f5a!important;stroke-width:7!important;stroke-linecap:round!important;stroke-linejoin:round!important;opacity:1!important}
-   .chart-v6 .bar-v6{fill:#174f5a!important;opacity:1!important;visibility:visible!important;transform-box:fill-box;transform-origin:center bottom;will-change:transform}
-   .chart-v6.active-v6 .bar-left-v6{animation:barLeftV6 1.28s cubic-bezier(.45,0,.25,1) both}
-   .chart-v6.active-v6 .bar-mid-v6{animation:barMidV6 1.28s cubic-bezier(.45,0,.25,1) both}
-   .chart-v6.active-v6 .bar-right-v6{animation:barRightV6 1.28s cubic-bezier(.45,0,.25,1) both}
-   @keyframes barLeftV6{from{transform:scaleY(1)}to{transform:scaleY(1.55)}}
-   @keyframes barMidV6{from{transform:scaleY(1)}to{transform:scaleY(.72)}}
-   @keyframes barRightV6{from{transform:scaleY(1)}to{transform:scaleY(1.45)}}
+   .chart-v6 .chart-frame-v10{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;display:block!important;opacity:1!important}
+   .chart-v6 .bar-v10{position:absolute!important;bottom:16.25%!important;background:#174f5a!important;border-radius:1px 1px 0 0!important;transform-origin:center bottom!important;will-change:height}
+   .chart-v6 .bar-left-v10{left:27%;width:13%;height:25%}
+   .chart-v6 .bar-mid-v10{left:48%;width:13%;height:49%}
+   .chart-v6 .bar-right-v10{left:69%;width:13%;height:30%}
+   .chart-v6.active-v6 .bar-left-v10{animation:barLeftV10 1.28s cubic-bezier(.45,0,.25,1) both}
+   .chart-v6.active-v6 .bar-mid-v10{animation:barMidV10 1.28s cubic-bezier(.45,0,.25,1) both}
+   .chart-v6.active-v6 .bar-right-v10{animation:barRightV10 1.28s cubic-bezier(.45,0,.25,1) both}
+   @keyframes barLeftV10{from{height:25%}to{height:39%}}
+   @keyframes barMidV10{from{height:49%}to{height:35%}}
+   @keyframes barRightV10{from{height:30%}to{height:44%}}
 
    @media(max-width:380px){.meter-v6{width:52px;height:45px}.chart-v6{width:41px;height:42px}}
    @media(prefers-reduced-motion:reduce){.needle-v6.go-v6,.clip-v6,.chart-v6.active-v6 img{animation:none!important}}
@@ -2057,12 +2059,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
    }
    if(!charts.querySelector('.chart-v6')){
      const m=document.createElement('span');m.className='chart-v6';m.setAttribute('aria-hidden','true');
-     m.innerHTML=`<svg viewBox="0 0 100 100" aria-hidden="true">
-       <path class="axis-v6" d="M15 12 V84 H91" fill="none" stroke="#174f5a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-       <rect class="bar-v6 bar-left-v6" x="27" y="54" width="13" height="25" rx="2" fill="#174f5a"/>
-       <rect class="bar-v6 bar-mid-v6" x="48" y="30" width="13" height="49" rx="2" fill="#174f5a"/>
-       <rect class="bar-v6 bar-right-v6" x="69" y="49" width="13" height="30" rx="2" fill="#174f5a"/>
-     </svg>`;charts.prepend(m);
+     m.innerHTML=`<img class="chart-frame-v10" src="charts-frame.png" alt=""><i class="bar-v10 bar-left-v10"></i><i class="bar-v10 bar-mid-v10"></i><i class="bar-v10 bar-right-v10"></i>`;charts.prepend(m);
    }
    if(root!==r){
      obs?.disconnect();root=r;previous=null;
