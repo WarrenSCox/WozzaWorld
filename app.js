@@ -1972,101 +1972,121 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 })();
 
 
-/* Surgical Travel Score icon animation.
-   Deliberately isolated: does not modify Insights swipe, touch, choose(), setSag(),
-   sag morph, chart carousel, or existing Insights observers. */
+/* Surgical Travel Score meter v2:
+   visual replacement + one-time-on-first-focus needle animation only.
+   No swipe/touch/navigation/sag functions are modified. */
 (()=>{
-  if(window.__wozzaSurgicalScoreMeter)return;
-  window.__wozzaSurgicalScoreMeter=true;
+  if(window.__wozzaScoreMeterFocusOnceV2)return;
+  window.__wozzaScoreMeterFocusOnceV2=true;
 
-  const style=document.createElement('style');
-  style.id='wozza-surgical-score-meter-style';
-  style.textContent=`
-    .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter{
+  const css=document.createElement('style');
+  css.id='wozza-score-meter-focus-once-v2-style';
+  css.textContent=`
+    .passport-insights-tab[data-insights-tab="score"] > .insights-brand-icon{
+      display:none!important;
+    }
+    .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v2{
       display:block;width:58px;height:50px;position:absolute;bottom:16px;left:50%;
       transform:translateX(-50%);opacity:.82;pointer-events:none;
       transition:transform .22s ease,opacity .22s ease;
     }
-    .passport-insights-tab[data-insights-tab="score"].is-active .wozza-score-meter{
+    .passport-insights-tab[data-insights-tab="score"].is-active .wozza-score-meter-v2{
       transform:translateX(-50%) translateY(-2px);opacity:1;
     }
-    .wozza-score-meter>img{
+    .wozza-score-meter-v2 img{
       display:block!important;position:absolute!important;inset:0!important;
       width:100%!important;height:100%!important;object-fit:contain!important;
-      pointer-events:none!important;transform:none;
+      pointer-events:none!important;
     }
-    .wozza-score-meter .wozza-score-needle{
+    .wozza-score-meter-v2 .wozza-score-meter-body-v2{transform:none!important}
+    .wozza-score-meter-v2 .wozza-score-meter-needle-v2{
+      transform:rotate(0deg);
       transform-origin:50% 68%!important;
+      will-change:transform;
     }
-    .wozza-score-meter .wozza-score-needle.wozza-sweep{
-      animation:wozzaScoreNeedleOnly .62s cubic-bezier(.22,.78,.24,1);
+    .wozza-score-meter-v2 .wozza-score-meter-needle-v2.wozza-first-focus-sweep{
+      animation:wozzaFirstFocusNeedleSweep .72s cubic-bezier(.22,.78,.24,1) both;
     }
-    @keyframes wozzaScoreNeedleOnly{
+    @keyframes wozzaFirstFocusNeedleSweep{
       0%{transform:rotate(-48deg)}
-      58%{transform:rotate(10deg)}
-      80%{transform:rotate(-4deg)}
+      55%{transform:rotate(9deg)}
+      78%{transform:rotate(-3deg)}
       100%{transform:rotate(0deg)}
     }
     @media(max-width:380px){
-      .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter{width:52px;height:45px}
+      .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter-v2{width:52px;height:45px}
     }
     @media(prefers-reduced-motion:reduce){
-      .wozza-score-meter .wozza-score-needle.wozza-sweep{animation:none!important}
+      .wozza-score-meter-v2 .wozza-score-meter-needle-v2.wozza-first-focus-sweep{animation:none!important}
     }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(css);
 
-  let wiredButton=null, observer=null, lastActive=false;
+  let currentBtn=null;
+  let classObserver=null;
+  let playedForCurrentView=false;
 
-  function sweep(btn){
-    const needle=btn?.querySelector('.wozza-score-needle');
+  function animateOnceIfFocused(btn){
+    if(!btn || playedForCurrentView || !btn.classList.contains('is-active'))return;
+    const needle=btn.querySelector('.wozza-score-meter-needle-v2');
     if(!needle)return;
-    needle.classList.remove('wozza-sweep');
-    void needle.offsetWidth;
-    needle.classList.add('wozza-sweep');
+    playedForCurrentView=true;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      needle.classList.add('wozza-first-focus-sweep');
+    }));
   }
 
   function install(){
     const btn=document.querySelector('.passport-insights-tab[data-insights-tab="score"]');
     if(!btn)return;
 
-    if(!btn.querySelector('.wozza-score-meter')){
-      const original=btn.querySelector('.insights-brand-icon');
-      if(!original)return;
+    // Remove any previously appended experimental meter if a browser cache retained it.
+    btn.querySelector('.wozza-score-meter')?.remove();
 
-      const meter=document.createElement('span');
-      meter.className='wozza-score-meter';
+    let meter=btn.querySelector('.wozza-score-meter-v2');
+    if(!meter){
+      meter=document.createElement('span');
+      meter.className='wozza-score-meter-v2';
       meter.setAttribute('aria-hidden','true');
 
       const body=document.createElement('img');
       body.src='meter-body-no-needle.png';
       body.alt='';
-      body.className='wozza-score-body';
+      body.className='wozza-score-meter-body-v2';
 
       const needle=document.createElement('img');
       needle.src='meter-needle.png';
       needle.alt='';
-      needle.className='wozza-score-needle';
+      needle.className='wozza-score-meter-needle-v2';
 
       meter.append(body,needle);
-      original.replaceWith(meter);
+      btn.prepend(meter);
     }
 
-    if(wiredButton===btn)return;
-    if(observer)observer.disconnect();
+    if(currentBtn!==btn){
+      if(classObserver)classObserver.disconnect();
+      currentBtn=btn;
+      playedForCurrentView=false;
 
-    wiredButton=btn;
-    lastActive=btn.classList.contains('is-active');
+      classObserver=new MutationObserver(()=>{
+        // Observe only the already-existing visual active state.
+        // Never clicks, chooses, swipes or changes any navigation state.
+        animateOnceIfFocused(btn);
+      });
+      classObserver.observe(btn,{attributes:true,attributeFilter:['class']});
+    }
 
-    observer=new MutationObserver(()=>{
-      const active=btn.classList.contains('is-active');
-      if(active&&!lastActive)sweep(btn);
-      lastActive=active;
-    });
-    observer.observe(btn,{attributes:true,attributeFilter:['class']});
+    // Critical: also trigger when Score is ALREADY focused on initial render.
+    animateOnceIfFocused(btn);
   }
 
   install();
-  const domObserver=new MutationObserver(install);
-  domObserver.observe(document.body,{childList:true,subtree:true});
+
+  // DOM presence watcher only, for screens that are rendered/re-rendered later.
+  // It never watches or changes navigation state.
+  const presenceObserver=new MutationObserver(()=>{
+    if(!document.documentElement.contains(currentBtn))currentBtn=null;
+    install();
+  });
+  presenceObserver.observe(document.body,{childList:true,subtree:true});
 })();
