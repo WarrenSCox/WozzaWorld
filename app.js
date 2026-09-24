@@ -721,19 +721,11 @@ function bindTripTodoRow(row){const input=row.querySelector('.trip-todo-input'),
 function attachTripTodoReorder(){
  const list=$('#tripTodoList');if(!list)return;
  if(!document.getElementById('trip-todo-reorder-style')){
-  const style=document.createElement('style');style.id='trip-todo-reorder-style';style.textContent=`
+  const st=document.createElement('style');st.id='trip-todo-reorder-style';st.textContent=`
    #tripTodoList .trip-todo-row{cursor:grab;-webkit-touch-callout:none}
    #tripTodoList>.trip-todo-drag-marker{display:block!important;box-sizing:border-box!important;border:0!important;background:transparent!important;padding:0!important;visibility:hidden!important}
-   .trip-todo-drag-live{display:grid!important;grid-template-columns:minmax(0,1fr) 34px 38px!important;gap:8px!important;align-items:center!important;position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important}
-   .trip-todo-drag-live .trip-todo-input{box-sizing:border-box!important;resize:none!important;min-height:44px!important;line-height:22px!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;margin:0!important;width:100%!important;background:#fff!important;color:#172f3a!important;border-color:rgba(7,94,120,.10)!important;font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;font-weight:500!important;text-transform:none!important;padding:12px 14px 10px!important;grid-column:1!important}
-   .trip-todo-drag-live .trip-todo-check{grid-column:2!important;position:relative;width:34px!important;height:34px!important;border:0!important;background:transparent!important;display:grid!important;place-items:center!important;padding:0!important}
-   .trip-todo-drag-live .trip-todo-check::before{content:"";width:27px;height:27px;border:2.6px solid #687781;border-radius:50%;box-sizing:border-box;background:transparent}
-   .trip-todo-drag-live .trip-todo-check.selected::before{background:#159b70;border-color:rgba(104,119,129,.58)}
-   .trip-todo-drag-live .trip-todo-check.selected::after{content:"✓";position:absolute;color:#fff;font-size:19px;font-weight:900;line-height:1}
-   .trip-todo-drag-live .trip-todo-remove{grid-column:3!important;width:38px!important;height:38px!important;border:0!important;border-radius:50%!important;background:#fff2ef!important;color:#b43831!important;font-size:23px!important;font-weight:800!important;display:grid!important;place-items:center!important;box-shadow:0 2px 7px rgba(9,38,47,.06)!important}
-   .trip-todo-drag-live:not(.has-text) .trip-todo-input{background:#e9bf2e!important;color:#172f3a!important;font-family:"Archivo Black",Impact,sans-serif!important;font-weight:900!important;text-transform:uppercase!important}
-   .trip-todo-drag-live:not(.has-text) .trip-todo-check{visibility:hidden!important}
-  `;document.head.appendChild(style)
+   .trip-todo-drag-live{position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important}
+  `;document.head.appendChild(st)
  }
  const rows=()=>[...list.querySelectorAll('.trip-todo-row')];
  rows().forEach(row=>{
@@ -741,52 +733,25 @@ function attachTripTodoReorder(){
   let holdTimer=null,startX=0,startY=0,dragging=false,marker=null,grabY=0,activeTouchId=null,suppressClick=false;
   const clearHold=()=>{clearTimeout(holdTimer);holdTimer=null};
   const pointFromTouch=e=>{const a=[...(e.touches||[]),...(e.changedTouches||[])];return a.find(t=>activeTouchId==null||t.identifier===activeTouchId)||a[0]||null};
-  const placeMarker=y=>{
-   const cards=rows().filter(el=>el!==row);let before=null;
-   for(const card of cards){const r=card.getBoundingClientRect();if(y<r.top+r.height/2){before=card;break}}
-   if(before)list.insertBefore(marker,before);else list.appendChild(marker)
-  };
+  const placeMarker=y=>{const cards=rows().filter(el=>el!==row);let before=null;for(const card of cards){const r=card.getBoundingClientRect();if(y<r.top+r.height/2){before=card;break}}if(before)list.insertBefore(marker,before);else list.appendChild(marker)};
   const startDrag=(x,y)=>{
    dragging=true;window.__wozzaTodoReorderActive=true;
-   const r=row.getBoundingClientRect(),cs=getComputedStyle(row);
-   grabY=Math.max(10,Math.min(r.height-10,y-r.top));
-   marker=document.createElement('div');marker.className='trip-todo-drag-marker';
-   marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;flex:0 0 ${r.height}px;width:100%;box-sizing:border-box;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;
-   list.insertBefore(marker,row);
-   row.dataset.todoDragStyle=row.getAttribute('style')||'';row.classList.add('trip-todo-drag-live');
+   const r=row.getBoundingClientRect(),cs=getComputedStyle(row);grabY=Math.max(10,Math.min(r.height-10,y-r.top));
+   marker=document.createElement('div');marker.className='trip-todo-drag-marker';marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;max-height:${r.height}px;flex:0 0 ${r.height}px;width:100%;box-sizing:border-box;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;
+   list.insertBefore(marker,row);row.dataset.todoDragStyle=row.getAttribute('style')||'';row.classList.add('trip-todo-drag-live');
    Object.assign(row.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647',pointerEvents:'none',opacity:'.94',boxShadow:'0 10px 24px rgba(0,35,55,.22)'});
-   document.body.appendChild(row);navigator.vibrate?.(20)
+   /* Proven stop-reorder fix: keep the live dragged node inside the open trip dialog.
+      This preserves the #tripDialog descendant styling instead of moving it to body. */
+   const dragLayer=$('#tripDialog[open]')||row.closest('dialog[open]')||document.body;
+   dragLayer.appendChild(row);navigator.vibrate?.(20)
   };
   const moveDrag=(x,y)=>{if(!dragging)return;row.style.top=`${y-grabY}px`;placeMarker(y)};
-  const finishDrag=()=>{
-   clearHold();if(!dragging){activeTouchId=null;return}
-   dragging=false;
-   if(marker?.parentNode)marker.parentNode.insertBefore(row,marker);
-   marker?.remove();marker=null;
-   const prior=row.dataset.todoDragStyle||'';row.classList.remove('trip-todo-drag-live');
-   if(prior)row.setAttribute('style',prior);else row.removeAttribute('style');delete row.dataset.todoDragStyle;
-   window.__wozzaTodoReorderActive=false;activeTouchId=null;suppressClick=true;
-   updateTripTodoSummary();setTimeout(()=>{suppressClick=false},120)
-  };
-  row.addEventListener('touchstart',e=>{
-   if(e.target.closest('button')||e.touches.length!==1)return;
-   const t=e.touches[0];activeTouchId=t.identifier;startX=t.clientX;startY=t.clientY;clearHold();
-   holdTimer=setTimeout(()=>{e.target.blur?.();startDrag(startX,startY)},420)
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-   if(activeTouchId==null)return;const t=pointFromTouch(e);if(!t)return;
-   if(dragging){e.preventDefault();e.stopPropagation();moveDrag(t.clientX,t.clientY);return}
-   if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)clearHold()
-  },{passive:false,capture:true});
+  const finishDrag=()=>{clearHold();if(!dragging){activeTouchId=null;return}dragging=false;if(marker?.parentNode)marker.parentNode.insertBefore(row,marker);marker?.remove();marker=null;const prior=row.dataset.todoDragStyle||'';row.classList.remove('trip-todo-drag-live');if(prior)row.setAttribute('style',prior);else row.removeAttribute('style');delete row.dataset.todoDragStyle;updateTripTodoSummary();window.__wozzaTodoReorderActive=false;activeTouchId=null;suppressClick=true;setTimeout(()=>{suppressClick=false},120)};
+  row.addEventListener('touchstart',e=>{if(e.target.closest('button')||e.touches.length!==1)return;const t=e.touches[0];activeTouchId=t.identifier;startX=t.clientX;startY=t.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420)},{passive:true});
+  document.addEventListener('touchmove',e=>{if(activeTouchId==null)return;const t=pointFromTouch(e);if(!t)return;if(dragging){e.preventDefault();e.stopPropagation();moveDrag(t.clientX,t.clientY);return}if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)clearHold()},{passive:false,capture:true});
   document.addEventListener('touchend',e=>{if(activeTouchId!=null){if(dragging){e.preventDefault();e.stopPropagation()}finishDrag()}},{passive:false,capture:true});
   document.addEventListener('touchcancel',finishDrag,{capture:true});
-  row.addEventListener('pointerdown',e=>{
-   if(e.pointerType==='touch'||e.target.closest('button'))return;
-   startX=e.clientX;startY=e.clientY;clearHold();holdTimer=setTimeout(()=>{e.target.blur?.();startDrag(startX,startY)},420);
-   const move=ev=>{if(dragging){ev.preventDefault();moveDrag(ev.clientX,ev.clientY)}else if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>10)clearHold()};
-   const up=()=>{document.removeEventListener('pointermove',move);finishDrag()};
-   document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true})
-  });
+  row.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.target.closest('button'))return;startX=e.clientX;startY=e.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420);const move=ev=>{if(dragging){ev.preventDefault();moveDrag(ev.clientX,ev.clientY)}else if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>10)clearHold()};const up=()=>{document.removeEventListener('pointermove',move);finishDrag()};document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true})});
   row.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation()}},true)
  })
 }
