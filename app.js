@@ -1678,10 +1678,56 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 (()=>{
   if(window.__wozzaPassportInsightsV1)return;window.__wozzaPassportInsightsV1=true;
   const ICONS={
-    score:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M8 39a24 24 0 0 1 48 0"/><path d="M32 39 44 19"/><circle cx="32" cy="39" r="3"/></svg>',
-    stats:'<svg viewBox="0 0 64 48" aria-hidden="true"><rect x="14" y="10" width="36" height="32" rx="5"/><path d="M25 10V7h14v3M22 20l3 3 5-6M34 21h9M22 30l3 3 5-6M34 31h9"/></svg>',
-    charts:'<svg viewBox="0 0 64 48" aria-hidden="true"><path d="M13 8v32h40"/><path d="M22 34V23M32 34V15M42 34V20M52 34V11"/></svg>'
+    score:'<svg class="insights-motion-icon insights-motion-score" viewBox="0 0 64 48" aria-hidden="true"><path d="M8 39a24 24 0 0 1 48 0"/><g class="insights-gauge-needle"><path d="M32 39 44 19"/><circle cx="32" cy="39" r="3"/></g></svg>',
+    stats:'<svg class="insights-motion-icon insights-motion-stats" viewBox="0 0 64 48" aria-hidden="true"><g class="insights-clipboard-body"><rect x="14" y="10" width="36" height="32" rx="5"/><path d="M25 10V7h14v3M22 20l3 3 5-6M34 21h9M22 30l3 3 5-6M34 31h9"/></g></svg>',
+    charts:'<svg class="insights-motion-icon insights-motion-charts" viewBox="0 0 64 48" aria-hidden="true"><path d="M13 8v32h40"/><path class="insights-bar insights-bar-1" d="M22 34V23"/><path class="insights-bar insights-bar-2" d="M32 34V15"/><path class="insights-bar insights-bar-3" d="M42 34V20"/><path class="insights-bar insights-bar-4" d="M52 34V11"/></svg>'
   };
+  /* Insights icon motion: independent of the existing underline/sag implementation. */
+  const iconMotionStyle=document.createElement('style');
+  iconMotionStyle.id='wozza-insights-icon-motion';
+  iconMotionStyle.textContent=`
+    .passport-insights-tab .insights-motion-icon{overflow:visible}
+    .insights-gauge-needle{transform-box:view-box;transform-origin:32px 39px}
+    .insights-clipboard-body{transform-box:view-box;transform-origin:32px 25px}
+    .insights-bar{transform-box:fill-box;transform-origin:center bottom}
+    .passport-insights-tab.icon-motion-run .insights-gauge-needle{animation:wozzaGaugeSweep .62s cubic-bezier(.35,.05,.25,1)}
+    .passport-insights-tab.icon-motion-run .insights-clipboard-body{animation:wozzaClipboardWiggle .56s ease-in-out}
+    .passport-insights-tab.icon-motion-run .insights-bar-1,
+    .passport-insights-tab.icon-motion-run .insights-bar-4{animation:wozzaBarDip .58s ease-in-out}
+    .passport-insights-tab.icon-motion-run .insights-bar-2,
+    .passport-insights-tab.icon-motion-run .insights-bar-3{animation:wozzaBarRise .58s ease-in-out}
+    @keyframes wozzaGaugeSweep{
+      0%{transform:rotate(-42deg)} 55%{transform:rotate(35deg)} 78%{transform:rotate(-8deg)} 100%{transform:rotate(0)}
+    }
+    @keyframes wozzaClipboardWiggle{
+      0%,100%{transform:rotate(0)} 20%{transform:rotate(-6deg)} 42%{transform:rotate(6deg)}
+      64%{transform:rotate(-3deg)} 82%{transform:rotate(2deg)}
+    }
+    @keyframes wozzaBarDip{0%,100%{transform:scaleY(1)}45%{transform:scaleY(.55)}70%{transform:scaleY(.82)}}
+    @keyframes wozzaBarRise{0%,100%{transform:scaleY(1)}45%{transform:scaleY(1.35)}70%{transform:scaleY(1.12)}}
+    @media (prefers-reduced-motion:reduce){
+      .passport-insights-tab.icon-motion-run .insights-gauge-needle,
+      .passport-insights-tab.icon-motion-run .insights-clipboard-body,
+      .passport-insights-tab.icon-motion-run .insights-bar{animation:none!important}
+    }`;
+  document.getElementById(iconMotionStyle.id)?.remove();
+  document.head.appendChild(iconMotionStyle);
+
+  function replayInsightsIcon(tab){
+    if(!tab)return;
+    tab.classList.remove('icon-motion-run');
+    void tab.offsetWidth;
+    tab.classList.add('icon-motion-run');
+  }
+  function installInsightsIconTapMotion(shell){
+    if(!shell||shell.dataset.iconMotionInstalled)return;
+    shell.dataset.iconMotionInstalled='1';
+    shell.querySelectorAll('.passport-insights-tab').forEach(btn=>{
+      btn.addEventListener('click',()=>replayInsightsIcon(btn));
+    });
+  }
+  requestAnimationFrame(()=>document.querySelectorAll('.passport-insights-shell').forEach(installInsightsIconTapMotion));
+
   function setup(){
     const screen=document.querySelector('.screen[data-screen="me"]'),score=document.getElementById('travelHealthCard'),grid=screen?.querySelector('.stats-grid'),charts=screen?.querySelector('.passport-stats-carousel'),milestones=document.getElementById('milestonesCard');
     if(!screen||!score||!grid||!charts||!milestones)return false;
@@ -1752,6 +1798,8 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   function choose(shell,key){
     const btn=shell.querySelector(`.passport-insights-tab[data-insights-tab="${key}"]`);if(!btn)return;
     btn.click();setSag(shell,key,true);
+    /* Separate visual reaction only; the sag call above is unchanged. */
+    replayInsightsIcon(btn);
   }
   function installIconsAndSag(shell){
     shell.querySelectorAll('.passport-insights-tab').forEach(btn=>{
