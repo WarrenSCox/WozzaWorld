@@ -724,7 +724,7 @@ function attachTripTodoReorder(){
   const st=document.createElement('style');st.id='trip-todo-reorder-style';st.textContent=`
    #tripTodoList .trip-todo-row{cursor:grab;-webkit-touch-callout:none}
    #tripTodoList>.trip-todo-drag-marker{display:block!important;box-sizing:border-box!important;border:0!important;background:transparent!important;padding:0!important;visibility:hidden!important}
-   .trip-todo-drag-live{position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important}
+   .trip-todo-drag-live{position:fixed!important;z-index:2147483647!important;pointer-events:none!important;opacity:.94!important;box-shadow:0 10px 24px rgba(0,35,55,.22)!important;border-radius:18px!important;overflow:hidden!important;clip-path:inset(0 round 18px)!important}
   `;document.head.appendChild(st)
  }
  const rows=()=>[...list.querySelectorAll('.trip-todo-row')];
