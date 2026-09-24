@@ -1970,3 +1970,103 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
   document.getElementById('closeBackupRestoreDialog')?.addEventListener('click',()=>document.getElementById('backupRestoreDialog')?.close());
   requestAnimationFrame(()=>{installBackupButton();});
 })();
+
+
+/* Surgical Travel Score icon animation.
+   Deliberately isolated: does not modify Insights swipe, touch, choose(), setSag(),
+   sag morph, chart carousel, or existing Insights observers. */
+(()=>{
+  if(window.__wozzaSurgicalScoreMeter)return;
+  window.__wozzaSurgicalScoreMeter=true;
+
+  const style=document.createElement('style');
+  style.id='wozza-surgical-score-meter-style';
+  style.textContent=`
+    .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter{
+      display:block;width:58px;height:50px;position:absolute;bottom:16px;left:50%;
+      transform:translateX(-50%);opacity:.82;pointer-events:none;
+      transition:transform .22s ease,opacity .22s ease;
+    }
+    .passport-insights-tab[data-insights-tab="score"].is-active .wozza-score-meter{
+      transform:translateX(-50%) translateY(-2px);opacity:1;
+    }
+    .wozza-score-meter>img{
+      display:block!important;position:absolute!important;inset:0!important;
+      width:100%!important;height:100%!important;object-fit:contain!important;
+      pointer-events:none!important;transform:none;
+    }
+    .wozza-score-meter .wozza-score-needle{
+      transform-origin:50% 68%!important;
+    }
+    .wozza-score-meter .wozza-score-needle.wozza-sweep{
+      animation:wozzaScoreNeedleOnly .62s cubic-bezier(.22,.78,.24,1);
+    }
+    @keyframes wozzaScoreNeedleOnly{
+      0%{transform:rotate(-48deg)}
+      58%{transform:rotate(10deg)}
+      80%{transform:rotate(-4deg)}
+      100%{transform:rotate(0deg)}
+    }
+    @media(max-width:380px){
+      .passport-insights-tab[data-insights-tab="score"] .wozza-score-meter{width:52px;height:45px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .wozza-score-meter .wozza-score-needle.wozza-sweep{animation:none!important}
+    }
+  `;
+  document.head.appendChild(style);
+
+  let wiredButton=null, observer=null, lastActive=false;
+
+  function sweep(btn){
+    const needle=btn?.querySelector('.wozza-score-needle');
+    if(!needle)return;
+    needle.classList.remove('wozza-sweep');
+    void needle.offsetWidth;
+    needle.classList.add('wozza-sweep');
+  }
+
+  function install(){
+    const btn=document.querySelector('.passport-insights-tab[data-insights-tab="score"]');
+    if(!btn)return;
+
+    if(!btn.querySelector('.wozza-score-meter')){
+      const original=btn.querySelector('.insights-brand-icon');
+      if(!original)return;
+
+      const meter=document.createElement('span');
+      meter.className='wozza-score-meter';
+      meter.setAttribute('aria-hidden','true');
+
+      const body=document.createElement('img');
+      body.src='meter-body-no-needle.png';
+      body.alt='';
+      body.className='wozza-score-body';
+
+      const needle=document.createElement('img');
+      needle.src='meter-needle.png';
+      needle.alt='';
+      needle.className='wozza-score-needle';
+
+      meter.append(body,needle);
+      original.replaceWith(meter);
+    }
+
+    if(wiredButton===btn)return;
+    if(observer)observer.disconnect();
+
+    wiredButton=btn;
+    lastActive=btn.classList.contains('is-active');
+
+    observer=new MutationObserver(()=>{
+      const active=btn.classList.contains('is-active');
+      if(active&&!lastActive)sweep(btn);
+      lastActive=active;
+    });
+    observer.observe(btn,{attributes:true,attributeFilter:['class']});
+  }
+
+  install();
+  const domObserver=new MutationObserver(install);
+  domObserver.observe(document.body,{childList:true,subtree:true});
+})();
