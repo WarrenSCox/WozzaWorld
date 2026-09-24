@@ -1700,19 +1700,36 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
       const dx=e.clientX-sx,dy=e.clientY-sy;
       if(Math.abs(dx)<48||Math.abs(dx)<=Math.abs(dy)*1.2)return;
       const forward=dx<0,key=activeKey(shell);
+      /* Exact circular order:
+         left/forward:  score > stats > chart 1 > ... > last chart > score
+         right/back:    score < stats < chart 1 < ... < last chart < score
+         Note: the real middle-tab key is "stats" (not "quick"). */
       if(key==='charts'){
         const c=chartInfo();
-        if(forward&&c.index<c.last){setPassportStatsSlide(c.index+1);queueMicrotask(rebuildChartButtons);return}
-        if(!forward&&c.index>0){setPassportStatsSlide(c.index-1);queueMicrotask(rebuildChartButtons);return}
-        choose(shell,forward?'score':'quick');return;
+        if(forward&&c.index<c.last){
+          setPassportStatsSlide(c.index+1);queueMicrotask(rebuildChartButtons);return;
+        }
+        if(!forward&&c.index>0){
+          setPassportStatsSlide(c.index-1);queueMicrotask(rebuildChartButtons);return;
+        }
+        if(forward){
+          choose(shell,'score');return;
+        }
+        choose(shell,'stats');return;
       }
-      if(key==='score'&&!forward){
-        choose(shell,'charts');const c=chartInfo();setPassportStatsSlide(c.last);queueMicrotask(rebuildChartButtons);return;
+      if(key==='score'){
+        if(forward){
+          choose(shell,'stats');return;
+        }
+        choose(shell,'charts');
+        const c=chartInfo();setPassportStatsSlide(c.last);queueMicrotask(rebuildChartButtons);return;
       }
-      if(key==='quick'&&forward){
-        choose(shell,'charts');setPassportStatsSlide(0);queueMicrotask(rebuildChartButtons);return;
+      if(key==='stats'){
+        if(forward){
+          choose(shell,'charts');setPassportStatsSlide(0);queueMicrotask(rebuildChartButtons);return;
+        }
+        choose(shell,'score');return;
       }
-      choose(shell,key==='score'?'quick':'score');
     },{passive:true});
     body.addEventListener('pointercancel',()=>{tracking=false},{passive:true});
   }
