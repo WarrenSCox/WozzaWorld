@@ -171,6 +171,7 @@ function tripAdaptiveFlags(cs){
     #tripList .trip-card-flags[data-visible="1"]{width:34px!important;min-width:34px!important}
     #tripList .trip-card-flags[data-visible="2"]{width:73px!important}
     #tripList .trip-card-flags[data-visible="3"]{width:92px!important;gap:0!important}#tripList .trip-card-flags[data-visible="3"] .trip-flag-slot+ .trip-flag-slot{margin-left:-5px}
+    #tripList .trip-card-flags[data-visible="4"]{width:118px!important;gap:0!important}#tripList .trip-card-flags[data-visible="4"] .trip-flag-slot+ .trip-flag-slot{margin-left:-6px}
     #tripList .trip-card-flags[data-count="4"]{width:118px!important;gap:0!important}
     #tripList .trip-card-flags[data-count="4"] .trip-flag-slot+ .trip-flag-slot{margin-left:-6px}
     #tripList .trip-card-flags[data-count="5"],#tripList .trip-card-flags[data-count="6"],#tripList .trip-card-flags[data-count="7"],#tripList .trip-card-flags[data-count="8"],#tripList .trip-card-flags[data-count="9"]{width:118px!important;gap:0!important}
@@ -194,15 +195,26 @@ function tripAdaptiveFlags(cs){
   const flap=(slots,items,offset)=>slots.forEach((slot,i)=>{const item=items[(offset+i)%items.length];setTimeout(()=>{slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{slot.innerHTML=item.html;slot.title=item.label;slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},i*55)});
   function initIcons(row){
     const items=parse(row,'flapItems');if(!items.length)return;
-    const available=Math.floor(row.getBoundingClientRect().width||row.clientWidth||0);
+    const meta=row.closest('.trip-card-meta-row');
+    if(!meta)return;
+
+    // Do not trust the empty middle cell's width: an empty minmax grid item can
+    // initially collapse to zero. Measure the whole footer and subtract the real
+    // star + flag footprints instead. This also makes the middle zone genuinely
+    // elastic when a star/flag is added or removed.
+    const metaWidth=Math.floor(meta.getBoundingClientRect().width||meta.clientWidth||0);
+    if(!metaWidth)return;
+    const stars=meta.querySelector('.trip-stars'),flags=meta.querySelector('.trip-card-flags');
+    const starWidth=stars?Math.ceil(stars.getBoundingClientRect().width||stars.scrollWidth||0):0;
+    const flagWidth=flags?Math.ceil(flags.getBoundingClientRect().width||flags.scrollWidth||0):0;
+    const style=getComputedStyle(meta),gap=parseFloat(style.columnGap)||9;
+    const occupied=(starWidth?starWidth+gap:0)+(flagWidth?flagWidth+gap:0);
+    const available=Math.max(0,metaWidth-occupied);
     if(!available)return;
 
-    // Measure the space once, without temporarily rendering every icon. The icon
-    // slots have a real CSS width of 26px and a 4px gap, so this gives the same
-    // physical-fit decision without creating a render/ResizeObserver feedback loop.
-    const slotWidth=26,gap=4;
-    const required=items.length*slotWidth+Math.max(0,items.length-1)*gap;
-    const capacity=required<=available+1?items.length:Math.max(1,Math.floor((available+gap)/(slotWidth+gap)));
+    const slotWidth=26,iconGap=4;
+    const required=items.length*slotWidth+Math.max(0,items.length-1)*iconGap;
+    const capacity=required<=available+1?items.length:Math.max(1,Math.floor((available+iconGap)/(slotWidth+iconGap)));
     const shown=Math.min(items.length,capacity);
     const mode=(items.length===1||shown>=items.length)?'static':'flap';
     const signature=`${mode}:${shown}:${items.length}:${available}`;
@@ -222,7 +234,7 @@ function tripAdaptiveFlags(cs){
   }
   function initFlags(row){
     const items=parse(row,'flagItems');if(!items.length)return;row.dataset.count=String(items.length);
-    const maxStatic=items.length<=4?items.length:3,shown=Math.min(items.length,maxStatic);row.dataset.visible=String(shown);const signature=`${shown}:${items.length}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
+    const maxStatic=Math.min(items.length,4),shown=maxStatic;row.dataset.visible=String(shown);const signature=`${shown}:${items.length}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
     row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flag-slot" data-flag-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
     const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown){states.delete(row);return}
     const state={offset:0,timer:null};states.set(row,state);state.timer=setInterval(()=>{if(!row.isConnected){clearInterval(state.timer);return}state.offset=(state.offset+shown)%items.length;flap([...row.querySelectorAll('.trip-flag-slot')],items,state.offset)},4700);
