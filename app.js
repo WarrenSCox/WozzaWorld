@@ -162,7 +162,7 @@ function tripAdaptiveFlags(cs){
   if(document.getElementById('wozza-adaptive-trip-footer-style'))return;
   const st=document.createElement('style');st.id='wozza-adaptive-trip-footer-style';st.textContent=`
     #tripList .trip-card-copy{width:100%!important;padding-right:0!important}
-    #tripList .trip-card-meta-row{display:grid!important;grid-template-columns:max-content minmax(0,1fr) max-content!important;align-items:center!important;column-gap:9px!important;width:100%!important;min-width:0!important;padding-right:0!important;box-sizing:border-box!important}
+    #tripList .trip-card-meta-row{display:grid!important;grid-template-columns:max-content minmax(0,1fr) max-content!important;align-items:center!important;column-gap:9px!important;width:calc(100% + 118px)!important;max-width:calc(100% + 118px)!important;min-width:0!important;padding-right:0!important;box-sizing:border-box!important}
     #tripList .trip-stars{flex:0 0 auto!important;display:flex!important;gap:1px!important;margin:0!important;white-space:nowrap!important}
     #tripList .trip-flap-icons{width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;overflow:hidden!important;perspective:240px!important}
     #tripList .trip-flap-slot{width:26px;height:26px;display:grid;place-items:center;flex:0 0 26px;transform-origin:50% 50%;backface-visibility:hidden}
