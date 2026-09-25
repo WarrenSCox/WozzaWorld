@@ -162,12 +162,12 @@ function tripAdaptiveFlags(cs){
   if(document.getElementById('wozza-adaptive-trip-footer-style'))return;
   const st=document.createElement('style');st.id='wozza-adaptive-trip-footer-style';st.textContent=`
     #tripList .trip-card-copy{width:100%!important;padding-right:0!important}
-    #tripList .trip-card-meta-row{display:flex!important;align-items:center!important;gap:9px!important;width:100%!important;min-width:0!important;padding-right:0!important;box-sizing:border-box!important}
+    #tripList .trip-card-meta-row{display:grid!important;grid-template-columns:max-content minmax(0,1fr) max-content!important;align-items:center!important;column-gap:9px!important;width:100%!important;min-width:0!important;padding-right:0!important;box-sizing:border-box!important}
     #tripList .trip-stars{flex:0 0 auto!important;display:flex!important;gap:1px!important;margin:0!important;white-space:nowrap!important}
-    #tripList .trip-flap-icons{flex:1 1 auto!important;min-width:28px!important;display:flex!important;align-items:center!important;gap:4px!important;overflow:hidden!important;perspective:240px!important}
+    #tripList .trip-flap-icons{width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;overflow:hidden!important;perspective:240px!important}
     #tripList .trip-flap-slot{width:26px;height:26px;display:grid;place-items:center;flex:0 0 26px;transform-origin:50% 50%;backface-visibility:hidden}
     #tripList .trip-flap-slot img{display:block;max-width:24px;max-height:24px;object-fit:contain}
-    #tripList .trip-card-flags{position:static!important;transform:none!important;flex:0 1 auto!important;width:auto!important;max-width:112px!important;min-width:34px!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;overflow:hidden!important;gap:5px!important;perspective:240px!important}
+    #tripList .trip-card-flags{position:static!important;transform:none!important;justify-self:end!important;width:auto!important;max-width:112px!important;min-width:34px!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;overflow:hidden!important;gap:5px!important;perspective:240px!important}
     #tripList .trip-card-flags[data-count="1"]{width:34px!important;min-width:34px!important}
     #tripList .trip-card-flags[data-count="2"]{width:73px!important}
     #tripList .trip-card-flags[data-count="3"]{width:112px!important}
@@ -192,7 +192,7 @@ function tripAdaptiveFlags(cs){
   const flap=(slots,items,offset)=>slots.forEach((slot,i)=>{const item=items[(offset+i)%items.length];setTimeout(()=>{slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{slot.innerHTML=item.html;slot.title=item.label;slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},i*55)});
   function initIcons(row){
     const items=parse(row,'flapItems');if(!items.length)return;
-    const available=Math.max(28,row.clientWidth||28),capacity=Math.max(1,Math.floor((available+4)/30)),shown=Math.min(items.length,capacity);
+    const meta=row.closest('.trip-card-meta-row'),stars=meta?.querySelector('.trip-stars'),flags=meta?.querySelector('.trip-card-flags'),metaWidth=meta?.clientWidth||0,styles=meta?getComputedStyle(meta):null,gap=parseFloat(styles?.columnGap||styles?.gap||9)||9,used=(stars?.offsetWidth||0)+(flags?.offsetWidth||0)+(stars?gap:0)+(flags?gap:0),available=Math.max(28,metaWidth?metaWidth-used:(row.clientWidth||28)),capacity=Math.max(1,Math.floor((available+4)/30)),shown=Math.min(items.length,capacity);
     const signature=`${shown}:${items.length}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
     row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
     const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown){states.delete(row);return}
