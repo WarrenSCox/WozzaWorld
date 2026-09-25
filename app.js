@@ -194,16 +194,48 @@ function tripAdaptiveFlags(cs){
   const flap=(slots,items,offset)=>slots.forEach((slot,i)=>{const item=items[(offset+i)%items.length];setTimeout(()=>{slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{slot.innerHTML=item.html;slot.title=item.label;slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},i*55)});
   function initIcons(row){
     const items=parse(row,'flapItems');if(!items.length)return;
-    // Use the space the browser has actually given this zone. Do not flap merely
-    // because an arbitrary icon-count threshold has been reached.
-    const available=Math.max(28,row.getBoundingClientRect().width||row.clientWidth||28);
-    const slot=26,gap=4,needed=items.length*slot+Math.max(0,items.length-1)*gap;
-    const capacity=needed<=available+1?items.length:Math.max(1,Math.floor((available+gap)/(slot+gap)));
-    const shown=Math.min(items.length,capacity);
-    const signature=`${shown}:${items.length}:${Math.round(available)}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
-    row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
-    const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown){states.delete(row);return}
-    const state={offset:0,timer:null};states.set(row,state);state.timer=setInterval(()=>{if(!row.isConnected){clearInterval(state.timer);return}state.offset=(state.offset+shown)%items.length;flap([...row.querySelectorAll('.trip-flap-slot')],items,state.offset)},4200);
+    const old=states.get(row);if(old?.timer)clearInterval(old.timer);states.delete(row);
+
+    // Source of truth is the DOM's real rendered width. First render EVERY icon
+    // statically, then ask the browser whether that complete set actually overflows.
+    // This prevents a one-icon "carousel" when there is visibly spare room.
+    row.innerHTML=items.map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
+    row.dataset.renderSig='measuring';
+
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      if(!row.isConnected)return;
+      const available=Math.floor(row.getBoundingClientRect().width||row.clientWidth||0);
+      const required=Math.ceil(row.scrollWidth||0);
+
+      // One icon must never animate. Nor should any set which genuinely fits.
+      if(items.length===1||!available||required<=available+1){
+        row.dataset.renderSig=`static:${items.length}:${available}:${required}`;
+        return;
+      }
+
+      const first=row.querySelector('.trip-flap-slot');
+      const slotWidth=Math.ceil(first?.getBoundingClientRect().width||26);
+      const cs=getComputedStyle(row);
+      const gap=parseFloat(cs.columnGap||cs.gap)||4;
+      const capacity=Math.max(1,Math.floor((available+gap)/(slotWidth+gap)));
+      const shown=Math.min(items.length,capacity);
+
+      // Defensive rule: if calculation says every icon fits, keep the complete
+      // static render. Animation exists only for genuine physical overflow.
+      if(shown>=items.length){
+        row.dataset.renderSig=`static:${items.length}:${available}:${required}`;
+        return;
+      }
+
+      row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
+      row.dataset.renderSig=`flap:${shown}:${items.length}:${available}`;
+      const state={offset:0,timer:null};states.set(row,state);
+      state.timer=setInterval(()=>{
+        if(!row.isConnected){clearInterval(state.timer);return}
+        state.offset=(state.offset+shown)%items.length;
+        flap([...row.querySelectorAll('.trip-flap-slot')],items,state.offset);
+      },4200);
+    }));
   }
   function initFlags(row){
     const items=parse(row,'flagItems');if(!items.length)return;row.dataset.count=String(items.length);
