@@ -167,7 +167,7 @@ function tripAdaptiveFlags(cs){
     #tripList .trip-flap-icons{width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;overflow:hidden!important;perspective:240px!important}
     #tripList .trip-flap-slot{width:26px;height:26px;display:grid;place-items:center;flex:0 0 26px;transform-origin:50% 50%;backface-visibility:hidden}
     #tripList .trip-flap-slot img{display:block;max-width:24px;max-height:24px;object-fit:contain}
-    #tripList .trip-card-flags{position:static!important;top:auto!important;bottom:auto!important;left:auto!important;right:auto!important;transform:none!important;justify-self:end!important;width:auto!important;max-width:118px!important;min-width:34px!important;margin:0 20px 0 0!important;display:flex!important;align-items:center!important;align-self:center!important;justify-content:flex-end!important;overflow:hidden!important;gap:5px!important;perspective:240px!important}
+    #tripList .trip-card-flags{position:static!important;top:auto!important;bottom:auto!important;left:auto!important;right:auto!important;transform:none!important;justify-self:end!important;width:auto!important;max-width:118px!important;min-width:34px!important;margin:0 15px 0 0!important;display:flex!important;align-items:center!important;align-self:center!important;justify-content:flex-end!important;overflow:hidden!important;gap:5px!important;perspective:240px!important}
     #tripList .trip-card-flags[data-count="1"]{width:34px!important;min-width:34px!important}
     #tripList .trip-card-flags[data-count="2"]{width:73px!important}
     #tripList .trip-card-flags[data-count="3"]{width:112px!important}
@@ -177,7 +177,9 @@ function tripAdaptiveFlags(cs){
     #tripList .trip-card-flags[data-count="5"] .trip-flag-slot+ .trip-flag-slot{margin-left:-15px}
     #tripList .trip-card-flags[data-count="6"] .trip-flag-slot+ .trip-flag-slot,#tripList .trip-card-flags[data-count="7"] .trip-flag-slot+ .trip-flag-slot,#tripList .trip-card-flags[data-count="8"] .trip-flag-slot+ .trip-flag-slot,#tripList .trip-card-flags[data-count="9"] .trip-flag-slot+ .trip-flag-slot{margin-left:-19px}
     #tripList .trip-flag-slot{width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px;transform-origin:50% 50%;backface-visibility:hidden}
-    #tripList .trip-flag-slot .trip-country-flag{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;max-width:34px!important;max-height:34px!important}
+    #tripList .trip-flag-slot{overflow:visible!important}
+    #tripList .trip-flag-slot .trip-country-flag{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;max-width:34px!important;max-height:34px!important;padding:0!important;margin:0!important;border:0!important;border-radius:50%!important;overflow:hidden!important;background:transparent!important;display:block!important;box-shadow:none!important}
+    #tripList .trip-flag-slot .trip-country-flag-img{display:block!important;width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;max-width:34px!important;max-height:34px!important;object-fit:cover!important;border-radius:50%!important;margin:0!important;padding:0!important;background:transparent!important}
     #tripList .trip-card-side{pointer-events:none!important}
     #tripList .trip-card-side .countdown-badge{pointer-events:auto!important}
     #tripList .trip-flap-slot.flap-out,#tripList .trip-flag-slot.flap-out{animation:wozzaAdaptiveFlapOut .16s ease-in forwards}
