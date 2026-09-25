@@ -191,6 +191,8 @@ function tripAdaptiveFlags(cs){
     @keyframes wozzaAdaptiveFlapOut{0%{transform:rotateX(0);opacity:1}100%{transform:rotateX(-88deg);opacity:.15}}
     @keyframes wozzaAdaptiveFlapIn{0%{transform:rotateX(88deg);opacity:.15}100%{transform:rotateX(0);opacity:1}}
     @media(max-width:420px){#tripList .trip-card-meta-row{gap:7px!important;padding-right:12px!important}#tripList .trip-card-flags{max-width:108px!important}#tripList .trip-card-flags[data-count="3"],#tripList .trip-card-flags[data-count="4"],#tripList .trip-card-flags[data-count="5"],#tripList .trip-card-flags[data-count="6"],#tripList .trip-card-flags[data-count="7"],#tripList .trip-card-flags[data-count="8"],#tripList .trip-card-flags[data-count="9"]{width:108px!important}#tripList .trip-card-flags[data-count="3"] .trip-flag-slot+ .trip-flag-slot{margin-left:-3px}#tripList .trip-card-flags[data-count="4"] .trip-flag-slot+ .trip-flag-slot{margin-left:-9px}#tripList .trip-card-flags[data-count="5"] .trip-flag-slot+ .trip-flag-slot,#tripList .trip-card-flags[data-count="6"] .trip-flag-slot+ .trip-flag-slot,#tripList .trip-card-flags[data-count="7"] .trip-flag-slot+ .trip-flag-slot,#tripList .trip-card-flags[data-count="8"] .trip-flag-slot+ .trip-flag-slot,#tripList .trip-card-flags[data-count="9"] .trip-flag-slot+ .trip-flag-slot{margin-left:-20px}}
+
+    #tripList .trip-card-flags[data-visible]{max-width:none!important}
     @media(prefers-reduced-motion:reduce){#tripList .flap-out,#tripList .flap-in{animation:none!important}}
   `;document.head.append(st);
   const states=new WeakMap();
@@ -201,20 +203,18 @@ function tripAdaptiveFlags(cs){
     const meta=row.closest('.trip-card-meta-row');
     if(!meta)return;
 
-    // Use the REAL geometric corridor between the middle icon row and the flag
-    // group. This avoids two opposite problems: reserving phantom width (unused
-    // gap) and allowing a wide icon silhouette to slide underneath a flag.
-    const rowRect=row.getBoundingClientRect();
-    if(!rowRect.width&&!rowRect.left)return;
-    const flags=meta.querySelector('.trip-card-flags');
-    const flagRect=flags?.getBoundingClientRect();
-    const cssWidth=Math.floor(rowRect.width||row.clientWidth||0);
-    // The flag group's left edge is the hard collision boundary. Keep a small
-    // visual gutter so artwork such as the steering wheel/beach icon is never
-    // shaved or hidden by a circular flag.
-    const collisionGutter=8;
-    const geometricWidth=flagRect?Math.floor(flagRect.left-rowRect.left-collisionGutter):cssWidth;
-    const available=Math.max(0,Math.min(cssWidth||geometricWidth,geometricWidth));
+    // Do not trust the empty middle cell's width: an empty minmax grid item can
+    // initially collapse to zero. Measure the whole footer and subtract the real
+    // star + flag footprints instead. This also makes the middle zone genuinely
+    // elastic when a star/flag is added or removed.
+    const metaWidth=Math.floor(meta.getBoundingClientRect().width||meta.clientWidth||0);
+    if(!metaWidth)return;
+    const stars=meta.querySelector('.trip-stars'),flags=meta.querySelector('.trip-card-flags');
+    const starWidth=stars?Math.ceil(stars.getBoundingClientRect().width||stars.scrollWidth||0):0;
+    const flagWidth=flags?Math.ceil(flags.getBoundingClientRect().width||flags.scrollWidth||0):0;
+    const style=getComputedStyle(meta),gap=parseFloat(style.columnGap)||9;
+    const occupied=(starWidth?starWidth+gap:0)+(flagWidth?flagWidth+gap:0);
+    const available=Math.max(0,metaWidth-occupied-3); // 3px optical/silhouette safety buffer
     if(!available)return;
 
     const slotWidth=26,iconGap=4;
@@ -239,8 +239,25 @@ function tripAdaptiveFlags(cs){
   }
   function initFlags(row){
     const items=parse(row,'flagItems');if(!items.length)return;row.dataset.count=String(items.length);
-    const maxStatic=Math.min(items.length,4),shown=maxStatic;row.dataset.visible=String(shown);const signature=`${shown}:${items.length}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
+    const meta=row.closest('.trip-card-meta-row'),stars=meta?.querySelector('.trip-stars'),icons=meta?.querySelector('.trip-flap-icons');
+    const metaWidth=Math.floor(meta?.getBoundingClientRect().width||meta?.clientWidth||0);
+    const starWidth=stars?Math.ceil(stars.getBoundingClientRect().width||stars.scrollWidth||0):0;
+    const iconItems=icons?parse(icons,'flapItems'):[];
+    const iconNeed=iconItems.length?iconItems.length*26+Math.max(0,iconItems.length-1)*4:0;
+    const gap=parseFloat(meta?getComputedStyle(meta).columnGap:0)||9;
+    // Flags are no longer capped at four. First protect the stars + every middle
+    // icon that can genuinely fit, then spend any remaining footer width on flags.
+    // A flag after the first costs ~26px because the group deliberately bunches.
+    const roomForFlags=Math.max(34,metaWidth-starWidth-iconNeed-(starWidth?gap:0)-(iconItems.length?gap:0)-6);
+    const fitByWidth=Math.max(1,1+Math.floor(Math.max(0,roomForFlags-34)/26));
+    const shown=Math.min(items.length,fitByWidth);
+    row.dataset.visible=String(shown);
+    const flagWidth=34+Math.max(0,shown-1)*26;
+    row.style.setProperty('width',flagWidth+'px','important');
+    row.style.setProperty('max-width',flagWidth+'px','important');
+    const signature=`adaptive:${shown}:${items.length}:${metaWidth}:${iconNeed}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
     row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flag-slot" data-flag-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
+    [...row.querySelectorAll('.trip-flag-slot')].forEach((slot,i)=>slot.style.marginLeft=i?'-8px':'0');
     const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown){states.delete(row);return}
     const state={offset:0,timer:null};states.set(row,state);state.timer=setInterval(()=>{if(!row.isConnected){clearInterval(state.timer);return}state.offset=(state.offset+shown)%items.length;flap([...row.querySelectorAll('.trip-flag-slot')],items,state.offset)},4700);
   }
