@@ -201,18 +201,20 @@ function tripAdaptiveFlags(cs){
     const meta=row.closest('.trip-card-meta-row');
     if(!meta)return;
 
-    // Do not trust the empty middle cell's width: an empty minmax grid item can
-    // initially collapse to zero. Measure the whole footer and subtract the real
-    // star + flag footprints instead. This also makes the middle zone genuinely
-    // elastic when a star/flag is added or removed.
-    const metaWidth=Math.floor(meta.getBoundingClientRect().width||meta.clientWidth||0);
-    if(!metaWidth)return;
-    const stars=meta.querySelector('.trip-stars'),flags=meta.querySelector('.trip-card-flags');
-    const starWidth=stars?Math.ceil(stars.getBoundingClientRect().width||stars.scrollWidth||0):0;
-    const flagWidth=flags?Math.ceil(flags.getBoundingClientRect().width||flags.scrollWidth||0):0;
-    const style=getComputedStyle(meta),gap=parseFloat(style.columnGap)||9;
-    const occupied=(starWidth?starWidth+gap:0)+(flagWidth?flagWidth+gap:0);
-    const available=Math.max(0,metaWidth-occupied-3); // 3px optical/silhouette safety buffer
+    // Use the REAL geometric corridor between the middle icon row and the flag
+    // group. This avoids two opposite problems: reserving phantom width (unused
+    // gap) and allowing a wide icon silhouette to slide underneath a flag.
+    const rowRect=row.getBoundingClientRect();
+    if(!rowRect.width&&!rowRect.left)return;
+    const flags=meta.querySelector('.trip-card-flags');
+    const flagRect=flags?.getBoundingClientRect();
+    const cssWidth=Math.floor(rowRect.width||row.clientWidth||0);
+    // The flag group's left edge is the hard collision boundary. Keep a small
+    // visual gutter so artwork such as the steering wheel/beach icon is never
+    // shaved or hidden by a circular flag.
+    const collisionGutter=8;
+    const geometricWidth=flagRect?Math.floor(flagRect.left-rowRect.left-collisionGutter):cssWidth;
+    const available=Math.max(0,Math.min(cssWidth||geometricWidth,geometricWidth));
     if(!available)return;
 
     const slotWidth=26,iconGap=4;
