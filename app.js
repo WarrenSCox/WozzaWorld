@@ -168,9 +168,9 @@ function tripAdaptiveFlags(cs){
     #tripList .trip-flap-slot{width:26px;height:26px;display:grid;place-items:center;flex:0 0 26px;transform-origin:50% 50%;backface-visibility:hidden}
     #tripList .trip-flap-slot img{display:block;max-width:24px;max-height:24px;object-fit:contain}
     #tripList .trip-card-flags{position:static!important;top:auto!important;bottom:auto!important;left:auto!important;right:auto!important;transform:none!important;justify-self:end!important;width:auto!important;max-width:118px!important;min-width:34px!important;margin:0 15px 0 0!important;display:flex!important;align-items:center!important;align-self:center!important;justify-content:flex-end!important;overflow:visible!important;gap:5px!important;perspective:240px!important}
-    #tripList .trip-card-flags[data-count="1"]{width:34px!important;min-width:34px!important}
-    #tripList .trip-card-flags[data-count="2"]{width:73px!important}
-    #tripList .trip-card-flags[data-count="3"]{width:112px!important}
+    #tripList .trip-card-flags[data-visible="1"]{width:34px!important;min-width:34px!important}
+    #tripList .trip-card-flags[data-visible="2"]{width:73px!important}
+    #tripList .trip-card-flags[data-visible="3"]{width:92px!important;gap:0!important}#tripList .trip-card-flags[data-visible="3"] .trip-flag-slot+ .trip-flag-slot{margin-left:-5px}
     #tripList .trip-card-flags[data-count="4"]{width:118px!important;gap:0!important}
     #tripList .trip-card-flags[data-count="4"] .trip-flag-slot+ .trip-flag-slot{margin-left:-6px}
     #tripList .trip-card-flags[data-count="5"],#tripList .trip-card-flags[data-count="6"],#tripList .trip-card-flags[data-count="7"],#tripList .trip-card-flags[data-count="8"],#tripList .trip-card-flags[data-count="9"]{width:118px!important;gap:0!important}
@@ -207,12 +207,12 @@ function tripAdaptiveFlags(cs){
   }
   function initFlags(row){
     const items=parse(row,'flagItems');if(!items.length)return;row.dataset.count=String(items.length);
-    const maxStatic=items.length<=6?items.length:4,shown=Math.min(items.length,maxStatic);const signature=`${shown}:${items.length}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
+    const maxStatic=items.length<=4?items.length:3,shown=Math.min(items.length,maxStatic);row.dataset.visible=String(shown);const signature=`${shown}:${items.length}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
     row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flag-slot" data-flag-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
     const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown){states.delete(row);return}
     const state={offset:0,timer:null};states.set(row,state);state.timer=setInterval(()=>{if(!row.isConnected){clearInterval(state.timer);return}state.offset=(state.offset+shown)%items.length;flap([...row.querySelectorAll('.trip-flag-slot')],items,state.offset)},4700);
   }
-  function scan(){document.querySelectorAll('#tripList .trip-card-meta-row').forEach(meta=>{const icons=meta.querySelector('.trip-flap-icons'),flags=meta.querySelector('.trip-card-flags');if(flags)initFlags(flags);if(icons)requestAnimationFrame(()=>initIcons(icons))})}
+  function scan(){document.querySelectorAll('#tripList .trip-card-meta-row').forEach(meta=>{const icons=meta.querySelector('.trip-flap-icons'),flags=meta.querySelector('.trip-card-flags');if(flags)initFlags(flags);if(icons)requestAnimationFrame(()=>requestAnimationFrame(()=>initIcons(icons)))})}
   const ro=new ResizeObserver(entries=>entries.forEach(e=>{if(e.target.classList.contains('trip-flap-icons'))initIcons(e.target)}));
   const mo=new MutationObserver(()=>{scan();document.querySelectorAll('#tripList .trip-flap-icons').forEach(x=>ro.observe(x))});mo.observe(document.documentElement,{childList:true,subtree:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{scan();document.querySelectorAll('#tripList .trip-flap-icons').forEach(x=>ro.observe(x))});else{scan();document.querySelectorAll('#tripList .trip-flap-icons').forEach(x=>ro.observe(x))}
