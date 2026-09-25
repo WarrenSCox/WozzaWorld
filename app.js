@@ -198,71 +198,74 @@ function tripAdaptiveFlags(cs){
   const states=new WeakMap();
   const parse=(el,key)=>{try{return JSON.parse(decodeURIComponent(el.dataset[key]||''))}catch(e){return[]}};
   const flap=(slots,items,offset)=>slots.forEach((slot,i)=>{const item=items[(offset+i)%items.length];setTimeout(()=>{slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{slot.innerHTML=item.html;slot.title=item.label;slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},i*55)});
-  function initIcons(row){
-    const items=parse(row,'flapItems');if(!items.length)return;
-    const meta=row.closest('.trip-card-meta-row');
-    if(!meta)return;
-
-    // Do not trust the empty middle cell's width: an empty minmax grid item can
-    // initially collapse to zero. Measure the whole footer and subtract the real
-    // star + flag footprints instead. This also makes the middle zone genuinely
-    // elastic when a star/flag is added or removed.
-    const metaWidth=Math.floor(meta.getBoundingClientRect().width||meta.clientWidth||0);
-    if(!metaWidth)return;
-    const stars=meta.querySelector('.trip-stars'),flags=meta.querySelector('.trip-card-flags');
-    const starWidth=stars?Math.ceil(stars.getBoundingClientRect().width||stars.scrollWidth||0):0;
-    const flagWidth=flags?Math.ceil(flags.getBoundingClientRect().width||flags.scrollWidth||0):0;
-    const style=getComputedStyle(meta),gap=parseFloat(style.columnGap)||9;
-    const occupied=(starWidth?starWidth+gap:0)+(flagWidth?flagWidth+gap:0);
-    const available=Math.max(0,metaWidth-occupied-3); // 3px optical/silhouette safety buffer
-    if(!available)return;
-
-    const slotWidth=26,iconGap=4;
-    const required=items.length*slotWidth+Math.max(0,items.length-1)*iconGap;
-    const capacity=required<=available+1?items.length:Math.max(1,Math.floor((available+iconGap)/(slotWidth+iconGap)));
-    const shown=Math.min(items.length,capacity);
-    const mode=(items.length===1||shown>=items.length)?'static':'flap';
-    const signature=`${mode}:${shown}:${items.length}:${available}`;
-    if(row.dataset.renderSig===signature)return;
-    row.dataset.renderSig=signature;
-
-    const old=states.get(row);if(old?.timer)clearInterval(old.timer);states.delete(row);
-    row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
-    if(mode==='static')return;
-
-    const state={offset:0,timer:null};states.set(row,state);
-    state.timer=setInterval(()=>{
-      if(!row.isConnected){clearInterval(state.timer);return}
-      state.offset=(state.offset+shown)%items.length;
-      flap([...row.querySelectorAll('.trip-flap-slot')],items,state.offset);
-    },4200);
-  }
-  function initFlags(row){
-    const items=parse(row,'flagItems');if(!items.length)return;row.dataset.count=String(items.length);
-    const meta=row.closest('.trip-card-meta-row'),stars=meta?.querySelector('.trip-stars'),icons=meta?.querySelector('.trip-flap-icons');
+  function footerAllocation(meta){
+    const stars=meta?.querySelector('.trip-stars'),icons=meta?.querySelector('.trip-flap-icons'),flags=meta?.querySelector('.trip-card-flags');
+    const iconItems=icons?parse(icons,'flapItems'):[],flagItems=flags?parse(flags,'flagItems'):[];
     const metaWidth=Math.floor(meta?.getBoundingClientRect().width||meta?.clientWidth||0);
+    if(!metaWidth)return null;
     const starWidth=stars?Math.ceil(stars.getBoundingClientRect().width||stars.scrollWidth||0):0;
-    const iconItems=icons?parse(icons,'flapItems'):[];
-    const iconNeed=iconItems.length?iconItems.length*26+Math.max(0,iconItems.length-1)*4:0;
-    const gap=parseFloat(meta?getComputedStyle(meta).columnGap:0)||9;
-    // Flags are no longer capped at four. First protect the stars + every middle
-    // icon that can genuinely fit, then spend any remaining footer width on flags.
-    // A flag after the first costs ~26px because the group deliberately bunches.
-    const roomForFlags=Math.max(34,metaWidth-starWidth-iconNeed-(starWidth?gap:0)-(iconItems.length?gap:0)-6);
-    const fitByWidth=Math.max(1,1+Math.floor(Math.max(0,roomForFlags-34)/26));
-    const shown=Math.min(items.length,fitByWidth);
+    const gap=parseFloat(getComputedStyle(meta).columnGap)||9;
+    const rightInset=15,safety=8;
+    const usable=Math.max(0,metaWidth-starWidth-(starWidth?gap:0)-rightInset-safety);
+    const iconW=n=>n>0?n*26+Math.max(0,n-1)*4:0;
+    const flagW=n=>n>0?34+Math.max(0,n-1)*26:0;
+    const between=(i,f)=>i>0&&f>0?gap:0;
+
+    // Equal-share first: each visible item owns one primary slot. If the number
+    // of slots is odd, the middle/vibe side gets shotgun. Any share it cannot
+    // use is immediately handed to the other side. We then verify against real
+    // pixel widths so the two groups can never overlap.
+    const maxLogical=Math.max(1,Math.floor((usable+4)/30));
+    let iShare=Math.ceil(maxLogical/2),fShare=Math.floor(maxLogical/2);
+    let i=Math.min(iconItems.length,iShare),f=Math.min(flagItems.length,fShare);
+    let spare=maxLogical-i-f;
+    while(spare>0){
+      if(i<iconItems.length){i++;spare--;if(!spare)break}
+      if(f<flagItems.length){f++;spare--}
+      if(i>=iconItems.length&&f>=flagItems.length)break;
+    }
+    if(!iconItems.length){f=Math.min(flagItems.length,maxLogical);i=0}
+    if(!flagItems.length){i=Math.min(iconItems.length,maxLogical);f=0}
+
+    const fits=(a,b)=>iconW(a)+flagW(b)+between(a,b)<=usable;
+    // If optical/real widths make the logical split too wide, trim from the side
+    // currently holding more slots. On a tie, preserve the vibe/middle slot.
+    while((i>0||f>0)&&!fits(i,f)){
+      if(f>i&&f>0)f--;else if(i>f&&i>0)i--;else if(f>0)f--;else i--;
+    }
+    // Reclaim every safe pixel. Alternate offers, with the middle/vibe side first.
+    let changed=true;
+    while(changed){changed=false;
+      if(i<iconItems.length&&fits(i+1,f)){i++;changed=true}
+      if(f<flagItems.length&&fits(i,f+1)){f++;changed=true}
+    }
+    return {iconItems,flagItems,iconsShown:i,flagsShown:f,metaWidth,usable,flagWidth:flagW(f)};
+  }
+  function initIcons(row,allocation){
+    const items=allocation?.iconItems||parse(row,'flapItems');if(!items.length)return;
+    const shown=Math.min(items.length,Math.max(0,allocation?.iconsShown??items.length));
+    const mode=(shown<=0||items.length===1||shown>=items.length)?'static':'flap';
+    const signature=`equal:${mode}:${shown}:${items.length}:${allocation?.usable||0}`;
+    if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
+    const old=states.get(row);if(old?.timer)clearInterval(old.timer);states.delete(row);
+    row.innerHTML=shown?items.slice(0,shown).map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join(''):'';
+    if(mode==='static'||shown<=0)return;
+    const state={offset:0,timer:null};states.set(row,state);state.timer=setInterval(()=>{if(!row.isConnected){clearInterval(state.timer);return}state.offset=(state.offset+shown)%items.length;flap([...row.querySelectorAll('.trip-flap-slot')],items,state.offset)},4200);
+  }
+  function initFlags(row,allocation){
+    const items=allocation?.flagItems||parse(row,'flagItems');if(!items.length)return;row.dataset.count=String(items.length);
+    const shown=Math.min(items.length,Math.max(0,allocation?.flagsShown??Math.min(items.length,4)));
     row.dataset.visible=String(shown);
-    const flagWidth=34+Math.max(0,shown-1)*26;
-    row.style.setProperty('width',flagWidth+'px','important');
-    row.style.setProperty('max-width',flagWidth+'px','important');
-    const signature=`adaptive:${shown}:${items.length}:${metaWidth}:${iconNeed}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
-    row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flag-slot" data-flag-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
+    const flagWidth=shown?34+Math.max(0,shown-1)*26:0;
+    row.style.setProperty('width',flagWidth+'px','important');row.style.setProperty('min-width',flagWidth+'px','important');row.style.setProperty('max-width',flagWidth+'px','important');
+    const signature=`equal:${shown}:${items.length}:${allocation?.usable||0}`;if(row.dataset.renderSig===signature)return;row.dataset.renderSig=signature;
+    row.innerHTML=shown?items.slice(0,shown).map((x,i)=>`<span class="trip-flag-slot" data-flag-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join(''):'';
     [...row.querySelectorAll('.trip-flag-slot')].forEach((slot,i)=>slot.style.marginLeft=i?'-8px':'0');
-    const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown){states.delete(row);return}
+    const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown||shown<=0){states.delete(row);return}
     const state={offset:0,timer:null};states.set(row,state);state.timer=setInterval(()=>{if(!row.isConnected){clearInterval(state.timer);return}state.offset=(state.offset+shown)%items.length;flap([...row.querySelectorAll('.trip-flag-slot')],items,state.offset)},4700);
   }
   let scanQueued=false;
-  function scan(){document.querySelectorAll('#tripList .trip-card-meta-row').forEach(meta=>{const icons=meta.querySelector('.trip-flap-icons'),flags=meta.querySelector('.trip-card-flags');if(flags)initFlags(flags);if(icons)initIcons(icons)})}
+  function scan(){document.querySelectorAll('#tripList .trip-card-meta-row').forEach(meta=>{const icons=meta.querySelector('.trip-flap-icons'),flags=meta.querySelector('.trip-card-flags'),allocation=footerAllocation(meta);if(!allocation)return;if(flags)initFlags(flags,allocation);if(icons)initIcons(icons,allocation)})}
   function queueScan(){
     if(scanQueued)return;
     scanQueued=true;
@@ -275,7 +278,7 @@ function tripAdaptiveFlags(cs){
     document.querySelectorAll('#tripList .trip-flap-icons').forEach(row=>{
       if(row.dataset.renderSig)return;
       const w=Math.floor(row.getBoundingClientRect().width||row.clientWidth||0);
-      if(w>0)initIcons(row);else pending=true;
+      if(w>0){const meta=row.closest('.trip-card-meta-row'),allocation=meta?footerAllocation(meta):null;if(allocation){const flags=meta.querySelector('.trip-card-flags');if(flags)initFlags(flags,allocation);initIcons(row,allocation)}}else pending=true;
     });
     // Finite retry only: never install a continuous layout observer / render loop.
     if(pending)setTimeout(()=>requestAnimationFrame(retryUnmeasured),32);
