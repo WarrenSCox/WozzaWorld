@@ -39,6 +39,18 @@
 <script>setTimeout(()=>document.getElementById('launchSplash')?.classList.add('hide'),2700)</script>
 <div class="map-view-title" id="mapViewTitle">MY WORLD VIEW</div>
 <button class="map-close" id="mapClose" aria-label="Close map">×</button>
+<button class="map-filter-btn" id="mapFilterBtn" type="button" aria-label="Filter map" title="Filter map">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+</button>
+<dialog class="map-filter-dialog" id="mapFilterDialog" aria-labelledby="mapFilterTitle">
+  <div class="map-filter-head"><h2 id="mapFilterTitle">FILTER MAP</h2><button type="button" id="mapFilterClose" aria-label="Close filter">×</button></div>
+  <p>Choose what to highlight on your map.</p>
+  <div class="map-filter-options">
+    <button type="button" class="map-filter-option visited" data-map-filter="visited" aria-pressed="true"><span class="map-filter-dot"></span><span>Visited</span><span class="map-filter-check">✓</span></button>
+    <button type="button" class="map-filter-option going" data-map-filter="going" aria-pressed="true"><span class="map-filter-dot"></span><span>Visiting</span><span class="map-filter-check">✓</span></button>
+    <button type="button" class="map-filter-option bucket" data-map-filter="bucket" aria-pressed="false"><span class="map-filter-dot"></span><span>Bucket List</span><span class="map-filter-check">✓</span></button>
+  </div>
+</dialog>
 <div id="app">
 <header class="topbar">
   <nav class="header-nav" aria-label="Main navigation">

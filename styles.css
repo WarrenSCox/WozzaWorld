@@ -4719,3 +4719,15 @@ html,body{overscroll-behavior-y:none;}
 .trip-unsaved-head{align-items:center!important;}
 .trip-unsaved-card .trip-unsaved-head h3{margin:0!important;}
 .trip-unsaved-close{flex-basis:38px!important;width:38px!important;height:38px!important;min-width:38px!important;transform:translateY(-2px)!important;}
+
+/* World View map filters */
+.map-filter-btn{display:none;position:fixed;z-index:118;width:58px;height:58px;border:0;border-radius:50%;background:#078ba0;color:#fff;box-shadow:0 10px 24px rgba(4,71,91,.24);align-items:center;justify-content:center;padding:15px}
+.map-filter-btn svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round}
+body.map-view .map-filter-btn{display:flex;right:24px;bottom:24px}
+.map-filter-dialog{width:min(88vw,430px);border:0;border-radius:28px;padding:0;background:#f7fbfb;color:#102b36;box-shadow:0 24px 70px rgba(2,45,62,.3)}
+.map-filter-dialog::backdrop{background:rgba(5,39,50,.38);backdrop-filter:blur(2px)}
+.map-filter-head{display:flex;align-items:center;justify-content:space-between;padding:24px 24px 8px}.map-filter-head h2{margin:0;font-size:24px;font-weight:900}.map-filter-head button{width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:#687781;font-size:30px;line-height:1}
+.map-filter-dialog>p{margin:0;padding:0 24px 18px;color:#687781}.map-filter-options{display:grid;gap:10px;padding:0 18px 22px}.map-filter-option{display:grid;grid-template-columns:24px 1fr 32px;align-items:center;gap:12px;min-height:58px;padding:10px 14px;border:0;border-radius:18px;background:#fff;color:#102b36;text-align:left;font:inherit;font-weight:800}.map-filter-dot{width:18px;height:18px;border-radius:50%}.map-filter-option.visited .map-filter-dot{background:#087f77}.map-filter-option.going .map-filter-dot{background:#ef9a27}.map-filter-option.bucket .map-filter-dot{background:#e3bd4d}.map-filter-check{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#078ba0;color:#fff;opacity:0;transform:scale(.8);transition:.15s ease}.map-filter-option[aria-pressed="true"] .map-filter-check{opacity:1;transform:scale(1)}
+body.map-view .country.map-filter-bucket{fill:#e3bd4d!important}
+@media (orientation:landscape){body.map-view .map-filter-btn{right:24px;bottom:24px}}
+@media (orientation:portrait){body.map-view .map-filter-btn{right:20px;bottom:72px}}
