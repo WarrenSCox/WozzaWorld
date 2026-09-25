@@ -1119,14 +1119,14 @@ applyWorldViewName();
 .vibe-icon--adventure{transform:translateY(1px)}
 .vibe-icon--beach{transform:translateY(0)}
 .vibe-icon--camping{transform:translateY(1px)}
-.vibe-icon--celebration{transform:translateY(1px)}
-.vibe-icon--city{transform:translateY(1px)}
+.vibe-icon--celebration{transform:translateY(-1px)}
+.vibe-icon--city{transform:translateY(-1px)}
 .vibe-icon--cruise{transform:translateY(0)}
-.vibe-icon--friends-family{transform:translateY(1px)}
+.vibe-icon--friends-family{transform:translateY(-1px)}
 .vibe-icon--great-outdoors{transform:translateY(1px)}
 .vibe-icon--road-trip{transform:translateY(1px) scale(.88)}
 .vibe-icon--snow-ski{transform:translateY(0)}
-.vibe-icon--spa-wellness{transform:translateY(1px)}
+.vibe-icon--spa-wellness{transform:translateY(3px)}
 .trip-stop-collapsed-meta{display:none!important}.trip-destination-stop.single-stop.collapsed .trip-stop-card-head{flex-wrap:nowrap}.single-stop-summary-mode{display:inline-flex}
 `;document.head.appendChild(st)})();
 
