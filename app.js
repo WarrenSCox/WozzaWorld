@@ -194,48 +194,31 @@ function tripAdaptiveFlags(cs){
   const flap=(slots,items,offset)=>slots.forEach((slot,i)=>{const item=items[(offset+i)%items.length];setTimeout(()=>{slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{slot.innerHTML=item.html;slot.title=item.label;slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},i*55)});
   function initIcons(row){
     const items=parse(row,'flapItems');if(!items.length)return;
+    const available=Math.floor(row.getBoundingClientRect().width||row.clientWidth||0);
+    if(!available)return;
+
+    // Measure the space once, without temporarily rendering every icon. The icon
+    // slots have a real CSS width of 26px and a 4px gap, so this gives the same
+    // physical-fit decision without creating a render/ResizeObserver feedback loop.
+    const slotWidth=26,gap=4;
+    const required=items.length*slotWidth+Math.max(0,items.length-1)*gap;
+    const capacity=required<=available+1?items.length:Math.max(1,Math.floor((available+gap)/(slotWidth+gap)));
+    const shown=Math.min(items.length,capacity);
+    const mode=(items.length===1||shown>=items.length)?'static':'flap';
+    const signature=`${mode}:${shown}:${items.length}:${available}`;
+    if(row.dataset.renderSig===signature)return;
+    row.dataset.renderSig=signature;
+
     const old=states.get(row);if(old?.timer)clearInterval(old.timer);states.delete(row);
+    row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
+    if(mode==='static')return;
 
-    // Source of truth is the DOM's real rendered width. First render EVERY icon
-    // statically, then ask the browser whether that complete set actually overflows.
-    // This prevents a one-icon "carousel" when there is visibly spare room.
-    row.innerHTML=items.map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
-    row.dataset.renderSig='measuring';
-
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      if(!row.isConnected)return;
-      const available=Math.floor(row.getBoundingClientRect().width||row.clientWidth||0);
-      const required=Math.ceil(row.scrollWidth||0);
-
-      // One icon must never animate. Nor should any set which genuinely fits.
-      if(items.length===1||!available||required<=available+1){
-        row.dataset.renderSig=`static:${items.length}:${available}:${required}`;
-        return;
-      }
-
-      const first=row.querySelector('.trip-flap-slot');
-      const slotWidth=Math.ceil(first?.getBoundingClientRect().width||26);
-      const cs=getComputedStyle(row);
-      const gap=parseFloat(cs.columnGap||cs.gap)||4;
-      const capacity=Math.max(1,Math.floor((available+gap)/(slotWidth+gap)));
-      const shown=Math.min(items.length,capacity);
-
-      // Defensive rule: if calculation says every icon fits, keep the complete
-      // static render. Animation exists only for genuine physical overflow.
-      if(shown>=items.length){
-        row.dataset.renderSig=`static:${items.length}:${available}:${required}`;
-        return;
-      }
-
-      row.innerHTML=items.slice(0,shown).map((x,i)=>`<span class="trip-flap-slot" data-flap-slot="${i}" title="${esc(x.label)}">${x.html}</span>`).join('');
-      row.dataset.renderSig=`flap:${shown}:${items.length}:${available}`;
-      const state={offset:0,timer:null};states.set(row,state);
-      state.timer=setInterval(()=>{
-        if(!row.isConnected){clearInterval(state.timer);return}
-        state.offset=(state.offset+shown)%items.length;
-        flap([...row.querySelectorAll('.trip-flap-slot')],items,state.offset);
-      },4200);
-    }));
+    const state={offset:0,timer:null};states.set(row,state);
+    state.timer=setInterval(()=>{
+      if(!row.isConnected){clearInterval(state.timer);return}
+      state.offset=(state.offset+shown)%items.length;
+      flap([...row.querySelectorAll('.trip-flap-slot')],items,state.offset);
+    },4200);
   }
   function initFlags(row){
     const items=parse(row,'flagItems');if(!items.length)return;row.dataset.count=String(items.length);
@@ -244,10 +227,15 @@ function tripAdaptiveFlags(cs){
     const old=states.get(row);if(old?.timer)clearInterval(old.timer);if(items.length<=shown){states.delete(row);return}
     const state={offset:0,timer:null};states.set(row,state);state.timer=setInterval(()=>{if(!row.isConnected){clearInterval(state.timer);return}state.offset=(state.offset+shown)%items.length;flap([...row.querySelectorAll('.trip-flag-slot')],items,state.offset)},4700);
   }
-  function scan(){document.querySelectorAll('#tripList .trip-card-meta-row').forEach(meta=>{const icons=meta.querySelector('.trip-flap-icons'),flags=meta.querySelector('.trip-card-flags');if(flags)initFlags(flags);if(icons)requestAnimationFrame(()=>requestAnimationFrame(()=>initIcons(icons)))})}
-  const ro=new ResizeObserver(entries=>entries.forEach(e=>{if(e.target.classList.contains('trip-flap-icons'))initIcons(e.target)}));
-  const mo=new MutationObserver(()=>{scan();document.querySelectorAll('#tripList .trip-flap-icons').forEach(x=>ro.observe(x))});mo.observe(document.documentElement,{childList:true,subtree:true});
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{scan();document.querySelectorAll('#tripList .trip-flap-icons').forEach(x=>ro.observe(x))});else{scan();document.querySelectorAll('#tripList .trip-flap-icons').forEach(x=>ro.observe(x))}
+  let scanQueued=false;
+  function scan(){document.querySelectorAll('#tripList .trip-card-meta-row').forEach(meta=>{const icons=meta.querySelector('.trip-flap-icons'),flags=meta.querySelector('.trip-card-flags');if(flags)initFlags(flags);if(icons)initIcons(icons)})}
+  function queueScan(){if(scanQueued)return;scanQueued=true;requestAnimationFrame(()=>{scanQueued=false;scan()})}
+  // Ignore mutations created by our own flap/flag slot updates. Only app-level
+  // card/list changes should schedule another layout pass.
+  const mo=new MutationObserver(muts=>{if(muts.some(m=>!m.target.closest?.('.trip-flap-icons,.trip-card-flags')))queueScan()});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+  let resizeTimer=null;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{document.querySelectorAll('#tripList .trip-flap-icons,#tripList .trip-card-flags').forEach(x=>delete x.dataset.renderSig);queueScan()},120)},{passive:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queueScan);else queueScan();
 })();
 function renderMyTrips(){if(!state.trips.length)return '<div class="hero-card"><p class="muted">No trips yet. Add your first adventure.</p></div>';const horizon=state.trips.filter(tripIsOnHorizon).sort(tripSortUpcoming),rearAll=state.trips.filter(t=>!tripIsOnHorizon(t)),rearview=rearviewSortedTrips([...rearAll]);const horizonHtml=`<section class="trip-category"><div class="trip-category-head"><h3 class="trip-category-title">ON THE HORIZON</h3></div><div class="trip-category-list">${horizon.length?horizon.map(tripCard).join(''):'<p class="trip-category-empty">No trips on the horizon yet.</p>'}</div></section>`;const rearHtml=`<section class="trip-category rearview-category${rearviewExpanded?'':' collapsed'}"><div class="trip-category-head"><h3 class="trip-category-title">IN THE REARVIEW</h3><div class="rearview-head-actions"><button type="button" class="rearview-filter-toggle" aria-label="Sort and filter past trips" ${rearviewExpanded?'':'hidden'}><span></span><span></span><span></span></button><button type="button" class="section-collapse-toggle rearview-toggle" aria-expanded="${rearviewExpanded}" aria-label="${rearviewExpanded?'Minimise':'Expand'} In the Rearview">${rearviewExpanded?'−':'+'}</button></div></div>${!rearviewExpanded?'<img class="rearview-handnote" src="rearview-past-adventures-illustrated.svg?v=20260917-19" alt="Click to see your past adventures">':''}${rearviewFilterPanel(rearAll)}<div class="trip-category-list" ${rearviewExpanded?'':'hidden'}>${rearview.length?rearview.map(tripCard).join(''):'<p class="trip-category-empty">No trips match this filter.</p>'}</div></section>`;return horizonHtml+rearHtml}
 function renderExtraStats(){const grid=$('.screen[data-screen="me"] .stats-grid');if(!grid)return;const going=$('#meGoing'),trips=$('#meTrips');if(going?.parentElement){const label=going.parentElement.querySelector('span');if(label)label.textContent='Upcoming trips'}if(trips?.parentElement){trips.textContent=state.trips.filter(t=>!tripIsOnHorizon(t)).length;const label=trips.parentElement.querySelector('span');if(label)label.textContent='Trips completed'}grid.querySelectorAll('.wozza-extra-stat').forEach(x=>x.remove());const transportGroup=m=>{m=String(m||'').toLowerCase();if(m==='air'||m==='plane')return'By air';if(m==='sea'||m==='ferry'||m==='cruise'||m==='narrowboat')return'By water';if(['car','campervan','motorhome','train','coach / bus','motorbike','bicycle','on foot'].includes(m))return'By land';return m?'Other':''};const modes=state.trips.flatMap(tripTravelModes).map(transportGroup).filter(Boolean);const counts={};modes.forEach(m=>counts[m]=(counts[m]||0)+1);const fav=Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]?.[0]||'';const ratings=state.trips.map(t=>Number(t.rating)||0).filter(Boolean);const avg=ratings.length?ratings.reduce((a,b)=>a+b,0)/ratings.length:0;const visited=countryRows('visited'),continents=milestoneContinents(visited),worldPct=visited.length?visited.length/193*100:0;const vibeCounts={};state.trips.filter(t=>!tripIsOnHorizon(t)).forEach(t=>{new Set(t.vibes||[]).forEach(v=>{v=String(v||'').trim();if(v)vibeCounts[v]=(vibeCounts[v]||0)+1})});const favVibe=Object.entries(vibeCounts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]?.[0]||'',vibeStatLabels={'City Break':'City','Beach Holiday':'Beach','Spa & Wellness':'Wellness','Snow & Ski':'Snow','Visiting Friends & Family':'Friends & Family','Great Outdoors':'Outdoors'},favVibeDisplay=vibeStatLabels[favVibe]||favVibe;const add=(value,label,cls='')=>{const card=document.createElement('div');card.className='stat wozza-extra-stat';card.innerHTML=`<strong class="${cls}">${value}</strong><span>${label}</span>`;grid.append(card)};add(`${continents} of 7`,'Continents travelled');add(worldPct?`${worldPct.toFixed(1)}%`:'0.0%','World explored');add(fav?esc(fav):'—','Favourite way to travel');add(favVibeDisplay?esc(favVibeDisplay):'—','Most travelled vibe',favVibeDisplay.length>12?'wozza-stat-vibe-value wozza-stat-vibe-long':'wozza-stat-vibe-value');add(avg?avg.toFixed(1)+' <em class="avg-rating-star">★</em>':'—','Average trip rating');const baseVisited=grid.querySelector('#meVisited')?.closest('.stat'),dest=grid.querySelector('#meCities')?.closest('.stat'),completed=grid.querySelector('#meTrips')?.closest('.stat'),upcoming=grid.querySelector('#meGoing')?.closest('.stat'),extras=[...grid.querySelectorAll('.wozza-extra-stat')];[baseVisited,extras[0],extras[1],dest,completed,upcoming,extras[2],extras[3],extras[4]].filter(Boolean).forEach(card=>grid.append(card));if(!document.getElementById('wozza-nine-stat-grid-style')){const st=document.createElement('style');st.id='wozza-nine-stat-grid-style';st.textContent='.stats-grid .wozza-stat-long-value{font-size:clamp(16px,4.4vw,21px)!important;line-height:1.05!important;overflow-wrap:anywhere}.stats-grid .wozza-stat-vibe-value{white-space:nowrap!important}.stats-grid .wozza-stat-vibe-long{font-size:clamp(13px,3.7vw,18px)!important;line-height:1!important;letter-spacing:-.025em!important}';document.head.appendChild(st)}}
