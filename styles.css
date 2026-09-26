@@ -4809,3 +4809,8 @@ body.map-view .country.map-filter-bucket{fill:#e3bd4d!important}
 .map-filter-check{
   background:#078ba0!important;
 }
+
+/* Bucket List map colour matches the Home page Bucket List key. */
+.map-filter-option.bucket .map-filter-dot{background:var(--bucket-sky)!important}
+body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
+.wozza-extra-stat[data-stat="continents"]{cursor:pointer}
