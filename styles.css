@@ -4814,3 +4814,9 @@ body.map-view .country.map-filter-bucket{fill:#e3bd4d!important}
 .map-filter-option.bucket .map-filter-dot{background:var(--bucket-sky)!important}
 body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 .wozza-extra-stat[data-stat="continents"]{cursor:pointer}
+
+/* v0.20.0 — shared Map/Home filter preference
+   The existing filter state is persisted in localStorage and applied to the shared
+   country paths. Make Bucket List highlighting visible on the Home overview too;
+   aeroplane overlays/animation are intentionally untouched. */
+.country.map-filter-bucket{fill:var(--bucket-sky)!important}
