@@ -4824,3 +4824,44 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 /* Stop itinerary v1 */
 .itinerary-swipe-prompt{pointer-events:auto!important;cursor:pointer;user-select:none}
 .stop-itinerary-summary{margin-top:14px}.stop-itinerary-title{font-weight:900;font-size:13px;letter-spacing:.06em;color:#fff;margin:0 0 8px}.stop-itinerary-title span{opacity:.7;margin-left:5px}.stop-itinerary-item{width:100%;display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;border:0;border-radius:14px;background:rgba(255,255,255,.14);color:#fff;padding:9px 11px;margin:6px 0;text-align:left}.stop-itinerary-item strong{font-size:13px}.stop-itinerary-item small{font-size:11px;opacity:.82}.stop-itinerary-dialog{width:min(92vw,620px);max-height:88vh;border:0;border-radius:28px;padding:0;background:#eef7f8;color:#173448;box-shadow:0 24px 70px rgba(0,25,40,.32)}.stop-itinerary-dialog::backdrop{background:rgba(0,50,65,.56);backdrop-filter:blur(8px)}.stop-itinerary-form{padding:25px;overflow:auto}.stop-itinerary-head{display:flex;align-items:start;justify-content:space-between;margin-bottom:18px}.stop-itinerary-head small{font-weight:900;letter-spacing:.08em;color:#07899d}.stop-itinerary-head h2{margin:2px 0 0;font-size:28px}.stop-itinerary-close{border:0;border-radius:50%;width:48px;height:48px;background:#fff;font-size:30px;color:#173448}.stop-itinerary-form label{display:block;font-size:12px;font-weight:900;letter-spacing:.02em;margin:11px 0}.stop-itinerary-form input,.stop-itinerary-form select,.stop-itinerary-form textarea{box-sizing:border-box;width:100%;margin-top:6px;border:1px solid rgba(20,55,70,.12);border-radius:16px;background:#fff;padding:13px 14px;font:inherit;color:#173448}.stop-itinerary-form textarea{min-height:88px;resize:vertical}.itin-two,.itin-timing{display:grid;grid-template-columns:1fr 1fr;gap:12px}.itin-link-check{display:flex!important;align-items:center;gap:9px;font-weight:700!important}.itin-link-check input{width:20px!important;height:20px;margin:0!important}.stop-itinerary-actions{display:grid;grid-template-columns:auto 1fr 1.3fr;gap:10px;margin-top:20px}.stop-itinerary-actions button{border:0;border-radius:999px;padding:13px 16px;font-weight:900}.stop-itinerary-actions .primary{background:#e8bd2f;color:#173448}.itin-delete{background:#fff0ef;color:#a93630}.itin-cancel{background:#fff;color:#173448}@media(max-width:520px){.itin-two,.itin-timing{grid-template-columns:1fr}.stop-itinerary-actions{grid-template-columns:1fr 1fr}.stop-itinerary-actions .primary{grid-column:1/-1;grid-row:1}.stop-itinerary-item{grid-template-columns:28px 1fr}.stop-itinerary-item small{grid-column:2}}
+
+
+/* Stop itinerary v1.1 — match established WozzaWorld modal styling */
+.stop-itinerary-dialog{
+  width:min(calc(100% - 32px),390px)!important;
+  max-height:86vh!important;
+  border:0!important;
+  border-radius:24px!important;
+  padding:0!important;
+  background:#fff0cf!important;
+  color:#172f3a!important;
+  box-shadow:0 18px 55px rgba(6,40,52,.28)!important;
+}
+.stop-itinerary-dialog::backdrop{
+  background:rgba(7,36,46,.48)!important;
+  backdrop-filter:blur(3px)!important;
+  -webkit-backdrop-filter:blur(3px)!important;
+}
+.stop-itinerary-form{padding:22px!important;overflow:auto!important;}
+.stop-itinerary-head{align-items:center!important;margin-bottom:16px!important;gap:12px!important;}
+.stop-itinerary-head small{color:#07899d!important;font-size:12px!important;font-weight:900!important;letter-spacing:.08em!important;}
+.stop-itinerary-head h2{
+  margin:2px 0 0!important;
+  font-family:"Archivo Black",Impact,sans-serif!important;
+  font-size:22px!important;
+  line-height:1.15!important;
+}
+.stop-itinerary-close{
+  flex:0 0 42px!important;
+  width:42px!important;height:42px!important;min-width:42px!important;
+  padding:0!important;border:0!important;border-radius:50%!important;
+  background:#fff!important;color:#68767b!important;font-size:28px!important;
+}
+.stop-itinerary-form label{font-size:12px!important;color:#172f3a!important;}
+.stop-itinerary-form input,.stop-itinerary-form select,.stop-itinerary-form textarea{
+  border:1px solid rgba(20,55,70,.12)!important;
+  border-radius:16px!important;background:#fff!important;color:#172f3a!important;
+}
+.stop-itinerary-actions button{min-height:44px!important;border-radius:999px!important;}
+.stop-itinerary-actions .primary{background:#e9bf2e!important;color:#172f3a!important;}
+.itin-cancel{background:#dcebed!important;color:#172f3a!important;}
