@@ -2583,3 +2583,28 @@ const _wwBindItineraryPromptV14=bindItineraryPrompt;
 bindItineraryPrompt=function(row){_wwBindItineraryPromptV14(row);const p=row?.querySelector('.itinerary-swipe-prompt');if(!p)return;p.onclick=wwOpenMasterItinerary;p.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();wwOpenMasterItinerary()}};p.onpointerdown=null;p.onpointerup=null;wwRefreshItineraryButtons()};
 /* Rebind rows already created before this patch loaded. */
 requestAnimationFrame(()=>wwTripStopRows().forEach(bindItineraryPrompt));
+
+/* === WozzaWorld itinerary v1.5 — clean trip surface, calendar drill-through, stop date guard === */
+/* Keep the trip/stop editor clean: itinerary content lives behind the itinerary button. */
+renderStopItinerarySummary=function(row){const host=row?.querySelector('.stop-itinerary-summary');if(host){host.innerHTML='';host.hidden=true}};
+function wwStopBounds(row){return {start:row?.querySelector('.trip-destination-from')?.value||'',end:row?.querySelector('.trip-destination-to')?.value||''}}
+function wwDateWithinStop(iso,row){if(!iso)return true;const b=wwStopBounds(row);return (!b.start||iso>=b.start)&&(!b.end||iso<=b.end)}
+/* Disable dates outside the active stop while using the existing WozzaWorld activity calendar. */
+const _wwCalRenderV15=wozzaCalendarRender;
+wozzaCalendarRender=function(){_wwCalRenderV15();if(wozzaCalendarMode!=='activity')return;const row=activeItineraryRow,grid=wozzaCalendarEnsure().querySelector('.wozza-calendar-grid');grid?.querySelectorAll('[data-cal-date]').forEach(b=>{const ok=wwDateWithinStop(b.dataset.calDate,row);b.disabled=!ok;b.classList.toggle('outside-stop-range',!ok);if(!ok)b.setAttribute('aria-label',`${b.textContent} — outside this stop`)});};
+/* Belt-and-braces validation in case an old/browser-native path supplies an out-of-range date. */
+const _wwSaveStopItineraryV15=saveStopItinerary;
+saveStopItinerary=function(){const d=itineraryDialog(),row=activeItineraryRow,sd=d.querySelector('#itinStartDate')?.dataset.iso||'',ed=d.querySelector('#itinEndDate')?.dataset.iso||'';if((sd&&!wwDateWithinStop(sd,row))||(ed&&!wwDateWithinStop(ed,row))){const b=wwStopBounds(row);alert(`Activity dates must stay within this stop${b.start||b.end?` (${b.start?pretty(b.start):'…'} – ${b.end?pretty(b.end):'…'})`:''}.`);return}return _wwSaveStopItineraryV15()};
+/* Daily schedule is a filtered view of the same activity records. */
+function wwOpenDailySchedule(iso){const all=wwMasterActivities().filter(x=>x.startDate===iso||(!x.startDate&&x.endDate===iso));const d=wwMasterItineraryDialog(),host=d.querySelector('#masterItineraryContent');d.querySelector('.master-itinerary-head small').textContent='DAILY SCHEDULE';d.querySelector('.master-itinerary-head h2').textContent=pretty(iso);d.querySelector('#masterItineraryAdd').hidden=true;host.innerHTML=all.length?`<section class="master-itinerary-day"><div class="master-itinerary-daybody">${all.map(x=>`<button type="button" class="master-itinerary-activity" data-stop="${x._stopIndex}" data-id="${esc(x.id)}"><time>${esc(x.flexible?'Flexible':(x.startTime||'—'))}</time><span class="master-itinerary-icon">${itineraryIcon(x)}</span><span><strong>${esc(x.name||'Activity')}</strong><small>${esc(x._stopName)}</small></span></button>`).join('')}</div></section>`:'<div class="master-itinerary-empty"><strong>Nothing planned yet</strong><p>There are no activities scheduled for this day.</p></div>';host.querySelectorAll('.master-itinerary-activity').forEach(b=>b.onclick=()=>{const row=wwTripStopRows()[Number(b.dataset.stop)];if(row){d.close();openStopItinerary(row,b.dataset.id)}});if(!d.open)d.showModal()}
+/* Existing read-only trip calendar: its in-range days now drill into the daily schedule. */
+const _wwCalRenderDailyV15=wozzaCalendarRender;
+wozzaCalendarRender=function(){_wwCalRenderDailyV15();if(wozzaCalendarMode!=='range')return;wozzaCalendarEnsure().querySelectorAll('.wozza-calendar-day[data-cal-date]').forEach(b=>{const iso=b.dataset.calDate,inTrip=iso>=wozzaCalendarRangeStart&&iso<=wozzaCalendarRangeEnd;b.disabled=!inTrip;b.classList.toggle('has-daily-schedule',inTrip);if(inTrip)b.onclick=()=>{wozzaCalendarClose();wwOpenDailySchedule(iso)}})};
+/* One stop = its itinerary. Multiple stops = the live master itinerary. */
+function wwOpenTripItinerary(){const rows=wwTripStopRows();if(rows.length===1){wwRenderMasterItinerary();const d=wwMasterItineraryDialog();d.querySelector('.master-itinerary-head small').textContent='STOP ITINERARY';d.querySelector('.master-itinerary-head h2').textContent=wwStopName(rows[0],0);d.querySelector('#masterItineraryAdd').hidden=false;if(!d.open)d.showModal();return}wwOpenMasterItinerary()}
+const _wwRenderMasterV15=wwRenderMasterItinerary;
+wwRenderMasterItinerary=function(){_wwRenderMasterV15();const d=wwMasterItineraryDialog();d.querySelector('.master-itinerary-head small').textContent=wwTripStopRows().length>1?'MASTER ITINERARY':'STOP ITINERARY';d.querySelector('.master-itinerary-head h2').textContent=wwTripStopRows().length>1?'Itinerary':wwStopName(wwTripStopRows()[0],0);d.querySelector('#masterItineraryAdd').hidden=false};
+wwOpenMasterItinerary=function(){wwRenderMasterItinerary();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()};
+const _wwBindItineraryPromptV15=bindItineraryPrompt;
+bindItineraryPrompt=function(row){_wwBindItineraryPromptV15(row);const p=row?.querySelector('.itinerary-swipe-prompt');if(!p)return;p.onclick=wwOpenTripItinerary;p.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();wwOpenTripItinerary()}};renderStopItinerarySummary(row)};
+requestAnimationFrame(()=>wwTripStopRows().forEach(bindItineraryPrompt));
