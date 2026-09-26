@@ -2508,3 +2508,58 @@ function saveStopItinerary(){const d=itineraryDialog(),row=activeItineraryRow;if
 function bindItineraryPrompt(row){const p=row?.querySelector('.itinerary-swipe-prompt');if(!p||p.dataset.bound)return;p.dataset.bound='1';p.setAttribute('role','button');p.setAttribute('tabindex','0');p.setAttribute('aria-label','Create itinerary activity');p.onclick=()=>openStopItinerary(row);p.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openStopItinerary(row)}};let sx=0;p.addEventListener('pointerdown',e=>sx=e.clientX);p.addEventListener('pointerup',e=>{if(e.clientX-sx>45)openStopItinerary(row)});renderStopItinerarySummary(row)}
 const _wwAddDestinationStop=addDestinationStop;addDestinationStop=function(data={}){const row=_wwAddDestinationStop(data);if(data.itinerary)row.dataset.itinerary=JSON.stringify(data.itinerary);bindItineraryPrompt(row);return row};
 const _wwCollectDestinationStops=collectDestinationStops;collectDestinationStops=function(){const out=_wwCollectDestinationStops();const rows=$$('#tripDestinationStops .trip-destination-stop');out.forEach((x,i)=>{const row=rows.find(r=>String(r.dataset.stopId)===String(x.id))||rows[i];x.itinerary=itineraryItemsForRow(row)});return out};
+
+/* === WozzaWorld stop itinerary v1.3 surgical tweaks === */
+state.itineraryTypeBank??=[];
+function itineraryAllCategories(){
+ const custom=(state.itineraryTypeBank||[]).map(n=>[n,'📍']);
+ return [...ITINERARY_CATEGORIES.filter(x=>x[0]!=='Other'),...custom,['Other','📍']];
+}
+function renderItineraryCategoryBank(d,selected='Food & drink'){
+ const bank=d.querySelector('#itinCategoryBank');if(!bank)return;
+ bank.innerHTML=itineraryAllCategories().map(x=>`<button type="button" class="itin-category-tag${String(x[0]).toLowerCase()===String(selected).toLowerCase()?' selected':''}" data-category="${esc(x[0])}"><span>${x[1]}</span>${esc(x[0])}</button>`).join('')+`<div class="itin-other-entry" hidden><input id="itinOtherType" autocomplete="off" maxlength="40" placeholder="Add activity type"></div>`;
+ d.dataset.category=selected;
+ bank.querySelectorAll('.itin-category-tag').forEach(b=>b.onclick=()=>{
+  if(b.dataset.category==='Other'){
+   bank.querySelector('.itin-other-entry').hidden=false;
+   requestAnimationFrame(()=>bank.querySelector('#itinOtherType')?.focus());return;
+  }
+  bank.querySelector('.itin-other-entry').hidden=true;
+  bank.querySelectorAll('.itin-category-tag').forEach(x=>x.classList.toggle('selected',x===b));d.dataset.category=b.dataset.category;
+ });
+ const other=bank.querySelector('#itinOtherType');if(other)other.onkeydown=e=>{if(e.key!=='Enter')return;e.preventDefault();const raw=other.value.trim();if(!raw)return;let v=(state.itineraryTypeBank||[]).find(x=>String(x).toLowerCase()===raw.toLowerCase())||raw;if(!(state.itineraryTypeBank||[]).some(x=>String(x).toLowerCase()===raw.toLowerCase()))state.itineraryTypeBank.push(v);localStorage.setItem('wozzaworld-state',JSON.stringify(state));renderItineraryCategoryBank(d,v)};
+}
+function activityTodoDraftFromItem(x){
+ const ids=Array.isArray(x.todoIds)?x.todoIds:(x.todoId?[x.todoId]:[]);
+ return ids.map(id=>{const r=activityTodoById(id);return r?{id,activityId:x.id||'',text:r.querySelector('.trip-todo-input')?.value||'',done:r.classList.contains('is-done')} : null}).filter(Boolean)
+}
+function renderActivityTodoEditor(d){
+ const list=d.querySelector('#itinTodoList');if(!list)return;const vals=JSON.parse(d.dataset.todoDraft||'[]');
+ list.innerHTML=vals.map((v,i)=>todoRowMarkup(v,i)).join('');
+ $$('.trip-todo-row',list).forEach(row=>{
+  bindTripTodoRow(row);
+  const input=row.querySelector('.trip-todo-input');input?.addEventListener('input',sync);
+  row.querySelector('.trip-todo-check')?.addEventListener('click',()=>setTimeout(sync));
+  row.querySelector('.trip-todo-remove')?.addEventListener('click',()=>setTimeout(sync));
+ });
+ function sync(){d.dataset.todoDraft=JSON.stringify($$('.trip-todo-row',list).map(r=>({id:r.dataset.todoId||'',activityId:d.dataset.activityDraftId||'',text:r.querySelector('.trip-todo-input')?.value.trim()||'',done:r.classList.contains('is-done')})).filter(x=>x.text));}
+ d.querySelector('#itinTodoAdd').onclick=()=>{sync();const a=JSON.parse(d.dataset.todoDraft||'[]');a.push({id:'',activityId:d.dataset.activityDraftId||'',text:'',done:false});d.dataset.todoDraft=JSON.stringify(a);renderActivityTodoEditor(d);list.lastElementChild?.querySelector('.trip-todo-input')?.focus()};
+}
+function syncActivityTodosToTrip(d,id,old={}){
+ const draft=JSON.parse(d.dataset.todoDraft||'[]');const oldIds=Array.isArray(old.todoIds)?old.todoIds:(old.todoId?[old.todoId]:[]),newIds=[];
+ oldIds.forEach(oid=>{if(!draft.some(x=>x.id===oid))activityTodoById(oid)?.remove()});
+ draft.forEach(item=>{if(!item.text)return;let tid=item.id||crypto.randomUUID?.()||`todo-${Date.now()}-${Math.random()}`,r=activityTodoById(tid);if(!r){addTripTodoRow({id:tid,activityId:id,text:item.text,done:!!item.done});r=activityTodoById(tid)}else{r.dataset.activityId=id;const inp=r.querySelector('.trip-todo-input');if(inp)inp.value=item.text;r.classList.toggle('is-done',!!item.done);const tick=r.querySelector('.trip-todo-check');tick?.classList.toggle('selected',!!item.done);tick?.setAttribute('aria-pressed',String(!!item.done));}newIds.push(tid)});
+ updateTripTodoSummary();return newIds;
+}
+const _wwItineraryDialog=itineraryDialog;
+itineraryDialog=function(){const d=_wwItineraryDialog();if(d.dataset.v13)return d;d.dataset.v13='1';
+ const sd=d.querySelector('#itinStartDate')?.closest('label'),ed=d.querySelector('#itinEndDate')?.closest('label');if(sd)sd.childNodes[0].textContent='Start';if(ed)ed.childNodes[0].textContent='Finish';
+ const loc=d.querySelector('#itinLocation')?.closest('label');if(loc&&!d.querySelector('#itinContact'))loc.insertAdjacentHTML('afterend','<label>Contact details<textarea id="itinContact" rows="1" placeholder="Phone, email, contact person…"></textarea></label>');
+ const oldTodo=d.querySelector('#itinTodo')?.closest('label');if(oldTodo)oldTodo.outerHTML='<section class="itin-todo-section"><div class="itin-todo-title">To do</div><div id="itinTodoList" class="trip-todo-list"></div><button type="button" id="itinTodoAdd" class="itin-todo-add">＋ Add more</button></section>';
+ return d};
+const _wwOpenStopItinerary=openStopItinerary;
+openStopItinerary=function(row,id=''){_wwOpenStopItinerary(row,id);const d=itineraryDialog(),items=itineraryItemsForRow(row),x=items.find(i=>String(i.id)===String(id))||{};renderItineraryCategoryBank(d,x.category||'Food & drink');d.dataset.activityDraftId=id||'';d.dataset.todoDraft=JSON.stringify(activityTodoDraftFromItem(x));const c=d.querySelector('#itinContact');if(c)c.value=x.contact||'';const sd=d.querySelector('#itinStartDate'),ed=d.querySelector('#itinEndDate');if(sd&&sd.dataset.iso)sd.value=pretty(sd.dataset.iso)+(x.startTime?` · ${x.startTime}`:'');if(ed&&ed.dataset.iso)ed.value=pretty(ed.dataset.iso)+(x.endTime?` · ${x.endTime}`:'');renderActivityTodoEditor(d)};
+const _wwSaveStopItinerary=saveStopItinerary;
+saveStopItinerary=function(){const d=itineraryDialog(),row=activeItineraryRow;if(!row)return;const q=id=>d.querySelector('#'+id),name=q('itinName')?.value.trim();if(!name){q('itinName')?.focus();return}const id=activeItineraryId||crypto.randomUUID?.()||`itin-${Date.now()}`,items=itineraryItemsForRow(row),at=items.findIndex(i=>String(i.id)===String(id)),old=at>=0?items[at]:{},todoIds=syncActivityTodosToTrip(d,id,old);const x={id,name,category:d.dataset.category||'Food & drink',startDate:q('itinStartDate')?.dataset.iso||'',startTime:q('itinStartTime')?.value||'',endDate:q('itinEndDate')?.dataset.iso||'',endTime:q('itinEndTime')?.value||'',flexible:!!q('itinFlexible')?.checked,location:q('itinLocation')?.value.trim()||'',contact:q('itinContact')?.value.trim()||'',locationUrl:q('itinLocationUrl')?.value.trim()||'',url:q('itinUrl')?.value.trim()||'',cost:q('itinCost')?.value.trim()||'',bookingRef:q('itinBookingRef')?.value.trim()||'',notes:q('itinNotes')?.value.trim()||'',todoIds,todoId:todoIds[0]||''};if(at>=0)items[at]=x;else items.push(x);setItineraryItemsForRow(row,items);if(q('itinLinkNotes')?.checked&&x.notes){const notes=$('#tripNotes'),prefix=`${itineraryIcon(x)} ${x.name}: ${x.notes}`;if(notes&&!notes.value.includes(prefix)){notes.value=(notes.value.trim()?notes.value.trim()+'\n':'')+prefix;updateTripNotesSummary()}}updateTripTodoSummary();d.close()};
+const _wwCalCommit=wozzaCalendarCommit;
+wozzaCalendarCommit=function(){const target=wozzaCalendarTarget,isActivity=wozzaCalendarMode==='activity';_wwCalCommit();if(isActivity&&target){const isEnd=target.id==='itinEndDate',time=document.getElementById(isEnd?'itinEndTime':'itinStartTime')?.value||'';target.value=target.dataset.iso?pretty(target.dataset.iso)+(time?` · ${time}`:''):''}};
