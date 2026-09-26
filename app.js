@@ -2469,7 +2469,7 @@ document.addEventListener('keydown',e=>{const card=e.target.closest?.('.wozza-ex
       white-space:nowrap!important;
     }
     #recycleDialog .recycle-bin-local-toast.show{opacity:1!important;transform:translateX(-50%) translateY(0)!important}
-    [data-map-filter]{background:linear-gradient(145deg,#087f91 0%,#12b8c7 58%,#18c9d3 100%)!important}
+    #mapFilterBtn{background:linear-gradient(145deg,#087f91 0%,#12b8c7 58%,#18c9d3 100%)!important;background-color:#0aa4b3!important}\n    [data-map-filter]{background:linear-gradient(145deg,#087f91 0%,#12b8c7 58%,#18c9d3 100%)!important;background-color:#0aa4b3!important}
   `;
   document.head.appendChild(st);
 })();
