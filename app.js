@@ -2665,3 +2665,83 @@ document.addEventListener('click',e=>{
   e.stopImmediatePropagation();
   openCountry(country);
 },true);
+
+/* === WozzaWorld hotfix — trip-editor stop flags + shared itinerary notes === */
+/* Keep the proven adaptive trip-card flag renderer untouched. Only the stop-summary flag gets navigation semantics. */
+const _wwUpdateStopSummarySharedNotes=updateStopSummary;
+updateStopSummary=function(row){
+  _wwUpdateStopSummarySharedNotes(row);
+  const slot=row?.querySelector('.trip-stop-summary-flag-slot');
+  const country=row?.querySelector('.trip-stop-country')?.value?.trim()||'';
+  if(slot){
+    slot.dataset.stopCountry=country;
+    slot.setAttribute('role','button');
+    slot.setAttribute('tabindex',country?'0':'-1');
+    slot.setAttribute('aria-hidden','false');
+    slot.setAttribute('aria-label',country?`Open ${country} country card`:'Country');
+  }
+};
+
+if(!window.__wozzaStopFlagCountryNavigation){
+  window.__wozzaStopFlagCountryNavigation=true;
+  const openStopFlagCountry=target=>{
+    const slot=target?.closest?.('.trip-stop-summary-flag-slot');
+    if(!slot)return false;
+    const country=slot.dataset.stopCountry||slot.closest('.trip-destination-stop')?.querySelector('.trip-stop-country')?.value?.trim();
+    if(!country)return false;
+    openCountry(country);
+    return true;
+  };
+  document.addEventListener('click',e=>{
+    if(!e.target.closest?.('#tripDestinationStops .trip-stop-summary-flag-slot'))return;
+    if(openStopFlagCountry(e.target)){e.preventDefault();e.stopPropagation()}
+  },true);
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    if(!e.target.closest?.('#tripDestinationStops .trip-stop-summary-flag-slot'))return;
+    if(openStopFlagCountry(e.target)){e.preventDefault();e.stopPropagation()}
+  },true);
+}
+
+function wwSyncItinerarySharedNotes(){
+  const main=document.querySelector('#tripNotes');
+  const itin=document.querySelector('#masterItineraryTripNotes');
+  if(main&&itin&&itin!==document.activeElement)itin.value=main.value;
+}
+function wwEnsureItinerarySharedNotes(){
+  const d=wwMasterItineraryDialog();
+  const add=d.querySelector('#masterItineraryAdd');
+  if(!add)return;
+  let wrap=d.querySelector('.master-itinerary-trip-notes');
+  if(!wrap){
+    wrap=document.createElement('label');
+    wrap.className='master-itinerary-trip-notes';
+    wrap.innerHTML='<span>NOTES</span><textarea id="masterItineraryTripNotes" placeholder="Jot down favourite moments, recommendations or anything you want to remember…"></textarea>';
+    add.insertAdjacentElement('afterend',wrap);
+    const itin=wrap.querySelector('textarea');
+    itin.addEventListener('input',()=>{
+      const main=document.querySelector('#tripNotes');
+      if(!main)return;
+      main.value=itin.value;
+      main.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+  }
+  wwSyncItinerarySharedNotes();
+}
+
+const _wwMasterItineraryDialogSharedNotes=wwMasterItineraryDialog;
+wwMasterItineraryDialog=function(){const d=_wwMasterItineraryDialogSharedNotes();wwEnsureItinerarySharedNotes();return d};
+const _wwRenderMasterItinerarySharedNotes=wwRenderMasterItinerary;
+wwRenderMasterItinerary=function(){const out=_wwRenderMasterItinerarySharedNotes();wwEnsureItinerarySharedNotes();return out};
+const _wwOpenDailyScheduleSharedNotes=wwOpenDailySchedule;
+wwOpenDailySchedule=function(iso){const out=_wwOpenDailyScheduleSharedNotes(iso);wwEnsureItinerarySharedNotes();return out};
+document.querySelector('#tripNotes')?.addEventListener('input',wwSyncItinerarySharedNotes);
+
+(()=>{if(document.getElementById('ww-trip-notes-hotfix-style'))return;const st=document.createElement('style');st.id='ww-trip-notes-hotfix-style';st.textContent=`
+#tripNotes{resize:vertical!important;min-height:96px!important;overflow:auto!important}
+#tripDestinationStops .trip-stop-summary-flag-slot{cursor:pointer!important;position:relative!important;z-index:3!important;pointer-events:auto!important}
+.master-itinerary-trip-notes{display:block;margin:18px 0 0!important;color:#172f3a!important;font-weight:900!important}
+.master-itinerary-trip-notes>span{display:block;margin:0 0 8px 4px;font-size:14px;letter-spacing:.04em}
+.master-itinerary-trip-notes textarea{display:block;width:100%;box-sizing:border-box;min-height:92px;resize:vertical;overflow:auto;border:1px solid rgba(23,47,58,.12);outline:0;border-radius:18px;background:rgba(255,255,255,.72);color:#172f3a;padding:13px 15px;font:inherit;font-weight:500;line-height:1.35}
+.master-itinerary-trip-notes textarea:focus{border-color:rgba(8,124,150,.34);box-shadow:0 0 0 3px rgba(8,124,150,.08)}
+`;document.head.appendChild(st)})();
