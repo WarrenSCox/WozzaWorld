@@ -3102,3 +3102,22 @@ const _wwOpenTripRecovery=openTrip;
 openTrip=function(){const r=_wwOpenTripRecovery.apply(this,arguments);requestAnimationFrame(wwRecoverExportTripPlacement);return r};
 const _wwOpenTripEditorRecovery=openTripEditor;
 openTripEditor=function(){const r=_wwOpenTripEditorRecovery.apply(this,arguments);requestAnimationFrame(wwRecoverExportTripPlacement);return r};
+
+/* === WozzaWorld final rest hotfix — landscape day pairing + tidy trip action row === */
+(()=>{if(document.getElementById('ww-final-rest-hotfix'))return;const st=document.createElement('style');st.id='ww-final-rest-hotfix';st.textContent=`
+/* Portrait is deliberately untouched. In landscape, pair days inside each stop: 1+2, 3+4, etc. */
+@media (orientation:landscape) and (min-width:700px){
+  #masterItineraryContent{display:block!important}
+  .master-itinerary-stop{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;align-items:start!important;width:100%!important;margin-bottom:22px!important}
+  .master-itinerary-stop>h3{grid-column:1/-1!important;margin-bottom:-2px!important}
+  .master-itinerary-stop .master-itinerary-day{min-width:0!important;width:100%!important;margin:0!important}
+}
+/* Keep all trip editor actions on one clean row. */
+#tripForm .dialog-actions{display:grid!important;grid-template-columns:auto minmax(0,.9fr) minmax(0,1fr) minmax(0,1.35fr)!important;gap:10px!important;align-items:stretch!important;width:100%!important}
+#tripForm .dialog-actions>button{min-width:0!important;margin:0!important;white-space:nowrap!important}
+#tripDialog .ww-trip-export-placeholder{width:100%!important;height:auto!important;min-height:48px!important;padding:12px 14px!important;border-radius:999px!important;background:#fff!important;color:#172f3a!important;font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important;letter-spacing:0!important;text-transform:none!important;display:flex!important;align-items:center!important;justify-content:center!important}
+#tripForm .dialog-actions #deleteTripBtn{grid-column:1!important}
+#tripForm .dialog-actions #wwTripExportPlaceholder{grid-column:2!important}
+#tripForm .dialog-actions #cancelTrip{grid-column:3!important}
+#tripForm .dialog-actions .primary{grid-column:4!important}
+`;document.head.appendChild(st)})();
