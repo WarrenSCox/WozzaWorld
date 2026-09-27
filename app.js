@@ -2651,3 +2651,53 @@ const _wwWireActionsV17=wwWireItineraryActivityActions;
 wwWireItineraryActivityActions=function(host,d){_wwWireActionsV17(host,d);wwWireItineraryNotes(host)};
 /* Country guide cards/bullets open useful Google searches without changing the displayed guide data. */
 document.addEventListener('click',e=>{const weather=e.target.closest('.country-weather-card');if(weather&&currentCountry){window.open(`https://www.google.com/search?q=${encodeURIComponent((canonicalCountry(currentCountry)||currentCountry)+' weather')}`,'_blank','noopener');return}const li=e.target.closest('.country-facts-accordion-list li');if(li&&currentCountry){window.open(`https://www.google.com/search?q=${encodeURIComponent(li.textContent.trim())}`,'_blank','noopener')} });
+
+/* === WozzaWorld itinerary v1.7.1 HOTFIX — restore date picker + one shared itinerary Notes === */
+/* The branded time UI replaced the native time input that the existing calendar opener expects.
+   Keep an invisible compatibility input so the established WozzaWorld calendar path remains intact. */
+const _wwEnsureBrandedTimePickerHotfix=wwEnsureBrandedTimePicker;
+wwEnsureBrandedTimePicker=function(){
+  const ov=wozzaCalendarEnsure(),host=ov.querySelector('.wozza-calendar-activity-time');
+  if(host && !host.querySelector('.wozza-calendar-time')){
+    const compat=document.createElement('input');
+    compat.type='time';
+    compat.className='wozza-calendar-time wozza-calendar-time-compat';
+    compat.hidden=true;
+    host.prepend(compat);
+  }
+  _wwEnsureBrandedTimePickerHotfix();
+  /* wwEnsureBrandedTimePicker may rebuild the host on first run, so guarantee it afterwards too. */
+  if(host && !host.querySelector('.wozza-calendar-time')){
+    const compat=document.createElement('input');
+    compat.type='time';
+    compat.className='wozza-calendar-time wozza-calendar-time-compat';
+    compat.hidden=true;
+    host.prepend(compat);
+  }
+};
+
+/* Stop itinerary Notes are one shared view of the trip Notes — never per-activity copies. */
+function wwItinerarySharedNotesMarkup(){
+  const v=document.querySelector('#tripNotes')?.value||'';
+  return `<div class="master-itinerary-shared-notes"><label for="masterItinerarySharedNotes">NOTES</label><textarea id="masterItinerarySharedNotes" placeholder="Notes…">${esc(v)}</textarea></div>`;
+}
+function wwWireSharedItineraryNotes(host){
+  const n=host?.querySelector('#masterItinerarySharedNotes');
+  if(!n)return;
+  n.addEventListener('input',()=>{
+    const tripNotes=document.querySelector('#tripNotes');
+    if(tripNotes){tripNotes.value=n.value;tripNotes.dispatchEvent(new Event('input',{bubbles:true}));}
+  });
+}
+const _wwRenderMasterItineraryHotfix=wwRenderMasterItinerary;
+wwRenderMasterItinerary=function(){
+  _wwRenderMasterItineraryHotfix();
+  const d=wwMasterItineraryDialog(),add=d.querySelector('#masterItineraryAdd');
+  d.querySelector('.master-itinerary-shared-notes')?.remove();
+  add?.insertAdjacentHTML('afterend',wwItinerarySharedNotesMarkup());
+  wwWireSharedItineraryNotes(d);
+};
+
+/* Remove the v1.7 per-activity note boxes while retaining edit / quick-info controls. */
+wwActivityScheduleRow=function(x){return _wwActivityScheduleRowV17(x)};
+wwWireItineraryActivityActions=function(host,d){_wwWireActionsV17(host,d)};
