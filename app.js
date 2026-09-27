@@ -2760,3 +2760,73 @@ closeSheet=async function(){
 .master-itinerary-trip-notes textarea{display:block;width:100%;box-sizing:border-box;min-height:92px;resize:vertical;overflow:auto;border:1px solid rgba(23,47,58,.12);outline:0;border-radius:18px;background:rgba(255,255,255,.72);color:#172f3a;padding:13px 15px;font:inherit;font-weight:500;line-height:1.35}
 .master-itinerary-trip-notes textarea:focus{border-color:rgba(8,124,150,.34);box-shadow:0 0 0 3px rgba(8,124,150,.08)}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld hotfix — itinerary autosave + return-to-itinerary === */
+function wwPersistItineraryWork(){
+  if(!editingTripId)return false;
+  const trip=state.trips.find(t=>String(t.id)===String(editingTripId));
+  if(!trip)return false;
+  const editorRows=$$('#tripDestinationStops .trip-destination-stop');
+  const savedStops=trip.destinations||[];
+  editorRows.forEach((row,i)=>{
+    const stopId=row.dataset.stopId||'';
+    const target=savedStops.find(s=>String(s.id||'')===String(stopId))||savedStops[i];
+    if(target)target.itinerary=structuredClone(itineraryItemsForRow(row));
+  });
+  trip.todos=collectTripTodos();
+  trip.notes=$('#tripNotes')?.value||trip.notes||'';
+  localStorage.setItem('wozzaworld-state',JSON.stringify(state));
+  return true;
+}
+
+/* Saving an activity is a real save: persist it immediately, then return to the itinerary it came from. */
+const _wwSaveStopItineraryAutosave=saveStopItinerary;
+saveStopItinerary=function(){
+  const row=activeItineraryRow;
+  const before=row?JSON.stringify(itineraryItemsForRow(row)):'';
+  const out=_wwSaveStopItineraryAutosave();
+  const after=row?JSON.stringify(itineraryItemsForRow(row)):'';
+  if(row&&after!==before){
+    wwPersistItineraryWork();
+    wwRenderMasterItinerary();
+    const master=wwMasterItineraryDialog();
+    if(!master.open)master.showModal();
+    rememberTripEditorSnapshot();
+  }
+  return out;
+};
+
+/* Deleting an activity follows the same immediate-persistence rule. */
+const _wwOpenStopItineraryAutosave=openStopItinerary;
+openStopItinerary=function(row,id=''){
+  const out=_wwOpenStopItineraryAutosave(row,id);
+  const d=itineraryDialog(),del=d.querySelector('#itinDelete');
+  if(del&&!del.hidden){
+    const originalDelete=del.onclick;
+    del.onclick=e=>{
+      const before=JSON.stringify(itineraryItemsForRow(row));
+      originalDelete?.call(del,e);
+      if(JSON.stringify(itineraryItemsForRow(row))!==before){
+        wwPersistItineraryWork();
+        wwRenderMasterItinerary();
+        const master=wwMasterItineraryDialog();
+        if(!master.open)master.showModal();
+        rememberTripEditorSnapshot();
+      }
+    };
+  }
+  return out;
+};
+
+/* Trip notes and itinerary notes are one field and persist without needing the overall Save changes button. */
+let wwNotesPersistTimer=0;
+function wwQueueSharedNotesPersist(){
+  clearTimeout(wwNotesPersistTimer);
+  wwNotesPersistTimer=setTimeout(()=>{
+    if(wwPersistItineraryWork())rememberTripEditorSnapshot();
+  },180);
+}
+document.querySelector('#tripNotes')?.addEventListener('input',wwQueueSharedNotesPersist);
+document.addEventListener('input',e=>{
+  if(e.target?.id==='masterItineraryTripNotes')wwQueueSharedNotesPersist();
+});
