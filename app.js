@@ -3310,13 +3310,22 @@ setItineraryItemsForRow=function(row,items){const r=_wwSetItemsActivityNotes(row
 const _wwOpenTripEditorActivityNotes=openTripEditor;
 openTripEditor=function(t){const r=_wwOpenTripEditorActivityNotes(t);requestAnimationFrame(wwRenderActivityNotesReadOnly);return r};
 
-const _wwActivityDetailsDialogFinal=itineraryDialog;
-itineraryDialog=function(){
-  const d=_wwActivityDetailsDialogFinal();
-  if(d.dataset.activityDetailsFinal)return d;
-  d.dataset.activityDetailsFinal='1';
+/* Activity form label polish is applied after the dialog opens, without wrapping
+   itineraryDialog again (keeps Add/Edit activity opening chain intact). */
+function wwPolishActivityNotesField(d){
+  if(!d)return;
   const notes=d.querySelector('#itinNotes')?.closest('label');
-  if(notes){for(const n of notes.childNodes){if(n.nodeType===3&&n.textContent.trim()==='Notes'){n.textContent='Activity notes';break}}}
-  d.querySelector('.itin-link-check')?.remove();
-  return d;
+  if(notes&&!notes.dataset.activityNotesLabel){
+    notes.dataset.activityNotesLabel='1';
+    for(const n of notes.childNodes){
+      if(n.nodeType===3&&n.textContent.trim()==='Notes'){n.textContent='Activity notes';break}
+    }
+  }
+  const linkCheck=d.querySelector('.itin-link-check');
+  if(linkCheck){linkCheck.hidden=true;const cb=linkCheck.querySelector('#itinLinkNotes');if(cb)cb.checked=false}
+}
+const _wwOpenStopActivityNotesPolish=openStopItinerary;
+openStopItinerary=function(row,id=''){
+  _wwOpenStopActivityNotesPolish(row,id);
+  wwPolishActivityNotesField(document.getElementById('stopItineraryDialog'));
 };
