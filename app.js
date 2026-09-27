@@ -2830,3 +2830,66 @@ document.querySelector('#tripNotes')?.addEventListener('input',wwQueueSharedNote
 document.addEventListener('input',e=>{
   if(e.target?.id==='masterItineraryTripNotes')wwQueueSharedNotesPersist();
 });
+
+/* === WozzaWorld hotfix — trip itinerary hierarchy + full itinerary image capture === */
+function wwItineraryTripMeta(){
+  const rows=wwTripStopRows();
+  const trip=editingTripId?state.trips.find(t=>String(t.id)===String(editingTripId)):null;
+  const name=($('#tripName')?.value||trip?.name||'Trip itinerary').trim();
+  const dates=rows.flatMap(r=>[r.querySelector('.trip-destination-from')?.value||'',r.querySelector('.trip-destination-to')?.value||'']).filter(Boolean).sort();
+  const start=dates[0]||trip?.start||'',end=dates[dates.length-1]||trip?.end||start;
+  const fmt=iso=>{if(!iso)return'';const d=new Date(iso+'T12:00:00');return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}).toUpperCase()};
+  return {name,dateRange:start?(end&&end!==start?`${fmt(start)} – ${fmt(end)}`:fmt(start)):''};
+}
+function wwApplyItineraryTripHeader(d){
+  const meta=wwItineraryTripMeta(),head=d?.querySelector('.master-itinerary-head');if(!head)return;
+  const small=head.querySelector('small'),title=head.querySelector('h2');
+  if(title)title.textContent=meta.name;
+  if(small){small.textContent=meta.dateRange;small.classList.add('master-itinerary-date-range')}
+  let cap=head.querySelector('.master-itinerary-capture');
+  if(!cap){cap=document.createElement('button');cap.type='button';cap.className='master-itinerary-capture';cap.title='Save full itinerary as image';cap.setAttribute('aria-label','Save full itinerary as image');cap.innerHTML='▣';head.insertBefore(cap,head.querySelector('.master-itinerary-close'));cap.onclick=wwCaptureFullItinerary}
+}
+function wwRenderTripHierarchy(){
+  const d=wwMasterItineraryDialog(),host=d.querySelector('#masterItineraryContent'),rows=wwTripStopRows(),items=wwMasterActivities();
+  wwApplyItineraryTripHeader(d);d.querySelector('#masterItineraryAdd').hidden=false;
+  if(!items.length){host.innerHTML='<div class="master-itinerary-empty"><strong>Start planning your trip</strong><p>Add your first activity and your day-by-day itinerary will build here.</p></div>';return}
+  const dated=[...new Set(items.map(x=>x.startDate||'unscheduled'))].sort((a,b)=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b));
+  const dayNo=new Map(dated.map((x,i)=>[x,i+1]));
+  host.innerHTML=rows.map((row,si)=>{
+    const stopItems=items.filter(x=>x._stopIndex===si);if(!stopItems.length)return'';
+    const groups=new Map();stopItems.forEach(x=>{const k=x.startDate||'unscheduled';if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)});
+    const days=[...groups.entries()].sort(([a],[b])=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b)).map(([date,list])=>{
+      const title=date==='unscheduled'?'TO BE SCHEDULED':wwItineraryDayLabel(date);
+      return `<section class="master-itinerary-day"><div class="master-itinerary-dayhead"><b>${date==='unscheduled'?'FLEXIBLE':`DAY ${dayNo.get(date)}`}</b><span>${esc(title)}</span></div><div class="master-itinerary-daybody">${list.map(wwActivityScheduleRow).join('')}</div></section>`
+    }).join('');
+    return `<section class="master-itinerary-stop"><h3>${esc(wwStopName(row,si))}</h3>${days}</section>`
+  }).join('');
+  wwWireItineraryActivityActions(host,d)
+}
+wwRenderMasterItinerary=wwRenderTripHierarchy;
+wwOpenTripItinerary=function(){wwRenderTripHierarchy();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()};
+wwOpenMasterItinerary=function(){wwRenderTripHierarchy();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()};
+
+async function wwCaptureFullItinerary(){
+  const d=wwMasterItineraryDialog(),shell=d.querySelector('.master-itinerary-shell');if(!shell)return;
+  const clone=shell.cloneNode(true);
+  clone.querySelectorAll('.master-itinerary-close,.master-itinerary-capture,.master-itinerary-edit,#masterItineraryAdd,.master-itinerary-trip-notes').forEach(x=>x.remove());
+  const src=[shell,...shell.querySelectorAll('*')],dst=[clone,...clone.querySelectorAll('*')];
+  src.forEach((el,i)=>{const out=dst[i];if(!out)return;const cs=getComputedStyle(el);for(const p of cs){try{out.style.setProperty(p,cs.getPropertyValue(p),cs.getPropertyPriority(p))}catch{}}});
+  clone.style.height='auto';clone.style.maxHeight='none';clone.style.overflow='visible';clone.style.margin='0';
+  clone.querySelectorAll('*').forEach(el=>{el.style.maxHeight='none';if(getComputedStyle(el).overflowY==='auto'||getComputedStyle(el).overflowY==='scroll')el.style.overflow='visible'});
+  const width=Math.ceil(shell.getBoundingClientRect().width),height=Math.ceil(Math.max(clone.scrollHeight,shell.scrollHeight));
+  const holder=document.createElement('div');holder.style.cssText=`position:fixed;left:-100000px;top:0;width:${width}px`;holder.appendChild(clone);document.body.appendChild(holder);
+  const h=Math.ceil(clone.getBoundingClientRect().height||clone.scrollHeight);const xml=new XMLSerializer().serializeToString(clone);
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${h}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">${xml}</div></foreignObject></svg>`;
+  const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob),img=new Image();
+  try{await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});const scale=Math.min(2,8192/Math.max(width,h));const canvas=document.createElement('canvas');canvas.width=Math.round(width*scale);canvas.height=Math.round(h*scale);const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.drawImage(img,0,0,width,h);const png=await new Promise(res=>canvas.toBlob(res,'image/png',1));if(!png)throw new Error('PNG export failed');const a=document.createElement('a');a.href=URL.createObjectURL(png);a.download=`${(wwItineraryTripMeta().name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}catch(e){console.error(e);alert('Sorry — the itinerary image could not be created on this device.')}finally{URL.revokeObjectURL(url);holder.remove()}
+}
+(()=>{if(document.getElementById('ww-itinerary-capture-style'))return;const st=document.createElement('style');st.id='ww-itinerary-capture-style';st.textContent=`
+.master-itinerary-head{position:relative!important;padding-right:138px!important}
+.master-itinerary-head .master-itinerary-date-range{display:block!important;color:#07849a!important;font-weight:900!important;letter-spacing:.06em!important;margin-top:5px!important}
+.master-itinerary-capture{position:absolute!important;right:78px!important;top:50%!important;transform:translateY(-50%)!important;width:54px!important;height:54px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#123542!important;font-size:24px!important;font-weight:900!important;display:grid!important;place-items:center!important;box-shadow:none!important;cursor:pointer!important}
+.master-itinerary-stop{margin:0 0 22px!important}
+.master-itinerary-stop>h3{margin:0 4px 10px!important;color:#07849a!important;font-size:21px!important;font-weight:950!important;letter-spacing:.045em!important;text-transform:uppercase!important}
+.master-itinerary-stop .master-itinerary-day{margin-bottom:12px!important}
+`;document.head.appendChild(st)})();
