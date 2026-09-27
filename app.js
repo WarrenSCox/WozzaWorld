@@ -3072,3 +3072,33 @@ document.addEventListener('click',e=>{if(e.target.closest?.('#tripDialog .trip-n
 .master-itinerary-activity-main strong{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
 @media(max-width:430px){.master-itinerary-activity{grid-template-columns:104px 24px minmax(0,1fr)!important;column-gap:3px!important;padding-left:18px!important;padding-right:10px!important}.master-itinerary-activity time{width:104px!important;min-width:104px!important}.master-itinerary-icon{width:24px!important;min-width:24px!important}}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld recovery hotfix — restore proven itinerary geometry without rolling back features === */
+(()=>{if(document.getElementById('ww-itinerary-layout-recovery'))return;const st=document.createElement('style');st.id='ww-itinerary-layout-recovery';st.textContent=`
+/* Restore the original responsive day-card behaviour: two cards per row when space allows, one on phone portrait. */
+#masterItineraryContent{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;align-items:start!important}
+.master-itinerary-day{min-width:0!important;width:100%!important}
+/* Restore the compact, proven activity geometry. Later functionality (row click/details/edit modal) is untouched. */
+.master-itinerary-activity{display:grid!important;grid-template-columns:48px 24px minmax(0,1fr)!important;column-gap:6px!important;align-items:start!important;width:100%!important;padding:7px 2px!important}
+.master-itinerary-activity time{width:auto!important;min-width:0!important;margin:0!important;padding:0!important;justify-self:start!important;text-align:left!important}
+.master-itinerary-icon{width:auto!important;min-width:0!important;margin:0!important;padding:0!important;justify-self:start!important;text-align:left!important}
+.master-itinerary-activity-main{min-width:0!important;width:auto!important;margin:0!important;padding:0!important}
+.master-itinerary-activity-main strong{display:block!important;width:auto!important;max-width:none!important;margin:0!important;padding:0!important}
+@media(max-width:560px){#masterItineraryContent{grid-template-columns:1fr!important}.master-itinerary-dialog{width:min(94vw,720px)!important}}
+/* Export trip belongs with the editor actions, not as a large content CTA. */
+#tripDialog .ww-trip-export-placeholder{width:auto!important;margin:0!important;border:0!important;border-radius:999px!important;background:#fff!important;color:#172f3a!important;padding:13px 18px!important;font:inherit!important;font-weight:400!important;letter-spacing:0!important;text-transform:none!important;cursor:default!important;align-self:stretch!important}
+`;document.head.appendChild(st)})();
+
+function wwRecoverExportTripPlacement(){
+  wwEnsureExportTripPlaceholder?.();
+  const b=document.getElementById('wwTripExportPlaceholder'),cancel=document.getElementById('cancelTrip'),del=document.getElementById('deleteTripBtn');
+  if(!b||!cancel)return;
+  const actions=cancel.parentElement;if(!actions)return;
+  actions.insertBefore(b,cancel);
+  /* Keep requested order: bin | Export trip | Cancel | Save changes. */
+  if(del&&del.parentElement===actions)actions.insertBefore(del,b);
+}
+const _wwOpenTripRecovery=openTrip;
+openTrip=function(){const r=_wwOpenTripRecovery.apply(this,arguments);requestAnimationFrame(wwRecoverExportTripPlacement);return r};
+const _wwOpenTripEditorRecovery=openTripEditor;
+openTripEditor=function(){const r=_wwOpenTripEditorRecovery.apply(this,arguments);requestAnimationFrame(wwRecoverExportTripPlacement);return r};
