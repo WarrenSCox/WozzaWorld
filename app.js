@@ -478,9 +478,9 @@ function properCaseCuisine(value){
  const s=String(value||'').trim();
  return s ? s.charAt(0).toUpperCase()+s.slice(1) : s;
 }
-function factListContent(items){
+function factListContent(items,googleSearch=false){
  if(!Array.isArray(items)||!items.length)return '<p class="country-facts-empty-inline">No information available yet.</p>';
- return `<ul class="country-facts-accordion-list">${items.map(x=>`<li>${esc(String(x))}</li>`).join('')}</ul>`;
+ return `<ul class="country-facts-accordion-list">${items.map(x=>{const text=String(x);return googleSearch?`<li><button type="button" class="country-google-search-item" data-google-search="${esc(text)}">${esc(text)}</button></li>`:`<li>${esc(text)}</li>`}).join('')}</ul>`;
 }
 function countryInfoAccordion(title,content){
  return `<section class="country-facts-accordion">
@@ -491,10 +491,10 @@ function countryInfoAccordion(title,content){
   </section>`;
 }
 
-function weatherBlock(weather){
+function weatherBlock(weather,countryName=''){
  if(!weather?.typicalWeather?.length)return '';
  return `<section class="country-fact-section country-weather-section"><h3>Typical weather</h3>
-  <div class="country-weather-grid">${weather.typicalWeather.map(x=>`<div class="country-weather-card"><strong>${esc(x.months||'')}</strong><b>${esc(x.season||'')}</b><span>${Number.isFinite(x.typicalTemperatureC?.low)&&Number.isFinite(x.typicalTemperatureC?.high)?`${x.typicalTemperatureC.low}–${x.typicalTemperatureC.high}°C`:''}</span><p>${esc(x.summary||'')}</p></div>`).join('')}</div>
+  <div class="country-weather-grid">${weather.typicalWeather.map(x=>`<div class="country-weather-card country-google-weather" data-google-weather="${esc(countryName)}"><strong>${esc(x.months||'')}</strong><b>${esc(x.season||'')}</b><span>${Number.isFinite(x.typicalTemperatureC?.low)&&Number.isFinite(x.typicalTemperatureC?.high)?`${x.typicalTemperatureC.low}–${x.typicalTemperatureC.high}°C`:''}</span><p>${esc(x.summary||'')}</p></div>`).join('')}</div>
  </section>`
 }
 function ensureCountryGuidePhotoStyle(){
@@ -543,10 +543,10 @@ async function openCountryInfo(){
   if(name==='Greenland'){
    body.innerHTML=`<figure class="country-guide-photo"><img src="greenland-country-hero.jpg" alt="Iceberg and expedition boat in Greenland"></figure>
    <section class="country-facts-key">${factRow('Capital','Nuuk')}${factRow('Languages','Greenlandic (official), Danish widely used')}${factRow('Currency','Danish krone (DKK)')}${factRow('Plug sockets','C, E, F and K')}${factRow('Driving side','Right')}</section>
-   ${countryInfoAccordion('WEATHER',factListContent(['Arctic climate with cool summers and very cold winters. Conditions vary considerably by region and season.']))}
-   ${countryInfoAccordion('INTERESTING FACTS',factListContent(['Greenland is the world’s largest island that is not a continent.','Almost 80% of Greenland is covered by the ice cap and glaciers.','Greenland is self-governing within the Kingdom of Denmark.']))}
-   ${countryInfoAccordion('LANDMARKS',factListContent(['Ilulissat Icefjord','Nuuk','Disko Bay','Greenland Ice Sheet']))}
-   ${countryInfoAccordion('FAMOUS CUISINE',factListContent(['Suaasat, a traditional Greenlandic soup','Fish and seafood','Reindeer and musk ox']))}`;
+   ${countryInfoAccordion('WEATHER',`<div class="country-google-weather" data-google-weather="${esc(name)}">${factListContent(['Arctic climate with cool summers and very cold winters. Conditions vary considerably by region and season.'])}</div>`)}
+   ${countryInfoAccordion('INTERESTING FACTS',factListContent(['Greenland is the world’s largest island that is not a continent.','Almost 80% of Greenland is covered by the ice cap and glaciers.','Greenland is self-governing within the Kingdom of Denmark.'],true))}
+   ${countryInfoAccordion('LANDMARKS',factListContent(['Ilulissat Icefjord','Nuuk','Disko Bay','Greenland Ice Sheet'],true))}
+   ${countryInfoAccordion('FAMOUS CUISINE',factListContent(['Suaasat, a traditional Greenlandic soup','Fish and seafood','Reindeer and musk ox'],true))}`;
    return;
   }
   if(!guide){
@@ -566,10 +566,10 @@ async function openCountryInfo(){
     ${factRow('Plug sockets',(guide.plugSocketTypes||[]).join(', '))}
     ${factRow('Driving side',guide.drivingSide?guide.drivingSide.charAt(0).toUpperCase()+guide.drivingSide.slice(1):'')}
    </section>
-   ${countryInfoAccordion('WEATHER',weatherBlock(weather))}
-   ${countryInfoAccordion('INTERESTING FACTS',factListContent(guide.interestingFacts))}
-   ${countryInfoAccordion('LANDMARKS',factListContent(guide.notableLandmarks))}
-   ${countryInfoAccordion('FAMOUS CUISINE',factListContent((guide.wellKnownCuisine||[]).map(properCaseCuisine)))}
+   ${countryInfoAccordion('WEATHER',weatherBlock(weather,name))}
+   ${countryInfoAccordion('INTERESTING FACTS',factListContent(guide.interestingFacts,true))}
+   ${countryInfoAccordion('LANDMARKS',factListContent(guide.notableLandmarks,true))}
+   ${countryInfoAccordion('FAMOUS CUISINE',factListContent((guide.wellKnownCuisine||[]).map(properCaseCuisine),true))}
   `;
  }catch(err){
   body.innerHTML='<p class="country-facts-empty">Country information could not be loaded.</p>';
@@ -694,6 +694,10 @@ $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
 $('#countryInfoBody')?.addEventListener('click',e=>{
+ const searchItem=e.target.closest('[data-google-search]');
+ if(searchItem){window.open(`https://www.google.com/search?q=${encodeURIComponent(searchItem.dataset.googleSearch||'')}`,'_blank','noopener');return}
+ const weatherItem=e.target.closest('[data-google-weather]');
+ if(weatherItem){window.open(`https://www.google.com/search?q=${encodeURIComponent((weatherItem.dataset.googleWeather||currentCountry)+' weather')}`,'_blank','noopener');return}
  const btn=e.target.closest('.country-facts-accordion-toggle'); if(!btn)return;
  const panel=btn.nextElementSibling,open=btn.getAttribute('aria-expanded')==='true';
  btn.setAttribute('aria-expanded',String(!open));
