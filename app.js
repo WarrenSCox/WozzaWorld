@@ -3061,3 +3061,14 @@ const _wwOpenTripEditorExportPlaceholder=openTripEditor;
 openTripEditor=function(){const r=_wwOpenTripEditorExportPlaceholder.apply(this,arguments);requestAnimationFrame(()=>{wwEnsureExportTripPlaceholder();wwEnsureMultiStopItineraryShortcut()});return r};
 
 document.addEventListener('click',e=>{if(e.target.closest?.('#tripDialog .trip-notes-section,#addTripDestination,.trip-stop-remove'))requestAnimationFrame(()=>{wwEnsureExportTripPlaceholder();wwEnsureMultiStopItineraryShortcut()})},true);
+
+/* === WozzaWorld hotfix — fixed compact itinerary columns === */
+(()=>{if(document.getElementById('ww-itinerary-fixed-columns-hotfix'))return;const st=document.createElement('style');st.id='ww-itinerary-fixed-columns-hotfix';st.textContent=`
+/* Time and icon consume only what they need; the activity title owns all remaining width. */
+.master-itinerary-activity{grid-template-columns:112px 26px minmax(0,1fr)!important;column-gap:4px!important;padding-left:22px!important;padding-right:12px!important;align-items:start!important}
+.master-itinerary-activity time{width:112px!important;min-width:112px!important;margin:0!important;padding:0!important;justify-self:start!important;text-align:left!important}
+.master-itinerary-icon{width:26px!important;min-width:26px!important;margin:0!important;padding:0!important;justify-self:start!important;text-align:left!important}
+.master-itinerary-activity-main{min-width:0!important;width:100%!important;margin:0!important;padding:0!important}
+.master-itinerary-activity-main strong{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+@media(max-width:430px){.master-itinerary-activity{grid-template-columns:104px 24px minmax(0,1fr)!important;column-gap:3px!important;padding-left:18px!important;padding-right:10px!important}.master-itinerary-activity time{width:104px!important;min-width:104px!important}.master-itinerary-icon{width:24px!important;min-width:24px!important}}
+`;document.head.appendChild(st)})();
