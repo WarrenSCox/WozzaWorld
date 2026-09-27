@@ -4908,3 +4908,26 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 .stop-itinerary-form .itin-two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:12px!important;margin:0!important}
 .itin-links-section{margin:11px 0}.itin-links-title{font-size:12px;font-weight:900;letter-spacing:.02em;color:#172f3a;margin-bottom:6px}.itin-link-row{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 34px;gap:8px;align-items:center;margin:8px 0}.itin-link-row input{margin-top:0!important;min-width:0}.itin-link-remove{width:34px;height:34px;border:0;border-radius:50%;background:#fff0ef;color:#a93630;font-size:22px;line-height:1;display:grid;place-items:center}.itin-link-remove[hidden]{visibility:hidden;display:grid!important}
 @media(max-width:520px){.stop-itinerary-form .itin-two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important}.itin-link-row{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr) 30px;gap:6px}.itin-link-remove{width:30px;height:30px;font-size:20px}}
+
+/* === Activity details final polish === */
+/* Type chooser: text-only on this form; itinerary icons remain unchanged elsewhere. */
+.stop-itinerary-form .itin-category-bank{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+.stop-itinerary-form .itin-category-tag{width:100%!important;min-width:0!important;justify-content:center!important;text-align:center!important;padding:8px 5px!important;font-size:12px!important;white-space:normal!important}
+.stop-itinerary-form .itin-category-tag>span{display:none!important}
+.stop-itinerary-form .itin-other-entry{grid-column:1/-1!important;width:100%!important}
+@media(max-width:390px){.stop-itinerary-form .itin-category-tag{font-size:11px!important;padding-left:3px!important;padding-right:3px!important}}
+
+/* Keep the form's soft field border when focused; no heavy browser ring. */
+.stop-itinerary-form input:focus,.stop-itinerary-form input:focus-visible,
+.stop-itinerary-form textarea:focus,.stop-itinerary-form textarea:focus-visible,
+.stop-itinerary-form select:focus,.stop-itinerary-form select:focus-visible{
+  outline:none!important;box-shadow:none!important;border-color:rgba(20,55,70,.12)!important;
+}
+
+/* Activity notes surfaced beneath the shared Trip / Itinerary notes, but never editable there. */
+.ww-activity-notes-readonly{margin-top:10px;display:grid;gap:8px}
+.ww-activity-notes-readonly[hidden]{display:none!important}
+.ww-activity-note-readonly{background:rgba(255,255,255,.18);border-radius:12px;padding:9px 11px;color:inherit;pointer-events:none}
+.ww-activity-note-readonly span{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.035em;text-transform:none;background:rgba(255,255,255,.28);border-radius:999px;padding:3px 8px;margin-bottom:5px}
+.ww-activity-note-readonly p{margin:0;font-size:12px;line-height:1.35;font-weight:600;opacity:.9}
+.master-itinerary-trip-notes .ww-activity-notes-readonly{display:block}

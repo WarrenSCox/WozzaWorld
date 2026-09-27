@@ -3288,3 +3288,35 @@ wwOpenQuickInfo=function(row,id){_wwQuickInfoNamedLinks(row,id);const x=itinerar
     _openCalendar(input);
   };
 })();
+
+/* === Activity details polish + linked read-only activity notes === */
+function wwActivityNotes(){
+  const out=[];
+  wwTripStopRows().forEach((row,si)=>itineraryItemsForRow(row).forEach(x=>{if((x.notes||'').trim())out.push({id:x.id,name:x.name||'Activity',notes:x.notes.trim(),stop:si})}));
+  return out;
+}
+function wwRenderActivityNotesReadOnly(){
+  const items=wwActivityNotes();
+  const html=items.length?items.map(x=>`<div class="ww-activity-note-readonly" data-activity-note="${esc(x.id)}"><span>${esc(x.name)}</span><p>${esc(x.notes).replace(/\n/g,'<br>')}</p></div>`).join(''):'';
+  const tripNotes=document.querySelector('#tripNotes');
+  if(tripNotes){let host=document.querySelector('#tripActivityNotesReadonly');if(!host){host=document.createElement('div');host.id='tripActivityNotesReadonly';host.className='ww-activity-notes-readonly';tripNotes.insertAdjacentElement('afterend',host)}host.innerHTML=html;host.hidden=!items.length}
+  const itinNotes=document.querySelector('#masterItineraryTripNotes');
+  if(itinNotes){let host=document.querySelector('#itineraryActivityNotesReadonly');if(!host){host=document.createElement('div');host.id='itineraryActivityNotesReadonly';host.className='ww-activity-notes-readonly';itinNotes.insertAdjacentElement('afterend',host)}host.innerHTML=html;host.hidden=!items.length}
+}
+const _wwEnsureSharedNotesActivityNotes=wwEnsureItinerarySharedNotes;
+wwEnsureItinerarySharedNotes=function(d){const r=_wwEnsureSharedNotesActivityNotes(d);wwRenderActivityNotesReadOnly();return r};
+const _wwSetItemsActivityNotes=setItineraryItemsForRow;
+setItineraryItemsForRow=function(row,items){const r=_wwSetItemsActivityNotes(row,items);wwRenderActivityNotesReadOnly();return r};
+const _wwOpenTripEditorActivityNotes=openTripEditor;
+openTripEditor=function(t){const r=_wwOpenTripEditorActivityNotes(t);requestAnimationFrame(wwRenderActivityNotesReadOnly);return r};
+
+const _wwActivityDetailsDialogFinal=itineraryDialog;
+itineraryDialog=function(){
+  const d=_wwActivityDetailsDialogFinal();
+  if(d.dataset.activityDetailsFinal)return d;
+  d.dataset.activityDetailsFinal='1';
+  const notes=d.querySelector('#itinNotes')?.closest('label');
+  if(notes){for(const n of notes.childNodes){if(n.nodeType===3&&n.textContent.trim()==='Notes'){n.textContent='Activity notes';break}}}
+  d.querySelector('.itin-link-check')?.remove();
+  return d;
+};
