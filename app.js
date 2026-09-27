@@ -2938,3 +2938,55 @@ renderDepartureBoard=function(){
 .master-itinerary-activity-actions{flex:0 0 auto!important}
 .master-itinerary-activity-main{min-width:0!important;flex:1 1 auto!important}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld hotfix — clean itinerary rows, modal edit, compact header === */
+wwActivityScheduleRow=function(x){return `<div class="master-itinerary-activity" data-stop="${x._stopIndex}" data-id="${esc(x.id)}"><time>${esc(x.flexible?'Flexible':(x.startTime||'—'))}</time><span class="master-itinerary-icon">${itineraryIcon(x)}</span><span class="master-itinerary-activity-main"><strong>${esc(x.name||'Activity')}</strong></span></div>`};
+
+const _wwOpenQuickInfoClean=wwOpenQuickInfo;
+wwOpenQuickInfo=function(row,id){
+  _wwOpenQuickInfoClean(row,id);
+  const d=wwQuickInfoDialog(),body=d.querySelector('#itineraryQuickInfoBody');
+  let edit=d.querySelector('.itinerary-quick-info-edit');
+  if(!edit){edit=document.createElement('button');edit.type='button';edit.className='itinerary-quick-info-edit';edit.textContent='EDIT';body.appendChild(edit)}
+  else body.appendChild(edit);
+  edit.onclick=()=>{d.close();openStopItinerary(row,id)};
+};
+
+/* Header: trip name first, date beneath, compact actions paired top-right. */
+function wwApplyItineraryTripHeader(d){
+  const meta=wwItineraryTripMeta(),head=d?.querySelector('.master-itinerary-head');if(!head)return;
+  const small=head.querySelector('small'),title=head.querySelector('h2');
+  if(title)title.textContent=meta.name;
+  if(small){small.textContent=meta.dateRange;small.classList.add('master-itinerary-date-range')}
+  let cap=head.querySelector('.master-itinerary-capture');
+  if(!cap){cap=document.createElement('button');cap.type='button';cap.className='master-itinerary-capture';cap.title='Save full itinerary as image';cap.setAttribute('aria-label','Save full itinerary as image');cap.innerHTML='▣';head.insertBefore(cap,head.querySelector('.master-itinerary-close'));cap.onclick=wwCaptureFullItinerary}
+}
+
+/* Export mirrors the clean itinerary: no destination repetition or action controls. */
+async function wwCaptureFullItinerary(){
+  const meta=wwItineraryTripMeta(),rows=wwTripStopRows(),items=wwMasterActivities(),multi=rows.length>1;if(!items.length)return;
+  const W=720,pad=42,contentW=W-pad*2,dayHeadH=72,rowPad=22,canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),font='Arial, sans-serif';
+  const wrap=(text,maxWidth,fontSpec)=>{ctx.font=fontSpec;const words=String(text||'').split(/\s+/),lines=[];let line='';for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);return lines.length?lines:['']};
+  const groupsByStop=rows.map((row,si)=>{const a=items.filter(x=>x._stopIndex===si),m=new Map();a.forEach(x=>{const k=x.startDate||'unscheduled';if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.entries()].sort(([a],[b])=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b))});
+  const dated=[...new Set(items.map(x=>x.startDate||'unscheduled'))].sort((a,b)=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b)),dayNo=new Map(dated.map((x,i)=>[x,i+1]));
+  const nameLines=wrap(meta.name,contentW,`800 48px ${font}`);let H=pad+nameLines.length*54+(meta.dateRange?38:0)+12;
+  groupsByStop.forEach(groups=>{if(!groups.length)return;if(multi)H+=54;groups.forEach(([date,list])=>{H+=dayHeadH;list.forEach(x=>{const lines=wrap(x.name||'Activity',430,`700 27px ${font}`);H+=Math.max(76,rowPad+lines.length*31+18)});H+=18})});H+=pad;
+  const scale=Math.min(2,8192/Math.max(W,H));canvas.width=Math.round(W*scale);canvas.height=Math.round(H*scale);ctx.scale(scale,scale);ctx.fillStyle='#fff0c7';ctx.fillRect(0,0,W,H);let y=pad;
+  ctx.fillStyle='#172f3a';ctx.font=`800 48px ${font}`;nameLines.forEach(l=>{ctx.fillText(l,pad,y+46);y+=54});if(meta.dateRange){ctx.fillStyle='#07849a';ctx.font=`800 22px ${font}`;ctx.fillText(meta.dateRange,pad,y+18);y+=38}y+=12;
+  groupsByStop.forEach((groups,si)=>{if(!groups.length)return;if(multi){ctx.fillStyle='#07849a';ctx.font=`900 28px ${font}`;ctx.fillText(String(wwStopName(rows[si],si)).toUpperCase(),pad,y+30);y+=54}groups.forEach(([date,list])=>{ctx.fillStyle='#fff';roundRect(ctx,pad,y,contentW,dayHeadH,22,true);ctx.fillStyle='#07849a';ctx.fillRect(pad,y,120,dayHeadH);ctx.fillStyle='#fff';ctx.font=`800 23px ${font}`;ctx.fillText(date==='unscheduled'?'FLEXIBLE':`DAY ${dayNo.get(date)}`,pad+22,y+44);ctx.fillStyle='#172f3a';ctx.font=`700 23px ${font}`;ctx.fillText(date==='unscheduled'?'TO BE SCHEDULED':wwItineraryDayLabel(date),pad+142,y+44);y+=dayHeadH;list.forEach(x=>{const lines=wrap(x.name||'Activity',430,`700 27px ${font}`),rh=Math.max(76,rowPad+lines.length*31+18);ctx.fillStyle='#ffc326';ctx.fillRect(pad,y,contentW,rh);ctx.fillStyle='#172f3a';ctx.font=`700 23px ${font}`;ctx.fillText(x.flexible?'Flexible':(x.startTime||'—'),pad+22,y+37);ctx.font=`26px ${font}`;ctx.fillText(itineraryIcon(x),pad+132,y+38);ctx.font=`700 27px ${font}`;lines.forEach((l,i)=>ctx.fillText(l,pad+188,y+37+i*31));y+=rh});y+=18})});
+  const png=await new Promise(res=>canvas.toBlob(res,'image/png',.96));if(!png){alert('Sorry — the itinerary image could not be created on this device.');return}const url=URL.createObjectURL(png),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)
+}
+
+(()=>{const st=document.createElement('style');st.id='ww-itinerary-clean-modal-header-style';st.textContent=`
+.master-itinerary-head{position:relative!important;display:block!important;padding:0 116px 18px 0!important;margin-bottom:10px!important;min-height:82px!important}
+.master-itinerary-head>div{display:flex!important;flex-direction:column!important;gap:4px!important}
+.master-itinerary-head h2{order:1!important;margin:0!important;line-height:1.02!important}
+.master-itinerary-head small.master-itinerary-date-range{order:2!important;margin:2px 0 0!important;line-height:1.25!important}
+.master-itinerary-close,.master-itinerary-capture{position:absolute!important;top:0!important;transform:none!important;width:48px!important;height:48px!important;border-radius:50%!important;background:#fff!important;color:#123542!important;display:grid!important;place-items:center!important;margin:0!important}
+.master-itinerary-close{right:0!important}.master-itinerary-capture{right:56px!important;font-size:21px!important}
+.master-itinerary-stop{margin-top:0!important}.master-itinerary-stop .master-itinerary-day:first-child{margin-top:0!important}
+.master-itinerary-activity{grid-template-columns:minmax(86px,auto) 42px minmax(0,1fr)!important;padding-right:22px!important}
+.master-itinerary-activity-main small,.master-itinerary-activity-actions{display:none!important}
+.master-itinerary-activity-main{padding-right:0!important}
+.itinerary-quick-info-edit{width:100%!important;margin-top:16px!important;border:0!important;border-radius:18px!important;background:#07849a!important;color:#fff!important;padding:14px 18px!important;font:inherit!important;font-weight:900!important;letter-spacing:.06em!important;cursor:pointer!important}
+`;document.head.appendChild(st)})();
