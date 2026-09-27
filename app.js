@@ -2990,3 +2990,37 @@ async function wwCaptureFullItinerary(){
 .master-itinerary-activity-main{padding-right:0!important}
 .itinerary-quick-info-edit{width:100%!important;margin-top:16px!important;border:0!important;border-radius:18px!important;background:#07849a!important;color:#fff!important;padding:14px 18px!important;font:inherit!important;font-weight:900!important;letter-spacing:.06em!important;cursor:pointer!important}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld hotfix — itinerary space + itinerary shortcuts === */
+/* Reclaim the old action/icon space: time stays aligned, emoji becomes a compact prefix, title gets the rest. */
+(()=>{if(document.getElementById('ww-itinerary-space-shortcuts-style'))return;const st=document.createElement('style');st.id='ww-itinerary-space-shortcuts-style';st.textContent=`
+.master-itinerary-activity{grid-template-columns:minmax(82px,auto) 28px minmax(0,1fr)!important;column-gap:8px!important;padding-left:22px!important;padding-right:22px!important}
+.master-itinerary-icon{width:28px!important;min-width:28px!important;justify-self:start!important;text-align:left!important}
+.master-itinerary-activity-main{min-width:0!important;width:100%!important;padding:0!important}
+.master-itinerary-activity-main strong{display:block!important;width:100%!important}
+.wozza-calendar-view-itinerary{border:0!important;border-radius:14px!important;background:#07849a!important;color:#fff!important;padding:12px 18px!important;font:inherit!important;font-weight:900!important;cursor:pointer!important}
+#tripDialog .ww-trip-view-itinerary{display:block!important;width:100%!important;margin:18px 0 24px!important;border:0!important;border-radius:18px!important;background:#fff!important;color:#07849a!important;padding:15px 18px!important;font:inherit!important;font-weight:950!important;letter-spacing:.045em!important;text-transform:uppercase!important;box-shadow:0 6px 16px rgba(0,0,0,.08)!important;cursor:pointer!important}
+`;document.head.appendChild(st)})();
+
+function wwEnsureCalendarItineraryShortcut(){
+  const ov=wozzaCalendarEnsure(),actions=ov.querySelector('.wozza-calendar-actions');if(!actions)return;
+  let b=actions.querySelector('.wozza-calendar-view-itinerary');
+  if(!b){b=document.createElement('button');b.type='button';b.className='wozza-calendar-view-itinerary';b.textContent='View itinerary';const close=actions.querySelector('.wozza-calendar-cancel');actions.insertBefore(b,close);b.onclick=()=>{wozzaCalendarClose();requestAnimationFrame(()=>wwOpenTripItinerary())}}
+  b.hidden=wozzaCalendarMode!=='range';
+}
+const _wwCalRenderItineraryShortcut=wozzaCalendarRender;
+wozzaCalendarRender=function(){_wwCalRenderItineraryShortcut();wwEnsureCalendarItineraryShortcut()};
+
+function wwEnsureMultiStopItineraryShortcut(){
+  const host=document.getElementById('tripDestinationStops'),add=document.getElementById('addTripDestination');if(!host||!add)return;
+  const rows=wwTripStopRows();let b=document.getElementById('wwTripViewItinerary');
+  if(rows.length<=1){b?.remove();return}
+  if(!b){b=document.createElement('button');b.type='button';b.id='wwTripViewItinerary';b.className='ww-trip-view-itinerary';b.textContent='View itinerary';b.onclick=e=>{e.preventDefault();e.stopPropagation();wwOpenTripItinerary()}}
+  /* Add Stop visually belongs to the stop stack; put the shortcut immediately after it and before the next editor section. */
+  add.insertAdjacentElement('afterend',b);
+}
+const _wwRefreshTripEditorSummaryShortcut=refreshTripEditorSummaryLine;
+refreshTripEditorSummaryLine=function(){const r=_wwRefreshTripEditorSummaryShortcut.apply(this,arguments);wwEnsureMultiStopItineraryShortcut();return r};
+const _wwUpdateStopLabelsShortcut=updateStopLabels;
+updateStopLabels=function(){const r=_wwUpdateStopLabelsShortcut.apply(this,arguments);wwEnsureMultiStopItineraryShortcut();return r};
+document.addEventListener('click',e=>{if(e.target.closest?.('#addTripDestination,.trip-stop-remove'))requestAnimationFrame(wwEnsureMultiStopItineraryShortcut)},true);
