@@ -3329,3 +3329,68 @@ openStopItinerary=function(row,id=''){
   _wwOpenStopActivityNotesPolish(row,id);
   wwPolishActivityNotesField(document.getElementById('stopItineraryDialog'));
 };
+
+/* === Hotfix — embedded activity-note lines + stable Export trip + remove legacy notes checkbox === */
+function wwActivityNotesInlineText(){
+  return wwActivityNotes().map(x=>`${x.name} activity: ${x.notes.replace(/\s*\n\s*/g,' ')}`).join('\n');
+}
+function wwEnsureEmbeddedNotesBox(textarea, hostId){
+  if(!textarea)return null;
+  let shell=textarea.closest('.ww-notes-composite');
+  if(!shell){
+    shell=document.createElement('div');
+    shell.className='ww-notes-composite';
+    textarea.parentNode.insertBefore(shell,textarea);
+    shell.appendChild(textarea);
+  }
+  let host=shell.querySelector('#'+hostId);
+  if(!host){
+    host=document.createElement('div');
+    host.id=hostId;
+    host.className='ww-activity-notes-inline';
+    host.setAttribute('aria-label','Activity notes (read only)');
+    shell.appendChild(host);
+  }
+  return host;
+}
+wwRenderActivityNotesReadOnly=function(){
+  /* Remove the old separate read-only cards if a previous render created them. */
+  document.querySelectorAll('.ww-activity-notes-readonly').forEach(x=>x.remove());
+  const text=wwActivityNotesInlineText();
+  const trip=wwEnsureEmbeddedNotesBox(document.querySelector('#tripNotes'),'tripActivityNotesInline');
+  const itin=wwEnsureEmbeddedNotesBox(document.querySelector('#masterItineraryTripNotes'),'itineraryActivityNotesInline');
+  [trip,itin].forEach(host=>{if(!host)return;host.textContent=text;host.hidden=!text});
+};
+
+/* The old checkbox is obsolete: activity notes always remain standalone and are mirrored read-only. */
+const _wwPolishActivityNotesFieldEmbedded=wwPolishActivityNotesField;
+wwPolishActivityNotesField=function(d){
+  _wwPolishActivityNotesFieldEmbedded(d);
+  d?.querySelector('.itin-link-check')?.remove();
+};
+
+/* Expanding/collapsing Notes must never pull Export trip out of the footer action row. */
+wwEnsureExportTripPlaceholder=function(){
+  let b=document.getElementById('wwTripExportPlaceholder');
+  if(!b){
+    b=document.createElement('button');
+    b.type='button';
+    b.id='wwTripExportPlaceholder';
+    b.className='ww-trip-export-placeholder';
+    b.textContent='Export trip';
+    b.setAttribute('aria-label','Export trip (coming soon)');
+    b.onclick=e=>{e.preventDefault();e.stopPropagation()};
+  }
+  const cancel=document.getElementById('cancelTrip');
+  const actions=cancel?.parentElement;
+  if(actions && b.parentElement!==actions) actions.insertBefore(b,cancel);
+  return b;
+};
+
+/* Re-render after activity save/delete and whenever either notes surface is created. */
+const _wwSetItemsEmbeddedActivityNotes=setItineraryItemsForRow;
+setItineraryItemsForRow=function(row,items){const r=_wwSetItemsEmbeddedActivityNotes(row,items);requestAnimationFrame(wwRenderActivityNotesReadOnly);return r};
+const _wwEnsureSharedEmbeddedActivityNotes=wwEnsureItinerarySharedNotes;
+wwEnsureItinerarySharedNotes=function(d){const r=_wwEnsureSharedEmbeddedActivityNotes(d);requestAnimationFrame(wwRenderActivityNotesReadOnly);return r};
+const _wwOpenTripEditorEmbeddedActivityNotes=openTripEditor;
+openTripEditor=function(t){const r=_wwOpenTripEditorEmbeddedActivityNotes(t);requestAnimationFrame(()=>{wwRenderActivityNotesReadOnly();wwRecoverExportTripPlacement?.()});return r};

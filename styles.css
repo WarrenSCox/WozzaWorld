@@ -4931,3 +4931,11 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 .ww-activity-note-readonly span{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.035em;text-transform:none;background:rgba(255,255,255,.28);border-radius:999px;padding:3px 8px;margin-bottom:5px}
 .ww-activity-note-readonly p{margin:0;font-size:12px;line-height:1.35;font-weight:600;opacity:.9}
 .master-itinerary-trip-notes .ww-activity-notes-readonly{display:block}
+
+/* === Hotfix — activity notes visually embedded inside the shared Notes box === */
+.ww-notes-composite{background:rgba(246,251,248,.82);border:1px solid rgba(7,94,120,.075);border-radius:20px;overflow:hidden}
+.ww-notes-composite>#tripNotes,.ww-notes-composite>#masterItineraryTripNotes{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;width:100%!important;box-sizing:border-box!important}
+.ww-activity-notes-inline{white-space:pre-wrap;padding:0 16px 15px;color:inherit;font:inherit;font-size:12px;line-height:1.45;font-weight:650;pointer-events:none}
+.ww-activity-notes-inline[hidden]{display:none!important}
+/* Remove legacy separate-card presentation if stale DOM survives during a live reload. */
+.ww-activity-notes-readonly{display:none!important}
