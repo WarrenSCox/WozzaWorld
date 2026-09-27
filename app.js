@@ -2903,3 +2903,38 @@ function roundRect(ctx,x,y,w,h,r,fill){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx
 .master-itinerary-stop>h3{margin:0 4px 10px!important;color:#07849a!important;font-size:21px!important;font-weight:950!important;letter-spacing:.045em!important;text-transform:uppercase!important}
 .master-itinerary-stop .master-itinerary-day{margin-bottom:12px!important}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld hotfix — tappable itinerary rows + next-departure trip shortcut === */
+wwWireItineraryActivityActions=function(host,d){
+  host.querySelectorAll('.master-itinerary-edit').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const row=wwTripStopRows()[Number(b.dataset.stop)];
+    if(row){d.close();openStopItinerary(row,b.dataset.id)}
+  });
+  host.querySelectorAll('.master-itinerary-activity').forEach(a=>{
+    a.setAttribute('role','button');a.tabIndex=0;
+    const open=()=>{const row=wwTripStopRows()[Number(a.dataset.stop)];if(row)wwOpenQuickInfo(row,a.dataset.id)};
+    a.onclick=e=>{if(e.target.closest('.master-itinerary-edit'))return;open()};
+    a.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('.master-itinerary-edit')){e.preventDefault();open()}}
+  })
+};
+wwActivityScheduleRow=function(x){return `<div class="master-itinerary-activity" data-stop="${x._stopIndex}" data-id="${esc(x.id)}"><time>${esc(x.flexible?'Flexible':(x.startTime||'—'))}</time><span class="master-itinerary-icon">${itineraryIcon(x)}</span><span class="master-itinerary-activity-main"><strong>${esc(x.name||'Activity')}</strong><small>${esc(x._stopName)}</small></span><span class="master-itinerary-activity-actions"><button type="button" class="master-itinerary-edit" data-stop="${x._stopIndex}" data-id="${esc(x.id)}" aria-label="Edit ${esc(x.name||'activity')}" title="Edit">✎</button></span></div>`};
+
+/* The departure board always remembers the exact trip used to build its message. */
+const _wwRenderDepartureBoardShortcut=renderDepartureBoard;
+renderDepartureBoard=function(){
+  _wwRenderDepartureBoardShortcut();
+  const el=$('#departureBoard');if(!el||el.hidden)return;
+  const upcoming=state.trips.filter(t=>t.start&&countdownDays(t.start)>=0&&tripCountries(t).some(c=>state.statuses[c]==='going')).sort((a,b)=>a.start.localeCompare(b.start))[0];
+  if(!upcoming)return;
+  el.dataset.tripId=upcoming.id;
+  el.setAttribute('role','button');el.tabIndex=0;el.style.cursor='pointer';
+  const go=e=>{if(e){e.preventDefault();e.stopPropagation()}const t=state.trips.find(x=>String(x.id)===String(el.dataset.tripId));if(t)openTripEditor(t)};
+  el.onclick=go;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')go(e)};
+};
+
+(()=>{const st=document.createElement('style');st.id='ww-itinerary-row-shortcut-style';st.textContent=`
+.master-itinerary-activity{cursor:pointer!important}
+.master-itinerary-activity-actions{flex:0 0 auto!important}
+.master-itinerary-activity-main{min-width:0!important;flex:1 1 auto!important}
+`;document.head.appendChild(st)})();
