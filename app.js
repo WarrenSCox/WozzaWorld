@@ -3242,3 +3242,49 @@ saveStopItinerary=function(){const d=itineraryDialog(),row=activeItineraryRow;if
 /* Named links in the read-only activity info dialog. */
 const _wwQuickInfoNamedLinks=wwOpenQuickInfo;
 wwOpenQuickInfo=function(row,id){_wwQuickInfoNamedLinks(row,id);const x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));if(!x)return;const body=document.querySelector('#itineraryQuickInfoBody');if(!body)return;body.querySelectorAll('.itinerary-quick-info-link').forEach(a=>a.remove());const links=wwActivityLinks(x).filter(l=>l.url);const notesBlock=body.querySelector('.itinerary-quick-info-block');const html=links.map(l=>`<a class="itinerary-quick-info-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name||'Open link')} ↗</a>`).join('');if(notesBlock)notesBlock.insertAdjacentHTML('beforebegin',html);else body.insertAdjacentHTML('beforeend',html)};
+
+/* === WozzaWorld activity details micro-hotfix — clean heading + optional start date === */
+(()=>{
+  const _dialog=itineraryDialog;
+  itineraryDialog=function(){
+    const d=_dialog();
+    if(d.dataset.activityDetailsV3)return d;
+    d.dataset.activityDetailsV3='1';
+    const small=d.querySelector('.stop-itinerary-head small');
+    if(small)small.remove();
+    return d;
+  };
+
+  const _open=openStopItinerary;
+  openStopItinerary=function(row,id=''){
+    _open(row,id);
+    const d=itineraryDialog();
+    const heading=d.querySelector('#stopItineraryHeading');
+    if(heading)heading.textContent='Activity details';
+    const sd=d.querySelector('#itinStartDate');
+    if(sd){
+      const tripStart=row?.querySelector('.trip-destination-from')?.value||'';
+      sd.dataset.calendarSeed=tripStart;
+      if(!id){
+        sd.dataset.iso='';
+        sd.value='';
+      }
+    }
+  };
+
+  const _openCalendar=wozzaCalendarOpenActivity;
+  wozzaCalendarOpenActivity=function(input){
+    if(!input?.isConnected)return;
+    const seed=input.dataset.iso||input.dataset.calendarSeed||'';
+    if(!input.dataset.iso && seed){
+      const previous=input.dataset.iso;
+      input.dataset.iso=seed;
+      _openCalendar(input);
+      input.dataset.iso=previous||'';
+      wozzaCalendarSelected='';
+      wozzaCalendarRender();
+      return;
+    }
+    _openCalendar(input);
+  };
+})();
