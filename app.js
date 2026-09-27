@@ -2689,6 +2689,8 @@ if(!window.__wozzaStopFlagCountryNavigation){
     if(!slot)return false;
     const country=slot.dataset.stopCountry||slot.closest('.trip-destination-stop')?.querySelector('.trip-stop-country')?.value?.trim();
     if(!country)return false;
+    const trip=document.querySelector('#tripDialog[open]');
+    if(trip){ trip.close(); window.__wozzaReturnToTripAfterCountry=true; }
     openCountry(country);
     return true;
   };
@@ -2708,8 +2710,9 @@ function wwSyncItinerarySharedNotes(){
   const itin=document.querySelector('#masterItineraryTripNotes');
   if(main&&itin&&itin!==document.activeElement)itin.value=main.value;
 }
-function wwEnsureItinerarySharedNotes(){
-  const d=wwMasterItineraryDialog();
+function wwEnsureItinerarySharedNotes(d){
+  d=d||document.getElementById('masterItineraryDialog');
+  if(!d)return;
   const add=d.querySelector('#masterItineraryAdd');
   if(!add)return;
   let wrap=d.querySelector('.master-itinerary-trip-notes');
@@ -2730,12 +2733,24 @@ function wwEnsureItinerarySharedNotes(){
 }
 
 const _wwMasterItineraryDialogSharedNotes=wwMasterItineraryDialog;
-wwMasterItineraryDialog=function(){const d=_wwMasterItineraryDialogSharedNotes();wwEnsureItinerarySharedNotes();return d};
+wwMasterItineraryDialog=function(){const d=_wwMasterItineraryDialogSharedNotes();wwEnsureItinerarySharedNotes(d);return d};
 const _wwRenderMasterItinerarySharedNotes=wwRenderMasterItinerary;
 wwRenderMasterItinerary=function(){const out=_wwRenderMasterItinerarySharedNotes();wwEnsureItinerarySharedNotes();return out};
 const _wwOpenDailyScheduleSharedNotes=wwOpenDailySchedule;
 wwOpenDailySchedule=function(iso){const out=_wwOpenDailyScheduleSharedNotes(iso);wwEnsureItinerarySharedNotes();return out};
 document.querySelector('#tripNotes')?.addEventListener('input',wwSyncItinerarySharedNotes);
+
+const _wwCloseSheetReturnTrip=closeSheet;
+closeSheet=async function(){
+  const returnToTrip=!!window.__wozzaReturnToTripAfterCountry;
+  window.__wozzaReturnToTripAfterCountry=false;
+  const out=await _wwCloseSheetReturnTrip();
+  if(returnToTrip){
+    const trip=document.getElementById('tripDialog');
+    if(trip&&!trip.open){trip.showModal();requestAnimationFrame(()=>{trip.scrollTop=0})}
+  }
+  return out;
+};
 
 (()=>{if(document.getElementById('ww-trip-notes-hotfix-style'))return;const st=document.createElement('style');st.id='ww-trip-notes-hotfix-style';st.textContent=`
 #tripNotes{resize:vertical!important;min-height:96px!important;overflow:auto!important}
