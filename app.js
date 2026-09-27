@@ -3149,3 +3149,33 @@ const _wwOpenTripActionPolish=openTrip;
 openTrip=function(){const r=_wwOpenTripActionPolish.apply(this,arguments);requestAnimationFrame(()=>{wwRecoverExportTripPlacement?.();wwPolishTripActionRow()});return r};
 const _wwOpenTripEditorActionPolish=openTripEditor;
 openTripEditor=function(){const r=_wwOpenTripEditorActionPolish.apply(this,arguments);requestAnimationFrame(()=>{wwRecoverExportTripPlacement?.();wwPolishTripActionRow()});return r};
+
+/* === WozzaWorld final action alignment hotfix === */
+(()=>{
+  if(document.getElementById('ww-trip-action-final-align'))return;
+  const st=document.createElement('style');
+  st.id='ww-trip-action-final-align';
+  st.textContent=`
+#tripForm .dialog-actions>#wwTripExportPlaceholder,
+#tripForm .dialog-actions>#cancelTrip{
+  background:#fff!important;
+  color:inherit!important;
+  font-family:inherit!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  line-height:1!important;
+  padding:0 14px!important;
+  height:48px!important;
+  min-height:48px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  vertical-align:middle!important;
+}
+#tripForm .dialog-actions>#wwTripExportPlaceholder{color:var(--ink,#172f3a)!important}
+#tripForm .dialog-actions>#cancelTrip{color:var(--ink,#172f3a)!important}
+`;
+  document.head.appendChild(st);
+})();
