@@ -3180,61 +3180,47 @@ openTripEditor=function(){const r=_wwOpenTripEditorActionPolish.apply(this,argum
   document.head.appendChild(st);
 })();
 
-/* === WozzaWorld trip action row — baseline-grounded final button sizing === */
+/* === WozzaWorld action row final micro-hotfix — contain bin + dirty save emphasis === */
 (()=>{
-  if(document.getElementById('ww-trip-actions-baseline-final'))return;
+  if(document.getElementById('ww-action-row-micro-final'))return;
   const st=document.createElement('style');
-  st.id='ww-trip-actions-baseline-final';
+  st.id='ww-action-row-micro-final';
   st.textContent=`
-#tripForm.trip-edit-mode .dialog-actions{
-  display:grid!important;
-  grid-template-columns:40px minmax(112px,auto) minmax(72px,auto) minmax(128px,1fr)!important;
-  gap:7px!important;
-  align-items:center!important;
-  width:100%!important;
+#tripForm .dialog-actions{
+  grid-template-columns:44px minmax(0,1.15fr) minmax(0,.78fr) minmax(0,1.35fr)!important;
+  gap:9px!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  overflow:visible!important;
 }
-#tripForm.trip-edit-mode .dialog-actions>#wwTripExportPlaceholder,
-#tripForm.trip-edit-mode .dialog-actions>#cancelTrip,
-#tripForm.trip-edit-mode .dialog-actions>.primary{
-  height:40px!important;
-  min-height:40px!important;
-  box-sizing:border-box!important;
-  padding:0 12px!important;
-  border-radius:999px!important;
-  font-family:inherit!important;
-  font-size:12px!important;
-  font-weight:inherit!important;
-  line-height:1!important;
-  letter-spacing:0!important;
-  text-transform:none!important;
-  white-space:nowrap!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  text-align:center!important;
-  margin:0!important;
+#tripForm .dialog-actions>#deleteTripBtn{
+  width:44px!important;min-width:44px!important;max-width:44px!important;
+  height:44px!important;min-height:44px!important;
+  margin:0!important;padding:0!important;justify-self:start!important;
 }
-#tripForm.trip-edit-mode .dialog-actions>#wwTripExportPlaceholder,
-#tripForm.trip-edit-mode .dialog-actions>#cancelTrip{
-  width:100%!important;
-  background:#fff!important;
-  color:var(--ink)!important;
-  border:1px solid rgba(7,94,120,.08)!important;
+#tripForm .dialog-actions>#wwTripExportPlaceholder,
+#tripForm .dialog-actions>#cancelTrip,
+#tripForm .dialog-actions>.primary{
+  height:44px!important;min-height:44px!important;
+  font-size:12px!important;line-height:1!important;
 }
-#tripForm.trip-edit-mode .dialog-actions>#wwTripExportPlaceholder{grid-column:2!important;min-width:112px!important}
-#tripForm.trip-edit-mode .dialog-actions>#cancelTrip{grid-column:3!important;min-width:72px!important}
-#tripForm.trip-edit-mode .dialog-actions>.primary{grid-column:4!important;min-width:128px!important}
-#tripForm.trip-edit-mode .dialog-actions>#deleteTripBtn{grid-column:1!important;width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;margin:0!important;padding:0!important}
-@media(min-width:421px){
-  #tripForm.trip-edit-mode .dialog-actions{grid-template-columns:44px minmax(126px,auto) minmax(82px,auto) minmax(142px,1fr)!important;gap:9px!important}
-  #tripForm.trip-edit-mode .dialog-actions>#wwTripExportPlaceholder,
-  #tripForm.trip-edit-mode .dialog-actions>#cancelTrip,
-  #tripForm.trip-edit-mode .dialog-actions>.primary{height:44px!important;min-height:44px!important;font-size:14px!important;padding:0 16px!important}
-  #tripForm.trip-edit-mode .dialog-actions>#wwTripExportPlaceholder{min-width:126px!important}
-  #tripForm.trip-edit-mode .dialog-actions>#cancelTrip{min-width:82px!important}
-  #tripForm.trip-edit-mode .dialog-actions>.primary{min-width:142px!important}
-  #tripForm.trip-edit-mode .dialog-actions>#deleteTripBtn{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important}
+#tripForm .dialog-actions>.primary{font-weight:400!important}
+#tripForm .dialog-actions>.primary.ww-trip-save-dirty{font-weight:850!important}
+@media(max-width:420px){
+ #tripForm .dialog-actions{grid-template-columns:40px minmax(0,1.12fr) minmax(0,.72fr) minmax(0,1.32fr)!important;gap:7px!important}
+ #tripForm .dialog-actions>#deleteTripBtn{width:40px!important;min-width:40px!important;max-width:40px!important;height:40px!important;min-height:40px!important}
+ #tripForm .dialog-actions>#wwTripExportPlaceholder,#tripForm .dialog-actions>#cancelTrip,#tripForm .dialog-actions>.primary{height:40px!important;min-height:40px!important;font-size:12px!important;padding-left:8px!important;padding-right:8px!important}
 }
 `;
   document.head.appendChild(st);
 })();
+function wwSyncTripSaveEmphasis(){
+  const saveBtn=document.querySelector('#tripForm .dialog-actions .primary');
+  if(!saveBtn)return;
+  saveBtn.classList.toggle('ww-trip-save-dirty',!!editingTripId&&tripEditorIsDirty());
+}
+document.getElementById('tripForm')?.addEventListener('input',()=>requestAnimationFrame(wwSyncTripSaveEmphasis),true);
+document.getElementById('tripForm')?.addEventListener('change',()=>requestAnimationFrame(wwSyncTripSaveEmphasis),true);
+document.getElementById('tripForm')?.addEventListener('click',()=>requestAnimationFrame(wwSyncTripSaveEmphasis),true);
+const _wwRememberTripEditorSnapshotActionFinal=rememberTripEditorSnapshot;
+rememberTripEditorSnapshot=function(){const r=_wwRememberTripEditorSnapshotActionFinal.apply(this,arguments);requestAnimationFrame(wwSyncTripSaveEmphasis);return r};
