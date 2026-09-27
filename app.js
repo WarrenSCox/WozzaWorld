@@ -2653,3 +2653,15 @@ document.addEventListener('click',e=>{
   e.stopPropagation();
   openCountry(country);
 });
+
+/* Hotfix: Trips-page adaptive flags are delegated because split-flap redraws replace the flag buttons. */
+document.addEventListener('click',e=>{
+  const flag=e.target.closest?.('#tripList .trip-country-flag[data-trip-country]');
+  if(!flag)return;
+  const country=flag.dataset.tripCountry?.trim();
+  if(!country)return;
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+  openCountry(country);
+},true);
