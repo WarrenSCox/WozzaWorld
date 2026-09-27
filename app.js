@@ -2862,7 +2862,7 @@ function wwRenderTripHierarchy(){
       const title=date==='unscheduled'?'TO BE SCHEDULED':wwItineraryDayLabel(date);
       return `<section class="master-itinerary-day"><div class="master-itinerary-dayhead"><b>${date==='unscheduled'?'FLEXIBLE':`DAY ${dayNo.get(date)}`}</b><span>${esc(title)}</span></div><div class="master-itinerary-daybody">${list.map(wwActivityScheduleRow).join('')}</div></section>`
     }).join('');
-    return `<section class="master-itinerary-stop"><h3>${esc(wwStopName(row,si))}</h3>${days}</section>`
+    return `<section class="master-itinerary-stop">${rows.length>1?`<h3>${esc(wwStopName(row,si))}</h3>`:''}${days}</section>`
   }).join('');
   wwWireItineraryActivityActions(host,d)
 }
@@ -2871,22 +2871,32 @@ wwOpenTripItinerary=function(){wwRenderTripHierarchy();const d=wwMasterItinerary
 wwOpenMasterItinerary=function(){wwRenderTripHierarchy();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()};
 
 async function wwCaptureFullItinerary(){
-  const d=wwMasterItineraryDialog(),shell=d.querySelector('.master-itinerary-shell');if(!shell)return;
-  const clone=shell.cloneNode(true);
-  clone.querySelectorAll('.master-itinerary-close,.master-itinerary-capture,.master-itinerary-edit,#masterItineraryAdd,.master-itinerary-trip-notes').forEach(x=>x.remove());
-  const src=[shell,...shell.querySelectorAll('*')],dst=[clone,...clone.querySelectorAll('*')];
-  src.forEach((el,i)=>{const out=dst[i];if(!out)return;const cs=getComputedStyle(el);for(const p of cs){try{out.style.setProperty(p,cs.getPropertyValue(p),cs.getPropertyPriority(p))}catch{}}});
-  clone.style.height='auto';clone.style.maxHeight='none';clone.style.overflow='visible';clone.style.margin='0';
-  clone.querySelectorAll('*').forEach(el=>{el.style.maxHeight='none';if(getComputedStyle(el).overflowY==='auto'||getComputedStyle(el).overflowY==='scroll')el.style.overflow='visible'});
-  const width=Math.ceil(shell.getBoundingClientRect().width),height=Math.ceil(Math.max(clone.scrollHeight,shell.scrollHeight));
-  const holder=document.createElement('div');holder.style.cssText=`position:fixed;left:-100000px;top:0;width:${width}px`;holder.appendChild(clone);document.body.appendChild(holder);
-  const h=Math.ceil(clone.getBoundingClientRect().height||clone.scrollHeight);const xml=new XMLSerializer().serializeToString(clone);
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${h}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">${xml}</div></foreignObject></svg>`;
-  const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob),img=new Image();
-  try{await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});const scale=Math.min(2,8192/Math.max(width,h));const canvas=document.createElement('canvas');canvas.width=Math.round(width*scale);canvas.height=Math.round(h*scale);const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.drawImage(img,0,0,width,h);const png=await new Promise(res=>canvas.toBlob(res,'image/png',1));if(!png)throw new Error('PNG export failed');const a=document.createElement('a');a.href=URL.createObjectURL(png);a.download=`${(wwItineraryTripMeta().name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}catch(e){console.error(e);alert('Sorry — the itinerary image could not be created on this device.')}finally{URL.revokeObjectURL(url);holder.remove()}
+  /* Canvas-first exporter: avoids SVG foreignObject, which is unreliable in Android WebView/PWA. */
+  const meta=wwItineraryTripMeta(),rows=wwTripStopRows(),items=wwMasterActivities(),multi=rows.length>1;
+  if(!items.length)return;
+  const W=720,pad=42,contentW=W-pad*2,dayHeadH=72,rowPad=22;
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  const font='Arial, sans-serif';
+  const wrap=(text,maxWidth,fontSpec)=>{ctx.font=fontSpec;const words=String(text||'').split(/\s+/),lines=[];let line='';for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);return lines.length?lines:['']};
+  const groupsByStop=rows.map((row,si)=>{const a=items.filter(x=>x._stopIndex===si),m=new Map();a.forEach(x=>{const k=x.startDate||'unscheduled';if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.entries()].sort(([a],[b])=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b))});
+  const dated=[...new Set(items.map(x=>x.startDate||'unscheduled'))].sort((a,b)=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b)),dayNo=new Map(dated.map((x,i)=>[x,i+1]));
+  let H=pad+70+(meta.dateRange?34:0)+18;
+  groupsByStop.forEach((groups,si)=>{if(!groups.length)return;if(multi)H+=54;groups.forEach(([date,list])=>{H+=dayHeadH;list.forEach(x=>{const lines=wrap(x.name||'Activity',390,`700 27px ${font}`);H+=Math.max(86,rowPad+lines.length*31+28)});H+=18})});H+=pad;
+  const scale=Math.min(2,8192/Math.max(W,H));canvas.width=Math.round(W*scale);canvas.height=Math.round(H*scale);ctx.scale(scale,scale);
+  ctx.fillStyle='#fff0c7';ctx.fillRect(0,0,W,H);let y=pad;
+  ctx.fillStyle='#172f3a';ctx.font=`800 48px ${font}`;wrap(meta.name,contentW,`800 48px ${font}`).forEach(l=>{ctx.fillText(l,pad,y+46);y+=54});
+  if(meta.dateRange){ctx.fillStyle='#07849a';ctx.font=`800 22px ${font}`;ctx.fillText(meta.dateRange,pad,y+18);y+=38}y+=12;
+  groupsByStop.forEach((groups,si)=>{if(!groups.length)return;if(multi){ctx.fillStyle='#07849a';ctx.font=`900 28px ${font}`;ctx.fillText(String(wwStopName(rows[si],si)).toUpperCase(),pad,y+30);y+=54}
+    groups.forEach(([date,list])=>{ctx.fillStyle='#fff';roundRect(ctx,pad,y,contentW,dayHeadH,22,true);ctx.fillStyle='#07849a';ctx.fillRect(pad,y,120,dayHeadH);ctx.fillStyle='#fff';ctx.font=`800 23px ${font}`;ctx.fillText(date==='unscheduled'?'FLEXIBLE':`DAY ${dayNo.get(date)}`,pad+22,y+44);ctx.fillStyle='#172f3a';ctx.font=`700 23px ${font}`;ctx.fillText(date==='unscheduled'?'TO BE SCHEDULED':wwItineraryDayLabel(date),pad+142,y+44);y+=dayHeadH;
+      ctx.fillStyle='#ffc326';ctx.fillRect(pad,y,contentW,1);
+      list.forEach(x=>{const lines=wrap(x.name||'Activity',390,`700 27px ${font}`),rh=Math.max(86,rowPad+lines.length*31+28);ctx.fillStyle='#ffc326';ctx.fillRect(pad,y,contentW,rh);ctx.fillStyle='#172f3a';ctx.font=`700 23px ${font}`;ctx.fillText(x.flexible?'Flexible':(x.startTime||'—'),pad+22,y+37);ctx.font=`26px ${font}`;ctx.fillText(itineraryIcon(x),pad+132,y+38);ctx.font=`700 27px ${font}`;lines.forEach((l,i)=>ctx.fillText(l,pad+188,y+37+i*31));ctx.fillStyle='rgba(23,47,58,.58)';ctx.font=`400 18px ${font}`;ctx.fillText(x._stopName||'',pad+188,y+37+lines.length*31+3);
+        /* Keep the useful info control; edit controls are intentionally omitted. */ctx.beginPath();ctx.arc(W-pad-34,y+rh/2,27,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.fillStyle='#07849a';ctx.font=`800 25px ${font}`;ctx.textAlign='center';ctx.fillText('i',W-pad-34,y+rh/2+9);ctx.textAlign='left';y+=rh});y+=18})});
+  const png=await new Promise(res=>canvas.toBlob(res,'image/png',.96));if(!png){alert('Sorry — the itinerary image could not be created on this device.');return}const url=URL.createObjectURL(png),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)
 }
+function roundRect(ctx,x,y,w,h,r,fill){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();if(fill)ctx.fill()}
+
 (()=>{if(document.getElementById('ww-itinerary-capture-style'))return;const st=document.createElement('style');st.id='ww-itinerary-capture-style';st.textContent=`
-.master-itinerary-head{position:relative!important;padding-right:138px!important}
+.master-itinerary-head{position:relative!important;padding-right:138px!important;display:flex!important;flex-direction:column!important}.master-itinerary-head h2{order:1!important}.master-itinerary-head small{order:2!important}
 .master-itinerary-head .master-itinerary-date-range{display:block!important;color:#07849a!important;font-weight:900!important;letter-spacing:.06em!important;margin-top:5px!important}
 .master-itinerary-capture{position:absolute!important;right:78px!important;top:50%!important;transform:translateY(-50%)!important;width:54px!important;height:54px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#123542!important;font-size:24px!important;font-weight:900!important;display:grid!important;place-items:center!important;box-shadow:none!important;cursor:pointer!important}
 .master-itinerary-stop{margin:0 0 22px!important}
