@@ -3121,3 +3121,31 @@ openTripEditor=function(){const r=_wwOpenTripEditorRecovery.apply(this,arguments
 #tripForm .dialog-actions #cancelTrip{grid-column:3!important}
 #tripForm .dialog-actions .primary{grid-column:4!important}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld action-row polish hotfix — exact existing Close styling === */
+(()=>{
+  if(document.getElementById('ww-trip-action-exact-match'))return;
+  const st=document.createElement('style');
+  st.id='ww-trip-action-exact-match';
+  st.textContent=`
+#tripForm .dialog-actions{grid-template-columns:auto minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr)!important;align-items:stretch!important}
+#tripForm .dialog-actions>#wwTripExportPlaceholder,
+#tripForm .dialog-actions>#cancelTrip{height:100%!important;min-height:0!important}
+`;
+  document.head.appendChild(st);
+})();
+function wwPolishTripActionRow(){
+  const b=document.getElementById('wwTripExportPlaceholder');
+  const close=document.getElementById('cancelTrip');
+  if(!b||!close)return;
+  close.textContent='Close';
+  /* Reuse the real existing secondary-button classes instead of approximating them. */
+  b.className=close.className;
+  b.textContent='Export trip';
+  b.setAttribute('aria-label','Export trip (coming soon)');
+  b.onclick=e=>{e.preventDefault();e.stopPropagation()};
+}
+const _wwOpenTripActionPolish=openTrip;
+openTrip=function(){const r=_wwOpenTripActionPolish.apply(this,arguments);requestAnimationFrame(()=>{wwRecoverExportTripPlacement?.();wwPolishTripActionRow()});return r};
+const _wwOpenTripEditorActionPolish=openTripEditor;
+openTripEditor=function(){const r=_wwOpenTripEditorActionPolish.apply(this,arguments);requestAnimationFrame(()=>{wwRecoverExportTripPlacement?.();wwPolishTripActionRow()});return r};
