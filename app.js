@@ -3024,3 +3024,40 @@ refreshTripEditorSummaryLine=function(){const r=_wwRefreshTripEditorSummaryShort
 const _wwUpdateStopLabelsShortcut=updateStopLabels;
 updateStopLabels=function(){const r=_wwUpdateStopLabelsShortcut.apply(this,arguments);wwEnsureMultiStopItineraryShortcut();return r};
 document.addEventListener('click',e=>{if(e.target.closest?.('#addTripDestination,.trip-stop-remove'))requestAnimationFrame(wwEnsureMultiStopItineraryShortcut)},true);
+
+/* === WozzaWorld hotfix — export placeholder + conditional subtle itinerary shortcut + export-ratio rows === */
+(()=>{if(document.getElementById('ww-trip-export-ratio-hotfix-style'))return;const st=document.createElement('style');st.id='ww-trip-export-ratio-hotfix-style';st.textContent=`
+/* Match the proven export geometry, while retaining the live app styling. */
+.master-itinerary-activity{grid-template-columns:100px 34px minmax(0,1fr)!important;column-gap:6px!important;padding-left:22px!important;padding-right:14px!important}
+.master-itinerary-icon{width:34px!important;min-width:34px!important;justify-self:start!important;text-align:left!important}
+.master-itinerary-activity-main{min-width:0!important;width:100%!important;padding:0!important}
+.master-itinerary-activity-main strong{display:block!important;width:100%!important}
+/* Secondary shortcut: useful, but deliberately quieter than the trip's primary actions. */
+#tripDialog .ww-trip-view-itinerary{width:auto!important;min-width:0!important;max-width:240px!important;margin:14px auto 22px!important;border:2px solid rgba(255,255,255,.58)!important;border-radius:999px!important;background:rgba(255,255,255,.10)!important;color:#fff!important;padding:9px 20px!important;box-shadow:none!important;font-size:15px!important;font-weight:900!important;letter-spacing:.04em!important}
+#tripDialog .ww-trip-export-placeholder{display:block!important;width:100%!important;margin:20px 0 4px!important;border:0!important;border-radius:18px!important;background:#f4c400!important;color:#172f3a!important;padding:15px 18px!important;font:inherit!important;font-weight:950!important;letter-spacing:.045em!important;text-transform:uppercase!important;cursor:default!important}
+`;document.head.appendChild(st)})();
+
+function wwTripHasAnyItinerary(){return wwTripStopRows().some(row=>itineraryItemsForRow(row).length>0)}
+
+wwEnsureMultiStopItineraryShortcut=function(){
+  const host=document.getElementById('tripDestinationStops'),add=document.getElementById('addTripDestination');if(!host||!add)return;
+  const rows=wwTripStopRows();let b=document.getElementById('wwTripViewItinerary');
+  if(rows.length<=1||!wwTripHasAnyItinerary()){b?.remove();return}
+  if(!b){b=document.createElement('button');b.type='button';b.id='wwTripViewItinerary';b.className='ww-trip-view-itinerary';b.textContent='View itinerary';b.onclick=e=>{e.preventDefault();e.stopPropagation();wwOpenTripItinerary()}}
+  add.insertAdjacentElement('afterend',b);
+}
+
+function wwEnsureExportTripPlaceholder(){
+  const notes=document.querySelector('#tripDialog .trip-notes-section')||document.getElementById('tripNotes')?.closest('section,div');
+  if(!notes)return;
+  let b=document.getElementById('wwTripExportPlaceholder');
+  if(!b){b=document.createElement('button');b.type='button';b.id='wwTripExportPlaceholder';b.className='ww-trip-export-placeholder';b.textContent='Export trip';b.setAttribute('aria-label','Export trip (coming soon)');b.onclick=e=>{e.preventDefault();e.stopPropagation()}}
+  notes.insertAdjacentElement('afterend',b);
+}
+
+const _wwOpenTripExportPlaceholder=openTrip;
+openTrip=function(){const r=_wwOpenTripExportPlaceholder.apply(this,arguments);requestAnimationFrame(()=>{wwEnsureExportTripPlaceholder();wwEnsureMultiStopItineraryShortcut()});return r};
+const _wwOpenTripEditorExportPlaceholder=openTripEditor;
+openTripEditor=function(){const r=_wwOpenTripEditorExportPlaceholder.apply(this,arguments);requestAnimationFrame(()=>{wwEnsureExportTripPlaceholder();wwEnsureMultiStopItineraryShortcut()});return r};
+
+document.addEventListener('click',e=>{if(e.target.closest?.('#tripDialog .trip-notes-section,#addTripDestination,.trip-stop-remove'))requestAnimationFrame(()=>{wwEnsureExportTripPlaceholder();wwEnsureMultiStopItineraryShortcut()})},true);
