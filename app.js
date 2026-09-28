@@ -3661,3 +3661,24 @@ saveStopItinerary=function(){const d=itineraryDialog(),row=activeItineraryRow;if
 /* Show currency alongside the saved amount in quick info. */
 const _wwCurrencyQuickInfo=wwOpenQuickInfo;
 wwOpenQuickInfo=function(row,id){_wwCurrencyQuickInfo(row,id);const x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));if(!x||!x.cost)return;const body=document.querySelector('#itineraryQuickInfoBody');const costRow=[...body.querySelectorAll('.itinerary-quick-info-row')].find(r=>r.querySelector('small')?.textContent==='Cost per person');const strong=costRow?.querySelector('strong');if(strong)strong.textContent=`${x.cost} ${x.currency||'GBP'}`};
+
+/* === WozzaWorld hotfix — currency prefix + collapsed read-only activity notes === */
+const WW_ACTIVITY_CURRENCY_SYMBOLS={GBP:'£',EUR:'€',USD:'$',HUF:'Ft',CHF:'CHF',NOK:'kr',SEK:'kr',DKK:'kr',PLN:'zł',CZK:'Kč',JPY:'¥',AUD:'A$',CAD:'C$',NZD:'NZ$',AED:'د.إ',ALL:'L',AMD:'֏',ARS:'AR$',BAM:'KM',BGN:'лв',BRL:'R$',CNY:'¥',COP:'COL$',CRC:'₡',EGP:'E£',GEL:'₾',HKD:'HK$',HRK:'kn',IDR:'Rp',ILS:'₪',INR:'₹',ISK:'kr',KRW:'₩',MAD:'د.م.',MXN:'MX$',MYR:'RM',PEN:'S/',PHP:'₱',RON:'lei',RSD:'дин',SAR:'﷼',SGD:'S$',THB:'฿',TRY:'₺',TWD:'NT$',UAH:'₴',VND:'₫',ZAR:'R'};
+function wwCurrencySymbol(code){return WW_ACTIVITY_CURRENCY_SYMBOLS[code]||code||''}
+function wwCostNumber(v){return String(v??'').replace(/^\s*(?:£|€|\$|¥|Ft|CHF|kr|zł|Kč|A\$|C\$|NZ\$|د\.إ|L|֏|AR\$|KM|лв|R\$|COL\$|₡|E£|₾|HK\$|kn|Rp|₪|₹|₩|د\.م\.|MX\$|RM|S\/|₱|lei|дин|﷼|S\$|฿|₺|NT\$|₴|₫|R)\s*/i,'').trim()}
+function wwPaintCostPrefix(d){const cost=d?.querySelector('#itinCost'),sel=d?.querySelector('#itinCurrency');if(!cost||!sel)return;const raw=wwCostNumber(cost.value);cost.value=raw?`${wwCurrencySymbol(sel.value)} ${raw}`:'';}
+const _wwPrefixEnsure=wwEnsureActivityCurrency;
+wwEnsureActivityCurrency=function(d){_wwPrefixEnsure(d);const cost=d.querySelector('#itinCost'),sel=d.querySelector('#itinCurrency');if(!cost||!sel||sel.dataset.prefixBound)return;sel.dataset.prefixBound='1';sel.addEventListener('change',()=>wwPaintCostPrefix(d));cost.addEventListener('focus',()=>{cost.value=wwCostNumber(cost.value)});cost.addEventListener('blur',()=>wwPaintCostPrefix(d));};
+const _wwPrefixOpen=openStopItinerary;
+openStopItinerary=function(row,id=''){_wwPrefixOpen(row,id);const d=itineraryDialog();setTimeout(()=>wwPaintCostPrefix(d),0)};
+const _wwPrefixSave=saveStopItinerary;
+saveStopItinerary=function(){const d=itineraryDialog(),cost=d.querySelector('#itinCost');if(cost)cost.value=wwCostNumber(cost.value);return _wwPrefixSave()};
+const _wwPrefixQuick=wwOpenQuickInfo;
+wwOpenQuickInfo=function(row,id){_wwPrefixQuick(row,id);const x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));if(!x||!x.cost)return;const body=document.querySelector('#itineraryQuickInfoBody'),costRow=[...body.querySelectorAll('.itinerary-quick-info-row')].find(r=>r.querySelector('small')?.textContent==='Cost per person'),strong=costRow?.querySelector('strong');if(strong)strong.textContent=`${wwCurrencySymbol(x.currency||'GBP')} ${wwCostNumber(x.cost)}`};
+
+wwRenderActivityNotesReadOnly=function(){
+ const items=wwActivityNotesV2();
+ const html=items.map(x=>`<div class="ww-activity-note-readonly is-collapsed" data-activity-note="${esc(x.id)}"><button type="button" class="ww-activity-note-toggle" aria-expanded="false"><strong>${esc(x.name)}</strong><span aria-hidden="true">+</span></button><div class="ww-activity-note-body" hidden><p>${esc(x.notes).replace(/\n/g,'<br>')}</p></div></div>`).join('');
+ const mount=(textarea,id)=>{if(!textarea)return;let host=document.getElementById(id);if(!host){host=document.createElement('div');host.id=id;host.className='ww-activity-notes-readonly';textarea.insertAdjacentElement('afterend',host)}host.innerHTML=html;host.hidden=!items.length;host.querySelectorAll('.ww-activity-note-toggle').forEach(btn=>btn.onclick=()=>{const card=btn.closest('.ww-activity-note-readonly'),body=card.querySelector('.ww-activity-note-body'),open=btn.getAttribute('aria-expanded')==='true';btn.setAttribute('aria-expanded',String(!open));btn.querySelector('span').textContent=open?'+':'−';body.hidden=open;card.classList.toggle('is-collapsed',open)})};
+ mount(document.getElementById('tripNotes'),'tripActivityNotesReadonly');mount(document.getElementById('masterItineraryTripNotes'),'itineraryActivityNotesReadonly');
+};

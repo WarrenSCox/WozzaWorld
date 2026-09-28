@@ -4944,3 +4944,11 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 .itin-cost-currency{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:10px;align-items:end}
 .stop-itinerary-form .itin-cost-currency #itinCost,.stop-itinerary-form .itin-cost-currency #itinCurrency{margin-top:6px}
 @media(max-width:390px){.itin-cost-currency{grid-template-columns:minmax(0,1fr) 96px;gap:7px}}
+
+/* Activity read-only note accordions */
+.ww-activity-note-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0;border:0;background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer}
+.ww-activity-note-toggle strong{margin:0!important;min-width:0}
+.ww-activity-note-toggle span{flex:0 0 auto;font-size:24px;font-weight:800;line-height:1;color:#07849a}
+.ww-activity-note-body{padding-top:5px}
+.ww-activity-note-body[hidden]{display:none!important}
+.ww-activity-note-readonly.is-collapsed{padding-top:12px!important;padding-bottom:12px!important}
