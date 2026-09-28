@@ -3394,3 +3394,38 @@ const _wwEnsureSharedEmbeddedActivityNotes=wwEnsureItinerarySharedNotes;
 wwEnsureItinerarySharedNotes=function(d){const r=_wwEnsureSharedEmbeddedActivityNotes(d);requestAnimationFrame(wwRenderActivityNotesReadOnly);return r};
 const _wwOpenTripEditorEmbeddedActivityNotes=openTripEditor;
 openTripEditor=function(t){const r=_wwOpenTripEditorEmbeddedActivityNotes(t);requestAnimationFrame(()=>{wwRenderActivityNotesReadOnly();wwRecoverExportTripPlacement?.()});return r};
+
+/* === Hotfix — repeat Add activity reliably in the same app visit ===
+   Mobile browsers can race when the itinerary <dialog> is closed and the
+   activity <dialog> is opened in the same click. Defer the second modal until
+   the close has fully settled, and always resolve a fresh connected stop row. */
+function wwOpenActivityAfterDialogClose(stopIndex,id=''){
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const row=wwTripStopRows()[Number(stopIndex)];
+    if(!row||!row.isConnected)return;
+    const activity=document.getElementById('stopItineraryDialog');
+    if(activity?.open)activity.close();
+    openStopItinerary(row,id);
+  }));
+}
+wwAddActivityFromMaster=function(){
+  const rows=wwTripStopRows();
+  if(!rows.length)return;
+  const master=wwMasterItineraryDialog();
+  if(rows.length===1){
+    const idx=0;
+    if(master.open)master.close();
+    wwOpenActivityAfterDialogClose(idx);
+    return;
+  }
+  const d=wwStopChooserDialog(),host=d.querySelector('.itinerary-stop-options');
+  host.innerHTML=rows.map((r,i)=>`<button type="button" data-stop="${i}"><span>Stop ${i+1}</span><strong>${esc(wwStopName(r,i))}</strong></button>`).join('');
+  host.querySelectorAll('button[data-stop]').forEach(b=>b.onclick=e=>{
+    e.preventDefault();e.stopPropagation();
+    const idx=Number(b.dataset.stop);
+    if(d.open)d.close();
+    if(master.open)master.close();
+    wwOpenActivityAfterDialogClose(idx);
+  });
+  if(!d.open)d.showModal();
+};
