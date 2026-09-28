@@ -3429,3 +3429,26 @@ wwAddActivityFromMaster=function(){
   });
   if(!d.open)d.showModal();
 };
+
+/* === Hotfix — Add activity must work repeatedly in one app visit ===
+   The master itinerary dialog can be created before wwAddActivityFromMaster is
+   replaced by later hotfix code. Its button then keeps the original function
+   reference for the lifetime of the page. Rebind through a live dispatcher so
+   every tap uses the current safe close/open path. */
+function wwBindLiveMasterAddActivity(){
+  const d=document.getElementById('masterItineraryDialog');
+  const b=d?.querySelector('#masterItineraryAdd');
+  if(!b)return;
+  b.onclick=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    wwAddActivityFromMaster();
+  };
+}
+const _wwMasterItineraryDialogLiveAdd=wwMasterItineraryDialog;
+wwMasterItineraryDialog=function(){
+  const d=_wwMasterItineraryDialogLiveAdd();
+  wwBindLiveMasterAddActivity();
+  return d;
+};
+wwBindLiveMasterAddActivity();
