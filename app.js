@@ -3951,5 +3951,5 @@ wwOpenQuickInfo=function(row,id){
 
   const _wire=wwWireItineraryActivityActions;
   wwWireItineraryActivityActions=function(host,d){_wire(host,d);host.querySelectorAll('.master-itinerary-daybody .master-itinerary-activity').forEach(enableDayRowReorder)};
-  const st=document.createElement('style');st.textContent=`.master-itinerary-activity{user-select:none;-webkit-user-select:none}.ww-itinerary-row-dragging{touch-action:none!important}.ww-itinerary-row-marker{border-radius:10px;background:rgba(7,132,154,.08)}`;document.head.appendChild(st);
+  const st=document.createElement('style');st.textContent=`.master-itinerary-activity{user-select:none;-webkit-user-select:none}.ww-itinerary-row-dragging{touch-action:none!important;border-radius:10px!important;overflow:hidden!important}.ww-itinerary-row-marker{border-radius:10px;background:rgba(7,132,154,.08)}`;document.head.appendChild(st);
 })();
