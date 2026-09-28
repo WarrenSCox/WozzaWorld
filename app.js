@@ -3372,3 +3372,102 @@ wwAddActivityFromMaster=function(){
   const d=wwMasterItineraryDialog();
   d.querySelector('#masterItineraryAdd')?.click();
 };
+
+/* === WozzaWorld Activity Details footer + cleanup hotfix ===
+   Reuse the proven Trip editor action styling/structure rather than redesigning it. */
+(()=>{
+  if(document.getElementById('ww-activity-footer-trip-match'))return;
+  const st=document.createElement('style');
+  st.id='ww-activity-footer-trip-match';
+  st.textContent=`
+#stopItineraryDialog .stop-itinerary-actions{
+  display:grid!important;
+  grid-template-columns:44px minmax(0,.78fr) minmax(0,1.35fr)!important;
+  gap:9px!important;
+  align-items:stretch!important;
+  width:100%!important;
+  padding:0!important;
+  margin-top:18px!important;
+  overflow:visible!important;
+}
+#stopItineraryDialog .stop-itinerary-actions>button{margin:0!important;min-width:0!important;white-space:nowrap!important;box-sizing:border-box!important}
+#stopItineraryDialog .stop-itinerary-actions>#itinDelete{
+  grid-column:1!important;
+  width:44px!important;min-width:44px!important;max-width:44px!important;
+  height:44px!important;min-height:44px!important;
+  padding:0!important;justify-self:start!important;
+}
+#stopItineraryDialog .stop-itinerary-actions>.itin-cancel{
+  grid-column:2!important;
+  height:44px!important;min-height:44px!important;
+  font-size:12px!important;line-height:1!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+}
+#stopItineraryDialog .stop-itinerary-actions>.primary{
+  grid-column:3!important;
+  height:44px!important;min-height:44px!important;
+  font-size:12px!important;line-height:1!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+}
+@media(max-width:420px){
+ #stopItineraryDialog .stop-itinerary-actions{grid-template-columns:40px minmax(0,.72fr) minmax(0,1.32fr)!important;gap:7px!important}
+ #stopItineraryDialog .stop-itinerary-actions>#itinDelete{width:40px!important;min-width:40px!important;max-width:40px!important;height:40px!important;min-height:40px!important}
+ #stopItineraryDialog .stop-itinerary-actions>.itin-cancel,#stopItineraryDialog .stop-itinerary-actions>.primary{height:40px!important;min-height:40px!important;font-size:12px!important;padding-left:8px!important;padding-right:8px!important}
+}
+`;
+  document.head.appendChild(st);
+})();
+
+function wwPolishActivityFooterAndCleanup(){
+  const d=document.getElementById('stopItineraryDialog');
+  if(!d)return;
+
+  /* Obsolete under the Activity-notes model: remove it, don't merely hide it. */
+  d.querySelector('.itin-link-check')?.remove();
+
+  /* Short instruction that fits the second link column cleanly. */
+  d.querySelectorAll('.itin-link-name').forEach(i=>i.placeholder='Link name');
+
+  const actions=d.querySelector('.stop-itinerary-actions');
+  const del=d.querySelector('#itinDelete');
+  const close=d.querySelector('.itin-cancel');
+  const save=d.querySelector('.stop-itinerary-actions .primary');
+  const tripDel=document.getElementById('deleteTripBtn');
+  const tripClose=document.getElementById('cancelTrip');
+  const tripSave=document.querySelector('#tripForm .dialog-actions .primary');
+  if(!actions||!close||!save)return;
+
+  /* Use the actual Trip controls as the styling source of truth. */
+  if(tripClose)close.className=tripClose.className+' itin-cancel';
+  if(tripSave)save.className=tripSave.className+' primary';
+  close.type='button'; close.textContent='Close';
+  save.textContent='Save changes';
+
+  if(del){
+    if(tripDel){
+      del.className=tripDel.className+' itin-delete';
+      del.innerHTML=tripDel.innerHTML;
+    }
+    del.setAttribute('aria-label','Delete activity');
+    del.setAttribute('title','Delete activity');
+  }
+
+  /* Exact requested order: bin | Close | Save changes. */
+  if(del)actions.appendChild(del);
+  actions.appendChild(close);
+  actions.appendChild(save);
+}
+
+/* Apply after every Add/Edit open without wrapping the launch lifecycle again. */
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-add-itinerary],[data-edit-itinerary],.master-itinerary-add,.master-itinerary-activity')){
+    requestAnimationFrame(()=>requestAnimationFrame(wwPolishActivityFooterAndCleanup));
+  }
+},true);
+
+/* Also apply whenever the Activity dialog itself is shown/updated. */
+const wwActivityFooterObserver=new MutationObserver(()=>{
+  const d=document.getElementById('stopItineraryDialog');
+  if(d?.open)wwPolishActivityFooterAndCleanup();
+});
+wwActivityFooterObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['open']});
