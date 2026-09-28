@@ -3895,3 +3895,61 @@ wwOpenQuickInfo=function(row,id){
     .master-itinerary-icon .ww-activity-type-asset,.stop-itinerary-item .ww-activity-type-asset{width:25px;height:25px}
   `;document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — itinerary day-row long-press reorder ===
+   Reuses the established WozzaWorld long-press/marker/fixed-row drag pattern.
+   Reordering changes display order only: activity dates/times are never edited. */
+(()=>{
+  const _masterActivities=wwMasterActivities;
+  wwMasterActivities=function(){
+    const out=[];
+    wwTripStopRows().forEach((row,si)=>itineraryItemsForRow(row).forEach((item,ii)=>out.push({...item,_row:row,_stopIndex:si,_stopName:wwStopName(row,si),_sourceIndex:ii})));
+    return out.sort((a,b)=>{
+      const dateCmp=String(a.startDate||'9999').localeCompare(String(b.startDate||'9999'));
+      if(dateCmp)return dateCmp;
+      const ao=Number.isFinite(Number(a.itineraryOrder))?Number(a.itineraryOrder):null;
+      const bo=Number.isFinite(Number(b.itineraryOrder))?Number(b.itineraryOrder):null;
+      if(ao!==null||bo!==null){
+        if(ao===null)return 1;if(bo===null)return-1;if(ao!==bo)return ao-bo;
+      }
+      return String(a.startTime||'99:99').localeCompare(String(b.startTime||'99:99'))||a._stopIndex-b._stopIndex||a._sourceIndex-b._sourceIndex;
+    });
+  };
+
+  function persistDayOrder(body){
+    const displayed=[...body.querySelectorAll('.master-itinerary-activity')];
+    const touched=new Map();
+    displayed.forEach((el,order)=>{
+      const row=wwTripStopRows()[Number(el.dataset.stop)];if(!row)return;
+      const items=touched.get(row)||itineraryItemsForRow(row);
+      const item=items.find(x=>String(x.id)===String(el.dataset.id));
+      if(item)item.itineraryOrder=order;
+      touched.set(row,items);
+    });
+    /* Keep the existing editor data model; only add the manual order value. */
+    touched.forEach((items,row)=>{row.dataset.itinerary=JSON.stringify(items);renderStopItinerarySummary(row)});
+  }
+
+  function enableDayRowReorder(el){
+    if(el.dataset.wwReorderBound==='1')return;el.dataset.wwReorderBound='1';
+    let holdTimer=null,startX=0,startY=0,dragging=false,marker=null,grabY=0,activeTouchId=null,suppressClick=false;
+    const body=el.closest('.master-itinerary-daybody');if(!body)return;
+    const clearHold=()=>{clearTimeout(holdTimer);holdTimer=null};
+    const touchPoint=e=>{const list=[...(e.touches||[]),...(e.changedTouches||[])];return list.find(t=>activeTouchId==null||t.identifier===activeTouchId)||list[0]||null};
+    const placeMarker=y=>{const rows=[...body.querySelectorAll('.master-itinerary-activity')].filter(x=>x!==el);let before=null;for(const row of rows){const r=row.getBoundingClientRect();if(y<r.top+r.height/2){before=row;break}}if(before)body.insertBefore(marker,before);else body.appendChild(marker)};
+    const scroller=()=>{const d=el.closest('dialog');if(!d)return null;return [d,...d.querySelectorAll('*')].find(x=>{const s=getComputedStyle(x);return /auto|scroll/.test(s.overflowY)&&x.scrollHeight>x.clientHeight+4})||d};
+    const startDrag=(x,y)=>{dragging=true;const r=el.getBoundingClientRect(),cs=getComputedStyle(el);grabY=Math.max(8,Math.min(r.height-8,y-r.top));marker=document.createElement('div');marker.className='ww-itinerary-row-marker';marker.style.cssText=`height:${r.height}px;min-height:${r.height}px;width:100%;box-sizing:border-box;margin:${parseFloat(cs.marginTop)||0}px 0 ${parseFloat(cs.marginBottom)||0}px;`;body.insertBefore(marker,el);el.dataset.dragStyle=el.getAttribute('style')||'';el.classList.add('ww-itinerary-row-dragging');Object.assign(el.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647',pointerEvents:'none',opacity:'.94',boxShadow:'0 10px 24px rgba(0,35,55,.22)'});(el.closest('dialog[open]')||document.body).appendChild(el);navigator.vibrate?.(20)};
+    const moveDrag=y=>{if(!dragging)return;el.style.top=`${y-grabY}px`;placeMarker(y);const sc=scroller();if(sc){const r=sc.getBoundingClientRect(),edge=Math.min(80,Math.max(50,r.height*.16));if(y<r.top+edge)sc.scrollTop-=Math.min(14,Math.max(4,(r.top+edge-y)/5));else if(y>r.bottom-edge)sc.scrollTop+=Math.min(14,Math.max(4,(y-(r.bottom-edge))/5))}};
+    const finish=()=>{clearHold();if(!dragging){activeTouchId=null;return}dragging=false;if(marker?.parentNode)marker.parentNode.insertBefore(el,marker);marker?.remove();marker=null;const prior=el.dataset.dragStyle||'';el.classList.remove('ww-itinerary-row-dragging');if(prior)el.setAttribute('style',prior);else el.removeAttribute('style');delete el.dataset.dragStyle;persistDayOrder(body);activeTouchId=null;suppressClick=true;setTimeout(()=>suppressClick=false,180)};
+    el.addEventListener('touchstart',e=>{if(e.target.closest('button,input,select,textarea,a')||e.touches.length!==1)return;const t=e.touches[0];activeTouchId=t.identifier;startX=t.clientX;startY=t.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420)},{passive:true});
+    document.addEventListener('touchmove',e=>{if(activeTouchId==null)return;const t=touchPoint(e);if(!t)return;if(dragging){e.preventDefault();e.stopPropagation();moveDrag(t.clientY)}else if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)clearHold()},{passive:false,capture:true});
+    document.addEventListener('touchend',e=>{if(activeTouchId!=null){if(dragging){e.preventDefault();e.stopPropagation()}finish()}},{passive:false,capture:true});
+    document.addEventListener('touchcancel',finish,{capture:true});
+    el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.target.closest('button,input,select,textarea,a'))return;startX=e.clientX;startY=e.clientY;clearHold();holdTimer=setTimeout(()=>startDrag(startX,startY),420);const move=ev=>{if(dragging){ev.preventDefault();moveDrag(ev.clientY)}else if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>10)clearHold()};const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);finish()};document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true})});
+    el.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation()}},true);
+  }
+
+  const _wire=wwWireItineraryActivityActions;
+  wwWireItineraryActivityActions=function(host,d){_wire(host,d);host.querySelectorAll('.master-itinerary-daybody .master-itinerary-activity').forEach(enableDayRowReorder)};
+  const st=document.createElement('style');st.textContent=`.master-itinerary-activity{user-select:none;-webkit-user-select:none}.ww-itinerary-row-dragging{touch-action:none!important}.ww-itinerary-row-marker{border-radius:10px;background:rgba(7,132,154,.08)}`;document.head.appendChild(st);
+})();
