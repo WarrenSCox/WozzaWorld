@@ -3729,3 +3729,62 @@ wwOpenMasterItinerary=function(){wwRenderTripHierarchy();const d=wwMasterItinera
 .master-itinerary-daybody>.master-itinerary-activity+.master-itinerary-activity{border-top:1px solid rgba(23,47,58,.13)!important}
 #tripActivityNotesReadonly,#itineraryActivityNotesReadonly{display:none!important}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld hotfix — activity links controls + quick-info order + itinerary spacing === */
+/* Link rows: the final empty row owns the + button; committed rows own a bin button. */
+function wwLinkRowMarkup(x={},i=0){
+  return `<div class="itin-link-row" data-link-row="${i}"><input class="itin-link-url" type="url" placeholder="https://…" value="${esc(x.url||'')}"><input class="itin-link-name" type="text" maxlength="50" placeholder="Link name" value="${esc(x.name||'')}"><button type="button" class="itin-link-remove" aria-label="Add link">+</button></div>`;
+}
+function wwRenderLinkRows(d,links=[]){
+  const host=d.querySelector('#itinLinksRows');if(!host)return;
+  const committed=(links||[]).filter(x=>x&&(x.url||x.name)).map(x=>({url:String(x.url||''),name:String(x.name||'')}));
+  const render=()=>{
+    const vals=[...committed,{url:'',name:''}];
+    host.innerHTML=vals.map(wwLinkRowMarkup).join('');
+    const rows=$$('.itin-link-row',host);
+    rows.forEach((r,i)=>{
+      const btn=r.querySelector('.itin-link-remove'),u=r.querySelector('.itin-link-url'),n=r.querySelector('.itin-link-name');
+      const isAdd=i===rows.length-1;
+      btn.classList.toggle('itin-link-add',isAdd);
+      btn.classList.toggle('itin-link-delete',!isAdd);
+      btn.textContent=isAdd?'+':'🗑';
+      btn.setAttribute('aria-label',isAdd?'Add another link':'Remove link');
+      if(isAdd){
+        btn.onclick=()=>{
+          const url=u.value.trim(),name=n.value.trim();
+          if(!url&&!name){u.focus();return}
+          committed.push({url,name});render();
+          const next=host.querySelector('.itin-link-row:last-child .itin-link-url');next?.focus();
+        };
+      }else{
+        btn.onclick=()=>{committed.splice(i,1);render()};
+      }
+    });
+  };
+  render();
+}
+/* Read both committed rows and the current final draft row, so Save never loses typed link data. */
+function wwReadLinkRows(d){return $$('.itin-link-row',d).map(r=>({url:r.querySelector('.itin-link-url')?.value.trim()||'',name:r.querySelector('.itin-link-name')?.value.trim()||''})).filter(x=>x.url||x.name)}
+
+/* Quick info: all links/directions above EDIT; EDIT is always the final control. */
+const _wwQuickInfoFinalOrder=wwOpenQuickInfo;
+wwOpenQuickInfo=function(row,id){
+  _wwQuickInfoFinalOrder(row,id);
+  const d=wwQuickInfoDialog(),body=d.querySelector('#itineraryQuickInfoBody'),edit=body.querySelector('.itinerary-quick-info-edit');
+  if(edit)body.appendChild(edit);
+};
+
+(()=>{if(document.getElementById('ww-final-activity-polish-style'))return;const st=document.createElement('style');st.id='ww-final-activity-polish-style';st.textContent=`
+/* Link action occupies the reserved third column from the first row onward. */
+.itin-link-remove{visibility:visible!important;display:grid!important;font-family:inherit!important;font-weight:900!important;cursor:pointer!important}
+.itin-link-add{background:#07849a!important;color:#fff!important;font-size:24px!important}
+.itin-link-delete{background:#fff0ef!important;color:#a93630!important;font-size:17px!important}
+/* 15% smaller day-header quick-add controls. */
+.ww-day-quick-add{width:29px!important;height:29px!important;font-size:21px!important;line-height:26px!important;right:16px!important}
+.master-itinerary-dayhead{padding-right:52px!important}
+/* Halve the effective visual gap between the final day card and main Add Activity control. */
+.master-itinerary-add{margin-top:1px!important}
+/* Notes remain scrollable but no scrollbar chrome is shown. */
+#masterItineraryTripNotes,#tripNotes{scrollbar-width:none!important;-ms-overflow-style:none!important}
+#masterItineraryTripNotes::-webkit-scrollbar,#tripNotes::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;background:transparent!important}
+`;document.head.appendChild(st)})();
