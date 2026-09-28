@@ -3543,3 +3543,49 @@ const wwExportHomeObserver=new MutationObserver(()=>{
   if(b&&cancel&&b.parentElement!==cancel.parentElement)wwRecoverExportTripPlacement();
 });
 wwExportHomeObserver.observe(document.documentElement,{subtree:true,childList:true});
+
+/* === WozzaWorld hotfix — seamless Activity Details launch + reliable read-only activity notes === */
+/* Keep the Activity Details modal covering the itinerary while the parent modal is
+   dismissed. Closing the parent first exposed the trip editor for a paint frame,
+   which appeared as a flicker on mobile. */
+wwOpenActivityDetailsSafely=function(row,id=''){
+  if(!row)return;
+  const activity=document.getElementById('stopItineraryDialog');
+  const master=document.getElementById('masterItineraryDialog');
+  const chooser=document.getElementById('itineraryStopChooser');
+  if(activity?.open)activity.close();
+  openStopItinerary(row,id);
+  if(chooser?.open)chooser.close();
+  if(master?.open)master.close();
+};
+
+/* Activity notes are derived from the activity records, never copied into the
+   editable trip note. Refresh both read-only mirrors after any itinerary render,
+   activity save/delete, or shared-notes area creation. */
+function wwRefreshActivityNotesMirrors(){
+  requestAnimationFrame(()=>requestAnimationFrame(wwRenderActivityNotesReadOnly));
+}
+const _wwRenderMasterActivityNotesReliable=wwRenderMasterItinerary;
+wwRenderMasterItinerary=function(){
+  const out=_wwRenderMasterActivityNotesReliable();
+  wwRefreshActivityNotesMirrors();
+  return out;
+};
+const _wwOpenDailyActivityNotesReliable=wwOpenDailySchedule;
+wwOpenDailySchedule=function(iso){
+  const out=_wwOpenDailyActivityNotesReliable(iso);
+  wwRefreshActivityNotesMirrors();
+  return out;
+};
+const _wwSetItemsActivityNotesReliable=setItineraryItemsForRow;
+setItineraryItemsForRow=function(row,items){
+  const out=_wwSetItemsActivityNotesReliable(row,items);
+  wwRefreshActivityNotesMirrors();
+  return out;
+};
+const _wwEnsureSharedActivityNotesReliable=wwEnsureItinerarySharedNotes;
+wwEnsureItinerarySharedNotes=function(d){
+  const out=_wwEnsureSharedActivityNotesReliable(d);
+  wwRefreshActivityNotesMirrors();
+  return out;
+};
