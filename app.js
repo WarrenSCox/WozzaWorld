@@ -3479,3 +3479,67 @@ const wwActivityFooterObserver=new MutationObserver(()=>{
   if(d?.open)wwPolishActivityFooterAndCleanup();
 });
 wwActivityFooterObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['open']});
+
+/* === WozzaWorld surgical regression fix — 2026-09-28 ===
+   1) Legacy Activity-note compatibility control remains in DOM but can never render.
+   2) Export trip belongs ONLY to the Trip action row; Notes expand/collapse cannot reparent it. */
+(()=>{
+  if(document.getElementById('ww-surgical-notes-export-regression'))return;
+  const st=document.createElement('style');
+  st.id='ww-surgical-notes-export-regression';
+  st.textContent=`
+#stopItineraryDialog .itin-link-check,
+#stopItineraryDialog label.itin-link-check,
+#stopItineraryDialog #itinLinkNotes{display:none!important;visibility:hidden!important;position:absolute!important;pointer-events:none!important;width:0!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important}
+/* Export is an action control, never Notes content. */
+#tripDialog #wwTripExportPlaceholder{position:static!important;float:none!important}
+`;
+  document.head.appendChild(st);
+})();
+
+/* Replace the old Notes-relative placement helper with an action-row-only helper. */
+wwEnsureExportTripPlaceholder=function(){
+  const cancel=document.getElementById('cancelTrip');
+  if(!cancel)return;
+  const actions=cancel.parentElement;
+  if(!actions)return;
+  let b=document.getElementById('wwTripExportPlaceholder');
+  if(!b){
+    b=document.createElement('button');
+    b.type='button';
+    b.id='wwTripExportPlaceholder';
+    b.className='ww-trip-export-placeholder';
+    b.textContent='Export trip';
+    b.setAttribute('aria-label','Export trip (coming soon)');
+    b.onclick=e=>{e.preventDefault();e.stopPropagation()};
+  }
+  if(b.parentElement!==actions || b.nextElementSibling!==cancel) actions.insertBefore(b,cancel);
+};
+
+/* Make recovery idempotent: any Notes DOM work simply puts Export back in its one legal home. */
+wwRecoverExportTripPlacement=function(){
+  wwEnsureExportTripPlaceholder();
+  const b=document.getElementById('wwTripExportPlaceholder');
+  const cancel=document.getElementById('cancelTrip');
+  const del=document.getElementById('deleteTripBtn');
+  if(!b||!cancel)return;
+  const actions=cancel.parentElement;
+  if(!actions)return;
+  if(b.parentElement!==actions || b.nextElementSibling!==cancel)actions.insertBefore(b,cancel);
+  if(del&&del.parentElement===actions&&del.nextElementSibling!==b)actions.insertBefore(del,b);
+};
+
+/* Notes toggling must never own/reposition Export. */
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#tripDialog .trip-notes-section')){
+    requestAnimationFrame(()=>requestAnimationFrame(wwRecoverExportTripPlacement));
+  }
+},true);
+
+/* Belt-and-braces: if legacy code tries to move Export beside Notes, immediately restore it. */
+const wwExportHomeObserver=new MutationObserver(()=>{
+  const b=document.getElementById('wwTripExportPlaceholder');
+  const cancel=document.getElementById('cancelTrip');
+  if(b&&cancel&&b.parentElement!==cancel.parentElement)wwRecoverExportTripPlacement();
+});
+wwExportHomeObserver.observe(document.documentElement,{subtree:true,childList:true});
