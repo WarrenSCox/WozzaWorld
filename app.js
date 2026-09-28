@@ -4207,3 +4207,37 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
   requestAnimationFrame(()=>requestAnimationFrame(autosizeTripNotes));
 })();
+
+/* === WozzaWorld hotfix — itinerary companions + tighter icon column + contained drag text === */
+(()=>{
+  function wwItineraryCompanionLine(){
+    const trip=editingTripId?state.trips.find(t=>String(t.id)===String(editingTripId)):null;
+    const companions=[...new Set((trip?.companions||[]).map(x=>String(x||'').trim()).filter(Boolean))];
+    if(!companions.length)return'';
+    const names=['Warren',...companions.filter(x=>x.toLowerCase()!=='warren')];
+    if(names.length===2)return `${names[0]} & ${names[1]}`;
+    return `${names.slice(0,-1).join(', ')} & ${names[names.length-1]}`;
+  }
+  function wwApplyCompanionLine(){
+    const d=document.getElementById('masterItineraryDialog'),head=d?.querySelector('.master-itinerary-head');if(!head)return;
+    let line=head.querySelector('.master-itinerary-companions');
+    const text=wwItineraryCompanionLine();
+    if(!text){line?.remove();return}
+    if(!line){line=document.createElement('div');line.className='master-itinerary-companions';const date=head.querySelector('.master-itinerary-date-range');(date||head.querySelector('small'))?.insertAdjacentElement('afterend',line)}
+    line.textContent=text;
+  }
+  const apply=()=>requestAnimationFrame(()=>requestAnimationFrame(wwApplyCompanionLine));
+  document.addEventListener('click',apply,true);
+  new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true});
+  const st=document.createElement('style');st.id='ww-itinerary-companions-drag-columns-2809';st.textContent=`
+    .master-itinerary-companions{margin-top:5px;color:#07879b;font-size:15px;font-weight:800;line-height:1.2}
+    /* One final small nudge left for the icon, giving the title the reclaimed width. */
+    .master-itinerary-activity{grid-template-columns:54px 25px minmax(0,1fr)!important;column-gap:2px!important}
+    .master-itinerary-icon{width:25px!important;min-width:25px!important}
+    /* Drag preview must wrap inside exactly the same title column; never paint off-screen. */
+    .ww-itinerary-row-dragging{overflow:hidden!important;contain:paint!important;max-width:100%!important}
+    .ww-itinerary-row-dragging .master-itinerary-activity-main{min-width:0!important;max-width:100%!important;overflow:hidden!important}
+    .ww-itinerary-row-dragging .master-itinerary-activity-main>strong{min-width:0!important;max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important}
+  `;document.head.appendChild(st);
+  apply();
+})();
