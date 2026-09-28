@@ -3841,3 +3841,57 @@ wwOpenQuickInfo=function(row,id){
     `;document.head.appendChild(st);
   }
 })();
+
+/* === WozzaWorld activity type + form polish 28 Sep 2026 === */
+(()=>{
+  /* Add requested native activity types without disturbing saved/custom types. */
+  const _cats=itineraryAllCategories;
+  itineraryAllCategories=function(){
+    const rows=_cats();
+    const wanted=[['Explore','🧭'],['Cycle','🚲'],['Spa','♨️']];
+    const other=rows.findIndex(x=>x[0]==='Other');
+    wanted.forEach(entry=>{if(!rows.some(x=>String(x[0]).toLowerCase()===entry[0].toLowerCase())) rows.splice(other<0?rows.length:rows.findIndex(x=>x[0]==='Other'),0,entry)});
+    return rows;
+  };
+
+  function wwActivityAsset(category){
+    const k=String(category||'').toLowerCase();
+    if(k==='airport')return'air.png';
+    if(k==='spa')return'vibe-spa-wellness.png';
+    if(k==='boat trip')return'narrowboat.png';
+    return'';
+  }
+  function wwActivityIconMarkup(x){
+    const src=wwActivityAsset(x?.category);
+    return src?`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true">`:itineraryIcon(x);
+  }
+
+  /* Itinerary rows: use established assets for Airport / Spa / Boat trip. */
+  wwActivityScheduleRow=function(x){return `<div class="master-itinerary-activity" data-stop="${x._stopIndex}" data-id="${esc(x.id)}"><time>${esc(x.tbc?'TBC':(x.flexible?'Flexible':(x.startTime||'—')))}</time><span class="master-itinerary-icon">${wwActivityIconMarkup(x)}</span><span class="master-itinerary-activity-main"><strong>${esc(x.name||'Activity')}</strong></span></div>`};
+
+  /* Stop-level summary uses the same asset mapping. */
+  renderStopItinerarySummary=function(row){const body=row?.querySelector('.trip-stop-body');if(!body)return;let host=body.querySelector('.stop-itinerary-summary');if(!host){host=document.createElement('div');host.className='stop-itinerary-summary';body.querySelector('.itinerary-swipe-prompt')?.insertAdjacentElement('beforebegin',host)}const items=itineraryItemsForRow(row);host.innerHTML=items.length?`<div class="stop-itinerary-title">ITINERARY <span>${items.length}</span></div>${items.slice().sort((a,b)=>String(a.startDate||'').localeCompare(String(b.startDate||''))||String(a.startTime||'').localeCompare(String(b.startTime||''))).map(x=>`<button type="button" class="stop-itinerary-item" data-itin-id="${esc(x.id)}"><span>${wwActivityIconMarkup(x)}</span><strong>${esc(x.name||'Activity')}</strong><small>${esc(itineraryWhen(x))}</small></button>`).join('')}`:'';host.querySelectorAll('[data-itin-id]').forEach(b=>b.onclick=()=>openStopItinerary(row,b.dataset.itinId))};
+
+  /* After the existing quick-info rendering/decorators, swap only the type icon. */
+  const _quick=wwOpenQuickInfo;
+  wwOpenQuickInfo=function(row,id){
+    _quick(row,id);
+    const x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));
+    const type=document.querySelector('#itineraryQuickInfoBody .itinerary-quick-info-type');
+    const src=wwActivityAsset(x?.category);
+    if(type&&src)type.innerHTML=`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true"> ${esc(x.category)}`;
+  };
+
+  const st=document.createElement('style');st.id='ww-activity-form-polish-2809b';st.textContent=`
+    /* Keep every Activity-form area scrollable but never show a scrollbar. */
+    .stop-itinerary-dialog,.stop-itinerary-form,.stop-itinerary-form *{scrollbar-width:none!important;-ms-overflow-style:none!important}
+    .stop-itinerary-dialog::-webkit-scrollbar,.stop-itinerary-form::-webkit-scrollbar,.stop-itinerary-form *::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
+    /* Same circles; stronger bin glyph only. */
+    .itin-link-delete::before{width:18px!important;height:20px!important}
+    /* Optical centring: lift the + without moving its circle. */
+    .itin-link-add{line-height:1!important}
+    .itin-link-add{padding-bottom:3px!important}
+    .ww-activity-type-asset{width:24px;height:24px;object-fit:contain;display:inline-block;vertical-align:middle}
+    .master-itinerary-icon .ww-activity-type-asset,.stop-itinerary-item .ww-activity-type-asset{width:25px;height:25px}
+  `;document.head.appendChild(st);
+})();
