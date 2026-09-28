@@ -3330,125 +3330,45 @@ openStopItinerary=function(row,id=''){
   wwPolishActivityNotesField(document.getElementById('stopItineraryDialog'));
 };
 
-/* === Hotfix — embedded activity-note lines + stable Export trip + remove legacy notes checkbox === */
-function wwActivityNotesInlineText(){
-  return wwActivityNotes().map(x=>`${x.name} activity: ${x.notes.replace(/\s*\n\s*/g,' ')}`).join('\n');
+/* === WozzaWorld hotfix — repeat-safe Activity Details launch lifecycle ===
+   Activity Details must be launchable repeatedly in one app session.
+   Important: finish closing itinerary/stop-chooser dialogs before opening the
+   activity modal. This avoids handing one click between two modal lifecycles. */
+function wwOpenActivityDetailsSafely(row,id=''){
+  if(!row)return;
+  const activity=document.getElementById('stopItineraryDialog');
+  const master=document.getElementById('masterItineraryDialog');
+  const chooser=document.getElementById('itineraryStopChooser');
+  if(activity?.open)activity.close();
+  if(chooser?.open)chooser.close();
+  if(master?.open)master.close();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>openStopItinerary(row,id)));
 }
-function wwEnsureEmbeddedNotesBox(textarea, hostId){
-  if(!textarea)return null;
-  let shell=textarea.closest('.ww-notes-composite');
-  if(!shell){
-    shell=document.createElement('div');
-    shell.className='ww-notes-composite';
-    textarea.parentNode.insertBefore(shell,textarea);
-    shell.appendChild(textarea);
-  }
-  let host=shell.querySelector('#'+hostId);
-  if(!host){
-    host=document.createElement('div');
-    host.id=hostId;
-    host.className='ww-activity-notes-inline';
-    host.setAttribute('aria-label','Activity notes (read only)');
-    shell.appendChild(host);
-  }
-  return host;
-}
-wwRenderActivityNotesReadOnly=function(){
-  /* Remove the old separate read-only cards if a previous render created them. */
-  document.querySelectorAll('.ww-activity-notes-readonly').forEach(x=>x.remove());
-  const text=wwActivityNotesInlineText();
-  const trip=wwEnsureEmbeddedNotesBox(document.querySelector('#tripNotes'),'tripActivityNotesInline');
-  const itin=wwEnsureEmbeddedNotesBox(document.querySelector('#masterItineraryTripNotes'),'itineraryActivityNotesInline');
-  [trip,itin].forEach(host=>{if(!host)return;host.textContent=text;host.hidden=!text});
-};
 
-/* The old checkbox is obsolete: activity notes always remain standalone and are mirrored read-only. */
-const _wwPolishActivityNotesFieldEmbedded=wwPolishActivityNotesField;
-wwPolishActivityNotesField=function(d){
-  _wwPolishActivityNotesFieldEmbedded(d);
-  d?.querySelector('.itin-link-check')?.remove();
-};
-
-/* Expanding/collapsing Notes must never pull Export trip out of the footer action row. */
-wwEnsureExportTripPlaceholder=function(){
-  let b=document.getElementById('wwTripExportPlaceholder');
-  if(!b){
-    b=document.createElement('button');
-    b.type='button';
-    b.id='wwTripExportPlaceholder';
-    b.className='ww-trip-export-placeholder';
-    b.textContent='Export trip';
-    b.setAttribute('aria-label','Export trip (coming soon)');
-    b.onclick=e=>{e.preventDefault();e.stopPropagation()};
-  }
-  const cancel=document.getElementById('cancelTrip');
-  const actions=cancel?.parentElement;
-  if(actions && b.parentElement!==actions) actions.insertBefore(b,cancel);
-  return b;
-};
-
-/* Re-render after activity save/delete and whenever either notes surface is created. */
-const _wwSetItemsEmbeddedActivityNotes=setItineraryItemsForRow;
-setItineraryItemsForRow=function(row,items){const r=_wwSetItemsEmbeddedActivityNotes(row,items);requestAnimationFrame(wwRenderActivityNotesReadOnly);return r};
-const _wwEnsureSharedEmbeddedActivityNotes=wwEnsureItinerarySharedNotes;
-wwEnsureItinerarySharedNotes=function(d){const r=_wwEnsureSharedEmbeddedActivityNotes(d);requestAnimationFrame(wwRenderActivityNotesReadOnly);return r};
-const _wwOpenTripEditorEmbeddedActivityNotes=openTripEditor;
-openTripEditor=function(t){const r=_wwOpenTripEditorEmbeddedActivityNotes(t);requestAnimationFrame(()=>{wwRenderActivityNotesReadOnly();wwRecoverExportTripPlacement?.()});return r};
-
-/* === Hotfix — repeat Add activity reliably in the same app visit ===
-   Mobile browsers can race when the itinerary <dialog> is closed and the
-   activity <dialog> is opened in the same click. Defer the second modal until
-   the close has fully settled, and always resolve a fresh connected stop row. */
-function wwOpenActivityAfterDialogClose(stopIndex,id=''){
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const row=wwTripStopRows()[Number(stopIndex)];
-    if(!row||!row.isConnected)return;
-    const activity=document.getElementById('stopItineraryDialog');
-    if(activity?.open)activity.close();
-    openStopItinerary(row,id);
-  }));
-}
-wwAddActivityFromMaster=function(){
-  const rows=wwTripStopRows();
-  if(!rows.length)return;
-  const master=wwMasterItineraryDialog();
-  if(rows.length===1){
-    const idx=0;
-    if(master.open)master.close();
-    wwOpenActivityAfterDialogClose(idx);
-    return;
-  }
-  const d=wwStopChooserDialog(),host=d.querySelector('.itinerary-stop-options');
-  host.innerHTML=rows.map((r,i)=>`<button type="button" data-stop="${i}"><span>Stop ${i+1}</span><strong>${esc(wwStopName(r,i))}</strong></button>`).join('');
-  host.querySelectorAll('button[data-stop]').forEach(b=>b.onclick=e=>{
-    e.preventDefault();e.stopPropagation();
-    const idx=Number(b.dataset.stop);
-    if(d.open)d.close();
-    if(master.open)master.close();
-    wwOpenActivityAfterDialogClose(idx);
-  });
-  if(!d.open)d.showModal();
-};
-
-/* === Hotfix — Add activity must work repeatedly in one app visit ===
-   The master itinerary dialog can be created before wwAddActivityFromMaster is
-   replaced by later hotfix code. Its button then keeps the original function
-   reference for the lifetime of the page. Rebind through a live dispatcher so
-   every tap uses the current safe close/open path. */
-function wwBindLiveMasterAddActivity(){
-  const d=document.getElementById('masterItineraryDialog');
-  const b=d?.querySelector('#masterItineraryAdd');
-  if(!b)return;
-  b.onclick=e=>{
-    e.preventDefault();
-    e.stopPropagation();
-    wwAddActivityFromMaster();
-  };
-}
-const _wwMasterItineraryDialogLiveAdd=wwMasterItineraryDialog;
+/* Rebind the master Add button every time the existing dialog is requested,
+   so it never retains a stale one-shot launch path. */
+const _wwMasterItineraryDialogRepeatSafe=wwMasterItineraryDialog;
 wwMasterItineraryDialog=function(){
-  const d=_wwMasterItineraryDialogLiveAdd();
-  wwBindLiveMasterAddActivity();
+  const d=_wwMasterItineraryDialogRepeatSafe();
+  const add=d.querySelector('#masterItineraryAdd');
+  if(add)add.onclick=()=>{
+    const rows=wwTripStopRows();
+    if(!rows.length)return;
+    if(rows.length===1){wwOpenActivityDetailsSafely(rows[0]);return}
+    const chooser=wwStopChooserDialog(),host=chooser.querySelector('.itinerary-stop-options');
+    host.innerHTML=rows.map((r,i)=>`<button type="button" data-stop="${i}"><span>Stop ${i+1}</span><strong>${esc(wwStopName(r,i))}</strong></button>`).join('');
+    host.querySelectorAll('button[data-stop]').forEach(b=>b.onclick=()=>{
+      const freshRows=wwTripStopRows();
+      const row=freshRows[Number(b.dataset.stop)];
+      wwOpenActivityDetailsSafely(row);
+    });
+    if(!chooser.open)chooser.showModal();
+  };
   return d;
 };
-wwBindLiveMasterAddActivity();
+
+/* Keep the public helper on the same repeat-safe path too. */
+wwAddActivityFromMaster=function(){
+  const d=wwMasterItineraryDialog();
+  d.querySelector('#masterItineraryAdd')?.click();
+};
