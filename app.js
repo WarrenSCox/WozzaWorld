@@ -4174,3 +4174,36 @@ wwOpenQuickInfo=function(row,id){
   bindObserver();
   requestAnimationFrame(()=>requestAnimationFrame(wwHF2809Apply));
 })();
+
+/* === WozzaWorld surgical hotfix — true compact itinerary columns + smaller download glyph + trip notes autosize === */
+(()=>{
+  const autosizeTripNotes=()=>{
+    const el=document.getElementById('tripNotes');
+    if(!el||el.offsetParent===null)return;
+    el.style.setProperty('height','auto','important');
+    el.style.setProperty('min-height','0','important');
+    el.style.setProperty('max-height','none','important');
+    el.style.setProperty('overflow','hidden','important');
+    requestAnimationFrame(()=>{
+      el.style.setProperty('height',`${Math.max(1,Math.ceil(el.scrollHeight))}px`,'important');
+    });
+  };
+  document.addEventListener('input',e=>{if(e.target?.id==='tripNotes')autosizeTripNotes()},true);
+  document.addEventListener('click',e=>{
+    if(e.target?.closest('#tripNotesToggle')) requestAnimationFrame(()=>requestAnimationFrame(autosizeTripNotes));
+  },true);
+  const st=document.createElement('style');
+  st.id='ww-itinerary-column-symbol-tripnotes-hotfix-2809';
+  st.textContent=`
+    /* Make the grid itself narrower on the left: time | icon | title. */
+    .master-itinerary-activity{grid-template-columns:58px 26px minmax(0,1fr)!important;column-gap:3px!important;align-items:center!important}
+    .master-itinerary-activity>time{width:auto!important;min-width:0!important}
+    .master-itinerary-icon{width:26px!important;min-width:26px!important;justify-content:center!important}
+    /* Keep the white circular button untouched; shrink only the download symbol by 15%. */
+    .master-itinerary-capture svg{width:23px!important;height:23px!important}
+    /* Trip-page Notes follows content height rather than a fixed textarea height. */
+    #tripDialog #tripNotes,#tripNotesBody #tripNotes{min-height:0!important;max-height:none!important;overflow:hidden!important;resize:none!important}
+  `;
+  document.head.appendChild(st);
+  requestAnimationFrame(()=>requestAnimationFrame(autosizeTripNotes));
+})();
