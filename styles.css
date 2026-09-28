@@ -4939,3 +4939,8 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 .ww-activity-notes-inline[hidden]{display:none!important}
 /* Remove legacy separate-card presentation if stale DOM survives during a live reload. */
 .ww-activity-notes-readonly{display:none!important}
+
+/* Activity cost + currency */
+.itin-cost-currency{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:10px;align-items:end}
+.stop-itinerary-form .itin-cost-currency #itinCost,.stop-itinerary-form .itin-cost-currency #itinCurrency{margin-top:6px}
+@media(max-width:390px){.itin-cost-currency{grid-template-columns:minmax(0,1fr) 96px;gap:7px}}
