@@ -3788,3 +3788,56 @@ wwOpenQuickInfo=function(row,id){
 #masterItineraryTripNotes,#tripNotes{scrollbar-width:none!important;-ms-overflow-style:none!important}
 #masterItineraryTripNotes::-webkit-scrollbar,#tripNotes::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;background:transparent!important}
 `;document.head.appendChild(st)})();
+
+/* === WozzaWorld hotfix — 28 Sep 2026 activity/trip polish === */
+(()=>{
+  /* Quick-info: remove redundant ACTIVITY eyebrow and combine same-day start/finish. */
+  const _dialog=wwQuickInfoDialog;
+  wwQuickInfoDialog=function(){
+    const d=_dialog();
+    d.querySelector('.itinerary-quick-info-shell header small')?.remove();
+    return d;
+  };
+  const _quick=wwOpenQuickInfo;
+  wwOpenQuickInfo=function(row,id){
+    _quick(row,id);
+    const x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));
+    const body=document.querySelector('#itineraryQuickInfoBody');
+    if(!x||!body)return;
+    const infoRows=[...body.querySelectorAll('.itinerary-quick-info-row')];
+    const whenRow=infoRows.find(r=>r.querySelector('small')?.textContent.trim().toLowerCase()==='when');
+    const finishRow=infoRows.find(r=>r.querySelector('small')?.textContent.trim().toLowerCase()==='finish');
+    if(x.startDate&&x.endDate&&x.startDate===x.endDate&&x.startTime&&x.endTime&&whenRow){
+      const strong=whenRow.querySelector('strong');
+      if(strong)strong.textContent=`${wwItineraryDayLabel(x.startDate)} · ${x.startTime}–${x.endTime}`;
+      finishRow?.remove();
+    }
+    /* Preserve final-action hierarchy after any inherited quick-info decorators. */
+    const edit=body.querySelector('.itinerary-quick-info-edit');
+    if(edit)body.appendChild(edit);
+  };
+
+  /* Match compact link-row delete control to the app's established red delete button. */
+  const _render=wwRenderLinkRows;
+  wwRenderLinkRows=function(d,links=[]){
+    _render(d,links);
+    d.querySelectorAll('.itin-link-delete').forEach(btn=>{
+      btn.textContent='';
+      btn.innerHTML='<span aria-hidden="true">♜</span>';
+      /* CSS masks the placeholder glyph and draws the same simple red bin silhouette. */
+    });
+  };
+
+  if(!document.getElementById('ww-activity-trip-polish-2809')){
+    const st=document.createElement('style');st.id='ww-activity-trip-polish-2809';st.textContent=`
+      /* Trip notes can be expanded by the user vertically, never horizontally. */
+      .trip-dialog #tripNotes,#tripNotesBody #tripNotes{resize:vertical!important;min-height:112px!important;max-width:100%!important;overflow:auto!important}
+      /* Pull the main Add Activity control 25% closer again without changing day-card internals. */
+      .master-itinerary-add{margin-top:0!important;transform:translateY(-6px)!important;margin-bottom:-6px!important}
+      /* Link-row delete = same visual language as the main red circular delete control. */
+      .itin-link-delete{position:relative!important;background:#fff0ef!important;border:1px solid rgba(169,54,48,.14)!important;color:#a93630!important;box-shadow:none!important}
+      .itin-link-delete span{font-size:0!important}
+      .itin-link-delete::before{content:''!important;width:14px!important;height:16px!important;display:block!important;background:#a93630!important;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12H7L6 9Zm3 2v8h2v-8H9Zm4 0v8h2v-8h-2Z'/%3E%3C/svg%3E") center/contain no-repeat!important;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12H7L6 9Zm3 2v8h2v-8H9Zm4 0v8h2v-8h-2Z'/%3E%3C/svg%3E") center/contain no-repeat!important}
+    `;document.head.appendChild(st);
+  }
+})();
