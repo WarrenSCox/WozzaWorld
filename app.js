@@ -3953,3 +3953,38 @@ wwOpenQuickInfo=function(row,id){
   wwWireItineraryActivityActions=function(host,d){_wire(host,d);host.querySelectorAll('.master-itinerary-daybody .master-itinerary-activity').forEach(enableDayRowReorder)};
   const st=document.createElement('style');st.textContent=`.master-itinerary-activity{user-select:none;-webkit-user-select:none}.ww-itinerary-row-dragging{touch-action:none!important;border-radius:10px!important;overflow:hidden!important}.ww-itinerary-row-marker{border-radius:10px;background:rgba(7,132,154,.08)}`;document.head.appendChild(st);
 })();
+
+/* === WozzaWorld micro-hotfix — trip note inset + contained itinerary drag preview === */
+(()=>{
+  if(document.getElementById('ww-notes-drag-containment-2809'))return;
+  const st=document.createElement('style');
+  st.id='ww-notes-drag-containment-2809';
+  st.textContent=`
+    /* Match the itinerary Notes textarea's comfortable top inset on the trip editor. */
+    #tripDialog #tripNotes{padding-top:13px!important;padding-bottom:13px!important;line-height:1.35!important}
+    /* Fixed drag clone keeps the rounded treatment and cannot paint beyond its own row box. */
+    .ww-itinerary-row-dragging{box-sizing:border-box!important;max-width:none!important;overflow:hidden!important;clip-path:inset(0 round 10px)!important;contain:paint!important}
+  `;
+  document.head.appendChild(st);
+
+  /* Keep the fixed drag preview locked to the day body's horizontal activity bounds. */
+  const lockDragPreview=()=>{
+    const el=document.querySelector('.ww-itinerary-row-dragging');
+    if(!el)return;
+    const marker=document.querySelector('.ww-itinerary-row-marker');
+    const body=marker?.closest('.master-itinerary-daybody');
+    if(!body)return;
+    const br=body.getBoundingClientRect();
+    const cs=getComputedStyle(body);
+    const left=br.left+(parseFloat(cs.paddingLeft)||0);
+    const right=br.right-(parseFloat(cs.paddingRight)||0);
+    el.style.left=`${left}px`;
+    el.style.width=`${Math.max(0,right-left)}px`;
+    el.style.right='auto';
+    el.style.maxWidth=`${Math.max(0,right-left)}px`;
+  };
+  const obs=new MutationObserver(lockDragPreview);
+  obs.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class'],childList:true});
+  document.addEventListener('touchmove',lockDragPreview,{passive:true,capture:true});
+  document.addEventListener('pointermove',lockDragPreview,{passive:true,capture:true});
+})();
