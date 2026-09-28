@@ -4113,3 +4113,64 @@ wwOpenQuickInfo=function(row,id){
   document.addEventListener('input',e=>{if(e.target?.id==='masterItineraryTripNotes'||e.target?.id==='tripNotes')wwAutosizeNotes(e.target)});
   requestAnimationFrame(wwBindAutosizeNotes);
 })();
+
+/* === WozzaWorld hotfix — itinerary notes true autosize + wider title column + reliable download icon === */
+(()=>{
+  function wwHF2809Autosize(el){
+    if(!el)return;
+    el.style.setProperty('height','auto','important');
+    el.style.setProperty('min-height','0','important');
+    el.style.setProperty('max-height','none','important');
+    el.style.setProperty('overflow','hidden','important');
+    /* scrollHeight is measured after height is released, so the box shrinks as well as grows. */
+    const h=Math.max(1,Math.ceil(el.scrollHeight));
+    el.style.setProperty('height',`${h}px`,'important');
+  }
+  function wwHF2809AutosizeAll(){
+    wwHF2809Autosize(document.getElementById('masterItineraryTripNotes'));
+    wwHF2809Autosize(document.getElementById('tripNotes'));
+  }
+  const downloadSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10"></path><path d="M8 10l4 4 4-4"></path><path d="M5 17v3h14v-3"></path></svg>';
+  function wwHF2809Download(){
+    const cap=document.querySelector('#masterItineraryDialog .master-itinerary-capture');
+    if(!cap)return;
+    if(!cap.querySelector('svg'))cap.innerHTML=downloadSvg;
+    cap.title='Download full itinerary';
+    cap.setAttribute('aria-label','Download full itinerary');
+  }
+  function wwHF2809Apply(){wwHF2809AutosizeAll();wwHF2809Download()}
+
+  document.addEventListener('input',e=>{
+    if(e.target?.id==='masterItineraryTripNotes'||e.target?.id==='tripNotes')wwHF2809Autosize(e.target);
+  },true);
+  document.addEventListener('click',()=>requestAnimationFrame(wwHF2809Apply),true);
+
+  /* The itinerary/header is rebuilt in a few flows. Observe only that dialog so the
+     download glyph and content-height notes survive those rebuilds. */
+  const bindObserver=()=>{
+    const d=document.getElementById('masterItineraryDialog');
+    if(!d||d.dataset.wwHf2809Observer==='1')return;
+    d.dataset.wwHf2809Observer='1';
+    let queued=false;
+    new MutationObserver(()=>{
+      if(queued)return;queued=true;
+      requestAnimationFrame(()=>{queued=false;wwHF2809Apply()});
+    }).observe(d,{childList:true,subtree:true});
+  };
+  const rootObserver=new MutationObserver(()=>{bindObserver();wwHF2809Apply()});
+  rootObserver.observe(document.documentElement,{childList:true,subtree:true});
+
+  const st=document.createElement('style');st.id='ww-itinerary-final-layout-hotfix-2809';st.textContent=`
+    /* Reclaim width from the first two columns and give it directly to activity titles. */
+    .master-itinerary-activity{grid-template-columns:82px 30px minmax(0,1fr)!important;column-gap:4px!important;align-items:center!important}
+    .master-itinerary-activity>time{width:auto!important;min-width:0!important}
+    .master-itinerary-icon{width:30px!important;min-width:30px!important;justify-content:center!important}
+    /* True content-sized notes: no fixed/min/max height and no inner scrolling. */
+    #masterItineraryTripNotes,#tripNotes{min-height:0!important;max-height:none!important;overflow:hidden!important;resize:none!important;box-sizing:border-box!important}
+    /* Keep the existing white circular control; replace only its glyph. */
+    .master-itinerary-capture{font-size:0!important}
+    .master-itinerary-capture svg{width:27px!important;height:27px!important;display:block!important;fill:none!important;stroke:currentColor!important;stroke-width:2.2!important;stroke-linecap:round!important;stroke-linejoin:round!important;margin:auto!important}
+  `;document.head.appendChild(st);
+  bindObserver();
+  requestAnimationFrame(()=>requestAnimationFrame(wwHF2809Apply));
+})();
