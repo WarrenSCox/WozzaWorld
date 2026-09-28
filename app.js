@@ -3422,8 +3422,16 @@ function wwPolishActivityFooterAndCleanup(){
   const d=document.getElementById('stopItineraryDialog');
   if(!d)return;
 
-  /* Obsolete under the Activity-notes model: remove it, don't merely hide it. */
-  d.querySelector('.itin-link-check')?.remove();
+  /* Keep the legacy checkbox node for lifecycle compatibility, but remove it from the UI.
+     openStopItinerary still resets #itinLinkNotes on every open, so deleting the node
+     breaks the second Add/Edit Activity launch. */
+  const legacyLinkCheck=d.querySelector('.itin-link-check');
+  if(legacyLinkCheck){
+    legacyLinkCheck.hidden=true;
+    legacyLinkCheck.style.display='none';
+    const legacyCb=legacyLinkCheck.querySelector('#itinLinkNotes');
+    if(legacyCb)legacyCb.checked=false;
+  }
 
   /* Short instruction that fits the second link column cleanly. */
   d.querySelectorAll('.itin-link-name').forEach(i=>i.placeholder='Link name');
