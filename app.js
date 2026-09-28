@@ -4030,3 +4030,86 @@ wwOpenQuickInfo=function(row,id){
     if(type&&src)type.innerHTML=`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true"> ${esc(x.category)}`;
   };
 })();
+
+/* === WozzaWorld hotfix — itinerary notes autosize + row alignment + compact dates + download icon === */
+(()=>{
+  function wwOrdinal(n){
+    n=Number(n);const mod100=n%100;
+    if(mod100>=11&&mod100<=13)return `${n}th`;
+    return `${n}${n%10===1?'st':n%10===2?'nd':n%10===3?'rd':'th'}`;
+  }
+  function wwCompactTripDateRange(start,end){
+    if(!start)return'';
+    const a=new Date(start+'T12:00:00'),b=new Date((end||start)+'T12:00:00');
+    if(Number.isNaN(a.getTime())||Number.isNaN(b.getTime()))return'';
+    const ad=wwOrdinal(a.getDate()),bd=wwOrdinal(b.getDate());
+    const am=a.toLocaleDateString('en-GB',{month:'short'}),bm=b.toLocaleDateString('en-GB',{month:'short'});
+    const ay=a.getFullYear(),by=b.getFullYear();
+    if(start===(end||start))return `${ad} ${am} ${ay}`;
+    if(ay===by&&a.getMonth()===b.getMonth())return `${ad} – ${bd} ${am} ${ay}`;
+    if(ay===by)return `${ad} ${am} – ${bd} ${bm} ${ay}`;
+    return `${ad} ${am} ${ay} – ${bd} ${bm} ${by}`;
+  }
+
+  /* Override only the display formatting used by the itinerary header. */
+  wwItineraryTripMeta=function(){
+    const rows=wwTripStopRows();
+    const trip=editingTripId?state.trips.find(t=>String(t.id)===String(editingTripId)):null;
+    const name=($('#tripName')?.value||trip?.name||'Trip itinerary').trim();
+    const dates=rows.flatMap(r=>[r.querySelector('.trip-destination-from')?.value||'',r.querySelector('.trip-destination-to')?.value||'']).filter(Boolean).sort();
+    const start=dates[0]||trip?.start||'',end=dates[dates.length-1]||trip?.end||start;
+    return {name,dateRange:wwCompactTripDateRange(start,end)};
+  };
+
+  function wwAutosizeNotes(el){
+    if(!el)return;
+    el.style.height='auto';
+    el.style.height=`${Math.max(el.scrollHeight,72)}px`;
+  }
+  function wwBindAutosizeNotes(){
+    ['masterItineraryTripNotes','tripNotes'].forEach(id=>{
+      const el=document.getElementById(id);if(!el)return;
+      wwAutosizeNotes(el);
+      if(el.dataset.wwAutosizeBound==='1')return;
+      el.dataset.wwAutosizeBound='1';
+      el.addEventListener('input',()=>wwAutosizeNotes(el));
+    });
+  }
+
+  function wwPolishItineraryHeader(){
+    const d=document.getElementById('masterItineraryDialog');if(!d)return;
+    wwApplyItineraryTripHeader(d);
+    const cap=d.querySelector('.master-itinerary-capture');
+    if(cap){
+      cap.title='Download full itinerary';
+      cap.setAttribute('aria-label','Download full itinerary');
+      cap.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>';
+    }
+    wwBindAutosizeNotes();
+  }
+
+  const _openMaster=wwOpenMasterItinerary;
+  wwOpenMasterItinerary=function(){const r=_openMaster.apply(this,arguments);requestAnimationFrame(wwPolishItineraryHeader);return r};
+  const _renderMaster=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){const r=_renderMaster.apply(this,arguments);requestAnimationFrame(()=>{wwPolishItineraryHeader();wwBindAutosizeNotes()});return r};
+  const _openTripAuto=openTrip;
+  openTrip=function(){const r=_openTripAuto.apply(this,arguments);requestAnimationFrame(wwBindAutosizeNotes);return r};
+  const _openTripEditorAuto=openTripEditor;
+  openTripEditor=function(){const r=_openTripEditorAuto.apply(this,arguments);requestAnimationFrame(wwBindAutosizeNotes);return r};
+
+  const st=document.createElement('style');st.id='ww-itinerary-layout-polish-2809';st.textContent=`
+    /* Every itinerary row is one vertically-centred three-column line: time | icon | title. */
+    .master-itinerary-activity{display:grid!important;grid-template-columns:92px 34px minmax(0,1fr)!important;align-items:center!important}
+    .master-itinerary-activity>time,.master-itinerary-activity>.master-itinerary-icon,.master-itinerary-activity>.master-itinerary-activity-main{align-self:center!important}
+    .master-itinerary-activity>time{display:flex!important;align-items:center!important;height:100%!important}
+    .master-itinerary-icon{display:flex!important;align-items:center!important;justify-content:center!important;height:100%!important;line-height:1!important}
+    .master-itinerary-activity-main{display:flex!important;align-items:center!important;min-height:100%!important}
+    .master-itinerary-activity-main>strong{display:block!important}
+    /* Notes grow to content; no internal scrollbar and no manual resize handle. */
+    #masterItineraryTripNotes,#tripNotes{overflow:hidden!important;resize:none!important;box-sizing:border-box!important}
+    /* Download symbol replaces the old square glyph without changing the existing circular button. */
+    .master-itinerary-capture svg{width:27px!important;height:27px!important;display:block!important;fill:none!important;stroke:currentColor!important;stroke-width:2.2!important;stroke-linecap:round!important;stroke-linejoin:round!important;margin:auto!important}
+  `;document.head.appendChild(st);
+  document.addEventListener('input',e=>{if(e.target?.id==='masterItineraryTripNotes'||e.target?.id==='tripNotes')wwAutosizeNotes(e.target)});
+  requestAnimationFrame(wwBindAutosizeNotes);
+})();
