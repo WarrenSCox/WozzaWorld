@@ -3682,3 +3682,50 @@ wwRenderActivityNotesReadOnly=function(){
  const mount=(textarea,id)=>{if(!textarea)return;let host=document.getElementById(id);if(!host){host=document.createElement('div');host.id=id;host.className='ww-activity-notes-readonly';textarea.insertAdjacentElement('afterend',host)}host.innerHTML=html;host.hidden=!items.length;host.querySelectorAll('.ww-activity-note-toggle').forEach(btn=>btn.onclick=()=>{const card=btn.closest('.ww-activity-note-readonly'),body=card.querySelector('.ww-activity-note-body'),open=btn.getAttribute('aria-expanded')==='true';btn.setAttribute('aria-expanded',String(!open));btn.querySelector('span').textContent=open?'+':'−';body.hidden=open;card.classList.toggle('is-collapsed',open)})};
  mount(document.getElementById('tripNotes'),'tripActivityNotesReadonly');mount(document.getElementById('masterItineraryTripNotes'),'itineraryActivityNotesReadonly');
 };
+
+/* === WozzaWorld hotfix — day quick-add, row dividers, remove mirrored activity notes === */
+function wwRemoveActivityNoteMirrors(){
+  document.getElementById('tripActivityNotesReadonly')?.remove();
+  document.getElementById('itineraryActivityNotesReadonly')?.remove();
+}
+/* Activity notes now live only inside the activity itself. */
+wwRenderActivityNotesReadOnly=function(){wwRemoveActivityNoteMirrors()};
+wwRemoveActivityNoteMirrors();
+
+function wwOpenActivityForDate(iso){
+  const rows=wwTripStopRows(); if(!rows.length)return;
+  const matching=rows.filter(r=>{const a=r.querySelector('.trip-destination-from')?.value||'',b=r.querySelector('.trip-destination-to')?.value||a;return !iso||(!a&&!b)||(a<=iso&&iso<=(b||a))});
+  const row=(matching.length?matching:rows)[0];
+  wwMasterItineraryDialog()?.close();
+  openStopItinerary(row);
+  const d=itineraryDialog(),sd=d.querySelector('#itinStartDate');
+  if(sd){sd.dataset.iso=iso;sd.value=iso?pretty(iso):''}
+}
+function wwWireDayQuickAdds(host){
+  host?.querySelectorAll('.ww-day-quick-add').forEach(b=>b.onclick=e=>{e.stopPropagation();wwOpenActivityForDate(b.dataset.date||'')});
+}
+const _wwQuickAddRender=wwRenderTripHierarchy;
+wwRenderTripHierarchy=function(){
+  _wwQuickAddRender();
+  const d=wwMasterItineraryDialog(),host=d.querySelector('#masterItineraryContent');
+  host.querySelectorAll('.master-itinerary-day').forEach(day=>{
+    const head=day.querySelector('.master-itinerary-dayhead'); if(!head||head.querySelector('.ww-day-quick-add'))return;
+    const title=head.querySelector('span')?.textContent||'';
+    const item=day.querySelector('.master-itinerary-activity');
+    const x=item?wwMasterActivities().find(a=>String(a.id)===String(item.dataset.id)):null;
+    const iso=x?.startDate||''; if(!iso)return;
+    const b=document.createElement('button');b.type='button';b.className='ww-day-quick-add';b.dataset.date=iso;b.setAttribute('aria-label',`Add activity on ${title}`);b.title='Add activity';b.textContent='+';head.appendChild(b);
+  });
+  wwWireDayQuickAdds(host);
+  wwRemoveActivityNoteMirrors();
+};
+wwRenderMasterItinerary=wwRenderTripHierarchy;
+wwOpenTripItinerary=function(){wwRenderTripHierarchy();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()};
+wwOpenMasterItinerary=function(){wwRenderTripHierarchy();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()};
+
+(()=>{if(document.getElementById('ww-itinerary-quickadd-dividers-style'))return;const st=document.createElement('style');st.id='ww-itinerary-quickadd-dividers-style';st.textContent=`
+.master-itinerary-dayhead{position:relative!important;padding-right:58px!important}
+.ww-day-quick-add{position:absolute!important;right:14px!important;top:50%!important;transform:translateY(-50%)!important;width:34px!important;height:34px!important;border:0!important;border-radius:50%!important;background:#07849a!important;color:#fff!important;font-size:25px!important;font-weight:700!important;line-height:30px!important;padding:0!important;display:grid!important;place-items:center!important;cursor:pointer!important}
+.master-itinerary-daybody>.master-itinerary-activity+.master-itinerary-activity{border-top:1px solid rgba(23,47,58,.13)!important}
+#tripActivityNotesReadonly,#itineraryActivityNotesReadonly{display:none!important}
+`;document.head.appendChild(st)})();
