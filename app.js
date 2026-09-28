@@ -3988,3 +3988,45 @@ wwOpenQuickInfo=function(row,id){
   document.addEventListener('touchmove',lockDragPreview,{passive:true,capture:true});
   document.addEventListener('pointermove',lockDragPreview,{passive:true,capture:true});
 })();
+
+/* === WozzaWorld hotfix — six activity types + traced WozzaWorld icons === */
+(()=>{
+  const WW_ACTIVITY_TYPES=[
+    ['Food','activity-food.png'],
+    ['Drinks','activity-drinks.png'],
+    ['See & Do','activity-see-do.png'],
+    ['Explore','activity-explore.png'],
+    ['Travel','activity-travel.png'],
+    ['Accommodation','activity-accommodation.png']
+  ];
+  const wwTypeAsset=category=>WW_ACTIVITY_TYPES.find(x=>x[0]===category)?.[1]||'';
+  const wwTypeIcon=category=>{const src=wwTypeAsset(category);return src?`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true">`:'📍'};
+
+  /* The picker is deliberately reduced to the six agreed, distinct categories. */
+  itineraryAllCategories=function(){return WW_ACTIVITY_TYPES.map(([name])=>[name,wwTypeIcon(name)])};
+  itineraryIcon=function(item){return wwTypeIcon(item?.category)};
+
+  /* New activities start on Food; existing saved legacy types are left untouched until edited. */
+  const _openSix=openStopItinerary;
+  openStopItinerary=function(row,id=''){
+    _openSix(row,id);
+    if(id)return;
+    const d=itineraryDialog();
+    renderItineraryCategoryBank(d,'Food');
+    d.dataset.category='Food';
+  };
+
+  /* Keep the master itinerary on the same six traced assets. */
+  wwActivityScheduleRow=function(x){return `<div class="master-itinerary-activity" data-stop="${x._stopIndex}" data-id="${esc(x.id)}"><time>${esc(x.tbc?'TBC':(x.flexible?'Flexible':(x.startTime||'—')))}</time><span class="master-itinerary-icon">${wwTypeIcon(x.category)}</span><span class="master-itinerary-activity-main"><strong>${esc(x.name||'Activity')}</strong></span></div>`};
+
+  renderStopItinerarySummary=function(row){const body=row?.querySelector('.trip-stop-body');if(!body)return;let host=body.querySelector('.stop-itinerary-summary');if(!host){host=document.createElement('div');host.className='stop-itinerary-summary';body.querySelector('.itinerary-swipe-prompt')?.insertAdjacentElement('beforebegin',host)}const items=itineraryItemsForRow(row);host.innerHTML=items.length?`<div class="stop-itinerary-title">ITINERARY <span>${items.length}</span></div>${items.slice().sort((a,b)=>String(a.startDate||'').localeCompare(String(b.startDate||''))||String(a.startTime||'').localeCompare(String(b.startTime||''))).map(x=>`<button type="button" class="stop-itinerary-item" data-itin-id="${esc(x.id)}"><span>${wwTypeIcon(x.category)}</span><strong>${esc(x.name||'Activity')}</strong><small>${esc(itineraryWhen(x))}</small></button>`).join('')}`:'';host.querySelectorAll('[data-itin-id]').forEach(b=>b.onclick=()=>openStopItinerary(row,b.dataset.itinId))};
+
+  const _quickSix=wwOpenQuickInfo;
+  wwOpenQuickInfo=function(row,id){
+    _quickSix(row,id);
+    const x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));
+    const type=document.querySelector('#itineraryQuickInfoBody .itinerary-quick-info-type');
+    const src=wwTypeAsset(x?.category);
+    if(type&&src)type.innerHTML=`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true"> ${esc(x.category)}`;
+  };
+})();
