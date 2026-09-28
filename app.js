@@ -3589,3 +3589,54 @@ wwEnsureItinerarySharedNotes=function(d){
   wwRefreshActivityNotesMirrors();
   return out;
 };
+
+/* === WozzaWorld hotfix — activity notes mirrors v2 === */
+/* Build activity-note mirrors from the live editor rows, with the persisted trip as
+   a fallback. This keeps the read-only notes available even when an itinerary
+   dialog/render temporarily rebuilds the stop UI. */
+function wwActivityNotesV2(){
+  const out=[],seen=new Set();
+  const add=(x,si=0)=>{
+    const notes=String(x?.notes||'').trim();
+    if(!notes)return;
+    const key=String(x?.id||`${si}:${x?.name||''}:${notes}`);
+    if(seen.has(key))return;
+    seen.add(key);
+    out.push({id:key,name:x?.name||'Activity',notes,stop:si});
+  };
+  wwTripStopRows().forEach((row,si)=>itineraryItemsForRow(row).forEach(x=>add(x,si)));
+  if(editingTripId){
+    const trip=state.trips.find(t=>String(t.id)===String(editingTripId));
+    (trip?.destinations||[]).forEach((stop,si)=>(stop.itinerary||[]).forEach(x=>add(x,si)));
+  }
+  return out;
+}
+wwActivityNotes=wwActivityNotesV2;
+
+wwRenderActivityNotesReadOnly=function(){
+  const items=wwActivityNotesV2();
+  const html=items.map(x=>`<div class="ww-activity-note-readonly" data-activity-note="${esc(x.id)}"><strong>${esc(x.name)}</strong><p>${esc(x.notes).replace(/\n/g,'<br>')}</p></div>`).join('');
+  const mount=(textarea,id)=>{
+    if(!textarea)return;
+    let host=document.getElementById(id);
+    if(!host){host=document.createElement('div');host.id=id;host.className='ww-activity-notes-readonly';textarea.insertAdjacentElement('afterend',host)}
+    host.innerHTML=html;
+    host.hidden=!items.length;
+  };
+  mount(document.getElementById('tripNotes'),'tripActivityNotesReadonly');
+  mount(document.getElementById('masterItineraryTripNotes'),'itineraryActivityNotesReadonly');
+};
+
+/* Repaint whenever either notes surface becomes visible. */
+const _wwOpenTripEditorActivityNotesV2=openTripEditor;
+openTripEditor=function(t){const out=_wwOpenTripEditorActivityNotesV2(t);setTimeout(wwRenderActivityNotesReadOnly,0);return out};
+const _wwRenderMasterActivityNotesV2=wwRenderMasterItinerary;
+wwRenderMasterItinerary=function(){const out=_wwRenderMasterActivityNotesV2();setTimeout(wwRenderActivityNotesReadOnly,0);return out};
+
+(()=>{if(document.getElementById('ww-activity-notes-readonly-style-v2'))return;const st=document.createElement('style');st.id='ww-activity-notes-readonly-style-v2';st.textContent=`
+.ww-activity-notes-readonly{display:block!important;margin:10px 0 0!important}
+.ww-activity-notes-readonly[hidden]{display:none!important}
+.ww-activity-note-readonly{display:block!important;margin:8px 0 0!important;padding:11px 14px!important;border-radius:14px!important;background:rgba(23,47,58,.07)!important;color:#172f3a!important;line-height:1.3!important}
+.ww-activity-note-readonly strong{display:block!important;margin:0 0 3px!important;font-size:13px!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:.025em!important;color:#07849a!important}
+.ww-activity-note-readonly p{display:block!important;margin:0!important;font:inherit!important;font-weight:500!important;color:#172f3a!important;white-space:normal!important}
+`;document.head.appendChild(st)})();
