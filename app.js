@@ -4609,7 +4609,105 @@ wwOpenQuickInfo=function(row,id){
     .master-itinerary-activity{position:relative!important}
     .ww-itinerary-bookmark{position:absolute!important;right:9px!important;top:-1px!important;width:22px!important;height:31px!important;color:#07899d!important;z-index:4!important;overflow:hidden!important;pointer-events:none!important}
     .ww-itinerary-bookmark svg{display:block!important;width:22px!important;height:30px!important;fill:#07899d!important;stroke:#07899d!important;stroke-width:1!important}
+    .ww-itinerary-bookmark::after{content:"";position:absolute;inset:-8px -18px;background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.95) 49%,transparent 64%);transform:translateX(-150%) skewX(-18deg);animation:wwBookmarkGlimmer 3.8s ease-in-out infinite;mix-blend-mode:screen}
+    @keyframes wwBookmarkGlimmer{0%,60%,100%{transform:translateX(-150%) skewX(-18deg);opacity:0}68%{opacity:.95}84%{transform:translateX(120%) skewX(-18deg);opacity:0}}
     /* Give bookmarked rows just enough right breathing room; no row highlight. */
     .master-itinerary-activity:has(.ww-itinerary-bookmark) .master-itinerary-activity-main{padding-right:24px!important}
   `;document.head.appendChild(st);
+})();
+
+/* === WozzaWorld hotfix — trip editor true autosave (no overall Save changes button) === */
+(()=>{
+  const form=document.getElementById('tripForm'),dialog=document.getElementById('tripDialog');
+  if(!form||!dialog||window.__wwTripTrueAutosaveInstalled)return;
+  window.__wwTripTrueAutosaveInstalled=true;
+
+  const style=document.createElement('style');
+  style.id='ww-trip-true-autosave-style';
+  style.textContent=`
+    #tripForm .dialog-actions>.primary{display:none!important}
+    #tripForm .dialog-actions{grid-template-columns:auto minmax(0,1fr) minmax(0,.72fr)!important}
+    #tripForm .dialog-actions>#deleteTripBtn{grid-column:1!important}
+    #tripForm .dialog-actions>#wwTripExportPlaceholder{grid-column:2!important}
+    #tripForm .dialog-actions>#cancelTrip{grid-column:3!important}
+  `;
+  document.head.appendChild(style);
+
+  let timer=0,busy=false;
+  function persistEditor(){
+    if(busy||!dialog.open)return false;
+    const stops=collectDestinationStops(),countries=[...new Set(stops.map(d=>d.country).filter(Boolean))];
+    /* Do not create a ghost trip until there is at least one real stop/country. */
+    if(!countries.length)return false;
+    busy=true;
+    try{
+      let trip=editingTripId?state.trips.find(x=>String(x.id)===String(editingTripId)):null;
+      const isNew=!trip;
+      const oldCountries=trip?tripCountries(trip).slice():[];
+      if(!trip){
+        trip={id:crypto.randomUUID?.()||String(Date.now()),status:'upcoming',cities:{}};
+        state.trips.push(trip);
+        editingTripId=trip.id;
+        setTripDialogMode(true);
+      }
+      let name=$('#tripName')?.value.trim()||'';
+      if(!name)name=countries.length===1?countries[0]:countries.join(' & ');
+      const first=stops[0]||{},last=stops[stops.length-1]||first;
+      const start=first.start||'',end=(stops.length===1?first.end:last.end)||'';
+      const companions=[...new Set($$('#tripCompanionBank .companion-tag.selected').map(b=>b.dataset.companion).filter(Boolean))];
+      const vibes=[...new Set($$('#tripVibeBank .vibe-tag.selected').map(b=>b.dataset.vibe).filter(Boolean))];
+      Object.assign(trip,{
+        name,start,end,countries,destinations:stops,
+        cities:trip.cities||{},companions,vibes,plan:trip.plan||'',
+        todos:collectTripTodos(),notes:$('#tripNotes')?.value.trim()||'',
+        rating:Number($('#tripRating')?.value)||0,status:trip.status||'upcoming'
+      });
+      countries.forEach(c=>{if(!state.countryAddedAt[c])state.countryAddedAt[c]=new Date().toISOString()});
+      reconcileTripCountryStatuses([...oldCountries,...countries]);
+      localStorage.setItem('wozzaworld-state',JSON.stringify(state));
+      rememberTripEditorSnapshot();
+      return true;
+    }finally{busy=false}
+  }
+  function queue(ms=320){clearTimeout(timer);timer=setTimeout(persistEditor,ms)}
+
+  /* Text typing is gently debounced; selectors, dates, toggles and pickers persist immediately. */
+  form.addEventListener('input',e=>{
+    if(e.target?.matches('input[type="text"],input:not([type]),textarea,input[type="number"],input[type="url"],input[type="email"],input[type="tel"]'))queue(320);
+    else queue(0);
+  },true);
+  form.addEventListener('change',()=>queue(0),true);
+
+  /* Structural actions (stops, companions, vibes, todos, ratings, reorder controls, etc.) save after their handler has updated the live editor. */
+  form.addEventListener('click',e=>{
+    if(e.target.closest('button,.companion-tag,.vibe-tag,[role="button"],.rating-star,.trip-rating-star'))setTimeout(persistEditor,0);
+  },true);
+  form.addEventListener('pointerup',()=>setTimeout(persistEditor,40),true);
+
+  /* WozzaWorld date/calendar and custom select overlays can live outside #tripForm. */
+  document.addEventListener('change',e=>{
+    if(dialog.open&&(e.target.closest?.('.wozza-calendar')||e.target.closest?.('.wozza-select')))queue(0);
+  },true);
+  document.addEventListener('click',e=>{
+    if(dialog.open&&(e.target.closest?.('.wozza-calendar')||e.target.closest?.('.wozza-select')))setTimeout(persistEditor,30);
+  },true);
+
+  /* Close now means close: flush the latest edit first, then bypass the old unsaved-changes prompt. */
+  const closeNow=e=>{
+    const btn=e.target.closest?.('#cancelTrip,#closeTripDialog');
+    if(!btn||!dialog.open)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    clearTimeout(timer);persistEditor();
+    editingTripId=null;tripEditorSnapshot='';
+    form.querySelector('.new-trip-name-arrow')?.remove();
+    dialog.close();
+  };
+  document.addEventListener('click',closeNow,true);
+
+  /* Existing activity save/delete already writes itinerary data; this makes the whole trip snapshot stick too. */
+  const oldPersist=window.wwPersistItineraryWork||wwPersistItineraryWork;
+  if(typeof oldPersist==='function'){
+    window.wwPersistItineraryWork=function(){const r=oldPersist.apply(this,arguments);persistEditor();return r};
+    try{wwPersistItineraryWork=window.wwPersistItineraryWork}catch(_e){}
+  }
 })();
