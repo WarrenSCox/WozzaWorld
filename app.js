@@ -4484,3 +4484,36 @@ wwOpenQuickInfo=function(row,id){
   `;document.head.appendChild(st);
   requestAnimationFrame(enhance);
 })();
+
+/* === WozzaWorld activity polish follow-up — 29 Sep 2026 ===
+   Spa itinerary mapping, currency symbols, link typography, placeholder alignment,
+   and safe activity-card word wrapping. Museum/Gallery split deferred. */
+(()=>{
+  const currencySymbols={GBP:'£',EUR:'€',USD:'$',HUF:'Ft',CHF:'CHF',NOK:'kr',SEK:'kr',DKK:'kr',PLN:'zł',CZK:'Kč',JPY:'¥',AUD:'A$',CAD:'C$',NZD:'NZ$',AED:'د.إ',ALL:'L',AMD:'֏',ARS:'$',BAM:'KM',BGN:'лв',BRL:'R$',CNY:'¥',COP:'$',CRC:'₡',EGP:'E£',GEL:'₾',HKD:'HK$',HRK:'€',IDR:'Rp',ILS:'₪',INR:'₹',ISK:'kr',KRW:'₩',MAD:'د.م.',MXN:'$',MYR:'RM',PEN:'S/',PHP:'₱',RON:'lei',RSD:'дин',RUB:'₽',SAR:'﷼',SGD:'S$',THB:'฿',TRY:'₺',TWD:'NT$',UAH:'₴',VND:'₫',ZAR:'R'};
+  const repaintCurrencyPicker=()=>{
+    const p=document.getElementById('wwCurrencyPicker');if(!p)return;
+    p.querySelectorAll('[data-currency]').forEach(b=>{const c=b.dataset.currency||'';b.textContent=currencySymbols[c]?`${c} ${currencySymbols[c]}`:c});
+  };
+  const mo=new MutationObserver(()=>repaintCurrencyPicker());
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+  repaintCurrencyPicker();
+
+  /* Ensure Spa always resolves to the existing Wellbeing artwork everywhere. */
+  const spaSrc='vibe-spa-wellness.png';
+  if(typeof window.wwTypeAsset==='function'){
+    const old=window.wwTypeAsset;window.wwTypeAsset=c=>String(c||'').toLowerCase()==='spa'?spaSrc:old(c);
+  }
+  if(typeof window.itineraryIcon==='function'){
+    const old=window.itineraryIcon;window.itineraryIcon=x=>String(x?.category||x?.type||'').toLowerCase()==='spa'?`<img class="ww-activity-type-asset" src="${spaSrc}" alt="" aria-hidden="true">`:old(x);
+  }
+
+  if(!document.getElementById('ww-activity-polish-followup-style')){
+    const st=document.createElement('style');st.id='ww-activity-polish-followup-style';st.textContent=`
+      .itin-link-url,.itin-link-name{font-size:14px!important;font-weight:600!important}
+      .itin-link-url::placeholder,.itin-link-name::placeholder{font-size:14px!important;font-weight:500!important;color:#777!important;opacity:1!important}
+      .ww-activity-type-choose:not(.has-type){justify-content:flex-start!important;text-align:left!important;color:#777!important;font-weight:700!important;font-size:14px!important;padding-left:15px!important}
+      .ww-type-picker-option span{overflow-wrap:normal!important;word-break:keep-all!important;hyphens:none!important;white-space:normal!important;line-height:1.05!important;text-align:center!important;max-width:100%!important}
+      .ww-type-picker-option[data-category="Accommodation"] span{font-size:10.5px!important;white-space:nowrap!important;letter-spacing:-.03em!important}
+    `;document.head.appendChild(st);
+  }
+})();
