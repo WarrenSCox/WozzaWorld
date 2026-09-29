@@ -4600,17 +4600,17 @@ wwOpenQuickInfo=function(row,id){
     .stop-itinerary-form .ww-currency-chevron{display:none!important}
     /* Bookmark controls: outline off, teal fill on. */
     .stop-itinerary-head{position:relative!important}
-    .ww-activity-bookmark-edit,.ww-activity-bookmark-preview{border:0!important;background:transparent!important;padding:6px!important;width:38px!important;height:42px!important;display:grid!important;place-items:center!important;color:#07849a!important;flex:0 0 38px!important}
+    .ww-activity-bookmark-edit,.ww-activity-bookmark-preview{border:0!important;background:transparent!important;padding:6px!important;width:38px!important;height:42px!important;display:grid!important;place-items:center!important;color:#07899d!important;flex:0 0 38px!important}
     .ww-activity-bookmark-edit svg,.ww-activity-bookmark-preview svg{width:22px!important;height:28px!important;fill:transparent!important;stroke:currentColor!important;stroke-width:2!important;overflow:visible!important}
-    .ww-activity-bookmark-edit.is-bookmarked svg,.ww-activity-bookmark-preview.is-bookmarked svg{fill:#07849a!important;stroke:#07849a!important}
+    .ww-activity-bookmark-edit.is-bookmarked svg,.ww-activity-bookmark-preview.is-bookmarked svg{fill:#07899d!important;stroke:#07899d!important}
     .itinerary-quick-info-shell header{display:flex!important;align-items:flex-start!important}
     .itinerary-quick-info-shell header>div{flex:1 1 auto!important}
     /* Hanging teal bookmark on the itinerary: right edge, attached to divider above. */
     .master-itinerary-activity{position:relative!important}
-    .ww-itinerary-bookmark{position:absolute!important;right:1px!important;top:-3px!important;width:22px!important;height:31px!important;color:#07849a!important;z-index:4!important;overflow:hidden!important;clip-path:polygon(0 0,100% 0,100% 72%,50% 100%,0 72%)!important;pointer-events:none!important}
-    .ww-itinerary-bookmark svg{display:block!important;width:22px!important;height:30px!important;fill:#07849a!important;stroke:#07849a!important;stroke-width:1!important}
-    .ww-itinerary-bookmark::after{content:"";position:absolute;top:0;bottom:0;left:0;width:4px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.28),rgba(255,255,255,0));transform:translateX(-6px) skewX(-12deg);opacity:0;animation:wwBookmarkGlimmer 5.2s linear infinite;pointer-events:none}
-    @keyframes wwBookmarkGlimmer{0%,80%,100%{transform:translateX(-6px) skewX(-12deg);opacity:0}82%{opacity:.35}88%{transform:translateX(25px) skewX(-12deg);opacity:.35}90%{transform:translateX(25px) skewX(-12deg);opacity:0}}
+    .ww-itinerary-bookmark{position:absolute!important;right:9px!important;top:-1px!important;width:22px!important;height:31px!important;color:#07899d!important;z-index:4!important;overflow:hidden!important;pointer-events:none!important}
+    .ww-itinerary-bookmark svg{display:block!important;width:22px!important;height:30px!important;fill:#07899d!important;stroke:#07899d!important;stroke-width:1!important}
+    .ww-itinerary-bookmark::after{content:"";position:absolute;inset:-8px -18px;background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.95) 49%,transparent 64%);transform:translateX(-150%) skewX(-18deg);animation:wwBookmarkGlimmer 3.8s ease-in-out infinite;mix-blend-mode:screen}
+    @keyframes wwBookmarkGlimmer{0%,60%,100%{transform:translateX(-150%) skewX(-18deg);opacity:0}68%{opacity:.95}84%{transform:translateX(120%) skewX(-18deg);opacity:0}}
     /* Give bookmarked rows just enough right breathing room; no row highlight. */
     .master-itinerary-activity:has(.ww-itinerary-bookmark) .master-itinerary-activity-main{padding-right:24px!important}
   `;document.head.appendChild(st);
