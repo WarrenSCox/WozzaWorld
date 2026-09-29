@@ -4003,36 +4003,38 @@ wwOpenQuickInfo=function(row,id){
   const WW_ACTIVITY_TYPES=[
     ['Food','activity-food.png'],
     ['Drinks','activity-drinks.png'],
-    ['See & Do','activity-see-do.png'],
     ['Explore','activity-explore.png'],
     ['Travel','activity-travel.png'],
     ['Accommodation','accommodation.png'],
-    ['Boat Trip','boat-trip.png'],
+    ['Other','activity-see-do.png'],
     ['Café','CAF.png'],
-    ['Library','LIBRARY.png'],
+    ['Taxi','taxi.png'],
+    ['Train','train.png'],
+    ['Boat Trip','boat-trip.png'],
     ['Spa','vibe-spa-wellness.png'],
-    ['Canoeing','canoeing.png'],
+    ['Theatre','theatre.png'],
+    ['Museum','museum.png'],
+    ['Gallery','museum-gallery.png'],
+    ['Gardens','gardens.png'],
     ['Castle','castle.png'],
     ['Cathedral','cathedral.png'],
     ['Church','church.png'],
-    ['Cycling','cycling.png'],
-    ['Football Ground','football-ground.png'],
-    ['Gardens','gardens.png'],
-    ['Ice Skating','ice-skating.png'],
-    ['Museum / Gallery','museum-gallery.png'],
-    ['Recreation','recreation.png'],
-    ['Roller Skating','rollerskating.png'],
-    ['Skiing','skiing.png'],
-    ['Swimming','swimming.png'],
-    ['Taxi','taxi.png'],
-    ['Theatre','theatre.png'],
     ['Theme Park','themepark.png'],
-    ['Train','train.png'],
-    ['Vineyard','vineyard.png'],
+    ['Football Ground','football-ground.png'],
+    ['Cycling','cycling.png'],
+    ['Canoeing','canoeing.png'],
     ['Watersports','watersports.png'],
+    ['Swimming','swimming.png'],
+    ['Skiing','skiing.png'],
+    ['Ice Skating','ice-skating.png'],
+    ['Roller Skating','rollerskating.png'],
+    ['Recreation','recreation.png'],
+    ['Vineyard','vineyard.png'],
+    ['Library','LIBRARY.png'],
     ['Zoo','zoo.png']
   ];
-  const wwTypeAsset=category=>WW_ACTIVITY_TYPES.find(x=>x[0]===category)?.[1]||'';
+  const wwTypeNormalise=category=>category==='See & Do'?'Other':category==='Museum / Gallery'?'Gallery':category;
+  const wwTypeAsset=category=>WW_ACTIVITY_TYPES.find(x=>x[0]===wwTypeNormalise(category))?.[1]||'';
   const wwTypeIcon=category=>{const src=wwTypeAsset(category);return src?`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true">`:'📍'};
 
   /* The picker is deliberately reduced to the six agreed, distinct categories. */
@@ -4247,35 +4249,38 @@ wwOpenQuickInfo=function(row,id){
   const WW_PICKER_TYPES=[
     ['Food','activity-food.png'],
     ['Drinks','activity-drinks.png'],
-    ['See & Do','activity-see-do.png'],
     ['Explore','activity-explore.png'],
     ['Travel','activity-travel.png'],
     ['Accommodation','accommodation.png'],
-    ['Boat Trip','boat-trip.png'],
+    ['Other','activity-see-do.png'],
     ['Café','CAF.png'],
-    ['Library','LIBRARY.png'],
-    ['Canoeing','canoeing.png'],
+    ['Taxi','taxi.png'],
+    ['Train','train.png'],
+    ['Boat Trip','boat-trip.png'],
+    ['Spa','vibe-spa-wellness.png'],
+    ['Theatre','theatre.png'],
+    ['Museum','museum.png'],
+    ['Gallery','museum-gallery.png'],
+    ['Gardens','gardens.png'],
     ['Castle','castle.png'],
     ['Cathedral','cathedral.png'],
     ['Church','church.png'],
-    ['Cycling','cycling.png'],
-    ['Football Ground','football-ground.png'],
-    ['Gardens','gardens.png'],
-    ['Ice Skating','ice-skating.png'],
-    ['Museum / Gallery','museum-gallery.png'],
-    ['Recreation','recreation.png'],
-    ['Roller Skating','rollerskating.png'],
-    ['Skiing','skiing.png'],
-    ['Swimming','swimming.png'],
-    ['Taxi','taxi.png'],
-    ['Theatre','theatre.png'],
     ['Theme Park','themepark.png'],
-    ['Train','train.png'],
-    ['Vineyard','vineyard.png'],
+    ['Football Ground','football-ground.png'],
+    ['Cycling','cycling.png'],
+    ['Canoeing','canoeing.png'],
     ['Watersports','watersports.png'],
+    ['Swimming','swimming.png'],
+    ['Skiing','skiing.png'],
+    ['Ice Skating','ice-skating.png'],
+    ['Roller Skating','rollerskating.png'],
+    ['Recreation','recreation.png'],
+    ['Vineyard','vineyard.png'],
+    ['Library','LIBRARY.png'],
     ['Zoo','zoo.png']
   ];
-  const typeAsset=name=>WW_PICKER_TYPES.find(x=>x[0]===name)?.[1]||'';
+  const typeNormalise=name=>name==='See & Do'?'Other':name==='Museum / Gallery'?'Gallery':name;
+  const typeAsset=name=>WW_PICKER_TYPES.find(x=>x[0]===typeNormalise(name))?.[1]||'';
 
   function pickerDialog(){
     let p=document.getElementById('wwActivityTypePicker');
@@ -4302,7 +4307,8 @@ wwOpenQuickInfo=function(row,id){
 
   function paintChooser(d){
     const b=d?.querySelector('#wwActivityTypeChoose');if(!b)return;
-    const cat=d.dataset.category||'';
+    const rawCat=d.dataset.category||'';
+    const cat=typeNormalise(rawCat);
     const src=typeAsset(cat);
     b.innerHTML=src?`<img src="${src}" alt="" aria-hidden="true"><span>${esc(cat)}</span>`:'<span>Choose type of activity</span>';
     b.classList.toggle('has-type',!!src);
@@ -4314,7 +4320,7 @@ wwOpenQuickInfo=function(row,id){
     field.innerHTML=`<legend>Type</legend><button type="button" id="wwActivityTypeChoose" class="ww-activity-type-choose"><span>Choose type of activity</span></button>`;
     field.querySelector('#wwActivityTypeChoose').onclick=()=>{
       const p=pickerDialog();
-      p.querySelectorAll('.ww-type-picker-option').forEach(o=>o.classList.toggle('selected',o.dataset.category===d.dataset.category));
+      p.querySelectorAll('.ww-type-picker-option').forEach(o=>o.classList.toggle('selected',o.dataset.category===typeNormalise(d.dataset.category)));
       p.showModal();
     };
     paintChooser(d);
@@ -4459,8 +4465,8 @@ wwOpenQuickInfo=function(row,id){
     .ww-type-picker-option::after{content:"";position:absolute;z-index:2;pointer-events:none;top:9px;left:50%;width:42px;height:42px;transform:translateX(-50%);background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.9) 48%,transparent 66%);mix-blend-mode:screen;animation:wwActivityGlimmer 3.6s ease-in-out infinite;opacity:0}
     @keyframes wwActivityGlimmer{0%,58%,100%{opacity:0;transform:translateX(-78%) skewX(-18deg)}68%{opacity:.9}82%{opacity:0;transform:translateX(-20%) skewX(-18deg)}}
     /* Labels never escape their own card. */
-    .ww-type-picker-option span{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.08!important;font-size:clamp(9px,2.65vw,11px)!important}
-    .ww-type-picker-option[data-category="Accommodation"] span{font-size:9px!important;letter-spacing:-.02em!important}
+    .ww-type-picker-option span{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-wrap:normal!important;word-break:keep-all!important;hyphens:none!important;line-height:1.08!important;font-size:clamp(9px,2.65vw,11px)!important}
+    .ww-type-picker-option[data-category="Accommodation"] span{font-size:8px!important;letter-spacing:-.035em!important;white-space:nowrap!important}
     /* Hide native platform dropdown while preserving its value for existing save logic. */
     .itin-cost-currency{display:grid!important;grid-template-columns:minmax(0,1fr) 96px!important;gap:8px!important;align-items:stretch!important}
     #itinCurrency.ww-native-currency-hidden{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important}
@@ -4472,4 +4478,23 @@ wwOpenQuickInfo=function(row,id){
     .ww-currency-shell::-webkit-scrollbar{display:none!important}.ww-currency-head{display:flex!important;justify-content:space-between!important;align-items:center!important;position:sticky!important;top:-20px!important;background:#f7e8c7!important;z-index:2!important;padding:20px 0 12px!important;margin-top:-20px!important}.ww-currency-head small{color:#07899d!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important}.ww-currency-head h3{margin:2px 0 0!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:22px!important;color:#172f3a!important}.ww-currency-close{width:44px!important;height:44px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#68767b!important;font-size:28px!important}.ww-currency-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:9px!important}.ww-currency-grid button{height:52px!important;border:2px solid #fff!important;border-radius:16px!important;background:rgba(255,255,255,.84)!important;color:#172f3a!important;font:900 14px/1 Inter,sans-serif!important}.ww-currency-grid button.selected{border-color:#07899d!important;background:#e8f7f8!important}
   `;document.head.appendChild(st);
   requestAnimationFrame(enhance);
+})();
+
+
+/* === WozzaWorld activity consistency + type taxonomy patch 29 Sep 2026 === */
+(()=>{
+  if(document.getElementById('ww-activity-consistency-2909'))return;
+  const st=document.createElement('style');st.id='ww-activity-consistency-2909';st.textContent=`
+    /* Empty Type behaves like every other placeholder. */
+    .ww-activity-type-choose:not(.has-type){justify-content:flex-start!important;text-align:left!important;color:#7b7b7b!important;font-family:Inter,sans-serif!important;font-size:13px!important;font-weight:700!important;padding-left:14px!important}
+    /* Link placeholders use the same visual language as the form placeholders. */
+    .stop-itinerary-form .itin-link-url,.stop-itinerary-form .itin-link-name{font-family:Inter,sans-serif!important;font-size:13px!important;font-weight:700!important;color:#172f3a!important}
+    .stop-itinerary-form input::placeholder,.stop-itinerary-form textarea::placeholder,.stop-itinerary-form .itin-link-url::placeholder,.stop-itinerary-form .itin-link-name::placeholder{color:#7b7b7b!important;opacity:1!important;font-family:Inter,sans-serif!important;font-size:13px!important;font-weight:700!important}
+    /* One standard fixed control height; expandable textareas remain content-led. */
+    .stop-itinerary-form #itinName,.stop-itinerary-form #itinStartDate,.stop-itinerary-form #itinEndDate,.stop-itinerary-form #itinCost,.stop-itinerary-form #itinBookingRef,.stop-itinerary-form .itin-link-url,.stop-itinerary-form .itin-link-name,.stop-itinerary-form .ww-activity-type-choose,.stop-itinerary-form .ww-currency-choose{height:44px!important;min-height:44px!important;max-height:44px!important;box-sizing:border-box!important}
+    .stop-itinerary-form .itin-cost-currency{align-items:end!important}
+    /* Never split a single activity-type word. Multi-word labels may wrap only at spaces. */
+    .ww-type-picker-option span{overflow-wrap:normal!important;word-break:keep-all!important;hyphens:none!important}
+    .ww-type-picker-option[data-category="Accommodation"] span{font-size:8px!important;letter-spacing:-.035em!important;white-space:nowrap!important}
+  `;document.head.appendChild(st);
 })();
