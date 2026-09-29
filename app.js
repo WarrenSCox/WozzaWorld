@@ -4010,6 +4010,7 @@ wwOpenQuickInfo=function(row,id){
     ['Boat Trip','boat-trip.png'],
     ['Café','CAF.png'],
     ['Library','LIBRARY.png'],
+    ['Spa','vibe-spa-wellness.png'],
     ['Canoeing','canoeing.png'],
     ['Castle','castle.png'],
     ['Cathedral','cathedral.png'],
@@ -4422,21 +4423,9 @@ wwOpenQuickInfo=function(row,id){
    Surgical UI-only patch: Spa, styled currency chooser, autosize fields,
    picker card polish and full-width Type field. Museum/Gallery intentionally unchanged. */
 (()=>{
-  /* Add Spa using the existing Wellbeing artwork. */
-  const spa=['Spa','vibe-spa-wellness.png'];
-  const addSpaToPicker=()=>{
-    const p=document.getElementById('wwActivityTypePicker');
-    const grid=p?.querySelector('.ww-type-picker-grid');
-    if(!grid||grid.querySelector('[data-category="Spa"]'))return;
-    const b=document.createElement('button');
-    b.type='button';b.className='ww-type-picker-option';b.dataset.category='Spa';
-    b.innerHTML='<img src="vibe-spa-wellness.png" alt=""><span>Spa</span>';
-    b.onclick=()=>{const d=document.getElementById('stopItineraryDialog');if(d){d.dataset.category='Spa';const choose=d.querySelector('#wwActivityTypeChoose');if(choose){choose.innerHTML='<img src="vibe-spa-wellness.png" alt="" aria-hidden="true"><span>Spa</span>';choose.classList.add('has-type')}}p.close()};
-    grid.appendChild(b);
-  };
-  /* Extend the shared icon lookup without changing existing categories. */
-  const oldIcon=window.itineraryIcon;
-  window.itineraryIcon=function(item){if(item?.category==='Spa')return '<img class="ww-activity-type-asset" src="vibe-spa-wellness.png" alt="" aria-hidden="true">';return oldIcon(item)};
+  /* Spa is supplied by the authoritative WW_ACTIVITY_TYPES table above. */
+  const addSpaToPicker=()=>{};
+  /* Existing itinerary renderers now resolve Spa through WW_ACTIVITY_TYPES. */
 
   /* Auto-grow only Location and Contact details. */
   const autosize=el=>{if(!el)return;el.style.height='auto';el.style.height=Math.max(46,Math.ceil(el.scrollHeight))+'px'};
@@ -4446,10 +4435,10 @@ wwOpenQuickInfo=function(row,id){
   function currencyDialog(){
     let p=document.getElementById('wwCurrencyPicker');if(p)return p;
     p=document.createElement('dialog');p.id='wwCurrencyPicker';p.className='ww-currency-picker';
-    p.innerHTML='<div class="ww-currency-shell"><div class="ww-currency-head"><div><small>CURRENCY</small><h3>Choose currency</h3></div><button type="button" class="ww-currency-close" aria-label="Close">×</button></div><div class="ww-currency-grid">'+WW_ACTIVITY_CURRENCIES.map(c=>`<button type="button" data-currency="${c}">${c}</button>`).join('')+'</div></div>';
+    p.innerHTML='<div class="ww-currency-shell"><div class="ww-currency-head"><div><small>CURRENCY</small><h3>Choose currency</h3></div><button type="button" class="ww-currency-close" aria-label="Close">×</button></div><div class="ww-currency-grid">'+WW_ACTIVITY_CURRENCIES.map(c=>`<button type="button" data-currency="${c}">${c}${wwCurrencySymbol(c)&&wwCurrencySymbol(c)!==c?' '+wwCurrencySymbol(c):''}</button>`).join('')+'</div></div>';
     document.body.appendChild(p);p.querySelector('.ww-currency-close').onclick=()=>p.close();p.addEventListener('click',e=>{if(e.target===p)p.close()});return p;
   }
-  const bindCurrency=d=>{const sel=d?.querySelector('#itinCurrency');if(!sel)return;sel.classList.add('ww-native-currency-hidden');let btn=d.querySelector('#wwCurrencyChoose');if(!btn){btn=document.createElement('button');btn.type='button';btn.id='wwCurrencyChoose';btn.className='ww-currency-choose';sel.insertAdjacentElement('afterend',btn)}const paint=()=>btn.innerHTML=`<span>${sel.value||'GBP'}</span><span class="ww-currency-chevron">⌄</span>`;paint();if(btn.dataset.bound)return;btn.dataset.bound='1';btn.onclick=()=>{const p=currencyDialog();p.querySelectorAll('[data-currency]').forEach(x=>{x.classList.toggle('selected',x.dataset.currency===sel.value);x.onclick=()=>{sel.value=x.dataset.currency;sel.dispatchEvent(new Event('change',{bubbles:true}));paint();p.close()}});p.showModal()};sel.addEventListener('change',paint)};
+  const bindCurrency=d=>{const sel=d?.querySelector('#itinCurrency');if(!sel)return;sel.classList.add('ww-native-currency-hidden');let btn=d.querySelector('#wwCurrencyChoose');if(!btn){btn=document.createElement('button');btn.type='button';btn.id='wwCurrencyChoose';btn.className='ww-currency-choose';sel.insertAdjacentElement('afterend',btn)}const paint=()=>{const c=sel.value||'GBP',sym=wwCurrencySymbol(c);btn.innerHTML=`<span>${c}${sym&&sym!==c?' '+sym:''}</span><span class="ww-currency-chevron">⌄</span>`};paint();if(btn.dataset.bound)return;btn.dataset.bound='1';btn.onclick=()=>{const p=currencyDialog();p.querySelectorAll('[data-currency]').forEach(x=>{x.classList.toggle('selected',x.dataset.currency===sel.value);x.onclick=()=>{sel.value=x.dataset.currency;sel.dispatchEvent(new Event('change',{bubbles:true}));paint();p.close()}});p.showModal()};sel.addEventListener('change',paint)};
 
   const enhance=()=>{const d=document.getElementById('stopItineraryDialog');if(d){bindAutosize(d);bindCurrency(d)}addSpaToPicker()};
   const oldDialog=window.itineraryDialog;window.itineraryDialog=function(){const d=oldDialog.apply(this,arguments);requestAnimationFrame(enhance);return d};
@@ -4483,37 +4472,4 @@ wwOpenQuickInfo=function(row,id){
     .ww-currency-shell::-webkit-scrollbar{display:none!important}.ww-currency-head{display:flex!important;justify-content:space-between!important;align-items:center!important;position:sticky!important;top:-20px!important;background:#f7e8c7!important;z-index:2!important;padding:20px 0 12px!important;margin-top:-20px!important}.ww-currency-head small{color:#07899d!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important}.ww-currency-head h3{margin:2px 0 0!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:22px!important;color:#172f3a!important}.ww-currency-close{width:44px!important;height:44px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#68767b!important;font-size:28px!important}.ww-currency-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:9px!important}.ww-currency-grid button{height:52px!important;border:2px solid #fff!important;border-radius:16px!important;background:rgba(255,255,255,.84)!important;color:#172f3a!important;font:900 14px/1 Inter,sans-serif!important}.ww-currency-grid button.selected{border-color:#07899d!important;background:#e8f7f8!important}
   `;document.head.appendChild(st);
   requestAnimationFrame(enhance);
-})();
-
-/* === WozzaWorld activity polish follow-up — 29 Sep 2026 ===
-   Spa itinerary mapping, currency symbols, link typography, placeholder alignment,
-   and safe activity-card word wrapping. Museum/Gallery split deferred. */
-(()=>{
-  const currencySymbols={GBP:'£',EUR:'€',USD:'$',HUF:'Ft',CHF:'CHF',NOK:'kr',SEK:'kr',DKK:'kr',PLN:'zł',CZK:'Kč',JPY:'¥',AUD:'A$',CAD:'C$',NZD:'NZ$',AED:'د.إ',ALL:'L',AMD:'֏',ARS:'$',BAM:'KM',BGN:'лв',BRL:'R$',CNY:'¥',COP:'$',CRC:'₡',EGP:'E£',GEL:'₾',HKD:'HK$',HRK:'€',IDR:'Rp',ILS:'₪',INR:'₹',ISK:'kr',KRW:'₩',MAD:'د.م.',MXN:'$',MYR:'RM',PEN:'S/',PHP:'₱',RON:'lei',RSD:'дин',RUB:'₽',SAR:'﷼',SGD:'S$',THB:'฿',TRY:'₺',TWD:'NT$',UAH:'₴',VND:'₫',ZAR:'R'};
-  const repaintCurrencyPicker=()=>{
-    const p=document.getElementById('wwCurrencyPicker');if(!p)return;
-    p.querySelectorAll('[data-currency]').forEach(b=>{const c=b.dataset.currency||'';b.textContent=currencySymbols[c]?`${c} ${currencySymbols[c]}`:c});
-  };
-  const mo=new MutationObserver(()=>repaintCurrencyPicker());
-  mo.observe(document.documentElement,{childList:true,subtree:true});
-  repaintCurrencyPicker();
-
-  /* Ensure Spa always resolves to the existing Wellbeing artwork everywhere. */
-  const spaSrc='vibe-spa-wellness.png';
-  if(typeof window.wwTypeAsset==='function'){
-    const old=window.wwTypeAsset;window.wwTypeAsset=c=>String(c||'').toLowerCase()==='spa'?spaSrc:old(c);
-  }
-  if(typeof window.itineraryIcon==='function'){
-    const old=window.itineraryIcon;window.itineraryIcon=x=>String(x?.category||x?.type||'').toLowerCase()==='spa'?`<img class="ww-activity-type-asset" src="${spaSrc}" alt="" aria-hidden="true">`:old(x);
-  }
-
-  if(!document.getElementById('ww-activity-polish-followup-style')){
-    const st=document.createElement('style');st.id='ww-activity-polish-followup-style';st.textContent=`
-      .itin-link-url,.itin-link-name{font-size:14px!important;font-weight:600!important}
-      .itin-link-url::placeholder,.itin-link-name::placeholder{font-size:14px!important;font-weight:500!important;color:#777!important;opacity:1!important}
-      .ww-activity-type-choose:not(.has-type){justify-content:flex-start!important;text-align:left!important;color:#777!important;font-weight:700!important;font-size:14px!important;padding-left:15px!important}
-      .ww-type-picker-option span{overflow-wrap:normal!important;word-break:keep-all!important;hyphens:none!important;white-space:normal!important;line-height:1.05!important;text-align:center!important;max-width:100%!important}
-      .ww-type-picker-option[data-category="Accommodation"] span{font-size:10.5px!important;white-space:nowrap!important;letter-spacing:-.03em!important}
-    `;document.head.appendChild(st);
-  }
 })();
