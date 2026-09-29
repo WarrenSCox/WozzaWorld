@@ -4607,10 +4607,10 @@ wwOpenQuickInfo=function(row,id){
     .itinerary-quick-info-shell header>div{flex:1 1 auto!important}
     /* Hanging teal bookmark on the itinerary: right edge, attached to divider above. */
     .master-itinerary-activity{position:relative!important}
-    .ww-itinerary-bookmark{position:absolute!important;right:1px!important;top:-3px!important;width:22px!important;height:31px!important;color:#07849a!important;z-index:4!important;overflow:hidden!important;clip-path:polygon(0 0,100% 0,100% 72%,50% 100%,0 72%)!important;pointer-events:none!important}
-    .ww-itinerary-bookmark svg{display:block!important;width:22px!important;height:30px!important;fill:#07849a!important;stroke:#07849a!important;stroke-width:1!important}
-    .ww-itinerary-bookmark::after{content:"";position:absolute;top:0;bottom:0;left:0;width:4px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.28),rgba(255,255,255,0));transform:translateX(-6px) skewX(-12deg);opacity:0;animation:wwBookmarkGlimmer 5.2s linear infinite;pointer-events:none}
-    @keyframes wwBookmarkGlimmer{0%,80%,100%{transform:translateX(-6px) skewX(-12deg);opacity:0}82%{opacity:.35}88%{transform:translateX(25px) skewX(-12deg);opacity:.35}90%{transform:translateX(25px) skewX(-12deg);opacity:0}}
+    .ww-itinerary-bookmark{position:absolute!important;right:1px!important;top:-3px!important;width:22px!important;height:34px!important;color:#07849a!important;z-index:4!important;overflow:visible!important;clip-path:none!important;pointer-events:none!important}
+    .ww-itinerary-bookmark svg{display:block!important;width:22px!important;height:32px!important;fill:#07849a!important;stroke:#07849a!important;stroke-width:1!important;overflow:visible!important}
+    .ww-itinerary-bookmark::after{content:"";position:absolute;top:0;bottom:0;left:0;width:7px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.58),rgba(255,255,255,0));clip-path:polygon(0 0,100% 0,100% 72%,50% 100%,0 72%);transform:translateX(-6px) skewX(-12deg);opacity:0;animation:wwBookmarkGlimmer 5.2s linear infinite;pointer-events:none}
+    @keyframes wwBookmarkGlimmer{0%,80%,100%{transform:translateX(-6px) skewX(-12deg);opacity:0}82%{opacity:.65}88%{transform:translateX(25px) skewX(-12deg);opacity:.65}90%{transform:translateX(25px) skewX(-12deg);opacity:0}}
     /* Give bookmarked rows just enough right breathing room; no row highlight. */
     .master-itinerary-activity:has(.ww-itinerary-bookmark) .master-itinerary-activity-main{padding-right:24px!important}
   `;document.head.appendChild(st);
