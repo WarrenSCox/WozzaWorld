@@ -4719,3 +4719,67 @@ wwOpenQuickInfo=function(row,id){
     try{wwPersistItineraryWork=window.wwPersistItineraryWork}catch(_e){}
   }
 })();
+
+/* === WozzaWorld hotfix — blank activity type defaults to Other + larger activity star 29 Sep 2026 === */
+(()=>{
+  if(window.__wwBlankActivityOtherStarSize)return;
+  window.__wwBlankActivityOtherStarSize=true;
+
+  const normaliseBlankTypes=row=>{
+    if(!row)return false;
+    const items=itineraryItemsForRow(row);
+    let changed=false;
+    items.forEach(x=>{if(x&&!String(x.category||'').trim()){x.category='Other';changed=true}});
+    if(changed)row.dataset.itinerary=JSON.stringify(items);
+    return changed;
+  };
+
+  /* Saving a new/edit activity with no explicit type stores Other, not a blank category. */
+  const previousSave=saveStopItinerary;
+  saveStopItinerary=function(){
+    const d=itineraryDialog();
+    if(d&&!String(d.dataset.category||'').trim())d.dataset.category='Other';
+    return previousSave.apply(this,arguments);
+  };
+
+  /* Existing legacy blank activities also resolve to Other anywhere itinerary UI is rendered. */
+  const previousSummary=renderStopItinerarySummary;
+  renderStopItinerarySummary=function(row){normaliseBlankTypes(row);return previousSummary.apply(this,arguments)};
+
+  const previousOpen=openStopItinerary;
+  openStopItinerary=function(row,id=''){normaliseBlankTypes(row);return previousOpen.apply(this,arguments)};
+
+  const previousQuick=wwOpenQuickInfo;
+  wwOpenQuickInfo=function(row,id){normaliseBlankTypes(row);return previousQuick.apply(this,arguments)};
+
+  const previousMaster=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){
+    document.querySelectorAll('.trip-stop-row').forEach(normaliseBlankTypes);
+    return previousMaster.apply(this,arguments);
+  };
+
+  const previousIcon=itineraryIcon;
+  itineraryIcon=function(item){
+    if(item&&!String(item.category||'').trim())item={...item,category:'Other'};
+    return previousIcon(item);
+  };
+
+  const previousSchedule=wwActivityScheduleRow;
+  wwActivityScheduleRow=function(x){
+    if(x&&!String(x.category||'').trim())x={...x,category:'Other'};
+    return previousSchedule(x);
+  };
+
+  const st=document.createElement('style');
+  st.id='ww-activity-star-size-2909';
+  st.textContent=`
+    /* Activity header star only: optically balance it with the circular close control. */
+    .ww-activity-bookmark-edit,.ww-activity-bookmark-preview{
+      width:52px!important;height:52px!important;flex:0 0 52px!important;padding:4px!important;
+    }
+    .ww-activity-bookmark-edit svg,.ww-activity-bookmark-preview svg{
+      width:42px!important;height:42px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
