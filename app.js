@@ -4240,3 +4240,53 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
   requestAnimationFrame(wwApplyItineraryCompanions);
 })();
+
+/* === WozzaWorld hotfix — compact activity type icon library === */
+(()=>{
+  const wwPickerTypes=()=>itineraryAllCategories();
+  const wwPickerIcon=name=>{const hit=wwPickerTypes().find(x=>String(x[0]).toLowerCase()===String(name||'').toLowerCase());return hit?.[1]||'📍'};
+  function wwTypeButtonMarkup(name){
+    const valid=wwPickerTypes().some(x=>String(x[0]).toLowerCase()===String(name||'').toLowerCase());
+    return valid?`${wwPickerIcon(name)}<span>${esc(name)}</span>`:`<span>Click here to choose</span>`;
+  }
+  function wwEnsurePicker(d){
+    if(d.querySelector('.ww-type-picker-overlay'))return;
+    const field=d.querySelector('.itin-category-field'),bank=d.querySelector('#itinCategoryBank');if(!field||!bank)return;
+    field.innerHTML=`<legend>Type</legend><button type="button" class="ww-type-choose" aria-haspopup="dialog"><span>Click here to choose</span></button>`;
+    const ov=document.createElement('div');ov.className='ww-type-picker-overlay';ov.hidden=true;ov.innerHTML=`<div class="ww-type-picker" role="dialog" aria-modal="true" aria-label="Choose activity type"><div class="ww-type-picker-head"><strong>Choose a type</strong><button type="button" class="ww-type-picker-close" aria-label="Close">×</button></div><div class="ww-type-picker-grid"></div></div>`;
+    d.querySelector('.stop-itinerary-form')?.appendChild(ov);
+    const choose=field.querySelector('.ww-type-choose'),close=ov.querySelector('.ww-type-picker-close');
+    const hide=()=>{ov.hidden=true};
+    const show=()=>{const grid=ov.querySelector('.ww-type-picker-grid');grid.innerHTML=wwPickerTypes().map(([name,icon])=>`<button type="button" class="ww-type-picker-item${String(name).toLowerCase()===String(d.dataset.category||'').toLowerCase()?' selected':''}" data-category="${esc(name)}"><span class="ww-type-picker-icon">${icon}</span><span class="ww-type-picker-name">${esc(name)}</span></button>`).join('');grid.querySelectorAll('.ww-type-picker-item').forEach(b=>b.onclick=()=>{d.dataset.category=b.dataset.category;choose.innerHTML=wwTypeButtonMarkup(b.dataset.category);hide()});ov.hidden=false};
+    choose.onclick=show;close.onclick=hide;ov.onclick=e=>{if(e.target===ov)hide()};
+  }
+  const _dialog=itineraryDialog;
+  itineraryDialog=function(){const d=_dialog();wwEnsurePicker(d);return d};
+  const _render=renderItineraryCategoryBank;
+  renderItineraryCategoryBank=function(d,selected='Food'){
+    wwEnsurePicker(d);d.dataset.category=selected;
+    const b=d.querySelector('.ww-type-choose');if(b)b.innerHTML=wwTypeButtonMarkup(selected);
+  };
+  const _open=openStopItinerary;
+  openStopItinerary=function(row,id=''){
+    _open(row,id);const d=itineraryDialog();const items=itineraryItemsForRow(row),x=items.find(i=>String(i.id)===String(id));const selected=x?.category||d.dataset.category||'Food';d.dataset.category=selected;const b=d.querySelector('.ww-type-choose');if(b)b.innerHTML=wwTypeButtonMarkup(selected);
+  };
+  const st=document.createElement('style');st.id='ww-compact-type-picker';st.textContent=`
+    .itin-category-field{border:0!important;padding:0!important;margin:0!important;display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;gap:14px!important;align-items:center!important}
+    .itin-category-field legend{float:left!important;width:auto!important;margin:0!important;padding:0!important;font:inherit!important;font-weight:800!important}
+    .ww-type-choose{min-height:48px!important;border:1px solid rgba(18,49,59,.13)!important;border-radius:999px!important;background:#fff!important;color:#21343b!important;font:inherit!important;font-weight:750!important;padding:9px 18px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;overflow:hidden!important}
+    .ww-type-choose .ww-activity-type-asset{width:26px!important;height:26px!important}
+    .ww-type-picker-overlay[hidden]{display:none!important}
+    .ww-type-picker-overlay{position:absolute!important;inset:0!important;z-index:80!important;background:rgba(0,72,84,.42)!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:22px!important;border-radius:inherit!important}
+    .ww-type-picker{width:min(100%,430px)!important;max-height:min(78vh,620px)!important;overflow:auto!important;background:#fff0c9!important;border-radius:28px!important;padding:20px!important;box-shadow:0 18px 50px rgba(0,45,55,.28)!important}
+    .ww-type-picker-head{display:flex!important;align-items:center!important;justify-content:space-between!important;margin-bottom:16px!important;color:#17333d!important;font-size:24px!important}
+    .ww-type-picker-close{width:46px!important;height:46px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#65747a!important;font-size:32px!important;line-height:1!important}
+    .ww-type-picker-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+    .ww-type-picker-item{min-width:0!important;min-height:104px!important;border:1px solid rgba(18,49,59,.12)!important;border-radius:20px!important;background:#fff!important;color:#20343b!important;padding:12px 7px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;font:inherit!important;font-weight:750!important;text-align:center!important}
+    .ww-type-picker-item.selected{background:#07899f!important;color:#fff!important;border-color:#07899f!important}
+    .ww-type-picker-icon{height:38px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:31px!important}
+    .ww-type-picker-icon .ww-activity-type-asset{width:36px!important;height:36px!important;object-fit:contain!important}
+    .ww-type-picker-name{font-size:14px!important;line-height:1.15!important}
+    @media(max-width:430px){.ww-type-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+  `;document.head.appendChild(st);
+})();
