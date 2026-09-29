@@ -4440,7 +4440,7 @@ wwOpenQuickInfo=function(row,id){
   /* Keep the real select for data/save compatibility, but present a WozzaWorld chooser. */
   function currencyDialog(){
     let p=document.getElementById('wwCurrencyPicker');if(p)return p;
-    p=document.createElement('div');p.id='wwCurrencyPicker';p.className='ww-currency-picker';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-modal','true');p.close=()=>{p.hidden=true;p.classList.remove('is-open')};p.showModal=()=>{p.hidden=false;p.classList.add('is-open')};
+    p=document.createElement('dialog');p.id='wwCurrencyPicker';p.className='ww-currency-picker';
     p.innerHTML='<div class="ww-currency-shell"><div class="ww-currency-head"><div><small>CURRENCY</small><h3>Choose currency</h3></div><button type="button" class="ww-currency-close" aria-label="Close">×</button></div><div class="ww-currency-grid">'+WW_ACTIVITY_CURRENCIES.map(c=>`<button type="button" data-currency="${c}">${c}${wwCurrencySymbol(c)&&wwCurrencySymbol(c)!==c?' '+wwCurrencySymbol(c):''}</button>`).join('')+'</div></div>';
     document.body.appendChild(p);p.querySelector('.ww-currency-close').onclick=()=>p.close();p.addEventListener('click',e=>{if(e.target===p)p.close()});return p;
   }
@@ -4472,9 +4472,9 @@ wwOpenQuickInfo=function(row,id){
     #itinCurrency.ww-native-currency-hidden{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important}
     .ww-currency-choose{width:100%!important;min-width:0!important;border:1px solid rgba(20,55,70,.12)!important;border-radius:16px!important;background:#fff!important;color:#172f3a!important;padding:0 14px!important;font:900 13px/1 Inter,sans-serif!important;display:flex!important;align-items:center!important;justify-content:space-between!important;box-sizing:border-box!important}
     .ww-currency-chevron{font-size:18px!important;font-weight:500!important;transform:translateY(-2px)}
-    .ww-currency-picker{position:fixed!important;inset:0!important;z-index:100000!important;border:0!important;padding:24px!important;background:rgba(0,74,88,.58)!important;backdrop-filter:blur(7px)!important;display:none!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important}.ww-currency-picker.is-open{display:flex!important}
-    .ww-currency-picker[hidden]{display:none!important}
-    .ww-currency-shell{background:#f7e8c7!important;border-radius:28px!important;padding:20px!important;width:min(88vw,390px)!important;max-height:82dvh!important;overflow:auto!important;box-shadow:0 18px 55px rgba(0,45,57,.28)!important;scrollbar-width:none!important}
+    .ww-currency-picker{border:0!important;padding:0!important;background:transparent!important;width:min(88vw,390px)!important;max-height:82dvh!important}
+    .ww-currency-picker::backdrop{background:rgba(0,74,88,.58)!important;backdrop-filter:blur(7px)!important}
+    .ww-currency-shell{background:#f7e8c7!important;border-radius:28px!important;padding:20px!important;max-height:82dvh!important;overflow:auto!important;box-shadow:0 18px 55px rgba(0,45,57,.28)!important;scrollbar-width:none!important}
     .ww-currency-shell::-webkit-scrollbar{display:none!important}.ww-currency-head{display:flex!important;justify-content:space-between!important;align-items:center!important;position:sticky!important;top:-20px!important;background:#f7e8c7!important;z-index:2!important;padding:20px 0 12px!important;margin-top:-20px!important}.ww-currency-head small{color:#07899d!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important}.ww-currency-head h3{margin:2px 0 0!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:22px!important;color:#172f3a!important}.ww-currency-close{width:44px!important;height:44px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#68767b!important;font-size:28px!important}.ww-currency-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:9px!important}.ww-currency-grid button{height:52px!important;border:2px solid #fff!important;border-radius:16px!important;background:rgba(255,255,255,.84)!important;color:#172f3a!important;font:900 14px/1 Inter,sans-serif!important}.ww-currency-grid button.selected{border-color:#07899d!important;background:#e8f7f8!important}
   `;document.head.appendChild(st);
   requestAnimationFrame(enhance);
@@ -4583,8 +4583,15 @@ wwOpenQuickInfo=function(row,id){
   };
 
   /* Currency field: ordinary populated-field weight, no dropdown arrow. */
-  function cleanCurrency(){document.querySelectorAll('.ww-currency-choose').forEach(b=>{b.querySelector('.ww-currency-chevron')?.remove()})}
-  const mo=new MutationObserver(()=>{enhancePicker();cleanCurrency();const d=document.getElementById('stopItineraryDialog');if(d){ensureEditBookmark(d);paintShoppingChooser(d)}});mo.observe(document.body,{childList:true,subtree:true});
+  /* Currency picker is already proven/stable above. Do not mutate its trigger or react to
+     DOM changes created by the picker itself; the chevron is hidden by CSS instead. */
+  function cleanCurrency(){}
+  const mo=new MutationObserver(mutations=>{
+    if(mutations.length&&mutations.every(m=>m.target?.closest?.('#wwCurrencyPicker')))return;
+    enhancePicker();
+    const d=document.getElementById('stopItineraryDialog');
+    if(d){ensureEditBookmark(d);paintShoppingChooser(d)}
+  });mo.observe(document.body,{childList:true,subtree:true});
   requestAnimationFrame(cleanCurrency);
 
   const st=document.createElement('style');st.id='ww-bookmark-shopping-final-2909';st.textContent=`
