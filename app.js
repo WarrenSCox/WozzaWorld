@@ -4316,3 +4316,16 @@ wwOpenQuickInfo=function(row,id){
     `;document.head.appendChild(st);
   }
 })();
+
+/* === WozzaWorld hotfix — itinerary icon optical nudge left ===
+   Visual-only: keep time/title columns exactly where they are. */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-itinerary-icon-optical-nudge-left-2909';
+  st.textContent=`
+    .master-itinerary-activity > .master-itinerary-icon{
+      transform:translateX(-6px)!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
