@@ -4609,8 +4609,6 @@ wwOpenQuickInfo=function(row,id){
     .master-itinerary-activity{position:relative!important}
     .ww-itinerary-bookmark{position:absolute!important;right:9px!important;top:-1px!important;width:22px!important;height:31px!important;color:#07899d!important;z-index:4!important;overflow:hidden!important;pointer-events:none!important}
     .ww-itinerary-bookmark svg{display:block!important;width:22px!important;height:30px!important;fill:#07899d!important;stroke:#07899d!important;stroke-width:1!important}
-    .ww-itinerary-bookmark::after{content:"";position:absolute;inset:-8px -18px;background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.95) 49%,transparent 64%);transform:translateX(-150%) skewX(-18deg);animation:wwBookmarkGlimmer 3.8s ease-in-out infinite;mix-blend-mode:screen}
-    @keyframes wwBookmarkGlimmer{0%,60%,100%{transform:translateX(-150%) skewX(-18deg);opacity:0}68%{opacity:.95}84%{transform:translateX(120%) skewX(-18deg);opacity:0}}
     /* Give bookmarked rows just enough right breathing room; no row highlight. */
     .master-itinerary-activity:has(.ww-itinerary-bookmark) .master-itinerary-activity-main{padding-right:24px!important}
   `;document.head.appendChild(st);
