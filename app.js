@@ -4615,3 +4615,35 @@ wwOpenQuickInfo=function(row,id){
     .master-itinerary-activity:has(.ww-itinerary-bookmark) .master-itinerary-activity-main{padding-right:24px!important}
   `;document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — bookmark column alignment + in-fill glimmer 29 Sep 2026 === */
+(()=>{
+  if(document.getElementById('ww-bookmark-column-glimmer-2909'))return;
+  const st=document.createElement('style');
+  st.id='ww-bookmark-column-glimmer-2909';
+  st.textContent=`
+    /* Bring the day + and bookmark centres into the same visual column. */
+    .ww-day-quick-add{right:13px!important}
+    .ww-itinerary-bookmark{right:4px!important;overflow:visible!important;height:36px!important}
+
+    /* New strategy: the bookmark itself carries the sheen. No overlay layer. */
+    .ww-itinerary-bookmark::after{content:none!important;display:none!important;animation:none!important}
+    .ww-itinerary-bookmark{
+      background:linear-gradient(105deg,
+        #07849a 0%,#07849a 42%,
+        #35aabd 47%,#8adce3 50%,#35aabd 53%,
+        #07849a 58%,#07849a 100%)!important;
+      background-size:320% 100%!important;
+      background-position:100% 0!important;
+      clip-path:polygon(0 0,100% 0,100% 72%,50% 100%,0 72%)!important;
+      animation:wwBookmarkInFillSheen 5.4s ease-in-out infinite!important;
+    }
+    .ww-itinerary-bookmark svg{opacity:0!important;pointer-events:none!important}
+    @keyframes wwBookmarkInFillSheen{
+      0%,72%{background-position:100% 0}
+      82%{background-position:-100% 0}
+      83%,100%{background-position:-100% 0}
+    }
+  `;
+  document.head.appendChild(st);
+})();
