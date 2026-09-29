@@ -4006,7 +4006,29 @@ wwOpenQuickInfo=function(row,id){
     ['See & Do','activity-see-do.png'],
     ['Explore','activity-explore.png'],
     ['Travel','activity-travel.png'],
-    ['Accommodation','activity-accommodation.png']
+    ['Accommodation','accommodation.png'],
+    ['Boat Trip','boat-trip.png'],
+    ['Café','cafe.png'],
+    ['Canoeing','canoeing.png'],
+    ['Castle','castle.png'],
+    ['Cathedral','cathedral.png'],
+    ['Church','church.png'],
+    ['Cycling','cycling.png'],
+    ['Football Ground','football-ground.png'],
+    ['Gardens','gardens.png'],
+    ['Ice Skating','ice-skating.png'],
+    ['Museum / Gallery','museum-gallery.png'],
+    ['Recreation','recreation.png'],
+    ['Roller Skating','rollerskating.png'],
+    ['Skiing','skiing.png'],
+    ['Swimming','swimming.png'],
+    ['Taxi','taxi.png'],
+    ['Theatre','theatre.png'],
+    ['Theme Park','themepark.png'],
+    ['Train','train.png'],
+    ['Vineyard','vineyard.png'],
+    ['Watersports','watersports.png'],
+    ['Zoo','zoo.png']
   ];
   const wwTypeAsset=category=>WW_ACTIVITY_TYPES.find(x=>x[0]===category)?.[1]||'';
   const wwTypeIcon=category=>{const src=wwTypeAsset(category);return src?`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true">`:'📍'};
@@ -4226,7 +4248,29 @@ wwOpenQuickInfo=function(row,id){
     ['See & Do','activity-see-do.png'],
     ['Explore','activity-explore.png'],
     ['Travel','activity-travel.png'],
-    ['Accommodation','activity-accommodation.png']
+    ['Accommodation','accommodation.png'],
+    ['Boat Trip','boat-trip.png'],
+    ['Café','cafe.png'],
+    ['Canoeing','canoeing.png'],
+    ['Castle','castle.png'],
+    ['Cathedral','cathedral.png'],
+    ['Church','church.png'],
+    ['Cycling','cycling.png'],
+    ['Football Ground','football-ground.png'],
+    ['Gardens','gardens.png'],
+    ['Ice Skating','ice-skating.png'],
+    ['Museum / Gallery','museum-gallery.png'],
+    ['Recreation','recreation.png'],
+    ['Roller Skating','rollerskating.png'],
+    ['Skiing','skiing.png'],
+    ['Swimming','swimming.png'],
+    ['Taxi','taxi.png'],
+    ['Theatre','theatre.png'],
+    ['Theme Park','themepark.png'],
+    ['Train','train.png'],
+    ['Vineyard','vineyard.png'],
+    ['Watersports','watersports.png'],
+    ['Zoo','zoo.png']
   ];
   const typeAsset=name=>WW_PICKER_TYPES.find(x=>x[0]===name)?.[1]||'';
 
@@ -4325,6 +4369,47 @@ wwOpenQuickInfo=function(row,id){
   st.textContent=`
     .master-itinerary-activity > .master-itinerary-icon{
       transform:translateX(-6px)!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
+/* === WozzaWorld hotfix — activity icon library scroll/reveal 29 Sep 2026 ===
+   The expanded picker already contains all icon options; this makes the full
+   library reachable inside the modal instead of clipping after the first 6. */
+(()=>{
+  if(document.getElementById('ww-activity-type-picker-scroll-hotfix-2909'))return;
+  const st=document.createElement('style');
+  st.id='ww-activity-type-picker-scroll-hotfix-2909';
+  st.textContent=`
+    #wwActivityTypePicker.ww-activity-type-picker{
+      max-height:88dvh!important;
+      overflow:visible!important;
+    }
+    #wwActivityTypePicker .ww-type-picker-shell{
+      box-sizing:border-box!important;
+      max-height:88dvh!important;
+      overflow-y:auto!important;
+      overflow-x:hidden!important;
+      overscroll-behavior:contain!important;
+      -webkit-overflow-scrolling:touch!important;
+      scrollbar-width:none!important;
+    }
+    #wwActivityTypePicker .ww-type-picker-shell::-webkit-scrollbar{display:none!important}
+    #wwActivityTypePicker .ww-type-picker-head{
+      position:sticky!important;
+      top:-22px!important;
+      z-index:3!important;
+      background:#f7e8c7!important;
+      padding-top:22px!important;
+      padding-bottom:10px!important;
+    }
+    #wwActivityTypePicker .ww-type-picker-grid{
+      padding-bottom:2px!important;
+    }
+    #wwActivityTypePicker .ww-type-picker-option{
+      display:flex!important;
+      visibility:visible!important;
     }
   `;
   document.head.appendChild(st);
