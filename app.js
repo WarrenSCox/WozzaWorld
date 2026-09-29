@@ -4881,3 +4881,30 @@ wwOpenQuickInfo=function(row,id){
     #itineraryQuickInfoDialog .ww-activity-bookmark-preview{transform:translateY(-6px)!important}
   `;document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — Activity delete confirmation lifecycle + edit-card height 29 Sep 2026 === */
+(()=>{
+  if(window.__wwActivityDeleteConfirmHeight2909)return;
+  window.__wwActivityDeleteConfirmHeight2909=true;
+
+  /* The shared confirmer normally prefers #tripDialog when it is still open behind
+     Activity Details. That leaves the overlay behind the top-layer activity dialog,
+     so it only becomes visible later when Activity Details closes. Keep the shared
+     confirmer, but move its overlay into the currently open Activity Details dialog. */
+  const priorConfirm=showWozzaConfirm;
+  showWozzaConfirm=function(title,message,onConfirm,confirmText='Confirm'){
+    priorConfirm.apply(this,arguments);
+    const activity=document.getElementById('stopItineraryDialog');
+    const overlay=document.querySelector('.wozza-alert-overlay');
+    if(activity?.open&&overlay&&overlay.parentElement!==activity)activity.appendChild(overlay);
+  };
+
+  const st=document.createElement('style');
+  st.id='ww-activity-edit-height-2909';
+  st.textContent=`
+    /* Activity Details only: a small height increase so its cream card reaches the
+       same visual depth as the parent card beneath it. Width/field geometry unchanged. */
+    #stopItineraryDialog.stop-itinerary-dialog{max-height:89vh!important}
+  `;
+  document.head.appendChild(st);
+})();
