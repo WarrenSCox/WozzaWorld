@@ -4216,3 +4216,103 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
   requestAnimationFrame(()=>requestAnimationFrame(autosizeTripNotes));
 })();
+
+/* === WozzaWorld hotfix — compact Activity Type icon-library picker (baseline 8) ===
+   Selection UI only. Deliberately does not touch itinerary rendering/reorder logic. */
+(()=>{
+  const WW_PICKER_TYPES=[
+    ['Food','activity-food.png'],
+    ['Drinks','activity-drinks.png'],
+    ['See & Do','activity-see-do.png'],
+    ['Explore','activity-explore.png'],
+    ['Travel','activity-travel.png'],
+    ['Accommodation','activity-accommodation.png']
+  ];
+  const typeAsset=name=>WW_PICKER_TYPES.find(x=>x[0]===name)?.[1]||'';
+
+  function pickerDialog(){
+    let p=document.getElementById('wwActivityTypePicker');
+    if(p)return p;
+    p=document.createElement('dialog');
+    p.id='wwActivityTypePicker';
+    p.className='ww-activity-type-picker';
+    p.innerHTML=`<div class="ww-type-picker-shell">
+      <div class="ww-type-picker-head"><div><small>ACTIVITY TYPE</small><h3>Choose an icon</h3></div><button type="button" class="ww-type-picker-close" aria-label="Close">×</button></div>
+      <div class="ww-type-picker-grid">${WW_PICKER_TYPES.map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""><span>${esc(name)}</span></button>`).join('')}</div>
+    </div>`;
+    document.body.appendChild(p);
+    p.querySelector('.ww-type-picker-close').onclick=()=>p.close();
+    p.addEventListener('click',e=>{if(e.target===p)p.close()});
+    p.querySelectorAll('.ww-type-picker-option').forEach(b=>b.onclick=()=>{
+      const d=document.getElementById('stopItineraryDialog');
+      if(!d)return p.close();
+      d.dataset.category=b.dataset.category;
+      paintChooser(d);
+      p.close();
+    });
+    return p;
+  }
+
+  function paintChooser(d){
+    const b=d?.querySelector('#wwActivityTypeChoose');if(!b)return;
+    const cat=d.dataset.category||'';
+    const src=typeAsset(cat);
+    b.innerHTML=src?`<img src="${src}" alt="" aria-hidden="true"><span>${esc(cat)}</span>`:'<span>Click here to choose</span>';
+    b.classList.toggle('has-type',!!src);
+  }
+
+  function installChooser(d){
+    const field=d?.querySelector('.itin-category-field');if(!field)return;
+    field.classList.add('ww-type-chooser-field');
+    field.innerHTML=`<legend>Type</legend><button type="button" id="wwActivityTypeChoose" class="ww-activity-type-choose"><span>Click here to choose</span></button>`;
+    field.querySelector('#wwActivityTypeChoose').onclick=()=>{
+      const p=pickerDialog();
+      p.querySelectorAll('.ww-type-picker-option').forEach(o=>o.classList.toggle('selected',o.dataset.category===d.dataset.category));
+      p.showModal();
+    };
+    paintChooser(d);
+  }
+
+  /* Override only the category-bank painter: all callers continue to set the same stored category value. */
+  renderItineraryCategoryBank=function(d,selected='Food'){
+    d.dataset.category=selected;
+    installChooser(d);
+    paintChooser(d);
+  };
+
+  const _dialog=itineraryDialog;
+  itineraryDialog=function(){
+    const d=_dialog();
+    installChooser(d);
+    paintChooser(d);
+    return d;
+  };
+
+  const _open=openStopItinerary;
+  openStopItinerary=function(row,id=''){
+    _open(row,id);
+    const d=itineraryDialog();
+    requestAnimationFrame(()=>paintChooser(d));
+  };
+
+  if(!document.getElementById('ww-activity-type-picker-style')){
+    const st=document.createElement('style');st.id='ww-activity-type-picker-style';st.textContent=`
+      .stop-itinerary-form .ww-type-chooser-field{display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;align-items:center!important;column-gap:14px!important;margin:14px 0!important}
+      .stop-itinerary-form .ww-type-chooser-field legend{grid-column:1!important;margin:0!important;font-size:12px!important;font-weight:900!important;color:#172f3a!important}
+      .ww-activity-type-choose{grid-column:2!important;width:100%!important;height:48px!important;min-height:48px!important;padding:0 15px!important;border:1px solid rgba(20,55,70,.12)!important;border-radius:16px!important;background:#fff!important;color:#24313b!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;font:800 13px/1 Inter,sans-serif!important;box-sizing:border-box!important}
+      .ww-activity-type-choose img{width:25px!important;height:25px!important;object-fit:contain!important;flex:0 0 25px!important}
+      .ww-activity-type-picker{border:0!important;padding:0!important;background:transparent!important;max-width:min(92vw,430px)!important;width:min(92vw,430px)!important;overflow:visible!important}
+      .ww-activity-type-picker::backdrop{background:rgba(0,74,88,.58)!important;backdrop-filter:blur(7px)!important}
+      .ww-type-picker-shell{background:#f7e8c7!important;border-radius:28px!important;padding:22px!important;box-shadow:0 18px 55px rgba(0,45,57,.28)!important;color:#172f3a!important}
+      .ww-type-picker-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin-bottom:18px!important}
+      .ww-type-picker-head small{display:block!important;color:#07899d!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important;margin-bottom:3px!important}
+      .ww-type-picker-head h3{margin:0!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:22px!important}
+      .ww-type-picker-close{width:44px!important;height:44px!important;flex:0 0 44px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#68767b!important;font-size:28px!important;line-height:1!important}
+      .ww-type-picker-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+      .ww-type-picker-option{min-width:0!important;min-height:104px!important;padding:12px 7px 10px!important;border:2px solid transparent!important;border-radius:19px!important;background:#fff!important;color:#24313b!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;font:800 11px/1.15 Inter,sans-serif!important;text-align:center!important}
+      .ww-type-picker-option img{width:45px!important;height:45px!important;object-fit:contain!important}
+      .ww-type-picker-option.selected{border-color:#07899d!important;background:#e8f7f8!important}
+      @media(max-width:390px){.ww-type-picker-grid{gap:8px!important}.ww-type-picker-option{min-height:96px!important;padding-left:4px!important;padding-right:4px!important}.ww-type-picker-option img{width:40px!important;height:40px!important}}
+    `;document.head.appendChild(st);
+  }
+})();
