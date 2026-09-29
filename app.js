@@ -2840,7 +2840,9 @@ function wwItineraryTripMeta(){
   const dates=rows.flatMap(r=>[r.querySelector('.trip-destination-from')?.value||'',r.querySelector('.trip-destination-to')?.value||'']).filter(Boolean).sort();
   const start=dates[0]||trip?.start||'',end=dates[dates.length-1]||trip?.end||start;
   const fmt=iso=>{if(!iso)return'';const d=new Date(iso+'T12:00:00');return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}).toUpperCase()};
-  return {name,dateRange:start?(end&&end!==start?`${fmt(start)} – ${fmt(end)}`:fmt(start)):''};
+  const companions=[...new Set((trip?.companions||[]).map(x=>String(x||'').trim()).filter(Boolean))];
+  const companionLine=companions.length?['Warren',...companions.filter(x=>x.toLowerCase()!=='warren')].join(' & '):'';
+  return {name,dateRange:start?(end&&end!==start?`${fmt(start)} – ${fmt(end)}`:fmt(start)):'',companionLine};
 }
 function wwApplyItineraryTripHeader(d){
   const meta=wwItineraryTripMeta(),head=d?.querySelector('.master-itinerary-head');if(!head)return;
@@ -2959,6 +2961,11 @@ function wwApplyItineraryTripHeader(d){
   const small=head.querySelector('small'),title=head.querySelector('h2');
   if(title)title.textContent=meta.name;
   if(small){small.textContent=meta.dateRange;small.classList.add('master-itinerary-date-range')}
+  let companions=head.querySelector('.master-itinerary-companions');
+  if(meta.companionLine){
+    if(!companions){companions=document.createElement('span');companions.className='master-itinerary-companions';head.querySelector('div')?.appendChild(companions)}
+    companions.textContent=meta.companionLine;companions.hidden=false;
+  }else if(companions)companions.hidden=true;
   let cap=head.querySelector('.master-itinerary-capture');
   if(!cap){cap=document.createElement('button');cap.type='button';cap.className='master-itinerary-capture';cap.title='Save full itinerary as image';cap.setAttribute('aria-label','Save full itinerary as image');cap.innerHTML='▣';head.insertBefore(cap,head.querySelector('.master-itinerary-close'));cap.onclick=wwCaptureFullItinerary}
 }
@@ -2983,6 +2990,8 @@ async function wwCaptureFullItinerary(){
 .master-itinerary-head>div{display:flex!important;flex-direction:column!important;gap:4px!important}
 .master-itinerary-head h2{order:1!important;margin:0!important;line-height:1.02!important}
 .master-itinerary-head small.master-itinerary-date-range{order:2!important;margin:2px 0 0!important;line-height:1.25!important}
+.master-itinerary-head .master-itinerary-companions{order:3!important;display:block!important;margin:1px 0 0!important;color:#7b858a!important;font-size:15px!important;font-weight:650!important;line-height:1.25!important;letter-spacing:0!important}
+.master-itinerary-head .master-itinerary-companions[hidden]{display:none!important}
 .master-itinerary-close,.master-itinerary-capture{position:absolute!important;top:0!important;transform:none!important;width:48px!important;height:48px!important;border-radius:50%!important;background:#fff!important;color:#123542!important;display:grid!important;place-items:center!important;margin:0!important}
 .master-itinerary-close{right:0!important}.master-itinerary-capture{right:56px!important;font-size:21px!important}
 .master-itinerary-stop{margin-top:0!important}.master-itinerary-stop .master-itinerary-day:first-child{margin-top:0!important}
