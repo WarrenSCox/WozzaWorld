@@ -4235,7 +4235,7 @@ wwOpenQuickInfo=function(row,id){
   const st=document.createElement('style');
   st.id='ww-itinerary-companions-hotfix-2909';
   st.textContent=`
-    .master-itinerary-companions{display:block!important;margin-top:3px!important;color:#7b8589!important;font-size:14px!important;font-weight:700!important;line-height:1.25!important;letter-spacing:0!important;text-transform:none!important}
+    .master-itinerary-companions{order:3!important;display:block!important;margin-top:3px!important;color:#7b8589!important;font-size:14px!important;font-weight:700!important;line-height:1.25!important;letter-spacing:0!important;text-transform:none!important}
   `;
   document.head.appendChild(st);
   requestAnimationFrame(wwApplyItineraryCompanions);
