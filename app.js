@@ -4783,3 +4783,101 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — activity recycle/restore + itinerary return + preview star nudge 29 Sep 2026 === */
+(()=>{
+  if(window.__wwActivityRecycleRestore2909)return;
+  window.__wwActivityRecycleRestore2909=true;
+  state.activityRecycleBin??=[];
+
+  const persistState=()=>localStorage.setItem('wozzaworld-state',JSON.stringify(state));
+  const findStop=(trip,stopId,stopIndex)=>{
+    const stops=trip?.destinations||[];
+    return stops.find(s=>String(s.id||'')===String(stopId||''))||stops[Number(stopIndex)]||null;
+  };
+  const todoIdsFor=x=>new Set([...(x?.todoIds||[]),...(x?.todoId?[x.todoId]:[])].map(String));
+
+  /* Final activity-save navigation: always land back on the master itinerary. */
+  const priorSave=saveStopItinerary;
+  saveStopItinerary=function(){
+    const row=activeItineraryRow;
+    const out=priorSave.apply(this,arguments);
+    if(row){
+      wwPersistItineraryWork?.();
+      requestAnimationFrame(()=>{
+        wwRenderMasterItinerary?.();
+        const master=wwMasterItineraryDialog?.();
+        if(master&&!master.open)master.showModal();
+      });
+    }
+    return out;
+  };
+
+  /* Final delete behaviour: move the complete activity to Recycle Bin, not permanent deletion. */
+  const priorOpen=openStopItinerary;
+  openStopItinerary=function(row,id=''){
+    const out=priorOpen.apply(this,arguments);
+    const d=itineraryDialog(),del=d?.querySelector('#itinDelete');
+    if(id&&del&&!del.hidden){
+      del.onclick=e=>{
+        e?.preventDefault?.();e?.stopPropagation?.();
+        const items=itineraryItemsForRow(row),idx=items.findIndex(x=>String(x.id)===String(id));
+        if(idx<0)return;
+        const activity=structuredClone(items[idx]);
+        const trip=state.trips.find(t=>String(t.id)===String(editingTripId));
+        const stopId=row.dataset.stopId||'';
+        const rows=$$('#tripDestinationStops .trip-destination-stop');
+        const stopIndex=Math.max(0,rows.indexOf(row));
+        const ids=todoIdsFor(activity);
+        const todos=(trip?.todos||collectTripTodos?.()||[]).filter(t=>ids.has(String(t.id))).map(t=>structuredClone(t));
+        const commit=()=>{
+          state.activityRecycleBin.unshift({activity,tripId:editingTripId||trip?.id||'',tripName:trip?.name||$('#tripName')?.value||'',stopId,stopIndex,todos,removedAt:Date.now()});
+          ids.forEach(todoId=>activityTodoById(todoId)?.remove());
+          setItineraryItemsForRow(row,items.filter((_,i)=>i!==idx));
+          updateTripTodoSummary?.();
+          wwPersistItineraryWork?.();persistState();
+          d.close();
+          wwRenderMasterItinerary?.();
+          const master=wwMasterItineraryDialog?.();if(master&&!master.open)master.showModal();
+          toast?.(`${activity.name||'Activity'} moved to recycle bin`);
+        };
+        if(typeof showWozzaConfirm==='function')showWozzaConfirm('Send activity to recycle bin?',`Send “${activity.name||'this activity'}” to the recycle bin?`,commit,'Send to recycle bin');else commit();
+      };
+    }
+    return out;
+  };
+
+  /* Add Activity rows to the existing shared Recycle Bin and wire restore/permanent delete. */
+  const priorRenderRecycle=renderRecycleBin;
+  renderRecycleBin=function(){
+    priorRenderRecycle.apply(this,arguments);
+    const el=$('#recycleList');if(!el||!state.activityRecycleBin?.length)return;
+    const undo=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7H5v-4M5.5 7.5A8 8 0 1 1 4 14"/></svg>`;
+    const bin=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>`;
+    const rows=state.activityRecycleBin.map((r,i)=>`<div class="recycle-row ww-recycled-activity" data-recycled-activity="${i}"><span class="recycle-trip-icon">${itineraryIcon(r.activity||{})}</span><span class="recycle-copy"><strong>${esc(r.activity?.name||'Activity')}</strong><small>Activity${r.tripName?' · '+esc(r.tripName):''}</small></span><span class="recycle-actions"><button type="button" class="restore-btn" data-restore-activity="${i}" aria-label="Restore ${esc(r.activity?.name||'activity')}">${undo}</button><button type="button" class="delete-btn" data-delete-activity="${i}" aria-label="Delete ${esc(r.activity?.name||'activity')} permanently">${bin}</button></span></div>`).join('');
+    const empty=el.querySelector('.recycle-empty-state');
+    if(empty){el.innerHTML=`<div class="recycle-select-head"><span>Choose items to restore or permanently delete.</span></div>${rows}`}
+    else el.insertAdjacentHTML('beforeend',rows);
+    el.querySelectorAll('[data-restore-activity]').forEach(b=>b.onclick=()=>{
+      const i=Number(b.dataset.restoreActivity),r=state.activityRecycleBin[i];if(!r)return;
+      const trip=state.trips.find(t=>String(t.id)===String(r.tripId));
+      const stop=findStop(trip,r.stopId,r.stopIndex);
+      if(!trip||!stop){toast?.('Original trip is not available');return}
+      stop.itinerary??=[];
+      if(!stop.itinerary.some(x=>String(x.id)===String(r.activity.id)))stop.itinerary.push(structuredClone(r.activity));
+      trip.todos??=[];(r.todos||[]).forEach(t=>{if(!trip.todos.some(x=>String(x.id)===String(t.id)))trip.todos.push(structuredClone(t))});
+      state.activityRecycleBin.splice(i,1);persistState();renderRecycleBin();render();toast?.(`${r.activity?.name||'Activity'} restored`);
+    });
+    el.querySelectorAll('[data-delete-activity]').forEach(b=>b.onclick=()=>{
+      const i=Number(b.dataset.deleteActivity),r=state.activityRecycleBin[i];if(!r)return;
+      const commit=()=>{state.activityRecycleBin.splice(i,1);persistState();renderRecycleBin();toast?.('Activity permanently deleted')};
+      if(typeof showWozzaConfirm==='function')showWozzaConfirm('Delete activity permanently?',`Permanently delete “${r.activity?.name||'this activity'}”?`,commit,'Delete permanently');else commit();
+    });
+  };
+
+  const st=document.createElement('style');st.id='ww-activity-preview-star-nudge-2909';st.textContent=`
+    /* Preview/details page only: retain approved size, just lift the teal star optically. */
+    .itinerary-quick-info-dialog .ww-activity-bookmark-preview,
+    #itineraryQuickInfoDialog .ww-activity-bookmark-preview{transform:translateY(-6px)!important}
+  `;document.head.appendChild(st);
+})();
