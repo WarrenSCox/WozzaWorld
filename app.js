@@ -4417,3 +4417,70 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld activity polish — 29 Sep 2026 ===
+   Surgical UI-only patch: Spa, styled currency chooser, autosize fields,
+   picker card polish and full-width Type field. Museum/Gallery intentionally unchanged. */
+(()=>{
+  /* Add Spa using the existing Wellbeing artwork. */
+  const spa=['Spa','vibe-spa-wellness.png'];
+  const addSpaToPicker=()=>{
+    const p=document.getElementById('wwActivityTypePicker');
+    const grid=p?.querySelector('.ww-type-picker-grid');
+    if(!grid||grid.querySelector('[data-category="Spa"]'))return;
+    const b=document.createElement('button');
+    b.type='button';b.className='ww-type-picker-option';b.dataset.category='Spa';
+    b.innerHTML='<img src="vibe-spa-wellness.png" alt=""><span>Spa</span>';
+    b.onclick=()=>{const d=document.getElementById('stopItineraryDialog');if(d){d.dataset.category='Spa';const choose=d.querySelector('#wwActivityTypeChoose');if(choose){choose.innerHTML='<img src="vibe-spa-wellness.png" alt="" aria-hidden="true"><span>Spa</span>';choose.classList.add('has-type')}}p.close()};
+    grid.appendChild(b);
+  };
+  /* Extend the shared icon lookup without changing existing categories. */
+  const oldIcon=window.itineraryIcon;
+  window.itineraryIcon=function(item){if(item?.category==='Spa')return '<img class="ww-activity-type-asset" src="vibe-spa-wellness.png" alt="" aria-hidden="true">';return oldIcon(item)};
+
+  /* Auto-grow only Location and Contact details. */
+  const autosize=el=>{if(!el)return;el.style.height='auto';el.style.height=Math.max(46,Math.ceil(el.scrollHeight))+'px'};
+  const bindAutosize=d=>['itinLocation','itinContact'].forEach(id=>{const el=d?.querySelector('#'+id);if(!el)return;autosize(el);if(el.dataset.wwGrow==='1')return;el.dataset.wwGrow='1';el.addEventListener('input',()=>autosize(el))});
+
+  /* Keep the real select for data/save compatibility, but present a WozzaWorld chooser. */
+  function currencyDialog(){
+    let p=document.getElementById('wwCurrencyPicker');if(p)return p;
+    p=document.createElement('dialog');p.id='wwCurrencyPicker';p.className='ww-currency-picker';
+    p.innerHTML='<div class="ww-currency-shell"><div class="ww-currency-head"><div><small>CURRENCY</small><h3>Choose currency</h3></div><button type="button" class="ww-currency-close" aria-label="Close">×</button></div><div class="ww-currency-grid">'+WW_ACTIVITY_CURRENCIES.map(c=>`<button type="button" data-currency="${c}">${c}</button>`).join('')+'</div></div>';
+    document.body.appendChild(p);p.querySelector('.ww-currency-close').onclick=()=>p.close();p.addEventListener('click',e=>{if(e.target===p)p.close()});return p;
+  }
+  const bindCurrency=d=>{const sel=d?.querySelector('#itinCurrency');if(!sel)return;sel.classList.add('ww-native-currency-hidden');let btn=d.querySelector('#wwCurrencyChoose');if(!btn){btn=document.createElement('button');btn.type='button';btn.id='wwCurrencyChoose';btn.className='ww-currency-choose';sel.insertAdjacentElement('afterend',btn)}const paint=()=>btn.innerHTML=`<span>${sel.value||'GBP'}</span><span class="ww-currency-chevron">⌄</span>`;paint();if(btn.dataset.bound)return;btn.dataset.bound='1';btn.onclick=()=>{const p=currencyDialog();p.querySelectorAll('[data-currency]').forEach(x=>{x.classList.toggle('selected',x.dataset.currency===sel.value);x.onclick=()=>{sel.value=x.dataset.currency;sel.dispatchEvent(new Event('change',{bubbles:true}));paint();p.close()}});p.showModal()};sel.addEventListener('change',paint)};
+
+  const enhance=()=>{const d=document.getElementById('stopItineraryDialog');if(d){bindAutosize(d);bindCurrency(d)}addSpaToPicker()};
+  const oldDialog=window.itineraryDialog;window.itineraryDialog=function(){const d=oldDialog.apply(this,arguments);requestAnimationFrame(enhance);return d};
+  const oldOpen=window.openStopItinerary;window.openStopItinerary=function(){const r=oldOpen.apply(this,arguments);requestAnimationFrame(()=>{enhance();const d=document.getElementById('stopItineraryDialog');bindAutosize(d);bindCurrency(d)});return r};
+  document.addEventListener('click',()=>requestAnimationFrame(enhance),true);
+
+  const st=document.createElement('style');st.id='ww-activity-polish-2909';st.textContent=`
+    /* Type field aligns exactly with the other full-width fields. */
+    .stop-itinerary-form .ww-type-chooser-field{display:block!important;width:100%!important;margin:14px 0!important;padding:0!important;border:0!important}
+    .stop-itinerary-form .ww-type-chooser-field legend{display:block!important;width:100%!important;margin:0 0 7px!important;padding:0!important;font-size:12px!important;font-weight:900!important;color:#172f3a!important}
+    .stop-itinerary-form .ww-activity-type-choose{width:100%!important;margin:0!important}
+    /* Location/contact grow to content without an internal scrollbar. */
+    #itinLocation,#itinContact{overflow:hidden!important;resize:none!important;min-height:46px!important;box-sizing:border-box!important}
+    /* Softer translucent cards, crisp white rim, and milestone-style travelling glimmer. */
+    .ww-type-picker-option{position:relative!important;overflow:hidden!important;background:rgba(255,255,255,.84)!important;border:2px solid #fff!important}
+    .ww-type-picker-option.selected{border-color:#07899d!important;background:rgba(232,247,248,.9)!important}
+    .ww-type-picker-option img{position:relative!important;z-index:1!important}
+    .ww-type-picker-option::after{content:"";position:absolute;z-index:2;pointer-events:none;top:9px;left:50%;width:42px;height:42px;transform:translateX(-50%);background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.9) 48%,transparent 66%);mix-blend-mode:screen;animation:wwActivityGlimmer 3.6s ease-in-out infinite;opacity:0}
+    @keyframes wwActivityGlimmer{0%,58%,100%{opacity:0;transform:translateX(-78%) skewX(-18deg)}68%{opacity:.9}82%{opacity:0;transform:translateX(-20%) skewX(-18deg)}}
+    /* Labels never escape their own card. */
+    .ww-type-picker-option span{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.08!important;font-size:clamp(9px,2.65vw,11px)!important}
+    .ww-type-picker-option[data-category="Accommodation"] span{font-size:9px!important;letter-spacing:-.02em!important}
+    /* Hide native platform dropdown while preserving its value for existing save logic. */
+    .itin-cost-currency{display:grid!important;grid-template-columns:minmax(0,1fr) 96px!important;gap:8px!important;align-items:stretch!important}
+    #itinCurrency.ww-native-currency-hidden{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important}
+    .ww-currency-choose{width:100%!important;min-width:0!important;border:1px solid rgba(20,55,70,.12)!important;border-radius:16px!important;background:#fff!important;color:#172f3a!important;padding:0 14px!important;font:900 13px/1 Inter,sans-serif!important;display:flex!important;align-items:center!important;justify-content:space-between!important;box-sizing:border-box!important}
+    .ww-currency-chevron{font-size:18px!important;font-weight:500!important;transform:translateY(-2px)}
+    .ww-currency-picker{border:0!important;padding:0!important;background:transparent!important;width:min(88vw,390px)!important;max-height:82dvh!important}
+    .ww-currency-picker::backdrop{background:rgba(0,74,88,.58)!important;backdrop-filter:blur(7px)!important}
+    .ww-currency-shell{background:#f7e8c7!important;border-radius:28px!important;padding:20px!important;max-height:82dvh!important;overflow:auto!important;box-shadow:0 18px 55px rgba(0,45,57,.28)!important;scrollbar-width:none!important}
+    .ww-currency-shell::-webkit-scrollbar{display:none!important}.ww-currency-head{display:flex!important;justify-content:space-between!important;align-items:center!important;position:sticky!important;top:-20px!important;background:#f7e8c7!important;z-index:2!important;padding:20px 0 12px!important;margin-top:-20px!important}.ww-currency-head small{color:#07899d!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important}.ww-currency-head h3{margin:2px 0 0!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:22px!important;color:#172f3a!important}.ww-currency-close{width:44px!important;height:44px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#68767b!important;font-size:28px!important}.ww-currency-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:9px!important}.ww-currency-grid button{height:52px!important;border:2px solid #fff!important;border-radius:16px!important;background:rgba(255,255,255,.84)!important;color:#172f3a!important;font:900 14px/1 Inter,sans-serif!important}.ww-currency-grid button.selected{border-color:#07899d!important;background:#e8f7f8!important}
+  `;document.head.appendChild(st);
+  requestAnimationFrame(enhance);
+})();
