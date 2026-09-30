@@ -5341,3 +5341,60 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld surgical hotfix — expanded stop country flag + return position === */
+(()=>{
+  if(window.__wozzaExpandedStopCountryFlag)return;
+  window.__wozzaExpandedStopCountryFlag=true;
+
+  const st=document.createElement('style');
+  st.id='ww-expanded-stop-country-flag-style';
+  st.textContent=`
+    /* Expanded stop: destination text -> flag -> minimise -> delete. */
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-card-head{display:flex!important;align-items:center!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-number{order:0!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary{order:1!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-collapsed-meta{order:2!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
+      order:3!important;display:grid!important;place-items:center!important;
+      flex:0 0 34px!important;width:34px!important;height:34px!important;min-width:34px!important;
+      margin-left:auto!important;margin-right:7px!important;border-radius:50%!important;overflow:hidden!important;
+    }
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag{
+      width:34px!important;height:34px!important;min-width:34px!important;max-width:34px!important;
+      border-radius:50%!important;object-fit:cover!important;
+    }
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-actions{order:4!important;margin-left:0!important;}
+  `;
+  document.head.appendChild(st);
+
+  /* The existing stop-flag handler already opens the correct country card.
+     Remember the exact trip-dialog position so Country Card close returns to
+     the same expanded trip/scroll position rather than jumping to the top. */
+  document.addEventListener('click',e=>{
+    const slot=e.target.closest?.('#tripDestinationStops .trip-stop-summary-flag-slot');
+    if(!slot)return;
+    const trip=document.querySelector('#tripDialog[open]');
+    if(trip)window.__wozzaTripCountryReturnScroll=trip.scrollTop;
+  },true);
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const slot=e.target.closest?.('#tripDestinationStops .trip-stop-summary-flag-slot');
+    if(!slot)return;
+    const trip=document.querySelector('#tripDialog[open]');
+    if(trip)window.__wozzaTripCountryReturnScroll=trip.scrollTop;
+  },true);
+
+  const previousCloseSheet=closeSheet;
+  closeSheet=async function(){
+    const shouldRestore=!!window.__wozzaReturnToTripAfterCountry;
+    const savedScroll=window.__wozzaTripCountryReturnScroll;
+    const out=await previousCloseSheet();
+    if(shouldRestore&&Number.isFinite(savedScroll)){
+      const trip=document.getElementById('tripDialog');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{if(trip?.open)trip.scrollTop=savedScroll;}));
+    }
+    window.__wozzaTripCountryReturnScroll=null;
+    return out;
+  };
+})();
