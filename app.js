@@ -5357,11 +5357,11 @@ wwOpenQuickInfo=function(row,id){
     #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-collapsed-meta{order:2!important;}
     #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
       order:3!important;display:grid!important;place-items:center!important;
-      flex:0 0 34px!important;width:34px!important;height:34px!important;min-width:34px!important;
+      flex:0 0 32px!important;width:32px!important;height:32px!important;min-width:32px!important;
       margin-left:auto!important;margin-right:7px!important;border-radius:50%!important;overflow:hidden!important;
     }
     #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag{
-      width:34px!important;height:34px!important;min-width:34px!important;max-width:34px!important;
+      width:32px!important;height:32px!important;min-width:32px!important;max-width:32px!important;
       border-radius:50%!important;object-fit:cover!important;
     }
     #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-actions{order:4!important;margin-left:0!important;}
