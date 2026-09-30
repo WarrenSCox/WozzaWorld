@@ -4919,7 +4919,7 @@ wwOpenQuickInfo=function(row,id){
 
  const canonicalTodoList=()=>document.getElementById('tripTodoList');
  const canonicalRows=()=>[...(canonicalTodoList()?.querySelectorAll(':scope > .trip-todo-row')||[])];
- const idsForActivity=x=>[...(Array.isArray(x?.todoIds)?x.todoIds:[]),...(x?.todoId?[x.todoId]:[])].map(String).filter(Boolean);
+ const idsForActivity=x=>[...new Set([...(Array.isArray(x?.todoIds)?x.todoIds:[]),...(x?.todoId?[x.todoId]:[])].map(String).filter(Boolean))];
 
  /* Never resolve an Activity task against the temporary Activity editor DOM. */
  activityTodoById=function(id){
