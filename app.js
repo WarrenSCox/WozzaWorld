@@ -5416,3 +5416,24 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+
+/* === WozzaWorld surgical polish — final expanded-stop flag alignment === */
+(()=>{
+  if(window.__wozzaStopFlagFinalAlign300926)return;
+  window.__wozzaStopFlagFinalAlign300926=true;
+  const st=document.createElement('style');
+  st.id='ww-stop-flag-final-align-300926';
+  st.textContent=`
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
+      transform:translateX(11px)!important;
+    }
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag{
+      width:31.04px!important;
+      height:31.04px!important;
+      min-width:31.04px!important;
+      max-width:31.04px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
