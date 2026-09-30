@@ -5249,7 +5249,7 @@ wwOpenQuickInfo=function(row,id){
   function closeModal(){document.getElementById('wozzaAiModal')?.remove()}
   function openModal(){
     closeModal();const modal=document.createElement('div');modal.id='wozzaAiModal';modal.className='wozza-ai-modal';
-    modal.innerHTML=`<div class="wozza-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="wozzaAiTitle"><div class="wozza-ai-sparkle">✨</div><h3 id="wozzaAiTitle">Get AI Analysis</h3><p>WozzaWorld will prepare a prompt containing your travel statistics and copy it to your clipboard, then open Google Gemini.</p><p><strong>Your travel stats are not sent to Google by WozzaWorld.</strong> They are shared with Google only if you paste and send the prompt in Gemini. Google's privacy terms will then apply.</p><div class="wozza-ai-actions"><button type="button" class="wozza-ai-cancel">Cancel</button><button type="button" class="wozza-ai-go"><span>Abracadabra</span><img src="other.png" alt="" aria-hidden="true"></button></div></div>`;
+    modal.innerHTML=`<div class="wozza-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="wozzaAiTitle"><div class="wozza-ai-sparkle">✨</div><h3 id="wozzaAiTitle">Get AI Analysis</h3><p>WozzaWorld will prepare a prompt containing your travel statistics and copy it to your clipboard, then open Google Gemini.</p><p><strong>Your travel stats are not sent to Google by WozzaWorld.</strong> They are shared with Google only if you paste and send the prompt in Gemini. Google's privacy terms will then apply.</p><div class="wozza-ai-actions"><button type="button" class="wozza-ai-cancel">Cancel</button><button type="button" class="wozza-ai-go"><span>Abracadabra</span><img src="activity-see-do.png" alt="" aria-hidden="true"></button></div></div>`;
     document.body.appendChild(modal);modal.querySelector('.wozza-ai-cancel').onclick=closeModal;modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
     modal.querySelector('.wozza-ai-go').onclick=()=>{
       const prompt=buildPrompt();
@@ -5259,7 +5259,7 @@ wwOpenQuickInfo=function(row,id){
   }
   function setup(){
     const shell=document.getElementById('passportInsights'),milestones=document.getElementById('milestonesCard');if(!shell||!milestones)return false;
-    let wrap=document.getElementById('passportAiAnalysis');if(!wrap){wrap=document.createElement('div');wrap.id='passportAiAnalysis';wrap.className='passport-ai-analysis';wrap.innerHTML='<button type="button" class="passport-ai-btn"><span>Get AI Analysis</span><img src="other.png" alt="" aria-hidden="true"></button>';wrap.querySelector('button').onclick=openModal}milestones.before(wrap);
+    let wrap=document.getElementById('passportAiAnalysis');if(!wrap){wrap=document.createElement('div');wrap.id='passportAiAnalysis';wrap.className='passport-ai-analysis';wrap.innerHTML='<button type="button" class="passport-ai-btn"><span>Get AI Analysis</span><img src="activity-see-do.png" alt="" aria-hidden="true"></button>';wrap.querySelector('button').onclick=openModal}milestones.before(wrap);
     return true;
   }
   const css=document.createElement('style');css.id='wozza-passport-ai-style';css.textContent=`
