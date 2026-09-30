@@ -5186,3 +5186,34 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld surgical hotfix — calendar daily date header polish 30 Sep 2026 ===
+   Scope: ONLY calendar -> selected-day read-only schedule. */
+(()=>{
+  const previousDaily=wwOpenDailySchedule;
+  const dayNames=['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'];
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dailyDateLabel=iso=>{
+    const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(!m)return String(iso||'');
+    const d=new Date(Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3])));
+    return `${dayNames[d.getUTCDay()]} ${Number(m[3])} ${monthNames[Number(m[2])-1]} ${m[1]}`;
+  };
+  wwOpenDailySchedule=function(iso){
+    const out=previousDaily(iso);
+    const d=document.getElementById('masterItineraryDialog');
+    if(!d)return out;
+    const eyebrow=d.querySelector('.master-itinerary-head small');
+    const title=d.querySelector('.master-itinerary-head h2');
+    if(eyebrow){eyebrow.textContent='';eyebrow.hidden=true;}
+    if(title)title.textContent=dailyDateLabel(iso);
+    return out;
+  };
+  const st=document.createElement('style');
+  st.id='ww-daily-date-header-polish-300926';
+  st.textContent=`
+    #masterItineraryDialog[data-ww-view="daily"] .master-itinerary-head small{display:none!important}
+    #masterItineraryDialog[data-ww-view="daily"] .master-itinerary-head h2{white-space:nowrap!important;font-size:clamp(24px,7vw,34px)!important;line-height:1.05!important;letter-spacing:-.02em!important}
+  `;
+  document.head.appendChild(st);
+})();
