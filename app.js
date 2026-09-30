@@ -5089,3 +5089,32 @@ wwOpenQuickInfo=function(row,id){
  .ww-itinerary-add-todo{margin:12px 0 0!important;padding:9px 2px!important;border:0!important;background:transparent!important;color:#087c96!important;font:inherit!important;font-size:13px!important;font-weight:850!important;text-align:left!important}
  `;document.head.appendChild(st);
 })();
+
+/* === WozzaWorld surgical hotfix — itinerary companions + notes heading + currency weight 30 Sep 2026 === */
+(()=>{
+  /* Build the itinerary companion line from the live trip editor when it is open,
+     falling back to the saved trip. Warren is the trip owner and is shown first. */
+  const oldMeta=wwItineraryTripMeta;
+  wwItineraryTripMeta=function(){
+    const meta=oldMeta();
+    const trip=editingTripId?state.trips.find(t=>String(t.id)===String(editingTripId)):null;
+    const live=[...document.querySelectorAll('#tripCompanionBank .companion-tag.selected')]
+      .map(b=>String(b.dataset.companion||'').trim()).filter(Boolean);
+    const saved=(trip?.companions||[]).map(x=>String(x||'').trim()).filter(Boolean);
+    const selected=live.length?live:saved;
+    const names=[...new Map(['Warren',...selected]
+      .filter(Boolean).map(n=>[n.toLowerCase(),n])).values()];
+    if(selected.length===0)meta.companionLine='';
+    else if(names.length===2)meta.companionLine=`${names[0]} & ${names[1]}`;
+    else meta.companionLine=`${names.slice(0,-1).join(', ')} & ${names[names.length-1]}`;
+    return meta;
+  };
+
+  const st=document.createElement('style');
+  st.id='ww-surgical-polish-300926';
+  st.textContent=`
+    .master-itinerary-trip-notes>span{font-size:18px!important;font-weight:900!important;letter-spacing:.02em!important;margin:0 0 12px!important}
+    .stop-itinerary-form .ww-currency-choose{font-weight:400!important}
+  `;
+  document.head.appendChild(st);
+})();
