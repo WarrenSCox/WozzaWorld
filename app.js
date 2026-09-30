@@ -5398,3 +5398,21 @@ wwOpenQuickInfo=function(row,id){
     return out;
   };
 })();
+
+
+/* === WozzaWorld surgical polish — flag spacing + Passport AI mustard === */
+(()=>{
+  if(window.__wozzaFlagAiCosmetic300926)return;
+  window.__wozzaFlagAiCosmetic300926=true;
+  const st=document.createElement('style');
+  st.id='ww-flag-ai-cosmetic-300926';
+  st.textContent=`
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
+      margin-right:4px!important;
+    }
+    #passportAiAnalysis .passport-ai-btn{
+      background:#f4c400!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
