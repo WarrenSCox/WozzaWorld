@@ -826,7 +826,7 @@ function enableStopReorder(row){
     document.addEventListener('pointermove',move,{passive:false});document.addEventListener('pointerup',up,{once:true});
   });
 }
-function addDestinationStop(data={}){const wrap=$('#tripDestinationStops'),row=document.createElement('section');row.className='trip-destination-stop';row.dataset.stopId=data.id||'';row.innerHTML=`<div class="trip-stop-card-head"><span class="trip-stop-summary-flag-slot" aria-hidden="true"></span><span class="trip-stop-number"></span><strong class="trip-stop-summary"></strong><span class="trip-stop-collapsed-meta"></span><div class="trip-stop-actions"><button type="button" class="stop-collapse-toggle" aria-expanded="true" aria-label="Minimise stop">−</button><button type="button" class="remove-destination-stop" aria-label="Delete stop">×</button></div></div><div class="trip-stop-body"><div class="trip-stop-top"><select class="trip-stop-country" aria-label="Country">${countryOptions(data.country||'')}</select></div><div class="destination-autocomplete destination-name-label"><input class="trip-destination-name" aria-label="Destination name" autocomplete="off" placeholder="Start typing a destination…" value="${esc(data.name||'')}"><div class="destination-suggestions" hidden></div></div><div class="destination-type-field"><select class="trip-destination-type" aria-label="Destination type">${destinationTypeOptions(data.type||'')}</select></div><div class="travel-mode-field"><select class="trip-travel-mode" aria-label="Travelling by">${travelModeOptions(data.travelMode||'')}</select></div><div class="trip-stop-dates"><div class="date-field"><input class="trip-destination-from" type="date" aria-label="Start date" value="${esc(data.start||'')}" data-placeholder="Start"></div><span class="date-to-word">to</span><div class="date-field"><input class="trip-destination-to" type="date" aria-label="End date" value="${esc(data.end||'')}" data-placeholder="End"></div></div><div class="itinerary-swipe-prompt" aria-hidden="true"><span>→</span> Swipe to create itinerary</div></div>`;wrap.appendChild(row);row.querySelectorAll('select').forEach(enhanceWozzaSelect);const input=row.querySelector('.trip-destination-name');input.addEventListener('input',()=>{input.dataset.selected='';renderDestinationSuggestions(row);updateStopSummary(row)});input.addEventListener('focus',()=>renderDestinationSuggestions(row));row.querySelector('.trip-stop-country').addEventListener('change',()=>{renderDestinationSuggestions(row);updateStopSummary(row)});row.querySelector('.remove-destination-stop').onclick=e=>{e?.preventDefault?.();e?.stopPropagation?.();if(typeof wwRecycleTripStop==='function')wwRecycleTripStop(row);else{row.remove();updateStopLabels()}};row.querySelector('.stop-collapse-toggle').onclick=()=>toggleStopCollapsed(row);enableStopReorder(row);bindWozzaDateInputs(row);updateStopLabels();return row}
+function addDestinationStop(data={}){const wrap=$('#tripDestinationStops'),row=document.createElement('section');row.className='trip-destination-stop';row.dataset.stopId=data.id||'';row.innerHTML=`<div class="trip-stop-card-head"><span class="trip-stop-summary-flag-slot" aria-hidden="true"></span><span class="trip-stop-number"></span><strong class="trip-stop-summary"></strong><span class="trip-stop-collapsed-meta"></span><div class="trip-stop-actions"><button type="button" class="stop-collapse-toggle" aria-expanded="true" aria-label="Minimise stop">−</button><button type="button" class="remove-destination-stop" aria-label="Delete stop">×</button></div></div><div class="trip-stop-body"><div class="trip-stop-top"><select class="trip-stop-country" aria-label="Country">${countryOptions(data.country||'')}</select></div><div class="destination-autocomplete destination-name-label"><input class="trip-destination-name" aria-label="Destination name" autocomplete="off" placeholder="Start typing a destination…" value="${esc(data.name||'')}"><div class="destination-suggestions" hidden></div></div><div class="destination-type-field"><select class="trip-destination-type" aria-label="Destination type">${destinationTypeOptions(data.type||'')}</select></div><div class="travel-mode-field"><select class="trip-travel-mode" aria-label="Travelling by">${travelModeOptions(data.travelMode||'')}</select></div><div class="trip-stop-dates"><div class="date-field"><input class="trip-destination-from" type="date" aria-label="Start date" value="${esc(data.start||'')}" data-placeholder="Start"></div><span class="date-to-word">to</span><div class="date-field"><input class="trip-destination-to" type="date" aria-label="End date" value="${esc(data.end||'')}" data-placeholder="End"></div></div><div class="itinerary-swipe-prompt" aria-hidden="true"><span>→</span> Swipe to create itinerary</div></div>`;wrap.appendChild(row);row.querySelectorAll('select').forEach(enhanceWozzaSelect);const input=row.querySelector('.trip-destination-name');input.addEventListener('input',()=>{input.dataset.selected='';renderDestinationSuggestions(row);updateStopSummary(row)});input.addEventListener('focus',()=>renderDestinationSuggestions(row));row.querySelector('.trip-stop-country').addEventListener('change',()=>{renderDestinationSuggestions(row);updateStopSummary(row)});row.querySelector('.remove-destination-stop').onclick=()=>{row.remove();updateStopLabels()};row.querySelector('.stop-collapse-toggle').onclick=()=>toggleStopCollapsed(row);enableStopReorder(row);bindWozzaDateInputs(row);updateStopLabels();return row}
 function collectDestinationStops(){const rows=$$('#tripDestinationStops .trip-destination-stop'),out=[];for(const row of rows){const country=canonicalCountry(row.querySelector('.trip-stop-country').value);if(!country)continue;const input=row.querySelector('.trip-destination-name'),typed=input.value.trim();let name='',type=row.querySelector('.trip-destination-type')?.value||'Other',custom=false;if(typed){const known=knownDestination(typed,country);name=known?.name||typed;type=type||known?.type||'Other';custom=!known;if(custom){const exists=(state.customDestinations||[]).some(d=>d.name.toLowerCase()===name.toLowerCase()&&sameCountry(d.country,country));if(!exists)state.customDestinations.push({id:`custom-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,name,type,country})}}out.push({id:row.dataset.stopId||crypto.randomUUID?.()||String(Date.now()+out.length),name,type,country,start:row.querySelector('.trip-destination-from').value,end:row.querySelector('.trip-destination-to').value,travelMode:row.querySelector('.trip-travel-mode')?.value||'',custom})}return out}
 function legacyDestinations(t){if((t.destinations||[]).length){const ds=t.destinations.map(d=>({...d}));if((t.start||t.end)&&!ds.some(d=>d.start||d.end)){if(ds[0])ds[0].start=t.start||'';if(ds[ds.length-1])ds[ds.length-1].end=t.end||''}return ds;}const out=[];for(const [country,names] of Object.entries(t.cities||{}))for(const name of names||[])out.push({name,type:'City',country,start:t.start||'',end:t.end||''});if(!out.length)tripCountries(t).forEach(country=>out.push({name:'',type:'Other',country,start:t.start||'',end:t.end||''}));return out}
 function setTripRatingInput(r=0){r=Math.max(0,Math.min(5,Number(r)||0));$('#tripRating').value=String(r);$$('#tripRatingInput button').forEach(b=>{const on=Number(b.dataset.rating)<=r;b.textContent=on?'★':'☆';b.classList.toggle('selected',on)})}
@@ -5342,63 +5342,167 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
-
-/* === WozzaWorld hotfix — trip stop recycle / restore 30 Sep 2026 === */
+/* === WozzaWorld surgical hotfix — expanded stop country flag + return position === */
 (()=>{
-  if(window.__wwTripStopRecycle3009)return;
-  window.__wwTripStopRecycle3009=true;
+  if(window.__wozzaExpandedStopCountryFlag)return;
+  window.__wozzaExpandedStopCountryFlag=true;
+
+  const st=document.createElement('style');
+  st.id='ww-expanded-stop-country-flag-style';
+  st.textContent=`
+    /* Expanded stop: destination text -> flag -> minimise -> delete. */
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-card-head{display:flex!important;align-items:center!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-number{order:0!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary{order:1!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-collapsed-meta{order:2!important;}
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
+      order:3!important;display:grid!important;place-items:center!important;
+      flex:0 0 32px!important;width:32px!important;height:32px!important;min-width:32px!important;
+      margin-left:auto!important;margin-right:7px!important;border-radius:50%!important;overflow:hidden!important;
+    }
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag{
+      width:32px!important;height:32px!important;min-width:32px!important;max-width:32px!important;
+      border-radius:50%!important;object-fit:cover!important;
+    }
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-actions{order:4!important;margin-left:0!important;}
+  `;
+  document.head.appendChild(st);
+
+  /* The existing stop-flag handler already opens the correct country card.
+     Remember the exact trip-dialog position so Country Card close returns to
+     the same expanded trip/scroll position rather than jumping to the top. */
+  document.addEventListener('click',e=>{
+    const slot=e.target.closest?.('#tripDestinationStops .trip-stop-summary-flag-slot');
+    if(!slot)return;
+    const trip=document.querySelector('#tripDialog[open]');
+    if(trip)window.__wozzaTripCountryReturnScroll=trip.scrollTop;
+  },true);
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const slot=e.target.closest?.('#tripDestinationStops .trip-stop-summary-flag-slot');
+    if(!slot)return;
+    const trip=document.querySelector('#tripDialog[open]');
+    if(trip)window.__wozzaTripCountryReturnScroll=trip.scrollTop;
+  },true);
+
+  const previousCloseSheet=closeSheet;
+  closeSheet=async function(){
+    const shouldRestore=!!window.__wozzaReturnToTripAfterCountry;
+    const savedScroll=window.__wozzaTripCountryReturnScroll;
+    const out=await previousCloseSheet();
+    if(shouldRestore&&Number.isFinite(savedScroll)){
+      const trip=document.getElementById('tripDialog');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{if(trip?.open)trip.scrollTop=savedScroll;}));
+    }
+    window.__wozzaTripCountryReturnScroll=null;
+    return out;
+  };
+})();
+
+
+/* === WozzaWorld surgical polish — flag spacing + Passport AI mustard === */
+(()=>{
+  if(window.__wozzaFlagAiCosmetic300926)return;
+  window.__wozzaFlagAiCosmetic300926=true;
+  const st=document.createElement('style');
+  st.id='ww-flag-ai-cosmetic-300926';
+  st.textContent=`
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
+      margin-right:4px!important;
+    }
+    #passportAiAnalysis .passport-ai-btn{
+      background:#f4c400!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
+
+/* === WozzaWorld surgical polish — final expanded-stop flag alignment === */
+(()=>{
+  if(window.__wozzaStopFlagFinalAlign300926)return;
+  window.__wozzaStopFlagFinalAlign300926=true;
+  const st=document.createElement('style');
+  st.id='ww-stop-flag-final-align-300926';
+  st.textContent=`
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
+      transform:translateX(11px)!important;
+    }
+    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag{
+      width:31.04px!important;
+      height:31.04px!important;
+      min-width:31.04px!important;
+      max-width:31.04px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
+/* === WozzaWorld surgical hotfix — stop recycle / restore 30 Sep 2026 === */
+(()=>{
+  if(window.__wwStopRecycleRestore300926)return;
+  window.__wwStopRecycleRestore300926=true;
   state.stopRecycleBin??=[];
   const persist=()=>localStorage.setItem('wozzaworld-state',JSON.stringify(state));
-  const stopName=(stop,i=0)=>stop?.name||stop?.country||`Stop ${i+1}`;
+  const activityTodoIds=stop=>new Set((stop?.itinerary||[]).flatMap(a=>[...(a?.todoIds||[]),...(a?.todoId?[a.todoId]:[])]).map(String));
 
-  window.wwRecycleTripStop=function(row){
-    if(!row)return;
-    const rows=$$('#tripDestinationStops .trip-destination-stop'),index=Math.max(0,rows.indexOf(row));
-    const trip=state.trips.find(t=>String(t.id)===String(editingTripId));
-    const current=collectDestinationStops?.()||[];
-    const stop=structuredClone(current[index]||{});
-    const label=stopName(stop,index);
-    const activityIds=new Set((stop.itinerary||[]).map(a=>String(a.id||'')).filter(Boolean));
-    const todos=collectTripTodos?.().filter(t=>activityIds.has(String(t.activityId||''))||((stop.itinerary||[]).some(a=>String(a.todoId||'')===String(t.id||''))))||[];
-    const commit=()=>{
-      state.stopRecycleBin.unshift({stop,tripId:editingTripId||trip?.id||'',tripName:trip?.name||$('#tripName')?.value||'',stopIndex:index,todos:structuredClone(todos),removedAt:Date.now()});
-      const todoIds=new Set(todos.map(t=>String(t.id||'')));
-      $$('#tripTodoList .trip-todo-row').forEach(r=>{if(todoIds.has(String(r.dataset.todoId||'')))r.remove()});
-      row.remove();updateStopLabels();updateTripTodoSummary?.();
-      /* Existing editor autosave writes the remaining stops back to the trip. */
-      wwPersistItineraryWork?.();
-      if(trip){
-        const remaining=collectDestinationStops?.()||[];
-        trip.destinations=structuredClone(remaining);
-        trip.todos=collectTripTodos?.()||trip.todos||[];
-      }
-      persist();rememberTripEditorSnapshot?.();
-      toast?.(`${label} moved to recycle bin`);
-    };
-    if(typeof showWozzaConfirm==='function')showWozzaConfirm('Send stop to recycle bin?',`Send “${label}” and its itinerary to the recycle bin?`,commit,'Send to recycle bin');else commit();
+  /* Rebind the stop × after every stop row is created. This deliberately touches
+     only stop deletion; collapse, itinerary, trip and activity behaviour stay intact. */
+  const priorAddDestinationStop=addDestinationStop;
+  addDestinationStop=function(data={}){
+    const row=priorAddDestinationStop.apply(this,arguments);
+    const remove=row?.querySelector('.remove-destination-stop');
+    if(remove){
+      remove.onclick=e=>{
+        e?.preventDefault?.();e?.stopPropagation?.();
+        const rows=$$('#tripDestinationStops .trip-destination-stop');
+        const stopIndex=Math.max(0,rows.indexOf(row));
+        const trip=state.trips.find(t=>String(t.id)===String(editingTripId));
+        const current=collectDestinationStops?.().find(s=>String(s.id||'')===String(row.dataset.stopId||'')) || collectDestinationStops?.()[stopIndex] || null;
+        const stop=current?structuredClone(current):null;
+        const label=stop?.name||stop?.country||'this stop';
+        const commit=()=>{
+          if(stop){
+            const ids=activityTodoIds(stop);
+            const todos=(trip?.todos||collectTripTodos?.()||[]).filter(t=>ids.has(String(t.id))).map(t=>structuredClone(t));
+            state.stopRecycleBin.unshift({stop,tripId:editingTripId||trip?.id||'',tripName:trip?.name||$('#tripName')?.value||'',stopIndex,todos,removedAt:Date.now()});
+            if(trip){
+              trip.destinations=(trip.destinations||[]).filter((s,i)=>String(s.id||'')!==String(stop.id||'')&&i!==stopIndex);
+              if(ids.size)trip.todos=(trip.todos||[]).filter(t=>!ids.has(String(t.id)));
+            }
+            ids.forEach(id=>activityTodoById?.(id)?.remove?.());
+          }
+          row.remove();updateStopLabels();updateTripTodoSummary?.();persist();
+          toast?.(`${label} moved to recycle bin`);
+        };
+        if(typeof showWozzaConfirm==='function')showWozzaConfirm('Send stop to recycle bin?',`Send “${label}” to the recycle bin?`,commit,'Send to recycle bin');else commit();
+      };
+    }
+    return row;
   };
 
-  const priorRender=renderRecycleBin;
+  const priorRenderRecycle=renderRecycleBin;
   renderRecycleBin=function(){
-    priorRender.apply(this,arguments);
+    priorRenderRecycle.apply(this,arguments);
     const el=$('#recycleList');if(!el||!state.stopRecycleBin?.length)return;
     const undo=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7H5v-4M5.5 7.5A8 8 0 1 1 4 14"/></svg>`;
     const bin=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>`;
-    const rows=state.stopRecycleBin.map((r,i)=>`<div class="recycle-row ww-recycled-stop" data-recycle-key="s:${i}"><button type="button" class="recycle-select-dot" aria-label="Select ${esc(stopName(r.stop,r.stopIndex))}" tabindex="-1">✓</button><span class="overview-flag">${r.stop?.country?flagMarkup(r.stop.country,'overview-flag-img'):''}</span><span class="recycle-copy"><strong>${esc(stopName(r.stop,r.stopIndex))}</strong><small>Trip stop${r.tripName?' · '+esc(r.tripName):''}</small></span><span class="recycle-actions"><button type="button" class="restore-btn" data-restore-stop="${i}" aria-label="Restore ${esc(stopName(r.stop,r.stopIndex))}">${undo}</button><button type="button" class="delete-btn" data-delete-stop="${i}" aria-label="Delete ${esc(stopName(r.stop,r.stopIndex))} permanently">${bin}</button></span></div>`).join('');
+    const rows=state.stopRecycleBin.map((r,i)=>`<div class="recycle-row ww-recycled-stop" data-recycle-key="s:${i}"><button type="button" class="recycle-select-dot" aria-label="Select ${esc(r.stop?.name||r.stop?.country||'stop')}" tabindex="-1">✓</button>${r.stop?.country?flagMarkup(r.stop.country):'<span class="recycle-trip-icon">📍</span>'}<span class="recycle-copy"><strong>${esc(r.stop?.name||r.stop?.country||'Stop')}</strong><small>Stop${r.tripName?' · '+esc(r.tripName):''}</small></span><span class="recycle-actions"><button type="button" class="restore-btn" data-restore-stop="${i}" aria-label="Restore ${esc(r.stop?.name||'stop')}">${undo}</button><button type="button" class="delete-btn" data-delete-stop="${i}" aria-label="Delete ${esc(r.stop?.name||'stop')} permanently">${bin}</button></span></div>`).join('');
     const empty=el.querySelector('.recycle-empty-state');
-    if(empty)el.innerHTML=`<div class="recycle-select-head"><span>Choose items to restore or permanently delete.</span></div>${rows}`;else el.insertAdjacentHTML('beforeend',rows);
-    el.querySelectorAll('[data-restore-stop]').forEach(b=>b.onclick=()=>{
-      const i=Number(b.dataset.restoreStop),r=state.stopRecycleBin[i];if(!r)return;
+    if(empty)el.innerHTML=`<div class="recycle-select-head"><span>Choose items to restore or permanently delete.</span></div>${rows}`;
+    else el.insertAdjacentHTML('beforeend',rows);
+    el.querySelectorAll('[data-restore-stop]').forEach(b=>b.onclick=e=>{
+      e?.stopPropagation?.();const i=Number(b.dataset.restoreStop),r=state.stopRecycleBin[i];if(!r)return;
       const trip=state.trips.find(t=>String(t.id)===String(r.tripId));if(!trip){toast?.('Original trip is not available');return}
-      trip.destinations??=[];const at=Math.min(Math.max(0,Number(r.stopIndex)||0),trip.destinations.length);
+      trip.destinations??=[];const at=Math.max(0,Math.min(Number(r.stopIndex)||0,trip.destinations.length));
       if(!trip.destinations.some(s=>String(s.id||'')===String(r.stop?.id||'')))trip.destinations.splice(at,0,structuredClone(r.stop));
-      trip.todos??=[];(r.todos||[]).forEach(t=>{if(!trip.todos.some(x=>String(x.id||'')===String(t.id||'')))trip.todos.push(structuredClone(t))});
-      state.stopRecycleBin.splice(i,1);persist();renderRecycleBin();render();toast?.(`${stopName(r.stop,r.stopIndex)} restored`);
+      trip.todos??=[];(r.todos||[]).forEach(t=>{if(!trip.todos.some(x=>String(x.id)===String(t.id)))trip.todos.push(structuredClone(t))});
+      state.stopRecycleBin.splice(i,1);persist();renderRecycleBin();render();toast?.(`${r.stop?.name||r.stop?.country||'Stop'} restored`);
     });
-    el.querySelectorAll('[data-delete-stop]').forEach(b=>b.onclick=()=>{
-      const i=Number(b.dataset.deleteStop),r=state.stopRecycleBin[i];if(!r)return;
+    el.querySelectorAll('[data-delete-stop]').forEach(b=>b.onclick=e=>{
+      e?.stopPropagation?.();const i=Number(b.dataset.deleteStop),r=state.stopRecycleBin[i];if(!r)return;
       const commit=()=>{state.stopRecycleBin.splice(i,1);persist();renderRecycleBin();toast?.('Stop permanently deleted')};
-      if(typeof showWozzaConfirm==='function')showWozzaConfirm('Delete stop permanently?',`Permanently delete “${stopName(r.stop,r.stopIndex)}” and its itinerary?`,commit,'Delete permanently');else commit();
+      if(typeof showWozzaConfirm==='function')showWozzaConfirm('Delete stop permanently?',`Permanently delete “${r.stop?.name||r.stop?.country||'this stop'}”?`,commit,'Delete permanently');else commit();
     });
   };
 })();
