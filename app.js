@@ -5070,9 +5070,10 @@ wwOpenQuickInfo=function(row,id){
  }
  const oldEnsure=wwEnsureItinerarySharedNotes;wwEnsureItinerarySharedNotes=function(d){const out=oldEnsure(d);render();return out};
  const oldRender=wwRenderTripHierarchy;wwRenderTripHierarchy=function(){const out=oldRender();render();return out};
- let queued=false;const queue=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;if(document.getElementById('masterItineraryDialog')?.open)render()})};
+ let queued=false;const itineraryTodoIsEditing=()=>document.activeElement?.matches?.('.ww-itinerary-todo-row textarea');const queue=()=>{if(queued||itineraryTodoIsEditing())return;queued=true;requestAnimationFrame(()=>{queued=false;if(document.getElementById('masterItineraryDialog')?.open&&!itineraryTodoIsEditing())render()})};
  const list=canonical();if(list)new MutationObserver(queue).observe(list,{subtree:true,childList:true,attributes:true,characterData:true});
  document.addEventListener('input',e=>{if(e.target?.closest?.('#tripTodoList'))queue()},true);
+ document.addEventListener('focusout',e=>{if(e.target?.matches?.('.ww-itinerary-todo-row textarea'))requestAnimationFrame(queue)},true);
  const st=document.createElement('style');st.id='ww-itinerary-shared-todos-3009';st.textContent=`
  .ww-itinerary-trip-todos{margin:24px 0 0!important}.ww-itinerary-trip-todos h3{margin:0 0 12px!important;color:#172f3a!important;font-size:18px!important;font-weight:900!important;letter-spacing:.02em!important}
  .ww-itinerary-todo-list{display:grid!important;gap:10px!important;background:#edf5f4!important;border:1px solid rgba(7,94,120,.075)!important;border-radius:24px!important;padding:16px!important}
