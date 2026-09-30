@@ -5249,8 +5249,8 @@ wwOpenQuickInfo=function(row,id){
   function closeModal(){document.getElementById('wozzaAiModal')?.remove()}
   function openModal(){
     closeModal();const modal=document.createElement('div');modal.id='wozzaAiModal';modal.className='wozza-ai-modal';
-    modal.innerHTML=`<div class="wozza-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="wozzaAiTitle"><button type="button" class="wozza-ai-x" aria-label="Close">×</button><div class="wozza-ai-sparkle">✨</div><h3 id="wozzaAiTitle">Get AI Analysis</h3><p>WozzaWorld will prepare a prompt containing your travel statistics and copy it to your clipboard, then open Google Gemini.</p><p><strong>Your travel stats are not sent to Google by WozzaWorld.</strong> They are shared with Google only if you paste and send the prompt in Gemini. Google's privacy terms will then apply.</p><div class="wozza-ai-actions"><button type="button" class="wozza-ai-cancel">Cancel</button><button type="button" class="wozza-ai-go">Abracadabra ✨</button></div></div>`;
-    document.body.appendChild(modal);modal.querySelector('.wozza-ai-x').onclick=closeModal;modal.querySelector('.wozza-ai-cancel').onclick=closeModal;modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+    modal.innerHTML=`<div class="wozza-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="wozzaAiTitle"><div class="wozza-ai-sparkle">✨</div><h3 id="wozzaAiTitle">Get AI Analysis</h3><p>WozzaWorld will prepare a prompt containing your travel statistics and copy it to your clipboard, then open Google Gemini.</p><p><strong>Your travel stats are not sent to Google by WozzaWorld.</strong> They are shared with Google only if you paste and send the prompt in Gemini. Google's privacy terms will then apply.</p><div class="wozza-ai-actions"><button type="button" class="wozza-ai-cancel">Cancel</button><button type="button" class="wozza-ai-go"><span>Abracadabra</span><img src="other.png" alt="" aria-hidden="true"></button></div></div>`;
+    document.body.appendChild(modal);modal.querySelector('.wozza-ai-cancel').onclick=closeModal;modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
     modal.querySelector('.wozza-ai-go').onclick=()=>{
       const prompt=buildPrompt();
       try{navigator.clipboard.writeText(prompt).then(()=>toast('AI analysis prompt copied — paste it into Gemini ✨')).catch(()=>{window.prompt('Copy this prompt, then paste it into Gemini:',prompt)})}catch(e){window.prompt('Copy this prompt, then paste it into Gemini:',prompt)}
@@ -5259,17 +5259,17 @@ wwOpenQuickInfo=function(row,id){
   }
   function setup(){
     const shell=document.getElementById('passportInsights'),milestones=document.getElementById('milestonesCard');if(!shell||!milestones)return false;
-    let wrap=document.getElementById('passportAiAnalysis');if(!wrap){wrap=document.createElement('div');wrap.id='passportAiAnalysis';wrap.className='passport-ai-analysis';wrap.innerHTML='<button type="button" class="passport-ai-btn">Get AI Analysis <span aria-hidden="true">✨</span></button>';shell.after(wrap);wrap.querySelector('button').onclick=openModal}else if(wrap.nextElementSibling!==milestones)milestones.before(wrap);
+    let wrap=document.getElementById('passportAiAnalysis');if(!wrap){wrap=document.createElement('div');wrap.id='passportAiAnalysis';wrap.className='passport-ai-analysis';wrap.innerHTML='<button type="button" class="passport-ai-btn"><span>Get AI Analysis</span><img src="other.png" alt="" aria-hidden="true"></button>';wrap.querySelector('button').onclick=openModal}milestones.before(wrap);
     return true;
   }
   const css=document.createElement('style');css.id='wozza-passport-ai-style';css.textContent=`
-    .passport-ai-analysis{margin:18px 0 22px;display:flex;justify-content:center}
-    .passport-ai-btn{width:min(92%,520px);border:0;border-radius:999px;background:#f5c400;color:#102a34;font:800 18px/1.1 inherit;padding:17px 24px;box-shadow:0 6px 16px rgba(0,0,0,.10);cursor:pointer}
+    .passport-ai-analysis{width:100%;margin:18px 0 22px;display:flex;justify-content:center;box-sizing:border-box}
+    .passport-ai-btn{width:100%;box-sizing:border-box;border:0;border-radius:999px;background:#f5c400;color:#102a34;font:800 18px/1.1 inherit;padding:17px 24px;box-shadow:0 6px 16px rgba(0,0,0,.10);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+    .passport-ai-btn img,.wozza-ai-go img{width:24px;height:18px;object-fit:contain;display:block;flex:0 0 auto}
     .passport-ai-btn:active{transform:translateY(1px)}
     .wozza-ai-modal{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(0,66,77,.54);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
     .wozza-ai-dialog{position:relative;width:min(92vw,520px);background:#fff0c6;color:#102f39;border-radius:28px;padding:30px 24px 22px;box-shadow:0 20px 55px rgba(0,0,0,.25);text-align:center}
-    .wozza-ai-x{position:absolute;right:17px;top:14px;border:0;background:transparent;color:#10333c;font-size:34px;line-height:1;cursor:pointer}
-    .wozza-ai-sparkle{font-size:34px;margin-bottom:5px}.wozza-ai-dialog h3{margin:0 30px 15px;font-size:27px;line-height:1.05}.wozza-ai-dialog p{margin:10px 0;font-size:15px;line-height:1.42}.wozza-ai-actions{display:flex;gap:10px;margin-top:22px}.wozza-ai-actions button{flex:1;border:0;border-radius:999px;padding:14px 12px;font:800 16px/1 inherit;cursor:pointer}.wozza-ai-cancel{background:#d9edf0;color:#12323b}.wozza-ai-go{background:#f5c400;color:#102a34}
+    .wozza-ai-sparkle{font-size:34px;margin-bottom:5px}.wozza-ai-dialog h3{margin:0 30px 15px;font-size:27px;line-height:1.05}.wozza-ai-dialog p{margin:10px 0;font-size:15px;line-height:1.42}.wozza-ai-actions{display:flex;gap:10px;margin-top:22px}.wozza-ai-actions button{flex:1;border:0;border-radius:999px;padding:14px 12px;font:800 16px/1 inherit;cursor:pointer}.wozza-ai-cancel{background:#f55849;color:#fff}.wozza-ai-go{background:#f5c400;color:#102a34;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
     .wozza-ai-toast{position:fixed;left:50%;bottom:28px;z-index:10100;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#087f8d;color:#fff;border-radius:999px;padding:12px 18px;font:700 14px/1.25 inherit;box-shadow:0 8px 25px rgba(0,0,0,.2);transition:.2s ease;text-align:center;max-width:88vw}.wozza-ai-toast.show{opacity:1;transform:translate(-50%,0)}
   `;document.head.appendChild(css);
   if(!setup()){const mo=new MutationObserver(()=>{if(setup())mo.disconnect()});mo.observe(document.documentElement,{childList:true,subtree:true})}
