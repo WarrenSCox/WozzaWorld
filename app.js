@@ -5277,3 +5277,67 @@ wwOpenQuickInfo=function(row,id){
   `;document.head.appendChild(css);
   if(!setup()){const mo=new MutationObserver(()=>{if(setup())mo.disconnect()});mo.observe(document.documentElement,{childList:true,subtree:true})}
 })();
+
+/* === WozzaWorld surgical hotfix — calendar daily header state isolation 30 Sep 2026 ===
+   ONLY calendar -> single-day read-only view:
+   - companions render on first open
+   - no download/export button
+   - compact date cannot sit beneath itinerary actions
+   Full itinerary keeps its download button. */
+(()=>{
+  const previousDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    const out=previousDaily(iso);
+    const d=document.getElementById('masterItineraryDialog');
+    const head=d?.querySelector('.master-itinerary-head');
+    if(!d||!head)return out;
+    d.dataset.wwView='daily';
+
+    const meta=wwItineraryTripMeta();
+    let companions=head.querySelector('.master-itinerary-companions');
+    if(meta.companionLine){
+      if(!companions){
+        companions=document.createElement('span');
+        companions.className='master-itinerary-companions';
+        head.querySelector('div')?.appendChild(companions);
+      }
+      companions.innerHTML=`${peopleIcon()}<span>${esc(meta.companionLine)}</span>`;
+      companions.hidden=false;
+    }else if(companions){
+      companions.hidden=true;
+    }
+
+    const capture=head.querySelector('.master-itinerary-capture');
+    if(capture)capture.hidden=true;
+    return out;
+  };
+
+  /* Full itinerary explicitly restores its own export control after a daily view. */
+  const restoreFullHeader=()=>{
+    const d=document.getElementById('masterItineraryDialog');
+    if(!d||d.dataset.wwView==='daily')return;
+    const capture=d.querySelector('.master-itinerary-capture');
+    if(capture)capture.hidden=false;
+  };
+  const previousTripOpen=wwOpenTripItinerary;
+  wwOpenTripItinerary=function(){
+    const out=previousTripOpen.apply(this,arguments);
+    requestAnimationFrame(restoreFullHeader);
+    return out;
+  };
+  const previousMasterOpen=wwOpenMasterItinerary;
+  wwOpenMasterItinerary=function(){
+    const out=previousMasterOpen.apply(this,arguments);
+    requestAnimationFrame(restoreFullHeader);
+    return out;
+  };
+
+  const st=document.createElement('style');
+  st.id='ww-daily-header-state-fix-300926';
+  st.textContent=`
+    #masterItineraryDialog[data-ww-view="daily"] .master-itinerary-capture{display:none!important}
+    #masterItineraryDialog[data-ww-view="daily"] .master-itinerary-head{padding-right:72px!important}
+    #masterItineraryDialog[data-ww-view="daily"] .master-itinerary-head h2{max-width:100%!important}
+  `;
+  document.head.appendChild(st);
+})();
