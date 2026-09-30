@@ -5452,3 +5452,65 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — itinerary country bunting markers (30 Sep 2026) === */
+(function(){
+  function wwTriangleBunting(country){
+    const src=flagUrl(country);
+    if(!src)return '';
+    return `<span class="ww-country-bunting" aria-hidden="true">${[0,1,2,3,4].map(()=>`<span class="ww-country-bunting-flag"><img src="${src}" alt=""></span>`).join('')}</span>`;
+  }
+  function wwApplyCountryBunting(){
+    const d=document.getElementById('masterItineraryDialog');
+    if(!d||d.dataset.wwView==='daily')return;
+    const host=d.querySelector('#masterItineraryContent');
+    if(!host)return;
+    host.querySelectorAll('.ww-country-bunting').forEach(x=>x.remove());
+    const rows=wwTripStopRows();
+    const stopSections=[...host.querySelectorAll('.master-itinerary-stop')];
+    let previousCountry='';
+    stopSections.forEach((section,si)=>{
+      const row=rows[si];
+      const country=row?.querySelector('.trip-stop-country')?.value?.trim()||'';
+      if(!country)return;
+      /* One marker for a single-country trip; for multi-country trips, mark only the first day when the country changes. */
+      if(country===previousCountry)return;
+      previousCountry=country;
+      const head=section.querySelector('.master-itinerary-day .master-itinerary-dayhead');
+      if(!head)return;
+      const html=wwTriangleBunting(country);
+      if(html)head.insertAdjacentHTML('beforeend',html);
+    });
+  }
+  const previousRender=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){
+    const out=previousRender.apply(this,arguments);
+    requestAnimationFrame(wwApplyCountryBunting);
+    return out;
+  };
+  /* Some itinerary entry points call the hierarchy renderer directly. Keep the decoration post-render only. */
+  const previousHierarchy=wwRenderTripHierarchy;
+  wwRenderTripHierarchy=function(){
+    const out=previousHierarchy.apply(this,arguments);
+    requestAnimationFrame(wwApplyCountryBunting);
+    return out;
+  };
+  const st=document.createElement('style');
+  st.id='ww-itinerary-country-bunting-style';
+  st.textContent=`
+    #masterItineraryDialog:not([data-ww-view="daily"]) .master-itinerary-dayhead:has(.ww-country-bunting){padding-right:156px!important}
+    .ww-country-bunting{position:absolute;right:52px;top:50%;transform:translateY(-50%);display:flex;align-items:flex-start;gap:1px;height:38px;pointer-events:none;z-index:1}
+    .ww-country-bunting:before{content:"";position:absolute;left:-2px;right:-2px;top:3px;height:1.5px;background:#172f3a;opacity:.55;transform:rotate(-1deg);transform-origin:center;z-index:2}
+    .ww-country-bunting-flag{display:block;width:20px;height:31px;overflow:hidden;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;position:relative}
+    .ww-country-bunting-flag:nth-child(2),.ww-country-bunting-flag:nth-child(4){transform:translateY(2px) rotate(2deg)}
+    .ww-country-bunting-flag:nth-child(3){transform:translateY(4px) rotate(-1deg)}
+    .ww-country-bunting-flag:nth-child(5){transform:translateY(1px) rotate(-2deg)}
+    .ww-country-bunting-flag img{width:100%;height:100%;object-fit:cover;display:block}
+    @media(max-width:430px){
+      #masterItineraryDialog:not([data-ww-view="daily"]) .master-itinerary-dayhead:has(.ww-country-bunting){padding-right:142px!important}
+      .ww-country-bunting{right:48px;gap:0;height:34px}
+      .ww-country-bunting-flag{width:18px;height:28px}
+    }
+  `;
+  document.head.appendChild(st);
+})();
