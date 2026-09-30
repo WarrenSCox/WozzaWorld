@@ -5458,7 +5458,7 @@ wwOpenQuickInfo=function(row,id){
   function wwTriangleBunting(country){
     const src=flagUrl(country);
     if(!src)return '';
-    return `<span class="ww-country-bunting" aria-hidden="true">${[0,1,2,3,4].map(()=>`<span class="ww-country-bunting-flag"><img src="${src}" alt=""></span>`).join('')}</span>`;
+    return `<span class="ww-country-bunting" aria-hidden="true">${[0,1,2,3,4].map(()=>`<span class="ww-country-bunting-flag" style="background-image:url('${src}')"></span>`).join('')}</span>`;
   }
   function wwApplyCountryBunting(){
     const d=document.getElementById('masterItineraryDialog');
@@ -5470,46 +5470,34 @@ wwOpenQuickInfo=function(row,id){
     const stopSections=[...host.querySelectorAll('.master-itinerary-stop')];
     let previousCountry='';
     stopSections.forEach((section,si)=>{
-      const row=rows[si];
-      const country=row?.querySelector('.trip-stop-country')?.value?.trim()||'';
-      if(!country)return;
-      /* One marker for a single-country trip; for multi-country trips, mark only the first day when the country changes. */
-      if(country===previousCountry)return;
+      const country=rows[si]?.querySelector('.trip-stop-country')?.value?.trim()||'';
+      if(!country||country===previousCountry)return;
       previousCountry=country;
-      const head=section.querySelector('.master-itinerary-day .master-itinerary-dayhead');
-      if(!head)return;
-      const html=wwTriangleBunting(country);
+      const head=section.querySelector('.master-itinerary-dayhead');
+      const html=head&&wwTriangleBunting(country);
       if(html)head.insertAdjacentHTML('beforeend',html);
     });
   }
   const previousRender=wwRenderMasterItinerary;
-  wwRenderMasterItinerary=function(){
-    const out=previousRender.apply(this,arguments);
-    requestAnimationFrame(wwApplyCountryBunting);
-    return out;
-  };
-  /* Some itinerary entry points call the hierarchy renderer directly. Keep the decoration post-render only. */
+  wwRenderMasterItinerary=function(){const out=previousRender.apply(this,arguments);requestAnimationFrame(wwApplyCountryBunting);return out};
   const previousHierarchy=wwRenderTripHierarchy;
-  wwRenderTripHierarchy=function(){
-    const out=previousHierarchy.apply(this,arguments);
-    requestAnimationFrame(wwApplyCountryBunting);
-    return out;
-  };
+  wwRenderTripHierarchy=function(){const out=previousHierarchy.apply(this,arguments);requestAnimationFrame(wwApplyCountryBunting);return out};
   const st=document.createElement('style');
   st.id='ww-itinerary-country-bunting-style';
   st.textContent=`
-    #masterItineraryDialog:not([data-ww-view="daily"]) .master-itinerary-dayhead:has(.ww-country-bunting){padding-right:156px!important}
-    .ww-country-bunting{position:absolute;right:52px;top:50%;transform:translateY(-50%);display:flex;align-items:flex-start;gap:1px;height:38px;pointer-events:none;z-index:1}
-    .ww-country-bunting:before{content:"";position:absolute;left:-2px;right:-2px;top:3px;height:1.5px;background:#172f3a;opacity:.55;transform:rotate(-1deg);transform-origin:center;z-index:2}
-    .ww-country-bunting-flag{display:block;width:20px;height:31px;overflow:hidden;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;position:relative}
-    .ww-country-bunting-flag:nth-child(2),.ww-country-bunting-flag:nth-child(4){transform:translateY(2px) rotate(2deg)}
-    .ww-country-bunting-flag:nth-child(3){transform:translateY(4px) rotate(-1deg)}
-    .ww-country-bunting-flag:nth-child(5){transform:translateY(1px) rotate(-2deg)}
-    .ww-country-bunting-flag img{width:100%;height:100%;object-fit:cover;display:block}
+    #masterItineraryDialog:not([data-ww-view="daily"]) .master-itinerary-dayhead:has(.ww-country-bunting){padding-right:150px!important;overflow:visible!important}
+    .ww-country-bunting{position:absolute;right:50px;top:3px;width:92px;height:37px;display:flex;justify-content:center;align-items:flex-start;gap:0;pointer-events:none;z-index:4}
+    .ww-country-bunting:before{content:"";position:absolute;left:1px;right:1px;top:1px;height:2px;background:#173641;border-radius:2px;opacity:.72;z-index:5}
+    .ww-country-bunting-flag{display:block!important;flex:0 0 18px!important;width:18px!important;height:28px!important;margin:0!important;background-repeat:no-repeat!important;background-position:center!important;background-size:cover!important;clip-path:polygon(0 0,100% 0,50% 100%)!important;-webkit-clip-path:polygon(0 0,100% 0,50% 100%)!important;transform-origin:50% 0;position:relative;z-index:4}
+    .ww-country-bunting-flag:nth-child(1){transform:translateY(1px) rotate(-3deg)}
+    .ww-country-bunting-flag:nth-child(2){transform:translateY(3px) rotate(2deg)}
+    .ww-country-bunting-flag:nth-child(3){transform:translateY(5px) rotate(-1deg)}
+    .ww-country-bunting-flag:nth-child(4){transform:translateY(3px) rotate(2deg)}
+    .ww-country-bunting-flag:nth-child(5){transform:translateY(1px) rotate(-3deg)}
     @media(max-width:430px){
-      #masterItineraryDialog:not([data-ww-view="daily"]) .master-itinerary-dayhead:has(.ww-country-bunting){padding-right:142px!important}
-      .ww-country-bunting{right:48px;gap:0;height:34px}
-      .ww-country-bunting-flag{width:18px;height:28px}
+      #masterItineraryDialog:not([data-ww-view="daily"]) .master-itinerary-dayhead:has(.ww-country-bunting){padding-right:138px!important}
+      .ww-country-bunting{right:45px;width:82px;height:34px}
+      .ww-country-bunting-flag{flex-basis:16px!important;width:16px!important;height:25px!important}
     }
   `;
   document.head.appendChild(st);
