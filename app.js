@@ -2964,7 +2964,7 @@ function wwApplyItineraryTripHeader(d){
   let companions=head.querySelector('.master-itinerary-companions');
   if(meta.companionLine){
     if(!companions){companions=document.createElement('span');companions.className='master-itinerary-companions';head.querySelector('div')?.appendChild(companions)}
-    companions.textContent=meta.companionLine;companions.hidden=false;
+    companions.innerHTML=`${peopleIcon()}<span>${esc(meta.companionLine)}</span>`;companions.hidden=false;
   }else if(companions)companions.hidden=true;
   let cap=head.querySelector('.master-itinerary-capture');
   if(!cap){cap=document.createElement('button');cap.type='button';cap.className='master-itinerary-capture';cap.title='Save full itinerary as image';cap.setAttribute('aria-label','Save full itinerary as image');cap.innerHTML='▣';head.insertBefore(cap,head.querySelector('.master-itinerary-close'));cap.onclick=wwCaptureFullItinerary}
@@ -2990,7 +2990,7 @@ async function wwCaptureFullItinerary(){
 .master-itinerary-head>div{display:flex!important;flex-direction:column!important;gap:4px!important}
 .master-itinerary-head h2{order:1!important;margin:0!important;line-height:1.02!important}
 .master-itinerary-head small.master-itinerary-date-range{order:2!important;margin:2px 0 0!important;line-height:1.25!important}
-.master-itinerary-head .master-itinerary-companions{order:3!important;display:block!important;margin:1px 0 0!important;color:#7b858a!important;font-size:15px!important;font-weight:650!important;line-height:1.25!important;letter-spacing:0!important}
+.master-itinerary-head .master-itinerary-companions{order:3!important;display:inline-flex!important;align-items:center!important;gap:6px!important;width:max-content!important;margin:1px 0 0!important;color:#7b858a!important;font-size:15px!important;font-weight:650!important;line-height:1.25!important;letter-spacing:0!important}.master-itinerary-head .master-itinerary-companions svg{width:18px!important;height:18px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important;flex:0 0 auto!important}
 .master-itinerary-head .master-itinerary-companions[hidden]{display:none!important}
 .master-itinerary-close,.master-itinerary-capture{position:absolute!important;top:0!important;transform:none!important;width:48px!important;height:48px!important;border-radius:50%!important;background:#fff!important;color:#123542!important;display:grid!important;place-items:center!important;margin:0!important}
 .master-itinerary-close{right:0!important}.master-itinerary-capture{right:56px!important;font-size:21px!important}
