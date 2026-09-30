@@ -5265,7 +5265,7 @@ wwOpenQuickInfo=function(row,id){
   const css=document.createElement('style');css.id='wozza-passport-ai-style';css.textContent=`
     .passport-ai-analysis{width:100%;margin:18px 0 22px;display:flex;justify-content:center;box-sizing:border-box}
     .passport-ai-btn{position:relative;overflow:hidden;width:100%;box-sizing:border-box;border:0;border-radius:999px;background:#f5c400;color:#102a34;font:800 18px/1.1 inherit;padding:17px 24px;box-shadow:0 6px 16px rgba(0,0,0,.10);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
-    .passport-ai-btn:after{content:"";position:absolute;inset:-70% -45%;background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,0) 47%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 54%,transparent 60%);transform:translateX(-65%) rotate(7deg);animation:milestoneGlimmer 5.5s ease-in-out infinite;pointer-events:none}
+    .passport-ai-btn:after{content:"";position:absolute;inset:-70% -45%;background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,0) 47%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 54%,transparent 60%);transform:translateX(-65%) rotate(7deg);animation:milestoneGlimmer 8.5s ease-in-out infinite;pointer-events:none}
     .passport-ai-btn span,.passport-ai-btn img{position:relative;z-index:1}
     .passport-ai-btn img,.wozza-ai-go img{width:24px;height:18px;object-fit:contain;display:block;flex:0 0 auto}
     .passport-ai-btn:active{transform:translateY(1px)}
