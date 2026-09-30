@@ -5217,3 +5217,60 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* Passport AI Analysis launcher — surgical add-on */
+(()=>{
+  if(window.__wozzaPassportAiAnalysis)return;window.__wozzaPassportAiAnalysis=true;
+  const GEMINI_URL='https://gemini.google.com/app';
+  const uniq=a=>[...new Set(a.filter(Boolean))];
+  function textOf(sel){return document.querySelector(sel)?.textContent?.replace(/\s+/g,' ').trim()||''}
+  function buildPrompt(){
+    const visited=typeof countryRows==='function'?countryRows('visited'):[];
+    const bucket=typeof countryRows==='function'?countryRows('bucket'):[];
+    const going=typeof countryRows==='function'?countryRows('going'):[];
+    const completed=(state.trips||[]).filter(t=>typeof tripIsOnHorizon==='function'?!tripIsOnHorizon(t):true);
+    const ratings=completed.map(t=>Number(t.rating)||0).filter(Boolean);
+    const avg=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):'Not enough data';
+    const vibes={}; completed.forEach(t=>uniq(t.vibes||[]).forEach(v=>vibes[v]=(vibes[v]||0)+1));
+    const vibeSummary=Object.entries(vibes).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([v,n])=>`${v}: ${n}`).join(', ')||'Not enough data';
+    const companions={}; completed.forEach(t=>uniq(t.companions||[]).forEach(n=>companions[n]=(companions[n]||0)+1));
+    const companionSummary=Object.entries(companions).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>`${n}: ${c} trip${c===1?'':'s'}`).join(', ')||'Mostly/entirely solo or not recorded';
+    const modes={}; completed.flatMap(t=>typeof tripTravelModes==='function'?tripTravelModes(t):[]).forEach(m=>{m=String(m||'').trim();if(m)modes[m]=(modes[m]||0)+1});
+    const modeSummary=Object.entries(modes).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`${m}: ${n}`).join(', ')||'Not enough data';
+    const topCountries=visited.map(c=>[c,typeof countryTrips==='function'?Math.max(1,countryTrips(c).length):1]).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>`${c}: ${n} trip${n===1?'':'s'}`).join(', ');
+    const topRated=completed.filter(t=>Number(t.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating)).slice(0,8).map(t=>`${t.name||'Untitled trip'}: ${Number(t.rating)}/5`).join(', ')||'Not enough data';
+    const score=textOf('#travelHealthCard .travel-health-score')||textOf('#travelHealthCard');
+    return `Act as my personal travel analyst. Analyse the WozzaWorld travel statistics below and give me a concise, friendly, useful report.\n\nPlease include:\n1. A short summary of my travel style.\n2. Interesting patterns in where and how I travel.\n3. My strongest travel habits.\n4. Gaps or opportunities in my travel experience.\n5. 5 personalised destination or trip-style recommendations, explaining why each fits my existing travel history.\n6. A few achievable ideas for broadening my travel experiences.\n\nBase the analysis only on the data supplied. Do not invent trips, preferences or personal details. Treat upcoming and bucket-list destinations as plans/interests, not places I have already visited.\n\nWOZZAWORLD STATS\nTravel score: ${score||'Not available'}\nCountries visited: ${visited.length} of 193 (${(visited.length/193*100).toFixed(1)}%)\nVisited countries: ${visited.join(', ')||'None recorded'}\nCompleted trips: ${completed.length}\nUpcoming destinations: ${going.join(', ')||'None recorded'}\nBucket list: ${bucket.join(', ')||'None recorded'}\nMost visited countries: ${topCountries||'Not enough data'}\nAverage trip rating: ${avg}${ratings.length?' / 5':''}\nHighest-rated trips: ${topRated}\nTravel companions: ${companionSummary}\nTravel modes: ${modeSummary}\nTrip styles/vibes: ${vibeSummary}`;
+  }
+  function toast(msg){
+    let t=document.getElementById('wozzaAiToast');if(!t){t=document.createElement('div');t.id='wozzaAiToast';t.className='wozza-ai-toast';document.body.appendChild(t)}
+    t.textContent=msg;t.classList.add('show');clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove('show'),2800);
+  }
+  function closeModal(){document.getElementById('wozzaAiModal')?.remove()}
+  function openModal(){
+    closeModal();const modal=document.createElement('div');modal.id='wozzaAiModal';modal.className='wozza-ai-modal';
+    modal.innerHTML=`<div class="wozza-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="wozzaAiTitle"><button type="button" class="wozza-ai-x" aria-label="Close">×</button><div class="wozza-ai-sparkle">✨</div><h3 id="wozzaAiTitle">Get AI Analysis</h3><p>WozzaWorld will prepare a prompt containing your travel statistics and copy it to your clipboard, then open Google Gemini.</p><p><strong>Your travel stats are not sent to Google by WozzaWorld.</strong> They are shared with Google only if you paste and send the prompt in Gemini. Google's privacy terms will then apply.</p><div class="wozza-ai-actions"><button type="button" class="wozza-ai-cancel">Cancel</button><button type="button" class="wozza-ai-go">Abracadabra ✨</button></div></div>`;
+    document.body.appendChild(modal);modal.querySelector('.wozza-ai-x').onclick=closeModal;modal.querySelector('.wozza-ai-cancel').onclick=closeModal;modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+    modal.querySelector('.wozza-ai-go').onclick=()=>{
+      const prompt=buildPrompt();
+      try{navigator.clipboard.writeText(prompt).then(()=>toast('AI analysis prompt copied — paste it into Gemini ✨')).catch(()=>{window.prompt('Copy this prompt, then paste it into Gemini:',prompt)})}catch(e){window.prompt('Copy this prompt, then paste it into Gemini:',prompt)}
+      window.open(GEMINI_URL,'_blank','noopener,noreferrer');closeModal();
+    };
+  }
+  function setup(){
+    const shell=document.getElementById('passportInsights'),milestones=document.getElementById('milestonesCard');if(!shell||!milestones)return false;
+    let wrap=document.getElementById('passportAiAnalysis');if(!wrap){wrap=document.createElement('div');wrap.id='passportAiAnalysis';wrap.className='passport-ai-analysis';wrap.innerHTML='<button type="button" class="passport-ai-btn">Get AI Analysis <span aria-hidden="true">✨</span></button>';shell.after(wrap);wrap.querySelector('button').onclick=openModal}else if(wrap.nextElementSibling!==milestones)milestones.before(wrap);
+    return true;
+  }
+  const css=document.createElement('style');css.id='wozza-passport-ai-style';css.textContent=`
+    .passport-ai-analysis{margin:18px 0 22px;display:flex;justify-content:center}
+    .passport-ai-btn{width:min(92%,520px);border:0;border-radius:999px;background:#f5c400;color:#102a34;font:800 18px/1.1 inherit;padding:17px 24px;box-shadow:0 6px 16px rgba(0,0,0,.10);cursor:pointer}
+    .passport-ai-btn:active{transform:translateY(1px)}
+    .wozza-ai-modal{position:fixed;inset:0;z-index:10050;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(0,66,77,.54);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    .wozza-ai-dialog{position:relative;width:min(92vw,520px);background:#fff0c6;color:#102f39;border-radius:28px;padding:30px 24px 22px;box-shadow:0 20px 55px rgba(0,0,0,.25);text-align:center}
+    .wozza-ai-x{position:absolute;right:17px;top:14px;border:0;background:transparent;color:#10333c;font-size:34px;line-height:1;cursor:pointer}
+    .wozza-ai-sparkle{font-size:34px;margin-bottom:5px}.wozza-ai-dialog h3{margin:0 30px 15px;font-size:27px;line-height:1.05}.wozza-ai-dialog p{margin:10px 0;font-size:15px;line-height:1.42}.wozza-ai-actions{display:flex;gap:10px;margin-top:22px}.wozza-ai-actions button{flex:1;border:0;border-radius:999px;padding:14px 12px;font:800 16px/1 inherit;cursor:pointer}.wozza-ai-cancel{background:#d9edf0;color:#12323b}.wozza-ai-go{background:#f5c400;color:#102a34}
+    .wozza-ai-toast{position:fixed;left:50%;bottom:28px;z-index:10100;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#087f8d;color:#fff;border-radius:999px;padding:12px 18px;font:700 14px/1.25 inherit;box-shadow:0 8px 25px rgba(0,0,0,.2);transition:.2s ease;text-align:center;max-width:88vw}.wozza-ai-toast.show{opacity:1;transform:translate(-50%,0)}
+  `;document.head.appendChild(css);
+  if(!setup()){const mo=new MutationObserver(()=>{if(setup())mo.disconnect()});mo.observe(document.documentElement,{childList:true,subtree:true})}
+})();
