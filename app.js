@@ -5061,7 +5061,7 @@ wwOpenQuickInfo=function(row,id){
    list.innerHTML=vals.map((v,i)=>`<div class="ww-itinerary-todo-row${v.done?' is-done':''}" data-id="${esc(v.id)}"><textarea rows="1" placeholder="Type here...">${esc(v.text)}</textarea><button type="button" class="ww-itinerary-todo-check${v.done?' selected':''}" aria-label="${v.done?'Mark incomplete':'Mark complete'}">${v.done?'✓':''}</button><button type="button" class="ww-itinerary-todo-remove" aria-label="Remove">×</button></div>`).join('');
    [...list.children].forEach(row=>{
      const id=row.dataset.id,input=row.querySelector('textarea'),check=row.querySelector('.ww-itinerary-todo-check'),remove=row.querySelector('.ww-itinerary-todo-remove');
-     const size=()=>{input.style.height='auto';input.style.height=Math.max(44,input.scrollHeight)+'px'};size();
+     const size=()=>{input.style.height='0px';const h=Math.max(38,input.scrollHeight+2);input.style.height=h+'px';row.style.minHeight=h+'px'};requestAnimationFrame(size);
      input.oninput=()=>{const r=canonicalRow(id);if(!r)return;const target=r.querySelector('.trip-todo-input');target.value=input.value;target.dispatchEvent(new Event('input',{bubbles:true}));size()};
      input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!input.value.trim())return;addTripTodoRow();render();requestAnimationFrame(()=>list.lastElementChild?.querySelector('textarea')?.focus())}};
      check.onclick=()=>canonicalRow(id)?.querySelector('.trip-todo-check')?.click();
@@ -5070,18 +5070,19 @@ wwOpenQuickInfo=function(row,id){
  }
  const oldEnsure=wwEnsureItinerarySharedNotes;wwEnsureItinerarySharedNotes=function(d){const out=oldEnsure(d);render();return out};
  const oldRender=wwRenderTripHierarchy;wwRenderTripHierarchy=function(){const out=oldRender();render();return out};
- let queued=false;const queue=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;if(document.getElementById('masterItineraryDialog')?.open)render()})};
+ let queued=false;const itineraryTodoIsEditing=()=>document.activeElement?.matches?.('.ww-itinerary-todo-row textarea');const queue=()=>{if(queued||itineraryTodoIsEditing())return;queued=true;requestAnimationFrame(()=>{queued=false;if(document.getElementById('masterItineraryDialog')?.open&&!itineraryTodoIsEditing())render()})};
  const list=canonical();if(list)new MutationObserver(queue).observe(list,{subtree:true,childList:true,attributes:true,characterData:true});
  document.addEventListener('input',e=>{if(e.target?.closest?.('#tripTodoList'))queue()},true);
+ document.addEventListener('focusout',e=>{if(e.target?.matches?.('.ww-itinerary-todo-row textarea'))requestAnimationFrame(queue)},true);
  const st=document.createElement('style');st.id='ww-itinerary-shared-todos-3009';st.textContent=`
  .ww-itinerary-trip-todos{margin:24px 0 0!important}.ww-itinerary-trip-todos h3{margin:0 0 12px!important;color:#172f3a!important;font-size:18px!important;font-weight:900!important;letter-spacing:.02em!important}
  .ww-itinerary-todo-list{display:grid!important;gap:10px!important;background:#edf5f4!important;border:1px solid rgba(7,94,120,.075)!important;border-radius:24px!important;padding:16px!important}
- .ww-itinerary-todo-row{display:grid!important;grid-template-columns:minmax(0,1fr) 38px 38px!important;gap:8px!important;align-items:center!important}
- .ww-itinerary-todo-row textarea{box-sizing:border-box!important;width:100%!important;min-height:44px!important;resize:none!important;overflow:hidden!important;border:1px solid #d8dfe1!important;border-radius:20px!important;background:#fff!important;color:#172f3a!important;padding:11px 14px!important;font:inherit!important;font-size:16px!important;line-height:1.35!important}
- .ww-itinerary-todo-check{position:relative!important;width:38px!important;height:38px!important;border:0!important;background:transparent!important;color:#fff!important;font-size:22px!important;font-weight:900!important;display:grid!important;place-items:center!important;padding:0!important}
- .ww-itinerary-todo-check::before{content:"";position:absolute!important;width:29px!important;height:29px!important;border:2.6px solid #687781!important;border-radius:50%!important;box-sizing:border-box!important;background:transparent!important;z-index:-1!important}.ww-itinerary-todo-check.selected::before{background:#159b70!important;border-color:rgba(104,119,129,.58)!important}
+ .ww-itinerary-todo-row{display:grid!important;grid-template-columns:minmax(0,1fr) 34px 34px!important;gap:7px!important;align-items:start!important;min-height:38px!important}
+ .ww-itinerary-todo-row textarea{box-sizing:border-box!important;width:100%!important;min-height:38px!important;resize:none!important;overflow:hidden!important;border:1px solid #d8dfe1!important;border-radius:18px!important;background:#fff!important;color:#172f3a!important;padding:9px 13px!important;font-family:inherit!important;font-size:13px!important;font-weight:400!important;line-height:1.35!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;max-height:none!important;field-sizing:content!important}
+ .ww-itinerary-todo-check{position:relative!important;isolation:isolate!important;width:34px!important;height:34px!important;border:0!important;background:transparent!important;color:#fff!important;font-size:19px!important;font-weight:900!important;display:grid!important;place-items:center!important;padding:0!important;z-index:0!important}
+ .ww-itinerary-todo-check::before{content:"";position:absolute!important;inset:3px!important;border:2.4px solid #687781!important;border-radius:50%!important;box-sizing:border-box!important;background:transparent!important;z-index:-1!important}.ww-itinerary-todo-check.selected::before{background:#159b70!important;border-color:rgba(104,119,129,.58)!important}
  .ww-itinerary-todo-row.is-done textarea{text-decoration-line:line-through!important;text-decoration-style:wavy!important;text-decoration-color:#111!important;text-decoration-thickness:2px!important}
- .ww-itinerary-todo-remove{width:38px!important;height:38px!important;border:0!important;border-radius:50%!important;background:#fff2ef!important;color:#b43831!important;font-size:23px!important;font-weight:800!important;display:grid!important;place-items:center!important;box-shadow:0 2px 7px rgba(9,38,47,.06)!important}
+ .ww-itinerary-todo-remove{width:34px!important;height:34px!important;border:0!important;border-radius:50%!important;background:#fff2ef!important;color:#b43831!important;font-size:23px!important;font-weight:800!important;display:grid!important;place-items:center!important;box-shadow:0 2px 7px rgba(9,38,47,.06)!important}
  .ww-itinerary-add-todo{margin:12px 0 0!important;padding:9px 2px!important;border:0!important;background:transparent!important;color:#087c96!important;font:inherit!important;font-size:13px!important;font-weight:850!important;text-align:left!important}
  `;document.head.appendChild(st);
 })();
