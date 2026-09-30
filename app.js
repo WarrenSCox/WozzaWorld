@@ -5426,13 +5426,13 @@ wwOpenQuickInfo=function(row,id){
   st.id='ww-stop-flag-final-align-300926';
   st.textContent=`
     #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{
-      transform:translateX(11px)!important;
+      transform:translateX(5px)!important;
     }
     #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag{
-      width:31.04px!important;
-      height:31.04px!important;
-      min-width:31.04px!important;
-      max-width:31.04px!important;
+      width:30.7296px!important;
+      height:30.7296px!important;
+      min-width:30.7296px!important;
+      max-width:30.7296px!important;
     }
   `;
   document.head.appendChild(st);
