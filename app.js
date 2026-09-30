@@ -5052,7 +5052,7 @@ wwOpenQuickInfo=function(row,id){
      section=document.createElement('section');section.className='ww-itinerary-trip-todos';
      section.innerHTML='<h3>TO DO LIST</h3><div class="ww-itinerary-todo-list"></div><button type="button" class="ww-itinerary-add-todo">＋ Add more</button>';
      notes.insertAdjacentElement('afterend',section);
-     section.querySelector('.ww-itinerary-add-todo').onclick=()=>{addTripTodoRow();render();requestAnimationFrame(()=>section.querySelector('.ww-itinerary-todo-list')?.lastElementChild?.querySelector('textarea')?.focus())};
+     section.querySelector('.ww-itinerary-add-todo').onclick=()=>{const list=section.querySelector('.ww-itinerary-todo-list');if(!list)return;const blank=document.createElement('div');blank.className='ww-itinerary-todo-row ww-itinerary-todo-draft';blank.innerHTML='<textarea rows="1" placeholder="Type here..."></textarea><button type="button" class="ww-itinerary-todo-check" aria-label="Mark complete"></button><button type="button" class="ww-itinerary-todo-remove" aria-label="Remove">×</button>';list.appendChild(blank);const input=blank.querySelector('textarea'),remove=blank.querySelector('.ww-itinerary-todo-remove');const size=()=>{input.style.height='0px';const h=Math.max(38,input.scrollHeight+2);input.style.height=h+'px';blank.style.minHeight=h+'px'};remove.onclick=()=>blank.remove();input.oninput=()=>{size();if(!input.value.trim())return;const text=input.value;addTripTodoRow();const r=[...(canonical()?.querySelectorAll(':scope > .trip-todo-row')||[])].at(-1);if(!r)return;const id=r.dataset.todoId||'';const target=r.querySelector('.trip-todo-input');if(target){target.value=text;target.dispatchEvent(new Event('input',{bubbles:true}))}render();requestAnimationFrame(()=>{const live=[...section.querySelectorAll('.ww-itinerary-todo-row')].find(x=>String(x.dataset.id||'')===String(id));const ta=live?.querySelector('textarea');if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length)}})};requestAnimationFrame(()=>{size();input.focus()})};
    }
    return section;
  }
@@ -5063,7 +5063,7 @@ wwOpenQuickInfo=function(row,id){
      const id=row.dataset.id,input=row.querySelector('textarea'),check=row.querySelector('.ww-itinerary-todo-check'),remove=row.querySelector('.ww-itinerary-todo-remove');
      const size=()=>{input.style.height='0px';const h=Math.max(38,input.scrollHeight+2);input.style.height=h+'px';row.style.minHeight=h+'px'};requestAnimationFrame(size);
      input.oninput=()=>{const r=canonicalRow(id);if(!r)return;const target=r.querySelector('.trip-todo-input');target.value=input.value;target.dispatchEvent(new Event('input',{bubbles:true}));size()};
-     input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!input.value.trim())return;addTripTodoRow();render();requestAnimationFrame(()=>list.lastElementChild?.querySelector('textarea')?.focus())}};
+     input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!input.value.trim())return;section.querySelector('.ww-itinerary-add-todo')?.click()}};
      check.onclick=()=>canonicalRow(id)?.querySelector('.trip-todo-check')?.click();
      remove.onclick=()=>canonicalRow(id)?.querySelector('.trip-todo-remove')?.click();
    });
