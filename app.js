@@ -5114,7 +5114,7 @@ wwOpenQuickInfo=function(row,id){
   st.id='ww-surgical-polish-300926';
   st.textContent=`
     .master-itinerary-trip-notes>span{font-size:18px!important;font-weight:900!important;letter-spacing:.02em!important;margin:0 0 12px!important}
-    .stop-itinerary-form .ww-currency-choose{font-weight:400!important}
+    .stop-itinerary-form .ww-currency-choose{font-weight:700!important;color:#7b7b7b!important}
   `;
   document.head.appendChild(st);
 })();
