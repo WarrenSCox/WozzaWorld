@@ -890,7 +890,7 @@ function todoScribbleMarkup(i=0){return `<svg class="trip-todo-scribble" aria-hi
 function sizeTripTodoScribble(row){const input=row?.querySelector('.trip-todo-input'),svg=row?.querySelector('.trip-todo-scribble');if(!input||!svg)return;const lines=tripTodoWrappedLines(input);if(!lines.length)return;const cs=getComputedStyle(input),lh=parseFloat(cs.lineHeight)||22,padTop=parseFloat(cs.paddingTop)||0,padLeft=parseFloat(cs.paddingLeft)||0,variant=Math.abs(Number(row.dataset.scribble)||0)%5;const widths=lines.map(x=>Math.min(input.clientWidth-padLeft-(parseFloat(cs.paddingRight)||0),Math.max(28,x.width+10)));const w=Math.max(...widths)+4,h=Math.max(input.clientHeight,Math.ceil(padTop*2+lh*lines.length));svg.style.left=`${padLeft-4}px`;svg.style.top='0';svg.style.width=`${w}px`;svg.style.height=`${h}px`;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML=widths.map((width,n)=>`<path d="${scribblePath(width,variant,n)}" transform="translate(0 ${padTop+n*lh})"></path>`).join('')}
 function autoSizeTripTodo(input){input.style.height='auto';const cs=getComputedStyle(input),lh=parseFloat(cs.lineHeight)||22,pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),max=lh*3+pad;input.style.height=`${Math.min(input.scrollHeight,max)}px`;input.style.overflowY=input.scrollHeight>max?'auto':'hidden'}
 function todoRowMarkup(item={text:'',done:false},i=0){const text=String(item.text||''),done=!!item.done,id=String(item.id||''),activityId=String(item.activityId||'');return `<div class="trip-todo-row${text?' has-text':''}${done?' is-done':''}" data-todo-id="${esc(id)}" data-activity-id="${esc(activityId)}" data-scribble="${i%5}"><textarea class="trip-todo-input" rows="1" placeholder="Type here..." aria-label="To do action ${i+1}">${esc(text)}</textarea>${done?todoScribbleMarkup(i):''}<button type="button" class="trip-todo-check status-tick${done?' selected':''}" aria-label="${done?'Mark incomplete':'Mark complete'}" aria-pressed="${done}"></button><button type="button" class="trip-todo-remove" aria-label="Remove to do action">×</button></div>`}
-function bindTripTodoRow(row){const input=row.querySelector('.trip-todo-input'),check=row.querySelector('.trip-todo-check'),remove=row.querySelector('.trip-todo-remove');const scribbleIndex=()=>Number(row.dataset.scribble||0)%5;const syncScribble=()=>{row.querySelector('.trip-todo-scribble')?.remove();if(row.classList.contains('is-done')&&input.value.trim()){input.insertAdjacentHTML('afterend',todoScribbleMarkup(scribbleIndex()));requestAnimationFrame(()=>sizeTripTodoScribble(row))}};const sync=()=>{autoSizeTripTodo(input);row.classList.toggle('has-text',!!input.value.trim());if(!input.value.trim()){row.classList.remove('is-done');check.classList.remove('selected');check.setAttribute('aria-pressed','false')}syncScribble();updateTripTodoSummary()};input.addEventListener('input',sync);input.addEventListener('change',sync);input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const text=input.value.trim();if(!text)return;if(!row.classList.contains('has-text'))sync();let next=row.nextElementSibling;if(!next||next.classList.contains('has-text')){if(row.closest('#itinTodoList')){document.querySelector('#itinTodoAdd')?.click();next=row.closest('#itinTodoList')?.lastElementChild}else{addTripTodoRow();next=$('#tripTodoList')?.lastElementChild}}else next.querySelector('.trip-todo-input')?.focus()}});check.onclick=()=>{if(!input.value.trim())return;const done=!row.classList.contains('is-done');row.classList.toggle('is-done',done);check.classList.toggle('selected',done);check.setAttribute('aria-pressed',String(done));check.setAttribute('aria-label',done?'Mark incomplete':'Mark complete');syncScribble();updateTripTodoSummary()};remove.onclick=()=>{const isActivityDraft=!!row.closest('#itinTodoList');row.remove();if(!isActivityDraft&&!$('#tripTodoList')?.children.length)addTripTodoRow();updateTripTodoSummary()};autoSizeTripTodo(input);if(row.classList.contains('is-done'))requestAnimationFrame(()=>sizeTripTodoScribble(row))}
+function bindTripTodoRow(row){const input=row.querySelector('.trip-todo-input'),check=row.querySelector('.trip-todo-check'),remove=row.querySelector('.trip-todo-remove');const scribbleIndex=()=>Number(row.dataset.scribble||0)%5;const syncScribble=()=>{row.querySelector('.trip-todo-scribble')?.remove();if(row.classList.contains('is-done')&&input.value.trim()){input.insertAdjacentHTML('afterend',todoScribbleMarkup(scribbleIndex()));requestAnimationFrame(()=>sizeTripTodoScribble(row))}};const sync=()=>{autoSizeTripTodo(input);row.classList.toggle('has-text',!!input.value.trim());if(!input.value.trim()){row.classList.remove('is-done');check.classList.remove('selected');check.setAttribute('aria-pressed','false')}syncScribble();updateTripTodoSummary()};input.addEventListener('input',sync);input.addEventListener('change',sync);input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const text=input.value.trim();if(!text)return;if(!row.classList.contains('has-text'))sync();let next=row.nextElementSibling;if(!next||next.classList.contains('has-text')){addTripTodoRow();next=$('#tripTodoList')?.lastElementChild}else next.querySelector('.trip-todo-input')?.focus()}});check.onclick=()=>{if(!input.value.trim())return;const done=!row.classList.contains('is-done');row.classList.toggle('is-done',done);check.classList.toggle('selected',done);check.setAttribute('aria-pressed',String(done));check.setAttribute('aria-label',done?'Mark incomplete':'Mark complete');syncScribble();updateTripTodoSummary()};remove.onclick=()=>{row.remove();if(!$('#tripTodoList')?.children.length)addTripTodoRow();updateTripTodoSummary()};autoSizeTripTodo(input);if(row.classList.contains('is-done'))requestAnimationFrame(()=>sizeTripTodoScribble(row))}
 function attachTripTodoReorder(){
  const list=$('#tripTodoList');if(!list)return;
  if(!document.getElementById('trip-todo-reorder-style')){
@@ -930,7 +930,7 @@ function attachTripTodoReorder(){
 }
 function renderTripTodos(items=[]){const list=$('#tripTodoList');if(!list)return;const vals=normaliseTripTodos(items);list.innerHTML=vals.map((v,i)=>todoRowMarkup(v,i)).join('');$$('.trip-todo-row',list).forEach(bindTripTodoRow);attachTripTodoReorder();updateTripTodoSummary()}
 function addTripTodoRow(value=''){const list=$('#tripTodoList');if(!list)return;const item=typeof value==='string'?{text:value,done:false}:value;const wrap=document.createElement('div');wrap.innerHTML=todoRowMarkup(item,list.children.length);const row=wrap.firstElementChild;list.appendChild(row);bindTripTodoRow(row);attachTripTodoReorder();row.querySelector('.trip-todo-input')?.focus();updateTripTodoSummary()}
-function collectTripTodos(){const list=$('#tripTodoList');return list?[...list.querySelectorAll('.trip-todo-row')].map(row=>({id:row.dataset.todoId||'',activityId:row.dataset.activityId||'',text:row.querySelector('.trip-todo-input')?.value.trim()||'',done:row.classList.contains('is-done')})).filter(x=>x.text):[]}
+function collectTripTodos(){return $$('.trip-todo-row').map(row=>({id:row.dataset.todoId||'',activityId:row.dataset.activityId||'',text:row.querySelector('.trip-todo-input')?.value.trim()||'',done:row.classList.contains('is-done')})).filter(x=>x.text)}
 function updateTripTodoSummary(){const summary=$('#tripTodoSummary');if(!summary)return;const items=collectTripTodos().filter(x=>!x.done);summary.textContent=items.map(x=>x.text).join(', ');summary.hidden=!items.length}
 function setTripTodoCollapsed(collapsed){const section=document.querySelector('.trip-todo-section'),body=$('#tripTodoBody'),b=$('#tripTodoToggle');if(!section||!body||!b)return;section.classList.toggle('collapsed',collapsed);body.hidden=collapsed;b.textContent=collapsed?'+':'−';b.setAttribute('aria-expanded',String(!collapsed));b.setAttribute('aria-label',collapsed?'Expand to do list':'Minimise to do list');updateTripTodoSummary();if(!collapsed)requestAnimationFrame(()=>{$$('.trip-todo-row',body).forEach(row=>{const input=row.querySelector('.trip-todo-input');if(input)autoSizeTripTodo(input);if(row.classList.contains('is-done')){if(!row.querySelector('.trip-todo-scribble'))input?.insertAdjacentHTML('afterend',todoScribbleMarkup(Number(row.dataset.scribble||0)));sizeTripTodoScribble(row)}})})}
 function toggleTripTodo(){const section=document.querySelector('.trip-todo-section');if(!section)return;const opening=section.classList.contains('collapsed');setTripTodoCollapsed(!opening);if(opening&&!$('#tripTodoList')?.children.length)addTripTodoRow()}
@@ -2518,7 +2518,7 @@ const ITINERARY_CATEGORIES=[['Food & drink','🍽️'],['Attraction','🎟️'],
 function itineraryItemsForRow(row){try{return JSON.parse(row.dataset.itinerary||'[]')}catch{return[]}}
 function setItineraryItemsForRow(row,items){row.dataset.itinerary=JSON.stringify(items||[]);renderStopItinerarySummary(row)}
 function itineraryIcon(item){return ITINERARY_CATEGORIES.find(x=>x[0]===item.category)?.[1]||'📍'}
-function activityTodoById(id){const list=$('#tripTodoList');return id&&list?[...list.querySelectorAll('.trip-todo-row')].find(r=>r.dataset.todoId===id)||null:null}
+function activityTodoById(id){return id?$$('.trip-todo-row').find(r=>r.dataset.todoId===id):null}
 function itineraryWhen(item){const d=item.startDate?pretty(item.startDate):'Anytime',t=item.tbc?'TBC':(item.flexible?'Flexible timing':(item.startTime||''));return [d,t].filter(Boolean).join(' · ')}
 function renderStopItinerarySummary(row){const body=row?.querySelector('.trip-stop-body');if(!body)return;let host=body.querySelector('.stop-itinerary-summary');if(!host){host=document.createElement('div');host.className='stop-itinerary-summary';body.querySelector('.itinerary-swipe-prompt')?.insertAdjacentElement('beforebegin',host)}const items=itineraryItemsForRow(row);host.innerHTML=items.length?`<div class="stop-itinerary-title">ITINERARY <span>${items.length}</span></div>${items.slice().sort((a,b)=>String(a.startDate||'').localeCompare(String(b.startDate||''))||String(a.startTime||'').localeCompare(String(b.startTime||''))).map(x=>`<button type="button" class="stop-itinerary-item" data-itin-id="${esc(x.id)}"><span>${itineraryIcon(x)}</span><strong>${esc(x.name||'Activity')}</strong><small>${esc(itineraryWhen(x))}</small></button>`).join('')}`:'';host.querySelectorAll('[data-itin-id]').forEach(b=>b.onclick=()=>openStopItinerary(row,b.dataset.itinId))}
 function itineraryDialog(){let d=document.getElementById('stopItineraryDialog');if(d)return d;d=document.createElement('dialog');d.id='stopItineraryDialog';d.className='stop-itinerary-dialog';d.innerHTML=`<form method="dialog" class="stop-itinerary-form"><div class="stop-itinerary-head"><div><small>STOP ITINERARY</small><h2 id="stopItineraryHeading">Add activity</h2></div><button type="button" class="stop-itinerary-close" aria-label="Close">×</button></div><label>Activity name<input id="itinName" maxlength="80" placeholder="e.g. Dinner at New York Café"></label><fieldset class="itin-category-field"><legend>Type</legend><div id="itinCategoryBank" class="itin-category-bank">${ITINERARY_CATEGORIES.map(x=>`<button type="button" class="itin-category-tag" data-category="${esc(x[0])}"><span>${x[1]}</span>${esc(x[0])}</button>`).join('')}</div></fieldset><div class="itin-two"><label>Start date<input id="itinStartDate" class="itin-wozza-date" type="text" readonly placeholder="Choose date"></label><label>End date<input id="itinEndDate" class="itin-wozza-date" type="text" readonly placeholder="Optional"></label></div><input id="itinStartTime" type="hidden"><input id="itinEndTime" type="hidden"><input id="itinFlexible" type="checkbox" hidden><input id="itinTbc" type="checkbox" hidden><label>Location<textarea id="itinLocation" rows="1" placeholder="Venue or address"></textarea></label><label>Maps / location link<input id="itinLocationUrl" type="url" placeholder="https://…"></label><label>Additional link<input id="itinUrl" type="url" placeholder="Venue, tickets, website…"></label><label>Cost per person<input id="itinCost" inputmode="decimal" placeholder="e.g. £28"></label><label>Booking reference<input id="itinBookingRef" placeholder="Optional"></label><label>Notes<textarea id="itinNotes" placeholder="Anything useful for this activity…"></textarea></label><label class="itin-link-check"><input id="itinLinkNotes" type="checkbox"> Also add these notes to the overall trip Notes</label><label>To do<input id="itinTodo" placeholder="e.g. Download tickets"></label><div class="stop-itinerary-actions"><button type="button" id="itinDelete" class="itin-delete">Delete</button><button type="button" class="itin-cancel">Cancel</button><button type="submit" class="primary">Save activity</button></div></form>`;document.body.appendChild(d);d.querySelector('.stop-itinerary-close').onclick=()=>d.close();d.querySelector('.itin-cancel').onclick=()=>d.close();d.querySelectorAll('.itin-category-tag').forEach(b=>b.onclick=()=>{d.querySelectorAll('.itin-category-tag').forEach(x=>x.classList.toggle('selected',x===b));d.dataset.category=b.dataset.category});d.querySelectorAll('.itin-wozza-date').forEach(i=>i.onclick=e=>{e.preventDefault();wozzaCalendarOpenActivity(i)});d.addEventListener('click',e=>{if(e.target===d)d.close()});return d}
@@ -2550,9 +2550,8 @@ function renderItineraryCategoryBank(d,selected='Food & drink'){
  const other=bank.querySelector('#itinOtherType');if(other)other.onkeydown=e=>{if(e.key!=='Enter')return;e.preventDefault();const raw=other.value.trim();if(!raw)return;let v=(state.itineraryTypeBank||[]).find(x=>String(x).toLowerCase()===raw.toLowerCase())||raw;if(!(state.itineraryTypeBank||[]).some(x=>String(x).toLowerCase()===raw.toLowerCase()))state.itineraryTypeBank.push(v);localStorage.setItem('wozzaworld-state',JSON.stringify(state));renderItineraryCategoryBank(d,v)};
 }
 function activityTodoDraftFromItem(x){
- const activityId=String(x?.id||'');
- const ids=Array.isArray(x?.todoIds)?x.todoIds:(x?.todoId?[x.todoId]:[]);
- return ids.map(id=>{const r=activityTodoById(id);if(!r||!activityId||String(r.dataset.activityId||'')!==activityId)return null;return{id,activityId,text:r.querySelector('.trip-todo-input')?.value||'',done:r.classList.contains('is-done')}}).filter(Boolean)
+ const ids=Array.isArray(x.todoIds)?x.todoIds:(x.todoId?[x.todoId]:[]);
+ return ids.map(id=>{const r=activityTodoById(id);return r?{id,activityId:x.id||'',text:r.querySelector('.trip-todo-input')?.value||'',done:r.classList.contains('is-done')} : null}).filter(Boolean)
 }
 function renderActivityTodoEditor(d){
  const list=d.querySelector('#itinTodoList');if(!list)return;const vals=JSON.parse(d.dataset.todoDraft||'[]');
@@ -4908,4 +4907,128 @@ wwOpenQuickInfo=function(row,id){
     #stopItineraryDialog.stop-itinerary-dialog{max-height:89vh!important}
   `;
   document.head.appendChild(st);
+})();
+
+/* === WozzaWorld corrective hotfix — Activity ↔ Trip to-do ownership 30 Sep 2026 ===
+   Trip to-do remains the canonical/master list. Activity editors only expose items
+   explicitly owned by that activity. No text-based dedupe: identical genuine tasks
+   are allowed. */
+(()=>{
+ if(window.__wwActivityTripTodoOwnership3009)return;
+ window.__wwActivityTripTodoOwnership3009=true;
+
+ const canonicalTodoList=()=>document.getElementById('tripTodoList');
+ const canonicalRows=()=>[...(canonicalTodoList()?.querySelectorAll(':scope > .trip-todo-row')||[])];
+ const idsForActivity=x=>[...(Array.isArray(x?.todoIds)?x.todoIds:[]),...(x?.todoId?[x.todoId]:[])].map(String).filter(Boolean);
+
+ /* Never resolve an Activity task against the temporary Activity editor DOM. */
+ activityTodoById=function(id){
+  if(!id)return null;
+  return canonicalRows().find(r=>String(r.dataset.todoId||'')===String(id))||null;
+ };
+
+ /* Trip snapshots/summaries must only collect the canonical Trip list. */
+ collectTripTodos=function(){
+  return canonicalRows().map(row=>({
+   id:row.dataset.todoId||'',activityId:row.dataset.activityId||'',
+   text:row.querySelector('.trip-todo-input')?.value.trim()||'',
+   done:row.classList.contains('is-done')
+  })).filter(x=>x.text);
+ };
+
+ /* Conservative migration/repair. It only uses IDs + explicit activity ownership.
+    It deliberately does NOT deduplicate by task text. */
+ function repairTripTodoOwnership(t){
+  if(!t)return false;
+  let changed=false;
+  const todos=normaliseTripTodos(t.todos||[]),byId=new Map();
+  const unique=[];
+  for(const todo of todos){
+   if(todo.id&&byId.has(todo.id)){changed=true;continue} // same-ID duplicate is always redundant
+   if(todo.id)byId.set(todo.id,todo);
+   unique.push(todo);
+  }
+  const activities=[];
+  (t.destinations||[]).forEach(stop=>(stop.itinerary||[]).forEach(a=>activities.push(a)));
+  const referenced=new Set();
+  activities.forEach(a=>{
+   const seen=new Set(),valid=[];
+   idsForActivity(a).forEach(id=>{
+    if(seen.has(id))return;seen.add(id);
+    const todo=byId.get(id);
+    /* A Trip-only task (blank activityId) can never belong in an Activity editor. */
+    if(todo&&String(todo.activityId||'')===String(a.id||'')){valid.push(id);referenced.add(id)}
+    else changed=true;
+   });
+   const before=idsForActivity(a);
+   if(before.length!==valid.length||before.some((v,i)=>v!==valid[i]))changed=true;
+   a.todoIds=valid;
+   a.todoId=valid[0]||'';
+  });
+  const cleaned=unique.filter(todo=>{
+   if(!todo.activityId)return true;
+   const keep=referenced.has(String(todo.id||''));
+   if(!keep)changed=true; // orphan created by the old bridge
+   return keep;
+  });
+  if(cleaned.length!==t.todos?.length)changed=true;
+  t.todos=cleaned;
+  return changed;
+ }
+
+ const priorOpenTripEditor=openTripEditor;
+ openTripEditor=function(t){
+  if(repairTripTodoOwnership(t))save();
+  return priorOpenTripEditor.apply(this,arguments);
+ };
+
+ activityTodoDraftFromItem=function(x){
+  const activityId=String(x?.id||'');
+  return idsForActivity(x).map(id=>{
+   const r=activityTodoById(id);
+   /* Defence in depth: even a polluted todoIds array cannot import a Trip-only task. */
+   if(!r||String(r.dataset.activityId||'')!==activityId)return null;
+   return {id:String(id),activityId,text:r.querySelector('.trip-todo-input')?.value||'',done:r.classList.contains('is-done')};
+  }).filter(Boolean);
+ };
+
+ renderActivityTodoEditor=function(d){
+  const list=d.querySelector('#itinTodoList');if(!list)return;
+  const vals=JSON.parse(d.dataset.todoDraft||'[]');
+  list.innerHTML=vals.map((v,i)=>todoRowMarkup(v,i)).join('');
+  const sync=()=>{
+   d.dataset.todoDraft=JSON.stringify([...list.querySelectorAll(':scope > .trip-todo-row')].map(r=>({
+    id:r.dataset.todoId||'',activityId:d.dataset.activityDraftId||'',
+    text:r.querySelector('.trip-todo-input')?.value.trim()||'',done:r.classList.contains('is-done')
+   })).filter(x=>x.text));
+  };
+  const addBlank=()=>{sync();const a=JSON.parse(d.dataset.todoDraft||'[]');a.push({id:'',activityId:d.dataset.activityDraftId||'',text:'',done:false});d.dataset.todoDraft=JSON.stringify(a);renderActivityTodoEditor(d);d.querySelector('#itinTodoList')?.lastElementChild?.querySelector('.trip-todo-input')?.focus()};
+  [...list.querySelectorAll(':scope > .trip-todo-row')].forEach(row=>{
+   const input=row.querySelector('.trip-todo-input'),check=row.querySelector('.trip-todo-check'),remove=row.querySelector('.trip-todo-remove');
+   const redraw=()=>{autoSizeTripTodo(input);row.classList.toggle('has-text',!!input.value.trim());row.querySelector('.trip-todo-scribble')?.remove();if(row.classList.contains('is-done')&&input.value.trim()){input.insertAdjacentHTML('afterend',todoScribbleMarkup(Number(row.dataset.scribble||0)%5));requestAnimationFrame(()=>sizeTripTodoScribble(row))}sync()};
+   input?.addEventListener('input',redraw);input?.addEventListener('change',redraw);
+   input?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(input.value.trim())addBlank()}});
+   if(check)check.onclick=()=>{if(!input.value.trim())return;const done=!row.classList.contains('is-done');row.classList.toggle('is-done',done);check.classList.toggle('selected',done);check.setAttribute('aria-pressed',String(done));check.setAttribute('aria-label',done?'Mark incomplete':'Mark complete');redraw()};
+   if(remove)remove.onclick=()=>{row.remove();sync()};
+   autoSizeTripTodo(input);if(row.classList.contains('is-done'))requestAnimationFrame(()=>sizeTripTodoScribble(row));
+  });
+  const add=d.querySelector('#itinTodoAdd');if(add)add.onclick=addBlank;
+ };
+
+ syncActivityTodosToTrip=function(d,id,old={}){
+  const activityId=String(id),draft=JSON.parse(d.dataset.todoDraft||'[]'),oldIds=idsForActivity(old),newIds=[];
+  const draftIds=new Set(draft.map(x=>String(x.id||'')).filter(Boolean));
+  oldIds.forEach(oid=>{const r=activityTodoById(oid);if(r&&String(r.dataset.activityId||'')===activityId&&!draftIds.has(String(oid)))r.remove()});
+  draft.forEach(item=>{
+   const text=String(item.text||'').trim();if(!text)return;
+   let tid=String(item.id||'');let r=tid?activityTodoById(tid):null;
+   /* Never commandeer a Trip-only or another Activity's task, even if stale data points at it. */
+   if(r&&String(r.dataset.activityId||'')!==activityId){tid='';r=null}
+   if(!tid)tid=crypto.randomUUID?.()||`todo-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+   if(!r){addTripTodoRow({id:tid,activityId,text,done:!!item.done});r=activityTodoById(tid)}
+   if(r){r.dataset.activityId=activityId;const inp=r.querySelector('.trip-todo-input');if(inp)inp.value=text;r.classList.toggle('has-text',true);r.classList.toggle('is-done',!!item.done);const tick=r.querySelector('.trip-todo-check');tick?.classList.toggle('selected',!!item.done);tick?.setAttribute('aria-pressed',String(!!item.done));autoSizeTripTodo(inp)}
+   if(!newIds.includes(tid))newIds.push(tid);
+  });
+  updateTripTodoSummary();return newIds;
+ };
 })();
