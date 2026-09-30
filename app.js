@@ -5118,3 +5118,71 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld surgical hotfix — calendar daily view read-only to-dos 30 Sep 2026 ===
+   Scope: ONLY calendar -> selected-day DAILY SCHEDULE.
+   - No Add Activity control.
+   - To Do list contains only tasks belonging to activities on that date.
+   - Daily To Do list is display-only.
+   Main itinerary, Trip and Activity editors keep their existing behaviour. */
+(()=>{
+  const dailyTodoValues=iso=>{
+    const activities=wwMasterActivities().filter(x=>x.startDate===iso||(!x.startDate&&x.endDate===iso));
+    const ids=[];
+    activities.forEach(x=>{
+      const own=Array.isArray(x.todoIds)&&x.todoIds.length?x.todoIds:(x.todoId?[x.todoId]:[]);
+      own.forEach(id=>{id=String(id||'');if(id&&!ids.includes(id))ids.push(id)});
+    });
+    return ids.map(id=>activityTodoById(id)).filter(Boolean).map(r=>({
+      text:r.querySelector('.trip-todo-input')?.value?.trim()||'',
+      done:r.classList.contains('is-done')
+    })).filter(x=>x.text);
+  };
+
+  function renderDailyTodos(d,iso){
+    const section=d?.querySelector('.ww-itinerary-trip-todos');
+    if(!section)return;
+    const vals=dailyTodoValues(iso);
+    section.hidden=!vals.length;
+    section.classList.toggle('ww-daily-readonly-todos',true);
+    const list=section.querySelector('.ww-itinerary-todo-list');
+    const add=section.querySelector('.ww-itinerary-add-todo');
+    if(add)add.hidden=true;
+    if(!list)return;
+    list.innerHTML=vals.map(v=>`<div class="ww-daily-todo-item${v.done?' is-done':''}"><span>${esc(v.text)}</span></div>`).join('');
+  }
+
+  const oldDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    const out=oldDaily(iso);
+    const d=document.getElementById('masterItineraryDialog');
+    if(!d)return out;
+    d.dataset.wwView='daily';
+    d.dataset.wwDailyIso=iso;
+    const add=d.querySelector('#masterItineraryAdd');
+    if(add)add.hidden=true;
+    renderDailyTodos(d,iso);
+    return out;
+  };
+
+  /* Any normal itinerary render explicitly exits daily-only mode and restores its editor. */
+  const oldHierarchy=wwRenderTripHierarchy;
+  wwRenderTripHierarchy=function(){
+    const d=document.getElementById('masterItineraryDialog');
+    if(d){delete d.dataset.wwView;delete d.dataset.wwDailyIso;const s=d.querySelector('.ww-itinerary-trip-todos');if(s){s.hidden=false;s.classList.remove('ww-daily-readonly-todos');const a=s.querySelector('.ww-itinerary-add-todo');if(a)a.hidden=false}}
+    return oldHierarchy();
+  };
+  wwRenderMasterItinerary=wwRenderTripHierarchy;
+
+  const st=document.createElement('style');
+  st.id='ww-daily-readonly-todos-300926';
+  st.textContent=`
+    #masterItineraryDialog[data-ww-view="daily"] #masterItineraryAdd{display:none!important}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-itinerary-trip-todos[hidden]{display:none!important}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-itinerary-add-todo{display:none!important}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-itinerary-todo-list{display:grid!important;gap:9px!important}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-daily-todo-item{box-sizing:border-box;width:100%;min-height:38px;border:1px solid #d8dfe1;border-radius:18px;background:#fff;color:#172f3a;padding:9px 13px;font-size:13px;font-weight:400;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-daily-todo-item.is-done{text-decoration:line-through;color:#687781;opacity:.72}
+  `;
+  document.head.appendChild(st);
+})();
