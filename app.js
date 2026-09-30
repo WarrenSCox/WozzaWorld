@@ -5398,39 +5398,3 @@ wwOpenQuickInfo=function(row,id){
     return out;
   };
 })();
-
-
-/* === WozzaWorld surgical polish — stop spacing + Passport AI placement/colour === */
-(()=>{
-  if(window.__wozzaStopAiPolish300926)return;
-  window.__wozzaStopAiPolish300926=true;
-
-  const st=document.createElement('style');
-  st.id='ww-stop-ai-polish-300926';
-  st.textContent=`
-    /* Optical spacing: flag -> minimise -> delete reads as one evenly-spaced control group. */
-    #tripDestinationStops .trip-destination-stop:not(.collapsed) .trip-stop-summary-flag-slot{margin-right:4px!important;}
-    /* Reuse WozzaWorld's established mustard action colour. */
-    #passportAiAnalysis .passport-ai-btn{background:#f4c400!important;}
-  `;
-  document.head.appendChild(st);
-
-  /* Keep the AI action directly after Travel Insights and therefore immediately before Milestones,
-     even when Passport Insights re-renders/reorders its own blocks. */
-  const placeAi=()=>{
-    const insights=document.getElementById('passportInsights');
-    const ai=document.getElementById('passportAiAnalysis');
-    const milestones=document.getElementById('milestonesCard');
-    if(!insights||!ai||!milestones)return;
-    if(insights.nextElementSibling!==ai) insights.after(ai);
-    if(ai.nextElementSibling!==milestones) ai.after(milestones);
-  };
-  placeAi();
-  requestAnimationFrame(placeAi);
-  requestAnimationFrame(()=>requestAnimationFrame(placeAi));
-  const passport=document.querySelector('.screen[data-screen="me"]');
-  if(passport){
-    const mo=new MutationObserver(placeAi);
-    mo.observe(passport,{childList:true,subtree:false});
-  }
-})();
