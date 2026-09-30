@@ -4995,7 +4995,9 @@ wwOpenQuickInfo=function(row,id){
  renderActivityTodoEditor=function(d){
   const list=d.querySelector('#itinTodoList');if(!list)return;
   const vals=JSON.parse(d.dataset.todoDraft||'[]');
-  list.innerHTML=vals.map((v,i)=>todoRowMarkup(v,i)).join('');
+  /* Match Trip to-do UX: an empty Activity list still presents one live, tappable draft field. */
+  const renderVals=vals.length?vals:[{id:'',activityId:d.dataset.activityDraftId||'',text:'',done:false}];
+  list.innerHTML=renderVals.map((v,i)=>todoRowMarkup(v,i)).join('');
   const sync=()=>{
    d.dataset.todoDraft=JSON.stringify([...list.querySelectorAll(':scope > .trip-todo-row')].map(r=>({
     id:r.dataset.todoId||'',activityId:d.dataset.activityDraftId||'',
