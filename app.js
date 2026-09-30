@@ -2550,8 +2550,9 @@ function renderItineraryCategoryBank(d,selected='Food & drink'){
  const other=bank.querySelector('#itinOtherType');if(other)other.onkeydown=e=>{if(e.key!=='Enter')return;e.preventDefault();const raw=other.value.trim();if(!raw)return;let v=(state.itineraryTypeBank||[]).find(x=>String(x).toLowerCase()===raw.toLowerCase())||raw;if(!(state.itineraryTypeBank||[]).some(x=>String(x).toLowerCase()===raw.toLowerCase()))state.itineraryTypeBank.push(v);localStorage.setItem('wozzaworld-state',JSON.stringify(state));renderItineraryCategoryBank(d,v)};
 }
 function activityTodoDraftFromItem(x){
- const ids=Array.isArray(x.todoIds)?x.todoIds:(x.todoId?[x.todoId]:[]);
- return ids.map(id=>{const r=activityTodoById(id);return r?{id,activityId:x.id||'',text:r.querySelector('.trip-todo-input')?.value||'',done:r.classList.contains('is-done')} : null}).filter(Boolean)
+ const activityId=String(x?.id||'');
+ const ids=Array.isArray(x?.todoIds)?x.todoIds:(x?.todoId?[x.todoId]:[]);
+ return ids.map(id=>{const r=activityTodoById(id);if(!r||!activityId||String(r.dataset.activityId||'')!==activityId)return null;return{id,activityId,text:r.querySelector('.trip-todo-input')?.value||'',done:r.classList.contains('is-done')}}).filter(Boolean)
 }
 function renderActivityTodoEditor(d){
  const list=d.querySelector('#itinTodoList');if(!list)return;const vals=JSON.parse(d.dataset.todoDraft||'[]');
