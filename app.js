@@ -5879,3 +5879,59 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
+
+/* === WozzaWorld experiment — destination flag itinerary backdrop + AI launcher polish (01 Oct 2026) === */
+(()=>{
+  if(window.__wwFlagItineraryBackdrop011026)return;
+  window.__wwFlagItineraryBackdrop011026=true;
+
+  const countryForStopIndex=i=>{
+    const row=wwTripStopRows()[Number(i)];
+    return row?.querySelector('.trip-stop-country')?.value||'';
+  };
+  const setFlag=(d,country)=>{
+    const u=country&&flagUrl(country);
+    if(!d||!u)return;
+    d.style.setProperty('--ww-itinerary-flag',`url("${u}")`);
+    d.dataset.wwFlagCountry=country;
+  };
+  let flagObserver=null;
+  function applyFlagBackdrop(){
+    const d=document.getElementById('masterItineraryDialog'),host=d?.querySelector('#masterItineraryContent');
+    if(!d||!host)return;
+    const days=[...host.querySelectorAll('.master-itinerary-day')];
+    const countries=[...new Set(wwTripStopRows().map((_,i)=>countryForStopIndex(i)).filter(Boolean))];
+    days.forEach(day=>{
+      const first=day.querySelector('.master-itinerary-activity[data-stop]');
+      day.dataset.wwCountry=first?countryForStopIndex(first.dataset.stop):(countries[0]||'');
+    });
+    if(countries.length)setFlag(d,countries[0]);
+    flagObserver?.disconnect();flagObserver=null;
+    if(countries.length>1&&days.length){
+      const shell=d.querySelector('.master-itinerary-shell');
+      flagObserver=new IntersectionObserver(entries=>{
+        const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+        if(visible?.target?.dataset.wwCountry)setFlag(d,visible.target.dataset.wwCountry);
+      },{root:shell||null,threshold:[.2,.4,.6,.8]});
+      days.forEach(x=>flagObserver.observe(x));
+    }
+  }
+  const oldRender=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){const r=oldRender.apply(this,arguments);requestAnimationFrame(applyFlagBackdrop);return r};
+  const oldHierarchy=wwRenderTripHierarchy;
+  wwRenderTripHierarchy=function(){const r=oldHierarchy.apply(this,arguments);requestAnimationFrame(applyFlagBackdrop);return r};
+  wwRenderMasterItinerary=wwRenderTripHierarchy;
+
+  const st=document.createElement('style');st.id='ww-flag-itinerary-backdrop-011026';st.textContent=`
+    #masterItineraryDialog .master-itinerary-shell{position:relative!important;isolation:isolate!important;background:rgba(255,240,199,.91)!important}
+    #masterItineraryDialog .master-itinerary-shell:before{content:"";position:absolute;inset:0;z-index:-2;border-radius:inherit;background-image:var(--ww-itinerary-flag);background-size:cover;background-position:center;background-repeat:no-repeat;opacity:.88;transition:background-image .45s ease,opacity .45s ease;pointer-events:none}
+    #masterItineraryDialog .master-itinerary-shell:after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:rgba(255,240,199,.35);pointer-events:none}
+    #masterItineraryDialog .master-itinerary-dayhead{background:rgba(255,255,255,.92)!important;backdrop-filter:blur(2px)}
+    #masterItineraryDialog .master-itinerary-dayhead>b{background:rgba(7,132,154,.93)!important}
+    #masterItineraryDialog .master-itinerary-daybody{background:rgba(255,195,38,.91)!important}
+    #masterItineraryDialog .master-itinerary-activity{background:transparent!important}
+    #masterItineraryDialog .master-itinerary-stop>h3{background:rgba(255,240,199,.82)!important;border-radius:12px!important;padding:5px 9px!important;width:max-content!important;max-width:100%!important}
+    #passportAiAnalysis .passport-ai-btn span{font-weight:900!important;text-transform:uppercase!important;letter-spacing:.18em!important;font-size:15px!important}
+    #passportAiAnalysis .passport-ai-btn img{width:34px!important;height:28px!important}
+  `;document.head.appendChild(st);
+})();
