@@ -5805,3 +5805,74 @@ wwOpenQuickInfo=function(row,id){
     #companionStats .companion-stat-row>div>i{background:#07849a!important}
   `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — AI activity context + unified insight bars 01 Oct 2026 === */
+(()=>{
+  if(window.__wozzaUnifiedInsightBars011026)return;window.__wozzaUnifiedInsightBars011026=true;
+  const st=document.createElement('style');st.id='wozza-unified-insight-bars-011026';st.textContent=`
+    /* Shared, optically-centred geometry for Activities + Travel Companions. */
+    .activity-types-chart,
+    #companionStats.companion-stats{
+      width:100%!important;
+      padding:10px 12px 4px!important;
+      box-sizing:border-box!important;
+      display:flex!important;
+      flex-direction:column!important;
+      gap:9px!important;
+      margin-top:0!important;
+    }
+    .activity-type-bar-row,
+    #companionStats .companion-stat-row{
+      display:grid!important;
+      grid-template-columns:minmax(78px,1.05fr) minmax(128px,2.65fr) 42px!important;
+      gap:9px!important;
+      align-items:center!important;
+      min-height:25px!important;
+      padding:0!important;
+      font-size:12px!important;
+      color:#073f52!important;
+    }
+    .activity-type-bar-label,
+    #companionStats .companion-stat-row>span{
+      min-width:0!important;
+      font-size:12px!important;
+      font-weight:850!important;
+      line-height:1.05!important;
+      color:#073f52!important;
+      text-align:right!important;
+      overflow:hidden!important;
+      text-overflow:ellipsis!important;
+      white-space:nowrap!important;
+    }
+    .activity-type-bar-track,
+    #companionStats .companion-stat-row>div{
+      height:13px!important;
+      border-radius:999px!important;
+      background:rgba(7,132,154,.12)!important;
+      overflow:hidden!important;
+    }
+    .activity-type-bar-track i,
+    #companionStats .companion-stat-row>div>i{
+      display:block!important;
+      height:100%!important;
+      min-width:5px!important;
+      border-radius:999px!important;
+      background:#07849a!important;
+    }
+    .activity-type-bar-row>strong,
+    #companionStats .companion-stat-row>strong{
+      font-size:12px!important;
+      font-weight:950!important;
+      line-height:1!important;
+      color:#073f52!important;
+      text-align:left!important;
+      white-space:nowrap!important;
+    }
+    @media(max-width:380px){
+      .activity-types-chart,#companionStats.companion-stats{padding-left:8px!important;padding-right:8px!important}
+      .activity-type-bar-row,#companionStats .companion-stat-row{grid-template-columns:minmax(70px,1fr) minmax(104px,2.45fr) 38px!important;gap:7px!important}
+      .activity-type-bar-label,#companionStats .companion-stat-row>span,.activity-type-bar-row>strong,#companionStats .companion-stat-row>strong{font-size:11px!important}
+    }
+  `;
+  document.getElementById(st.id)?.remove();document.head.appendChild(st);
+})();
