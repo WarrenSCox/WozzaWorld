@@ -5237,7 +5237,10 @@ wwOpenQuickInfo=function(row,id){
     const companionSummary=Object.entries(companions).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>`${n}: ${c} trip${c===1?'':'s'}`).join(', ')||'Mostly/entirely solo or not recorded';
     const modes={}; completed.flatMap(t=>typeof tripTravelModes==='function'?tripTravelModes(t):[]).forEach(m=>{m=String(m||'').trim();if(m)modes[m]=(modes[m]||0)+1});
     const modeSummary=Object.entries(modes).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`${m}: ${n}`).join(', ')||'Not enough data';
-    const activityTypes={}; completed.forEach(t=>(t.destinations||[]).forEach(stop=>(stop.itinerary||[]).forEach(item=>{const raw=String(item?.category||'Other').trim()||'Other';const type=/^see & do$/i.test(raw)?'Other':raw;activityTypes[type]=(activityTypes[type]||0)+1})));
+    // Use the same source and normalisation rules as the Top 10 Activities chart.
+    const activityTypes={};
+    const cleanActivityType=raw=>{const v=String(raw||'').trim();if(!v)return 'Other';const map={'food':'Food','food/drinks':'Food / Drinks','food & drinks':'Food / Drinks','drinks':'Drinks','explore':'Explore','travel':'Travel','accommodation':'Accommodation','other':'Other','see & do':'Other','airport':'Airport','boat trip':'Boat Trip','spa':'Spa','cycle':'Cycle','cycling':'Cycle','tour':'Tour','theatre':'Theatre','cafe':'Cafe','café':'Cafe','library':'Library','museum':'Museum','gallery':'Gallery','shopping':'Shopping'};return map[v.toLowerCase()]||v;};
+    (state.trips||[]).forEach(t=>(t.destinations||[]).forEach(stop=>(stop.itinerary||[]).forEach(item=>{const type=cleanActivityType(item?.category);activityTypes[type]=(activityTypes[type]||0)+1})));
     const activityTypeSummary=Object.entries(activityTypes).filter(([type])=>!['taxi','accommodation','other','travel'].includes(String(type).toLowerCase())).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,10).map(([type,n])=>`${type}: ${n}`).join(', ')||'Not enough data';
     const topCountries=visited.map(c=>[c,typeof countryTrips==='function'?Math.max(1,countryTrips(c).length):1]).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>`${c}: ${n} trip${n===1?'':'s'}`).join(', ');
     const topRated=completed.filter(t=>Number(t.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating)).slice(0,8).map(t=>`${t.name||'Untitled trip'}: ${Number(t.rating)}/5`).join(', ')||'Not enough data';
