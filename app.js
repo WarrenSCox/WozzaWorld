@@ -5506,3 +5506,76 @@ wwOpenQuickInfo=function(row,id){
     });
   };
 })();
+
+/* === WozzaWorld hotfix — activity booking status 01 Oct 2026 === */
+(()=>{
+  const OPTIONS=[
+    ['required','Booking Required'],
+    ['booked','Booked'],
+    ['not-required','Booking Not Required']
+  ];
+  function ensureBookingStatus(d){
+    if(!d||d.querySelector('.ww-booking-status-field'))return;
+    const ref=d.querySelector('#itinBookingRef');
+    const anchor=ref?.closest('label');if(!anchor)return;
+    const box=document.createElement('fieldset');box.className='ww-booking-status-field';
+    box.innerHTML=`<legend>Booking status</legend><div class="ww-booking-status-options">${OPTIONS.map(([v,l])=>`<button type="button" class="ww-booking-status-option" data-booking-status="${v}" aria-pressed="false"><span class="ww-booking-status-tick">✓</span><span>${l}</span></button>`).join('')}</div>`;
+    anchor.parentNode.insertBefore(box,anchor);
+    box.querySelectorAll('[data-booking-status]').forEach(b=>b.onclick=()=>{
+      d.dataset.bookingStatus=b.dataset.bookingStatus;
+      paintBookingStatus(d);
+    });
+  }
+  function paintBookingStatus(d){
+    const value=d?.dataset.bookingStatus||'';
+    d?.querySelectorAll('[data-booking-status]').forEach(b=>{
+      const on=b.dataset.bookingStatus===value;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',String(on));
+    });
+  }
+  const priorDialog=itineraryDialog;
+  itineraryDialog=function(){const d=priorDialog.apply(this,arguments);ensureBookingStatus(d);paintBookingStatus(d);return d};
+
+  const priorOpen=openStopItinerary;
+  openStopItinerary=function(row,id=''){
+    const out=priorOpen.apply(this,arguments),d=itineraryDialog();
+    const x=id?itineraryItemsForRow(row).find(i=>String(i.id)===String(id)):null;
+    d.dataset.bookingStatus=x?.bookingStatus||'';paintBookingStatus(d);return out;
+  };
+
+  const priorSave=saveStopItinerary;
+  saveStopItinerary=function(){
+    const d=document.getElementById('stopItineraryDialog'),row=activeItineraryRow;
+    if(!d||!row)return priorSave.apply(this,arguments);
+    const existingId=activeItineraryId||'',before=new Set(itineraryItemsForRow(row).map(x=>String(x.id))),wanted=d.dataset.bookingStatus||'';
+    const out=priorSave.apply(this,arguments),items=itineraryItemsForRow(row);
+    const x=existingId?items.find(i=>String(i.id)===String(existingId)):items.find(i=>!before.has(String(i.id)));
+    if(x){x.bookingStatus=wanted;row.dataset.itinerary=JSON.stringify(items);renderStopItinerarySummary(row);wwPersistItineraryWork?.()}
+    return out;
+  };
+
+  const priorQuick=wwOpenQuickInfo;
+  wwOpenQuickInfo=function(row,id){
+    const out=priorQuick.apply(this,arguments),x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));
+    const body=document.querySelector('#itineraryQuickInfoBody'),type=body?.querySelector('.itinerary-quick-info-type');
+    body?.querySelector('.ww-booking-status-preview')?.remove();
+    if(x?.bookingStatus&&type){
+      const label=OPTIONS.find(o=>o[0]===x.bookingStatus)?.[1];
+      if(label){const badge=document.createElement('div');badge.className=`ww-booking-status-preview is-${x.bookingStatus}`;badge.innerHTML=`<span>✓</span>${esc(label)}`;type.insertAdjacentElement('afterend',badge);type.parentElement?.classList.add('ww-has-booking-status')}
+    }
+    return out;
+  };
+
+  const st=document.createElement('style');st.id='ww-booking-status-style';st.textContent=`
+    .ww-booking-status-field{border:0!important;padding:0!important;margin:14px 0!important;min-width:0!important}
+    .ww-booking-status-field legend{padding:0!important;margin:0 0 8px!important;font:800 13px/1.2 Inter,sans-serif!important;color:#172f3a!important}
+    .ww-booking-status-options{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+    .ww-booking-status-option{min-width:0!important;min-height:48px!important;padding:7px 6px!important;border:1px solid rgba(20,55,70,.12)!important;border-radius:15px!important;background:#fff!important;color:#526168!important;font:800 10px/1.15 Inter,sans-serif!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;text-align:center!important}
+    .ww-booking-status-tick{width:18px!important;height:18px!important;flex:0 0 18px!important;border:2px solid #7c8c92!important;border-radius:50%!important;color:transparent!important;display:grid!important;place-items:center!important;font-size:12px!important;line-height:1!important}
+    .ww-booking-status-option.selected{background:#e8f7f8!important;border-color:#078fa3!important;color:#17323c!important}
+    .ww-booking-status-option.selected .ww-booking-status-tick{background:#078fa3!important;border-color:#078fa3!important;color:#fff!important}
+    #itineraryQuickInfoBody.ww-has-booking-status .itinerary-quick-info-type{display:inline-flex!important;vertical-align:middle!important;margin-right:8px!important}
+    .ww-booking-status-preview{display:inline-flex!important;align-items:center!important;gap:6px!important;min-height:40px!important;padding:0 14px!important;border-radius:999px!important;background:#fff!important;color:#17323c!important;font:900 12px/1 Inter,sans-serif!important;vertical-align:middle!important;margin:0 0 14px!important}
+    .ww-booking-status-preview span{width:20px!important;height:20px!important;border-radius:50%!important;background:#078fa3!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:13px!important}
+    .ww-booking-status-preview.is-required span{background:#d89016!important}.ww-booking-status-preview.is-not-required span{background:#78878d!important}
+  `;document.head.appendChild(st);
+})();
