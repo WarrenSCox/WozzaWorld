@@ -5922,3 +5922,44 @@ wwOpenQuickInfo=function(row,id){
   },{passive:true});
   d.addEventListener('touchcancel',()=>{tracking=false},{passive:true});
 })();
+
+/* === WozzaWorld hotfix — surgical swipe navigation in calendar Daily Schedule (01 Oct 2026) === */
+(()=>{
+  const d=wwMasterItineraryDialog();
+  if(!d||d.dataset.wwDailySwipeNav==='1')return;
+  d.dataset.wwDailySwipeNav='1';
+  let sx=0,sy=0,tracking=false,currentIso='';
+
+  const previousDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    currentIso=String(iso||'');
+    return previousDaily.apply(this,arguments);
+  };
+
+  const tripDays=()=>{
+    const start=String(wozzaCalendarRangeStart||''),end=String(wozzaCalendarRangeEnd||'');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||!/^\d{4}-\d{2}-\d{2}$/.test(end)||start>end)return [];
+    const out=[],cursor=new Date(`${start}T12:00:00Z`),last=new Date(`${end}T12:00:00Z`);
+    while(cursor<=last&&out.length<370){out.push(cursor.toISOString().slice(0,10));cursor.setUTCDate(cursor.getUTCDate()+1)}
+    return out;
+  };
+  const move=dir=>{
+    if(d.dataset.wwView!=='daily'||!currentIso)return;
+    const days=tripDays(),i=days.indexOf(currentIso),next=days[i+dir];
+    if(i<0||!next)return;
+    wwOpenDailySchedule(next);
+  };
+
+  d.addEventListener('touchstart',e=>{
+    if(d.dataset.wwView!=='daily'||e.touches.length!==1)return;
+    const t=e.touches[0];sx=t.clientX;sy=t.clientY;tracking=true;
+  },{passive:true});
+  d.addEventListener('touchend',e=>{
+    if(!tracking||!e.changedTouches.length)return;tracking=false;
+    const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.35)return;
+    /* Finger left = next trip date; finger right = previous trip date. */
+    move(dx<0?1:-1);
+  },{passive:true});
+  d.addEventListener('touchcancel',()=>{tracking=false},{passive:true});
+})();
