@@ -5887,3 +5887,38 @@ wwOpenQuickInfo=function(row,id){
     #passportAiAnalysis .passport-ai-btn img{width:34px!important;height:28px!important}
   `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — surgical swipe navigation in Activity Information === */
+(()=>{
+  const d=wwQuickInfoDialog();
+  if(!d||d.dataset.wwSwipeNav==='1')return;
+  d.dataset.wwSwipeNav='1';
+  let sx=0,sy=0,tracking=false,currentRow=null,currentId='';
+
+  const previousQuick=wwOpenQuickInfo;
+  wwOpenQuickInfo=function(row,id){
+    currentRow=row;currentId=String(id||'');
+    return previousQuick.apply(this,arguments);
+  };
+
+  const ordered=()=>wwMasterActivities();
+  const currentIndex=list=>list.findIndex(x=>x._row===currentRow&&String(x.id)===currentId);
+  const move=dir=>{
+    const list=ordered(),i=currentIndex(list),next=list[i+dir];
+    if(i<0||!next)return;
+    wwOpenQuickInfo(next._row,next.id);
+  };
+
+  d.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1)return;
+    const t=e.touches[0];sx=t.clientX;sy=t.clientY;tracking=true;
+  },{passive:true});
+  d.addEventListener('touchend',e=>{
+    if(!tracking||!e.changedTouches.length)return;tracking=false;
+    const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.35)return;
+    /* Finger left = move forward; finger right = move back. */
+    move(dx<0?1:-1);
+  },{passive:true});
+  d.addEventListener('touchcancel',()=>{tracking=false},{passive:true});
+})();
