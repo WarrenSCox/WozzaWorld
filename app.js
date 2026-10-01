@@ -5238,7 +5238,7 @@ wwOpenQuickInfo=function(row,id){
     const modes={}; completed.flatMap(t=>typeof tripTravelModes==='function'?tripTravelModes(t):[]).forEach(m=>{m=String(m||'').trim();if(m)modes[m]=(modes[m]||0)+1});
     const modeSummary=Object.entries(modes).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`${m}: ${n}`).join(', ')||'Not enough data';
     const activityTypes={}; completed.forEach(t=>(t.destinations||[]).forEach(stop=>(stop.itinerary||[]).forEach(item=>{const raw=String(item?.category||'Other').trim()||'Other';const type=/^see & do$/i.test(raw)?'Other':raw;activityTypes[type]=(activityTypes[type]||0)+1})));
-    const activityTypeSummary=Object.entries(activityTypes).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([type,n])=>`${type}: ${n}`).join(', ')||'Not enough data';
+    const activityTypeSummary=Object.entries(activityTypes).filter(([type])=>!['taxi','accommodation','other','travel'].includes(String(type).toLowerCase())).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,10).map(([type,n])=>`${type}: ${n}`).join(', ')||'Not enough data';
     const topCountries=visited.map(c=>[c,typeof countryTrips==='function'?Math.max(1,countryTrips(c).length):1]).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>`${c}: ${n} trip${n===1?'':'s'}`).join(', ');
     const topRated=completed.filter(t=>Number(t.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating)).slice(0,8).map(t=>`${t.name||'Untitled trip'}: ${Number(t.rating)}/5`).join(', ')||'Not enough data';
     const score=textOf('#travelHealthCard .travel-health-score')||textOf('#travelHealthCard');
@@ -5765,14 +5765,14 @@ wwOpenQuickInfo=function(row,id){
     (state.trips||[]).forEach(trip=>(trip.destinations||[]).forEach(stop=>(stop.itinerary||[]).forEach(item=>{
       const type=cleanType(item?.category);counts[type]=(counts[type]||0)+1;
     })));
-    return Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+    return Object.entries(counts).filter(([type])=>!['taxi','accommodation','other','travel'].includes(String(type).toLowerCase())).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,10);
   }
   function renderActivityTypes(){
     const track=document.getElementById('passportStatsTrack');if(!track)return;
     let slide=document.getElementById('activityTypesStatsSlide');
     if(!slide){
       slide=document.createElement('article');slide.id='activityTypesStatsSlide';slide.className='passport-stats-slide activity-types-slide';
-      slide.innerHTML='<h4>ACTIVITY TYPES</h4><div id="activityTypesChart" class="activity-types-chart"></div>';
+      slide.innerHTML='<h4>TOP 10 ACTIVITIES</h4><div id="activityTypesChart" class="activity-types-chart"></div>';
       const stops=document.getElementById('tripsPerYearStatsSlide');
       if(stops?.nextSibling)track.insertBefore(slide,stops.nextSibling);else track.appendChild(slide);
     }
@@ -5796,4 +5796,12 @@ wwOpenQuickInfo=function(row,id){
   `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
   renderActivityTypes();
   requestAnimationFrame(()=>{renderActivityTypes();if(typeof setPassportStatsSlide==='function'&&document.getElementById('passportStatsTrack'))setPassportStatsSlide(passportStatsSlide||0)});
+})();
+
+
+/* === WozzaWorld hotfix — Top 10 Activities polish 01 Oct 2026 === */
+(()=>{
+  const st=document.createElement('style');st.id='wozza-top10-activities-polish-011026';st.textContent=`
+    #companionStats .companion-stat-row>div>i{background:#07849a!important}
+  `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
