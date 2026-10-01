@@ -5560,7 +5560,19 @@ wwOpenQuickInfo=function(row,id){
     body?.querySelector('.ww-booking-status-preview')?.remove();
     if(x?.bookingStatus&&type){
       const label=OPTIONS.find(o=>o[0]===x.bookingStatus)?.[1];
-      if(label){const badge=document.createElement('div');badge.className=`ww-booking-status-preview is-${x.bookingStatus}`;badge.innerHTML=`<span>✓</span>${esc(label)}`;type.insertAdjacentElement('afterend',badge);type.parentElement?.classList.add('ww-has-booking-status')}
+      if(label){
+        const badge=document.createElement('div');
+        badge.className=`ww-booking-status-preview is-${x.bookingStatus}`;
+        badge.innerHTML=`<span>✓</span><b>${esc(label)}</b>`;
+        const parent=type.parentElement;
+        if(parent){
+          const wrap=document.createElement('div');
+          wrap.className='ww-quick-info-pill-row';
+          type.insertAdjacentElement('beforebegin',wrap);
+          wrap.append(type,badge);
+          parent.classList.add('ww-has-booking-status');
+        }
+      }
     }
     return out;
   };
@@ -5682,6 +5694,50 @@ wwOpenQuickInfo=function(row,id){
       padding-right:10px!important;
       gap:5px!important;
       margin-right:0!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
+
+/* === WozzaWorld hotfix — responsive activity + booking pill row 01 Oct 2026 === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-quick-info-responsive-pill-row-011026';
+  st.textContent=`
+    #itineraryQuickInfoBody .ww-quick-info-pill-row{
+      display:flex!important;
+      align-items:flex-start!important;
+      gap:8px!important;
+      width:100%!important;
+      min-width:0!important;
+      margin:0 0 10px!important;
+    }
+    #itineraryQuickInfoBody .ww-quick-info-pill-row .itinerary-quick-info-type{
+      flex:0 0 auto!important;
+      margin:0!important;
+      white-space:nowrap!important;
+    }
+    #itineraryQuickInfoBody .ww-quick-info-pill-row .ww-booking-status-preview{
+      flex:0 1 auto!important;
+      min-width:0!important;
+      max-width:calc(100% - 8px)!important;
+      margin:0!important;
+      white-space:normal!important;
+      line-height:1.05!important;
+      justify-content:flex-start!important;
+      overflow:hidden!important;
+    }
+    #itineraryQuickInfoBody .ww-quick-info-pill-row .ww-booking-status-preview b{
+      min-width:0!important;
+      font:inherit!important;
+      line-height:1.05!important;
+      white-space:normal!important;
+      overflow-wrap:normal!important;
+      word-break:normal!important;
+    }
+    #itineraryQuickInfoBody .ww-quick-info-pill-row .ww-booking-status-preview span{
+      flex:0 0 20px!important;
     }
   `;
   document.head.appendChild(st);
