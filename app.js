@@ -6007,7 +6007,7 @@ wwOpenQuickInfo=function(row,id){
     ctx.fillStyle='#fff0c7';rr(ctx,0,0,W,H,36,true);let y=pad;
     ctx.fillStyle='#17323c';ctx.font=`900 48px ${font}`;const titleLines=wrap(meta.name,contentW-300,`900 48px ${font}`);titleLines.forEach((l,i)=>{ctx.fillText(l,pad,y+44);if(i===titleLines.length-1&&flagText){const tw=ctx.measureText(l).width;ctx.font=`34px ${font}`;ctx.fillText(flagText,pad+tw+16,y+42);ctx.font=`900 48px ${font}`}y+=52});
     if(meta.dateRange){ctx.fillStyle='#078fa3';ctx.font=`900 23px ${font}`;ctx.fillText(meta.dateRange,pad,y+22);y+=38}
-    const headerBottom=y;ctx.fillStyle='#17323c';ctx.font=`900 46px ${font}`;ctx.textAlign='right';ctx.fillText('Itinerary',W-pad,pad+44);ctx.textAlign='left';y=headerBottom+12;
+    const headerBottom=y;ctx.fillStyle='#17323c';ctx.font=`900 92px ${font}`;ctx.textAlign='right';ctx.fillText('Itinerary',W-pad,pad+78);ctx.textAlign='left';y=headerBottom+12;
     measured.forEach((gs,si)=>{if(!gs.length)return;if(multi){ctx.fillStyle='#078fa3';ctx.font=`900 25px ${font}`;ctx.fillText(String(wwStopName(rows[si],si)).toUpperCase(),pad,y+28);y+=48}
       gs.forEach(([date,list])=>{
         ctx.fillStyle='#fff';rr(ctx,pad,y,contentW,68,22,true);ctx.fillStyle='#078fa3';rr(ctx,pad,y,132,68,22,true);ctx.fillRect(pad+110,y,22,68);ctx.fillStyle='#fff';ctx.font=`900 21px ${font}`;ctx.fillText(date==='unscheduled'?'FLEXIBLE':`DAY ${dayNo.get(date)}`,pad+20,y+42);ctx.fillStyle='#17323c';ctx.font=`800 22px ${font}`;ctx.fillText(date==='unscheduled'?'TO BE SCHEDULED':wwItineraryDayLabel(date),pad+154,y+42);y+=76;
@@ -6062,9 +6062,9 @@ wwOpenQuickInfo=function(row,id){
     .ww-export-ready-tick .ww-prep-arrow{animation-duration:1.4s!important}
     /* Exact supplied illustration in the spare itinerary-header area. */
     .master-itinerary-head{position:relative!important}
-    .ww-download-pdf-callout{position:absolute!important;right:2px!important;top:42px!important;width:99px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
+    .ww-download-pdf-callout{position:absolute!important;right:-8px!important;top:42px!important;width:99px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
     #masterItineraryDialog[data-ww-view="daily"] .ww-download-pdf-callout{display:none!important}
-    @media(max-width:420px){.ww-download-pdf-callout{width:92px!important;right:2px!important;top:42px!important}}
+    @media(max-width:420px){.ww-download-pdf-callout{width:92px!important;right:-8px!important;top:42px!important}}
   `;
   document.head.appendChild(st);
   document.addEventListener('click',()=>requestAnimationFrame(applyCallout),true);
