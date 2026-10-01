@@ -5664,3 +5664,25 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — keep booking status beside activity type 01 Oct 2026 === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-quick-info-booking-same-line-011026';
+  st.textContent=`
+    /* Keep the activity type and all booking-status variants on one row.
+       The long "Booking Not Required" label only needs a few pixels reclaimed. */
+    #itineraryQuickInfoBody.ww-has-booking-status .itinerary-quick-info-type{
+      margin-right:8px!important;
+      white-space:nowrap!important;
+    }
+    #itineraryQuickInfoBody.ww-has-booking-status .ww-booking-status-preview{
+      white-space:nowrap!important;
+      padding-left:10px!important;
+      padding-right:10px!important;
+      gap:5px!important;
+      margin-right:0!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
