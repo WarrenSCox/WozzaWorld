@@ -2878,7 +2878,7 @@ async function wwCaptureFullItinerary(){
   const meta=wwItineraryTripMeta(),rows=wwTripStopRows(),items=wwMasterActivities(),multi=rows.length>1;
   if(!items.length)return;
   const W=720,pad=42,contentW=W-pad*2,dayHeadH=72,rowPad=22;
-  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),linkRects=[];
   const font='Arial, sans-serif';
   const wrap=(text,maxWidth,fontSpec)=>{ctx.font=fontSpec;const words=String(text||'').split(/\s+/),lines=[];let line='';for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);return lines.length?lines:['']};
   const groupsByStop=rows.map((row,si)=>{const a=items.filter(x=>x._stopIndex===si),m=new Map();a.forEach(x=>{const k=x.startDate||'unscheduled';if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.entries()].sort(([a],[b])=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b))});
@@ -5997,7 +5997,7 @@ wwOpenQuickInfo=function(row,id){
     showPreparing(meta.name);
     const countries=exportCountries(rows),flagText=countries.map(c=>countryCodeToEmoji(flags[c]||'')).filter(Boolean).join(' '),logo=await loadExportImage('Colourful Earth Travel Logo.png');
     const W=1180,pad=48,contentW=W-pad*2,font='Arial, sans-serif',timeW=125,activityW=385,gap=18,notesW=contentW-timeW-activityW-gap*2;
-    const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+    const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),linkRects=[];
     const wrap=(text,maxWidth,fontSpec)=>{ctx.font=fontSpec;const paras=String(text??'').split(/\n/),all=[];paras.forEach((p,pi)=>{const words=p.split(/\s+/).filter(Boolean);let line='';if(!words.length)all.push('');for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>maxWidth&&line){all.push(line);line=w}else line=t}if(line)all.push(line);if(pi<paras.length-1)all.push('')});return all.length?all:['']};
     const dated=[...new Set(items.map(x=>x.startDate||'unscheduled'))].sort((a,b)=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b)),dayNo=new Map(dated.map((x,i)=>[x,i+1]));
     const groups=rows.map((row,si)=>{const m=new Map();items.filter(x=>x._stopIndex===si).forEach(x=>{const k=x.startDate||'unscheduled';if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.entries()].sort(([a],[b])=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b))});
@@ -6015,11 +6015,21 @@ wwOpenQuickInfo=function(row,id){
           const tx=pad+18,ax=pad+timeW+gap,nx=ax+activityW+gap;
           ctx.fillStyle='#17323c';ctx.font=`800 20px ${font}`;ctx.fillText(x.tbc?'TBC':(x.flexible?'Flexible':(x.startTime||'—')),tx,y+34);
           ctx.font=`700 24px ${font}`;r.a.forEach((l,i)=>ctx.fillText(l,ax,y+32+i*29));
-          ctx.fillStyle='rgba(23,50,60,.82)';ctx.font=`400 18px ${font}`;if(r.dl.length)r.dl.forEach((l,i)=>ctx.fillText(l,nx,y+29+i*23));else{ctx.fillStyle='rgba(23,50,60,.48)';ctx.fillText('—',nx,y+29)};
+          ctx.fillStyle='rgba(23,50,60,.82)';ctx.font=`400 18px ${font}`;if(r.dl.length)r.dl.forEach((l,i)=>{ctx.fillText(l,nx,y+29+i*23);const m=String(l).match(/https?:\/\/[^\s]+/i);if(m){const prefix=String(l).slice(0,m.index),lx=nx+ctx.measureText(prefix).width,lw=ctx.measureText(m[0]).width;linkRects.push({url:m[0],x:lx,y:y+10+i*23,w:lw,h:22})}});else{ctx.fillStyle='rgba(23,50,60,.48)';ctx.fillText('—',nx,y+29)};
           ctx.strokeStyle='rgba(23,50,60,.13)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad+timeW+8,y+14);ctx.lineTo(pad+timeW+8,y+r.rh-14);ctx.moveTo(nx-9,y+14);ctx.lineTo(nx-9,y+r.rh-14);ctx.stroke();y+=r.rh+8});y+=20;
       });
     });
-    const png=await new Promise(res=>canvas.toBlob(res,'image/png',.96));if(!png){if(btn)delete btn.dataset.exportBusy;alert('Sorry — the itinerary image could not be created on this device.');return}
-    const url=URL.createObjectURL(png),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse','ww-download-pressed')}},180);
+    /* PDF keeps the exact visual export while adding real clickable link annotations over the visibly-spelled URLs. */
+    const jpegUrl=canvas.toDataURL('image/jpeg',.94),jpegBin=atob(jpegUrl.split(',')[1]),jpegBytes=new Uint8Array(jpegBin.length);for(let i=0;i<jpegBin.length;i++)jpegBytes[i]=jpegBin.charCodeAt(i);
+    const enc=new TextEncoder(),parts=[],offsets=[0];let total=0;const push=v=>{const b=typeof v==='string'?enc.encode(v):v;parts.push(b);total+=b.length};const obj=(n,body)=>{offsets[n]=total;push(`${n} 0 obj\n${body}\nendobj\n`)};
+    push('%PDF-1.4\n%WWPDF\n');
+    const pageW=595.28,pageH=pageW*(H/W),imgObj=4,firstAnnot=5,annotRefs=linkRects.map((_,i)=>`${firstAnnot+i} 0 R`).join(' ');
+    obj(1,'<< /Type /Catalog /Pages 2 0 R >>');obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW.toFixed(2)} ${pageH.toFixed(2)}] /Resources << /XObject << /Im0 ${imgObj} 0 R >> >> /Contents ${firstAnnot+linkRects.length} 0 R${annotRefs?` /Annots [${annotRefs}]`:''} >>`);
+    offsets[imgObj]=total;push(`${imgObj} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`);push(jpegBytes);push('\nendstream\nendobj\n');
+    const escPdf=s=>String(s).replace(/([\\()])/g,'\\$1');linkRects.forEach((r,i)=>{const sx=pageW/W,sy=pageH/H,x1=r.x*sx,x2=(r.x+r.w)*sx,y1=pageH-(r.y+r.h)*sy,y2=pageH-r.y*sy;obj(firstAnnot+i,`<< /Type /Annot /Subtype /Link /Rect [${x1.toFixed(2)} ${y1.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)}] /Border [0 0 0] /A << /S /URI /URI (${escPdf(r.url)}) >> >>`)});
+    const contentObj=firstAnnot+linkRects.length,stream=`q ${pageW.toFixed(2)} 0 0 ${pageH.toFixed(2)} 0 0 cm /Im0 Do Q`;obj(contentObj,`<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}\nendstream`);
+    const xref=total,pdfObjCount=contentObj;push(`xref\n0 ${pdfObjCount+1}\n0000000000 65535 f \n`);for(let i=1;i<=pdfObjCount;i++)push(`${String(offsets[i]).padStart(10,'0')} 00000 n \n`);push(`trailer\n<< /Size ${pdfObjCount+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+    const pdf=new Blob(parts,{type:'application/pdf'}),url=URL.createObjectURL(pdf),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse','ww-download-pressed')}},180);
   };
 })();
