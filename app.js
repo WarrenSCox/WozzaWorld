@@ -6057,9 +6057,9 @@ wwOpenQuickInfo=function(row,id){
     .ww-export-ready-tick .ww-prep-arrow{animation-duration:1.4s!important}
     /* Exact supplied illustration in the spare itinerary-header area. */
     .master-itinerary-head{position:relative!important}
-    .ww-download-pdf-callout{position:absolute!important;right:24px!important;top:48px!important;width:129.72px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
+    .ww-download-pdf-callout{position:absolute!important;right:14px!important;top:42px!important;width:116.75px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
     #masterItineraryDialog[data-ww-view="daily"] .ww-download-pdf-callout{display:none!important}
-    @media(max-width:420px){.ww-download-pdf-callout{width:120.32px!important;right:22px!important;top:48px!important}}
+    @media(max-width:420px){.ww-download-pdf-callout{width:108.29px!important;right:12px!important;top:42px!important}}
   `;
   document.head.appendChild(st);
   document.addEventListener('click',()=>requestAnimationFrame(applyCallout),true);
