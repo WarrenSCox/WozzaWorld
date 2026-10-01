@@ -5888,12 +5888,12 @@ wwOpenQuickInfo=function(row,id){
   `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
 
-/* === WozzaWorld hotfix — surgical carousel swipe navigation in Activity Information === */
+/* === WozzaWorld hotfix — surgical swipe navigation in Activity Information === */
 (()=>{
   const d=wwQuickInfoDialog();
-  if(!d)return;
-  d.dataset.wwSwipeNav='2';
-  let sx=0,sy=0,dx=0,tracking=false,horizontal=false,currentRow=null,currentId='',leftPreview=null,rightPreview=null;
+  if(!d||d.dataset.wwSwipeNav==='1')return;
+  d.dataset.wwSwipeNav='1';
+  let sx=0,sy=0,tracking=false,currentRow=null,currentId='';
 
   const previousQuick=wwOpenQuickInfo;
   wwOpenQuickInfo=function(row,id){
@@ -5903,66 +5903,22 @@ wwOpenQuickInfo=function(row,id){
 
   const ordered=()=>wwMasterActivities();
   const currentIndex=list=>list.findIndex(x=>x._row===currentRow&&String(x.id)===currentId);
-  const neighbour=dir=>{const list=ordered(),i=currentIndex(list);return i<0?null:list[i+dir]||null};
-  const shell=()=>d.querySelector('.itinerary-quick-info-shell:not(.ww-swipe-preview)');
-  const stripIds=node=>node.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
-  function makePreview(item,side){
-    if(!item)return null;
-    const base=shell();if(!base)return null;
-    const r=base.getBoundingClientRect(),c=base.cloneNode(true);stripIds(c);
-    c.classList.add('ww-swipe-preview',side==='left'?'is-left':'is-right');c.setAttribute('aria-hidden','true');
-    const title=c.querySelector('h2');if(title)title.textContent=item.name||'Activity';
-    c.querySelectorAll('button,a').forEach(el=>{el.tabIndex=-1;el.style.pointerEvents='none'});
-    Object.assign(c.style,{width:`${r.width}px`,height:`${r.height}px`,left:`${r.left}px`,top:`${r.top}px`});
-    document.body.appendChild(c);return c;
-  }
-  function previews(){cleanupPreviews();leftPreview=makePreview(neighbour(-1),'left');rightPreview=makePreview(neighbour(1),'right')}
-  function cleanupPreviews(){leftPreview?.remove();rightPreview?.remove();leftPreview=rightPreview=null}
-  function reset(animate=true){
-    const s=shell();[s,leftPreview,rightPreview].filter(Boolean).forEach(el=>el.classList.toggle('ww-swipe-animate',animate));
-    if(s)s.style.transform='translate3d(0,0,0) scale(1)';
-    if(leftPreview)leftPreview.style.transform='translate3d(calc(-100% - 22px),0,0) scale(.92)';
-    if(rightPreview)rightPreview.style.transform='translate3d(calc(100% + 22px),0,0) scale(.92)';
-    setTimeout(()=>{if(!tracking)cleanupPreviews()},animate?190:0);
-  }
-  function paintDrag(x){
-    const s=shell();if(!s)return;const r=s.getBoundingClientRect(),w=Math.max(1,r.width),p=Math.min(1,Math.abs(x)/w),scale=1-(p*.055);
-    s.classList.remove('ww-swipe-animate');s.style.transform=`translate3d(${x}px,0,0) scale(${scale})`;
-    if(leftPreview){leftPreview.classList.remove('ww-swipe-animate');leftPreview.style.transform=`translate3d(calc(-100% - 22px + ${x*.82}px),0,0) scale(${.92+p*.06})`}
-    if(rightPreview){rightPreview.classList.remove('ww-swipe-animate');rightPreview.style.transform=`translate3d(calc(100% + 22px + ${x*.82}px),0,0) scale(${.92+p*.06})`}
-  }
-  function commit(dir){
-    const item=neighbour(dir),s=shell(),incoming=dir>0?rightPreview:leftPreview;if(!item||!s){reset();return}
-    [s,incoming].filter(Boolean).forEach(el=>el.classList.add('ww-swipe-animate'));
-    s.style.transform=`translate3d(${dir>0?'-115%':'115%'},0,0) scale(.92)`;
-    if(incoming)incoming.style.transform='translate3d(0,0,0) scale(1)';
-    setTimeout(()=>{cleanupPreviews();s.style.transition='none';s.style.transform='';wwOpenQuickInfo(item._row,item.id);requestAnimationFrame(()=>{s.style.transition='';})},175);
-  }
+  const move=dir=>{
+    const list=ordered(),i=currentIndex(list),next=list[i+dir];
+    if(i<0||!next)return;
+    wwOpenQuickInfo(next._row,next.id);
+  };
 
   d.addEventListener('touchstart',e=>{
-    if(e.touches.length!==1||e.target.closest('button,a,input,select,textarea'))return;
-    const t=e.touches[0];sx=t.clientX;sy=t.clientY;dx=0;tracking=true;horizontal=false;previews();reset(false);tracking=true;
+    if(e.touches.length!==1)return;
+    const t=e.touches[0];sx=t.clientX;sy=t.clientY;tracking=true;
   },{passive:true});
-  d.addEventListener('touchmove',e=>{
-    if(!tracking||e.touches.length!==1)return;const t=e.touches[0],mx=t.clientX-sx,my=t.clientY-sy;
-    if(!horizontal){if(Math.hypot(mx,my)<8)return;if(Math.abs(mx)<=Math.abs(my)*1.15){tracking=false;cleanupPreviews();return}horizontal=true}
-    e.preventDefault();dx=mx;
-    if((dx>0&&!leftPreview)||(dx<0&&!rightPreview))dx*=.24;
-    paintDrag(dx);
-  },{passive:false});
-  d.addEventListener('touchend',()=>{
-    if(!tracking)return;tracking=false;if(!horizontal){cleanupPreviews();return}
-    if(Math.abs(dx)>=60)commit(dx<0?1:-1);else reset();
+  d.addEventListener('touchend',e=>{
+    if(!tracking||!e.changedTouches.length)return;tracking=false;
+    const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.35)return;
+    /* Finger left = move forward; finger right = move back. */
+    move(dx<0?1:-1);
   },{passive:true});
-  d.addEventListener('touchcancel',()=>{tracking=false;reset()},{passive:true});
-
-  const st=document.createElement('style');st.id='ww-activity-carousel-swipe-011026';st.textContent=`
-    #itineraryQuickInfoDialog{overflow:hidden!important}
-    #itineraryQuickInfoDialog>.itinerary-quick-info-shell:not(.ww-swipe-preview){position:relative!important;z-index:3!important;will-change:transform;transform-origin:center center}
-    body>.ww-swipe-preview{position:fixed!important;z-index:2147483000!important;margin:0!important;pointer-events:none!important;will-change:transform;transform-origin:center center;filter:brightness(.92);opacity:.92!important;overflow:hidden!important}
-    body>.ww-swipe-preview *{pointer-events:none!important}
-    body>.ww-swipe-preview.is-left{transform:translate3d(calc(-100% - 22px),0,0) scale(.92)}
-    body>.ww-swipe-preview.is-right{transform:translate3d(calc(100% + 22px),0,0) scale(.92)}
-    #itineraryQuickInfoDialog .ww-swipe-animate,body>.ww-swipe-preview.ww-swipe-animate{transition:transform 175ms cubic-bezier(.22,.75,.25,1),opacity 175ms ease!important}
-  `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
+  d.addEventListener('touchcancel',()=>{tracking=false},{passive:true});
 })();
