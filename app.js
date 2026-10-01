@@ -5579,3 +5579,39 @@ wwOpenQuickInfo=function(row,id){
     .ww-booking-status-preview.is-required span{background:#d89016!important}.ww-booking-status-preview.is-not-required span{background:#78878d!important}
   `;document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — booking badge height + itinerary scrollbar polish 01 Oct 2026 === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-booking-badge-scrollbar-polish-011026';
+  st.textContent=`
+    /* Match the booking-status badge to the existing Activity Type pill height. */
+    #itineraryQuickInfoBody .ww-booking-status-preview{
+      min-height:0!important;
+      height:auto!important;
+      align-self:stretch!important;
+      box-sizing:border-box!important;
+    }
+    #itineraryQuickInfoBody.ww-has-booking-status .itinerary-quick-info-type{
+      align-self:stretch!important;
+      box-sizing:border-box!important;
+    }
+
+    /* Keep itinerary scrolling fully functional, but hide scrollbar chrome. */
+    #masterItineraryDialog,
+    #masterItineraryDialog .master-itinerary-shell,
+    #masterItineraryContent{
+      scrollbar-width:none!important;
+      -ms-overflow-style:none!important;
+    }
+    #masterItineraryDialog::-webkit-scrollbar,
+    #masterItineraryDialog .master-itinerary-shell::-webkit-scrollbar,
+    #masterItineraryContent::-webkit-scrollbar{
+      width:0!important;
+      height:0!important;
+      display:none!important;
+      background:transparent!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
