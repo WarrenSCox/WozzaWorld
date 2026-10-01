@@ -5589,11 +5589,16 @@ wwOpenQuickInfo=function(row,id){
     #itineraryQuickInfoBody .ww-booking-status-preview{
       min-height:0!important;
       height:auto!important;
-      align-self:stretch!important;
+      padding:8px 14px!important;
+      line-height:normal!important;
       box-sizing:border-box!important;
+      align-self:auto!important;
+    }
+    #itineraryQuickInfoBody .ww-booking-status-preview span{
+      flex:0 0 20px!important;
     }
     #itineraryQuickInfoBody.ww-has-booking-status .itinerary-quick-info-type{
-      align-self:stretch!important;
+      align-self:auto!important;
       box-sizing:border-box!important;
     }
 
