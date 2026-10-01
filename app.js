@@ -5647,3 +5647,20 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — quick-info booking pill true alignment 01 Oct 2026 === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-quick-info-pill-true-alignment-011026';
+  st.textContent=`
+    /* These are inline siblings. Align their outer boxes from the same top edge
+       instead of baseline/margin alignment, which was lifting the white badge. */
+    #itineraryQuickInfoBody.ww-has-booking-status .itinerary-quick-info-type,
+    #itineraryQuickInfoBody.ww-has-booking-status .ww-booking-status-preview{
+      vertical-align:top!important;
+      margin-top:0!important;
+      margin-bottom:10px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
