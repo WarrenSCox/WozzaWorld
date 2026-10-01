@@ -5245,7 +5245,7 @@ wwOpenQuickInfo=function(row,id){
     const topCountries=visited.map(c=>[c,typeof countryTrips==='function'?Math.max(1,countryTrips(c).length):1]).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>`${c}: ${n} trip${n===1?'':'s'}`).join(', ');
     const topRated=completed.filter(t=>Number(t.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating)).slice(0,8).map(t=>`${t.name||'Untitled trip'}: ${Number(t.rating)}/5`).join(', ')||'Not enough data';
     const score=textOf('#travelHealthCard .travel-health-score')||textOf('#travelHealthCard');
-    return `Act as my personal travel analyst. Analyse the WozzaWorld travel statistics below and give me a concise, friendly, useful report.\n\nPlease include:\n1. A short summary of my travel style.\n2. Interesting patterns in where and how I travel, including meaningful patterns in my activity types where the data supports them.\n3. My strongest travel habits.\n4. Gaps or opportunities in my travel experience.\n5. 5 personalised destination or trip-style recommendations, explaining why each fits my existing travel history.\n6. A few achievable ideas for broadening my travel experiences.\n\nBase the analysis only on the data supplied. Do not invent trips, preferences or personal details. Treat upcoming and bucket-list destinations as plans/interests, not places I have already visited.\n\nWOZZAWORLD STATS\nTravel score: ${score||'Not available'}\nCountries visited: ${visited.length} of 193 (${(visited.length/193*100).toFixed(1)}%)\nVisited countries: ${visited.join(', ')||'None recorded'}\nCompleted trips: ${completed.length}\nUpcoming destinations: ${going.join(', ')||'None recorded'}\nBucket list: ${bucket.join(', ')||'None recorded'}\nMost visited countries: ${topCountries||'Not enough data'}\nAverage trip rating: ${avg}${ratings.length?' / 5':''}\nHighest-rated trips: ${topRated}\nTravel companions: ${companionSummary}\nTravel modes: ${modeSummary}\nActivity types: ${activityTypeSummary}\nTrip styles/vibes: ${vibeSummary}`;
+    return `Act as my personal travel analyst. Analyse the WozzaWorld travel statistics below and give me a concise, friendly, useful report.\n\nPlease include:\n1. A short summary of my travel style.\n2. Interesting patterns in where and how I travel, including meaningful patterns in my activity types where the data supports them.\n3. My strongest travel habits.\n4. Gaps or opportunities in my travel experience.\n5. 5 personalised destination or trip-style recommendations, explaining why each fits my existing travel history.\n6. A few achievable ideas for broadening my travel experiences.\n\nBase the analysis only on the data supplied. Do not invent trips, preferences or personal details. Treat upcoming and bucket-list destinations as plans/interests, not places I have already visited. Treat activity-type statistics as recorded activity data only. Do not assume they represent every activity undertaken across all past trips.\n\nWOZZAWORLD STATS\nTravel score: ${score||'Not available'}\nCountries visited: ${visited.length} of 193 (${(visited.length/193*100).toFixed(1)}%)\nVisited countries: ${visited.join(', ')||'None recorded'}\nCompleted trips: ${completed.length}\nUpcoming destinations: ${going.join(', ')||'None recorded'}\nBucket list: ${bucket.join(', ')||'None recorded'}\nMost visited countries: ${topCountries||'Not enough data'}\nAverage trip rating: ${avg}${ratings.length?' / 5':''}\nHighest-rated trips: ${topRated}\nTravel companions: ${companionSummary}\nTravel modes: ${modeSummary}\nActivity types: ${activityTypeSummary}\nTrip styles/vibes: ${vibeSummary}`;
   }
   function toast(msg){
     let t=document.getElementById('wozzaAiToast');if(!t){t=document.createElement('div');t.id='wozzaAiToast';t.className='wozza-ai-toast';document.body.appendChild(t)}
@@ -5880,90 +5880,10 @@ wwOpenQuickInfo=function(row,id){
   document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
 
-/* === WozzaWorld hotfix — persistent vivid itinerary flag backdrop + translucent itinerary surfaces (01 Oct 2026) === */
+/* === WozzaWorld surgical polish — Passport AI button only (01 Oct 2026) === */
 (()=>{
-  if(window.__wwFlagItineraryBackdrop011026v2)return;
-  window.__wwFlagItineraryBackdrop011026v2=true;
-
-  const countryForStopIndex=i=>{
-    const row=wwTripStopRows()[Number(i)];
-    return row?.querySelector('.trip-stop-country')?.value||'';
-  };
-  const setFlag=(d,country)=>{
-    const u=country&&flagUrl(country);
-    if(!d||!u)return;
-    d.style.setProperty('--ww-itinerary-flag',`url("${u}")`);
-    d.dataset.wwFlagCountry=country;
-  };
-  let flagObserver=null;
-  function applyFlagBackdrop(){
-    const d=document.getElementById('masterItineraryDialog'),host=d?.querySelector('#masterItineraryContent');
-    if(!d||!host)return;
-    const days=[...host.querySelectorAll('.master-itinerary-day')];
-    const countries=[...new Set(wwTripStopRows().map((_,i)=>countryForStopIndex(i)).filter(Boolean))];
-    days.forEach(day=>{
-      const first=day.querySelector('.master-itinerary-activity[data-stop]');
-      day.dataset.wwCountry=first?countryForStopIndex(first.dataset.stop):(countries[0]||'');
-    });
-    if(countries.length)setFlag(d,countries[0]);
-    flagObserver?.disconnect();flagObserver=null;
-    if(countries.length>1&&days.length){
-      const shell=d.querySelector('.master-itinerary-shell');
-      flagObserver=new IntersectionObserver(entries=>{
-        const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
-        if(visible?.target?.dataset.wwCountry)setFlag(d,visible.target.dataset.wwCountry);
-      },{root:shell||null,rootMargin:'-22% 0px -45% 0px',threshold:[0,.15,.35,.6]});
-      days.forEach(x=>flagObserver.observe(x));
-    }
-  }
-  const oldMaster=wwRenderMasterItinerary;
-  wwRenderMasterItinerary=function(){const r=oldMaster.apply(this,arguments);requestAnimationFrame(applyFlagBackdrop);return r};
-  const oldHierarchy=wwRenderTripHierarchy;
-  wwRenderTripHierarchy=function(){const r=oldHierarchy.apply(this,arguments);requestAnimationFrame(applyFlagBackdrop);return r};
-
-  document.getElementById('ww-flag-itinerary-backdrop-011026')?.remove();
-  const st=document.createElement('style');st.id='ww-flag-itinerary-backdrop-v2-011026';st.textContent=`
-    /* Put the flag on the scrolling content itself, not on the viewport-sized shell.
-       Repeating vertically keeps a real flag behind every part of a long itinerary. */
-    #masterItineraryDialog .master-itinerary-shell{
-      position:relative!important;isolation:isolate!important;background:transparent!important;
-    }
-    #masterItineraryDialog #masterItineraryContent{
-      position:relative!important;
-      background-image:var(--ww-itinerary-flag)!important;
-      background-size:100% auto!important;
-      background-position:center top!important;
-      background-repeat:repeat-y!important;
-      border-radius:inherit!important;
-      transition:background-image .4s ease!important;
-    }
-    #masterItineraryDialog .master-itinerary-head{
-      background:rgba(255,240,199,.78)!important;
-      backdrop-filter:saturate(1.08) blur(1px)!important;
-    }
-    #masterItineraryDialog .master-itinerary-dayhead{
-      background:rgba(255,255,255,.82)!important;
-      backdrop-filter:saturate(1.08) blur(1px)!important;
-    }
-    #masterItineraryDialog .master-itinerary-dayhead>b{
-      background:rgba(7,132,154,.84)!important;
-    }
-    #masterItineraryDialog .master-itinerary-daybody{
-      background:rgba(255,195,38,.80)!important;
-      backdrop-filter:saturate(1.08) blur(.7px)!important;
-    }
-    #masterItineraryDialog .master-itinerary-activity{background:transparent!important}
-    #masterItineraryDialog .master-itinerary-stop>h3{
-      background:rgba(255,240,199,.76)!important;border-radius:12px!important;
-      padding:5px 9px!important;width:max-content!important;max-width:100%!important;
-    }
-    /* Flag itself stays full-strength: translucency belongs to the UI surfaces above it. */
-    #masterItineraryDialog #masterItineraryContent:before,
-    #masterItineraryDialog .master-itinerary-shell:before,
-    #masterItineraryDialog .master-itinerary-shell:after{display:none!important}
-
+  const st=document.createElement('style');st.id='ww-passport-ai-button-polish-011026';st.textContent=`
     #passportAiAnalysis .passport-ai-btn span{font-weight:900!important;text-transform:uppercase!important;letter-spacing:.18em!important;font-size:15px!important}
     #passportAiAnalysis .passport-ai-btn img{width:34px!important;height:28px!important}
-  `;document.head.appendChild(st);
-  requestAnimationFrame(applyFlagBackdrop);
+  `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
