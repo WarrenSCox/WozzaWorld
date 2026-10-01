@@ -5967,9 +5967,8 @@ wwOpenQuickInfo=function(row,id){
 /* === WozzaWorld surgical hotfix — polished itinerary export + ready confirmation 01 Oct 2026 === */
 (()=>{
   const rr=(ctx,x,y,w,h,r,fill,stroke)=>{r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke()};
-  const iconFor=x=>({Food:'🍽',Drinks:'🍸',Cafe:'☕','Café':'☕',Explore:'📍',Travel:'✈',Accommodation:'🛏',Airport:'✈','Boat Trip':'⛴',Spa:'♨',Taxi:'🚕',Train:'🚆',Theatre:'🎭',Museum:'🏛',Gallery:'🖼',Gardens:'🌿',Castle:'🏰',Cathedral:'⛪',Church:'⛪',Library:'📚',Shopping:'🛍',Cycling:'🚲',Canoeing:'🛶',Swimming:'🏊',Skiing:'⛷'}[String(x?.category||'')]||'•');
   const bookingLabel=v=>v==='booked'?'Booked':v==='required'?'Booking Required':v==='not-required'?'Booking Not Required':'';
-  const todosFor=x=>{const ids=[...(Array.isArray(x?.todoIds)?x.todoIds:[]),...(x?.todoId?[x.todoId]:[])].map(String);return ids.map(activityTodoById).filter(Boolean).map(r=>({text:r.querySelector('.trip-todo-input')?.value?.trim()||'',done:r.classList.contains('is-done')})).filter(t=>t.text&&!t.done)};
+  const todosFor=x=>{const ids=[...new Set([...(Array.isArray(x?.todoIds)?x.todoIds:[]),...(x?.todoId?[x.todoId]:[])].map(String))];const seen=new Set();return ids.map(activityTodoById).filter(Boolean).map(r=>({text:r.querySelector('.trip-todo-input')?.value?.trim()||'',done:r.classList.contains('is-done')})).filter(t=>{const k=t.text.toLocaleLowerCase();if(!t.text||t.done||seen.has(k))return false;seen.add(k);return true})};
   const detailsFor=x=>{
     const out=[];const bs=bookingLabel(x.bookingStatus);if(bs)out.push(bs);
     if(x.location)out.push(`Location: ${x.location}`);if(x.contact)out.push(`Contact: ${x.contact}`);
@@ -5984,21 +5983,29 @@ wwOpenQuickInfo=function(row,id){
     let d=document.getElementById('wwExportReadyDialog');if(!d){d=document.createElement('dialog');d.id='wwExportReadyDialog';d.className='ww-export-ready';d.innerHTML='<div class="ww-export-ready-card"><div class="ww-export-ready-tick">✓</div><h2>Your itinerary is ready!</h2><p></p><button type="button">CLOSE</button></div>';document.body.appendChild(d);d.querySelector('button').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target===d)d.close()})}d.querySelector('p').textContent=`Your ${name||'trip'} itinerary has been downloaded.`;if(!d.open)d.showModal();
   };
   if(!document.getElementById('ww-export-ready-style')){const s=document.createElement('style');s.id='ww-export-ready-style';s.textContent=`
+    @keyframes wwDownloadPulse{0%{transform:scale(1)}35%{transform:scale(.88) translateY(3px)}68%{transform:scale(1.08) translateY(-2px)}100%{transform:scale(1)}}.master-itinerary-capture.ww-download-pulse{animation:wwDownloadPulse .38s ease!important;pointer-events:none!important}
     .ww-export-ready{border:0!important;padding:0!important;background:transparent!important;max-width:min(88vw,430px)!important;width:100%!important}.ww-export-ready::backdrop{background:rgba(0,76,88,.62)!important;backdrop-filter:blur(8px)!important}.ww-export-ready-card{background:#fff0c7!important;border-radius:30px!important;padding:30px 26px 24px!important;text-align:center!important;color:#17323c!important}.ww-export-ready-tick{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#078fa3;color:#fff;font:900 32px/1 Arial,sans-serif}.ww-export-ready h2{margin:0 0 9px!important;font:900 25px/1.08 Arial,sans-serif!important}.ww-export-ready p{margin:0 0 22px!important;font:600 15px/1.4 Arial,sans-serif!important}.ww-export-ready button{width:100%!important;min-height:54px!important;border:0!important;border-radius:20px!important;background:#078fa3!important;color:#fff!important;font:900 16px/1 Arial,sans-serif!important;letter-spacing:.06em!important}`;document.head.appendChild(s)}
 
+  const countryCodeToEmoji=code=>String(code||'').toUpperCase().replace(/[A-Z]/g,c=>String.fromCodePoint(127397+c.charCodeAt(0)));
+  const exportCountries=rows=>[...new Set(rows.map(r=>r.querySelector('.trip-stop-country')?.value?.trim()).filter(Boolean))];
+  const loadExportImage=src=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src});
   wwCaptureFullItinerary=async function(){
-    const meta=wwItineraryTripMeta(),rows=wwTripStopRows(),items=wwMasterActivities(),multi=rows.length>1;if(!items.length)return;
+    const btn=this instanceof HTMLElement?this:document.querySelector('.master-itinerary-capture');if(btn?.dataset.exportBusy==='1')return;if(btn){btn.dataset.exportBusy='1';btn.classList.remove('ww-download-pulse');void btn.offsetWidth;btn.classList.add('ww-download-pulse')}navigator.vibrate?.(24);
+    const meta=wwItineraryTripMeta(),rows=wwTripStopRows(),items=wwMasterActivities(),multi=rows.length>1;if(!items.length){if(btn)delete btn.dataset.exportBusy;return}
+    const countries=exportCountries(rows),flagText=countries.map(c=>countryCodeToEmoji(flags[c]||'')).filter(Boolean).join('  '),logo=await loadExportImage('wozzaworld-logo.png');
     const W=1180,pad=48,contentW=W-pad*2,font='Arial, sans-serif',timeW=125,activityW=385,gap=18,notesW=contentW-timeW-activityW-gap*2;
     const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
     const wrap=(text,maxWidth,fontSpec)=>{ctx.font=fontSpec;const paras=String(text??'').split(/\n/),all=[];paras.forEach((p,pi)=>{const words=p.split(/\s+/).filter(Boolean);let line='';if(!words.length)all.push('');for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>maxWidth&&line){all.push(line);line=w}else line=t}if(line)all.push(line);if(pi<paras.length-1)all.push('')});return all.length?all:['']};
     const dated=[...new Set(items.map(x=>x.startDate||'unscheduled'))].sort((a,b)=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b)),dayNo=new Map(dated.map((x,i)=>[x,i+1]));
     const groups=rows.map((row,si)=>{const m=new Map();items.filter(x=>x._stopIndex===si).forEach(x=>{const k=x.startDate||'unscheduled';if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.entries()].sort(([a],[b])=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b))});
-    const measured=groups.map(gs=>gs.map(([date,list])=>[date,list.map(x=>{const a=wrap(`${iconFor(x)}  ${x.name||'Activity'}`,activityW-28,`700 24px ${font}`),d=detailsFor(x),dl=d.flatMap(v=>wrap(v,notesW-28,`400 18px ${font}`));return {x,a,dl,rh:Math.max(70,28+Math.max(a.length*29,dl.length*23))}})]));
+    const measured=groups.map(gs=>gs.map(([date,list])=>[date,list.map(x=>{const a=wrap(`${x.name||'Activity'}`,activityW-28,`700 24px ${font}`),d=detailsFor(x),dl=d.flatMap(v=>wrap(v,notesW-28,`400 18px ${font}`));return {x,a,dl,rh:Math.max(70,28+Math.max(a.length*29,dl.length*23))}})]));
     let H=pad+76+(meta.dateRange?38:0)+20;measured.forEach((gs,si)=>{if(!gs.length)return;if(multi)H+=48;gs.forEach(([,list])=>{H+=68;list.forEach(r=>H+=r.rh+8);H+=20})});H+=pad;
     const scale=Math.min(2,8192/Math.max(W,H));canvas.width=Math.round(W*scale);canvas.height=Math.round(H*scale);ctx.scale(scale,scale);
     ctx.fillStyle='#fff0c7';rr(ctx,0,0,W,H,36,true);let y=pad;
     ctx.fillStyle='#17323c';ctx.font=`900 48px ${font}`;wrap(meta.name,contentW,`900 48px ${font}`).forEach(l=>{ctx.fillText(l,pad,y+44);y+=52});
-    if(meta.dateRange){ctx.fillStyle='#078fa3';ctx.font=`900 23px ${font}`;ctx.fillText(meta.dateRange,pad,y+22);y+=38}y+=12;
+    if(meta.dateRange){ctx.fillStyle='#078fa3';ctx.font=`900 23px ${font}`;ctx.fillText(meta.dateRange,pad,y+22);y+=38}
+    const headerBottom=y,logoW=220,logoH=82,logoX=W-pad-logoW,logoY=pad+2;if(logo){const ratio=Math.min(logoW/logo.naturalWidth,logoH/logo.naturalHeight);ctx.drawImage(logo,logoX+logoW-logo.naturalWidth*ratio,logoY,logo.naturalWidth*ratio,logo.naturalHeight*ratio)}else{ctx.fillStyle='#17323c';ctx.font=`900 29px ${font}`;ctx.textAlign='right';ctx.fillText('WozzaWorld',W-pad,pad+42);ctx.textAlign='left'}
+    if(flagText){ctx.font=`34px ${font}`;ctx.textAlign='right';ctx.fillText(flagText,logoX-26,pad+43);ctx.textAlign='left'}y=headerBottom+12;
     measured.forEach((gs,si)=>{if(!gs.length)return;if(multi){ctx.fillStyle='#078fa3';ctx.font=`900 25px ${font}`;ctx.fillText(String(wwStopName(rows[si],si)).toUpperCase(),pad,y+28);y+=48}
       gs.forEach(([date,list])=>{
         ctx.fillStyle='#fff';rr(ctx,pad,y,contentW,68,22,true);ctx.fillStyle='#078fa3';rr(ctx,pad,y,132,68,22,true);ctx.fillRect(pad+110,y,22,68);ctx.fillStyle='#fff';ctx.font=`900 21px ${font}`;ctx.fillText(date==='unscheduled'?'FLEXIBLE':`DAY ${dayNo.get(date)}`,pad+20,y+42);ctx.fillStyle='#17323c';ctx.font=`800 22px ${font}`;ctx.fillText(date==='unscheduled'?'TO BE SCHEDULED':wwItineraryDayLabel(date),pad+154,y+42);y+=76;
@@ -6010,7 +6017,7 @@ wwOpenQuickInfo=function(row,id){
           ctx.strokeStyle='rgba(23,50,60,.13)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad+timeW+8,y+14);ctx.lineTo(pad+timeW+8,y+r.rh-14);ctx.moveTo(nx-9,y+14);ctx.lineTo(nx-9,y+r.rh-14);ctx.stroke();y+=r.rh+8});y+=20;
       });
     });
-    const png=await new Promise(res=>canvas.toBlob(res,'image/png',.96));if(!png){alert('Sorry — the itinerary image could not be created on this device.');return}
-    const url=URL.createObjectURL(png),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);setTimeout(()=>showReady(meta.name),180);
+    const png=await new Promise(res=>canvas.toBlob(res,'image/png',.96));if(!png){if(btn)delete btn.dataset.exportBusy;alert('Sorry — the itinerary image could not be created on this device.');return}
+    const url=URL.createObjectURL(png),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse')}showReady(meta.name)},180);
   };
 })();
