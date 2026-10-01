@@ -5914,7 +5914,7 @@ wwOpenQuickInfo=function(row,id){
     const title=c.querySelector('h2');if(title)title.textContent=item.name||'Activity';
     c.querySelectorAll('button,a').forEach(el=>{el.tabIndex=-1;el.style.pointerEvents='none'});
     Object.assign(c.style,{width:`${r.width}px`,height:`${r.height}px`,left:`${r.left}px`,top:`${r.top}px`});
-    d.appendChild(c);return c;
+    document.body.appendChild(c);return c;
   }
   function previews(){cleanupPreviews();leftPreview=makePreview(neighbour(-1),'left');rightPreview=makePreview(neighbour(1),'right')}
   function cleanupPreviews(){leftPreview?.remove();rightPreview?.remove();leftPreview=rightPreview=null}
@@ -5959,9 +5959,10 @@ wwOpenQuickInfo=function(row,id){
   const st=document.createElement('style');st.id='ww-activity-carousel-swipe-011026';st.textContent=`
     #itineraryQuickInfoDialog{overflow:hidden!important}
     #itineraryQuickInfoDialog>.itinerary-quick-info-shell:not(.ww-swipe-preview){position:relative!important;z-index:3!important;will-change:transform;transform-origin:center center}
-    #itineraryQuickInfoDialog .ww-swipe-preview{position:fixed!important;z-index:2!important;margin:0!important;pointer-events:none!important;will-change:transform;transform-origin:center center;filter:brightness(.92);opacity:.92!important}
-    #itineraryQuickInfoDialog .ww-swipe-preview.is-left{transform:translate3d(calc(-100% - 22px),0,0) scale(.92)}
-    #itineraryQuickInfoDialog .ww-swipe-preview.is-right{transform:translate3d(calc(100% + 22px),0,0) scale(.92)}
-    #itineraryQuickInfoDialog .ww-swipe-animate{transition:transform 175ms cubic-bezier(.22,.75,.25,1),opacity 175ms ease!important}
+    body>.ww-swipe-preview{position:fixed!important;z-index:2147483000!important;margin:0!important;pointer-events:none!important;will-change:transform;transform-origin:center center;filter:brightness(.92);opacity:.92!important;overflow:hidden!important}
+    body>.ww-swipe-preview *{pointer-events:none!important}
+    body>.ww-swipe-preview.is-left{transform:translate3d(calc(-100% - 22px),0,0) scale(.92)}
+    body>.ww-swipe-preview.is-right{transform:translate3d(calc(100% + 22px),0,0) scale(.92)}
+    #itineraryQuickInfoDialog .ww-swipe-animate,body>.ww-swipe-preview.ww-swipe-animate{transition:transform 175ms cubic-bezier(.22,.75,.25,1),opacity 175ms ease!important}
   `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
 })();
