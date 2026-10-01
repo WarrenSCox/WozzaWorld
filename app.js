@@ -5620,3 +5620,30 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — exact quick-info pill height lock 01 Oct 2026 === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-quick-info-pill-exact-height-011026';
+  st.textContent=`
+    #itineraryQuickInfoBody.ww-has-booking-status .itinerary-quick-info-type,
+    #itineraryQuickInfoBody .ww-booking-status-preview{
+      height:40px!important;
+      min-height:40px!important;
+      max-height:40px!important;
+      box-sizing:border-box!important;
+      padding-top:0!important;
+      padding-bottom:0!important;
+      align-items:center!important;
+    }
+    #itineraryQuickInfoBody.ww-has-booking-status .itinerary-quick-info-type{
+      padding-left:12px!important;
+      padding-right:12px!important;
+    }
+    #itineraryQuickInfoBody .ww-booking-status-preview{
+      padding-left:14px!important;
+      padding-right:14px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
