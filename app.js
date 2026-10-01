@@ -6002,7 +6002,7 @@ wwOpenQuickInfo=function(row,id){
     const dated=[...new Set(items.map(x=>x.startDate||'unscheduled'))].sort((a,b)=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b)),dayNo=new Map(dated.map((x,i)=>[x,i+1]));
     const groups=rows.map((row,si)=>{const m=new Map();items.filter(x=>x._stopIndex===si).forEach(x=>{const k=x.startDate||'unscheduled';if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.entries()].sort(([a],[b])=>a==='unscheduled'?1:b==='unscheduled'?-1:a.localeCompare(b))});
     const measured=groups.map(gs=>gs.map(([date,list])=>[date,list.map(x=>{const a=wrap(`${x.name||'Activity'}`,activityW-28,`700 24px ${font}`),d=detailsFor(x),dl=d.flatMap(v=>wrap(v,notesW-28,`400 18px ${font}`));return {x,a,dl,rh:Math.max(70,28+Math.max(a.length*29,dl.length*23))}})]));
-    let H=pad+76+(meta.dateRange?38:0)+20;measured.forEach((gs,si)=>{if(!gs.length)return;if(multi)H+=48;gs.forEach(([,list])=>{H+=68;list.forEach(r=>H+=r.rh+8);H+=20})});H+=pad+150;
+    let H=pad+76+(meta.dateRange?38:0)+20;measured.forEach((gs,si)=>{if(!gs.length)return;if(multi)H+=48;gs.forEach(([,list])=>{H+=68;list.forEach(r=>H+=r.rh+8);H+=20})});H+=pad+205;
     const scale=Math.min(2,8192/Math.max(W,H));canvas.width=Math.round(W*scale);canvas.height=Math.round(H*scale);ctx.scale(scale,scale);
     ctx.fillStyle='#fff0c7';rr(ctx,0,0,W,H,36,true);let y=pad;
     ctx.fillStyle='#17323c';ctx.font=`900 48px ${font}`;const titleLines=wrap(meta.name,contentW-300,`900 48px ${font}`);titleLines.forEach((l,i)=>{ctx.fillText(l,pad,y+44);if(i===titleLines.length-1&&flagText){const tw=ctx.measureText(l).width;ctx.font=`34px ${font}`;ctx.fillText(flagText,pad+tw+16,y+42);ctx.font=`900 48px ${font}`}y+=52});
@@ -6022,7 +6022,16 @@ wwOpenQuickInfo=function(row,id){
     if(logo){
       const footerW=360,footerH=120,ratio=Math.min(footerW/logo.naturalWidth,footerH/logo.naturalHeight);
       const dw=logo.naturalWidth*ratio,dh=logo.naturalHeight*ratio;
-      ctx.drawImage(logo,(W-dw)/2,H-pad-120+(120-dh)/2,dw,dh);
+      const footerBottom=H-pad;
+      const logoY=footerBottom-dh;
+      ctx.save();
+      ctx.fillStyle='#17323c';
+      ctx.font=`900 24px ${font}`;
+      ctx.textAlign='center';
+      ctx.textBaseline='alphabetic';
+      ctx.fillText('G E N E R A T E D  B Y',W/2,logoY-18);
+      ctx.restore();
+      ctx.drawImage(logo,(W-dw)/2,logoY,dw,dh);
     }
     /* PDF keeps the exact visual export while adding real clickable link annotations over the visibly-spelled URLs. */
     const jpegUrl=canvas.toDataURL('image/jpeg',.94),jpegBin=atob(jpegUrl.split(',')[1]),jpegBytes=new Uint8Array(jpegBin.length);for(let i=0;i<jpegBin.length;i++)jpegBytes[i]=jpegBin.charCodeAt(i);
@@ -6035,7 +6044,7 @@ wwOpenQuickInfo=function(row,id){
     const escPdf=s=>String(s).replace(/([\\()])/g,'\\$1');linkRects.forEach((r,i)=>{const sx=pageW/W,sy=pageH/H,x1=r.x*sx,x2=(r.x+r.w)*sx,y1=pageH-(r.y+r.h)*sy,y2=pageH-r.y*sy;obj(firstAnnot+i,`<< /Type /Annot /Subtype /Link /Rect [${x1.toFixed(2)} ${y1.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)}] /Border [0 0 0] /A << /S /URI /URI (${escPdf(r.url)}) >> >>`)});
     const contentObj=firstAnnot+linkRects.length,stream=`q ${pageW.toFixed(2)} 0 0 ${pageH.toFixed(2)} 0 0 cm /Im0 Do Q`;obj(contentObj,`<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}\nendstream`);
     const xref=total,pdfObjCount=contentObj;push(`xref\n0 ${pdfObjCount+1}\n0000000000 65535 f \n`);for(let i=1;i<=pdfObjCount;i++)push(`${String(offsets[i]).padStart(10,'0')} 00000 n \n`);push(`trailer\n<< /Size ${pdfObjCount+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
-    const pdf=new Blob(parts,{type:'application/pdf'}),url=URL.createObjectURL(pdf),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse','ww-download-pressed')}},180);
+    const pdf=new Blob(parts,{type:'application/pdf'}),url=URL.createObjectURL(pdf),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.pdf`;document.body.appendChild(a);a.click();a.remove();window.wwMarkCurrentItineraryPdfDownloaded?.();setTimeout(()=>URL.revokeObjectURL(url),4000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse','ww-download-pressed')}},180);
   };
 })();
 
@@ -6072,16 +6081,39 @@ wwOpenQuickInfo=function(row,id){
   requestAnimationFrame(()=>requestAnimationFrame(applyCallout));
 })();
 
-/* WozzaWorld: PDF callout hides after download; returns after itinerary changes. */
+
+
+
+/* === WozzaWorld — persistent per-trip PDF freshness prompt === */
 (()=>{
- const D=()=>document.getElementById('masterItineraryDialog'), A=()=>D()?.querySelector('.ww-download-pdf-callout');
- const hide=()=>{let d=D(),a=A();if(d)d.dataset.wwPdfDownloaded='1';if(a)a.style.setProperty('display','none','important')};
- const show=()=>{let d=D(),a=A();if(d)delete d.dataset.wwPdfDownloaded;if(a)a.style.removeProperty('display')};
- document.addEventListener('click',e=>{
-   if(e.target.closest?.('.master-itinerary-capture'))return hide();
-   let d=D();if(d?.dataset.wwPdfDownloaded!=='1')return;
-   if(e.target.closest?.('.master-itinerary-add,.master-itinerary-edit,[data-action="edit"],[data-action="add"],[data-action="delete"],[data-action="remove"],[data-action="save"],.activity-edit,.activity-delete,.todo-check,.todo-add'))show();
- },true);
- for(const ev of ['input','change'])document.addEventListener(ev,e=>{let d=D();if(d?.dataset.wwPdfDownloaded==='1'&&d.contains(e.target))show()},true);
- new MutationObserver(()=>{let d=D(),a=A();if(d?.dataset.wwPdfDownloaded==='1'&&a)a.style.setProperty('display','none','important')}).observe(document.documentElement,{childList:true,subtree:true});
+ const STORE='wozzaworld-pdf-export-fingerprints-v1';
+ const D=()=>document.getElementById('masterItineraryDialog');
+ const A=()=>D()?.querySelector('.ww-download-pdf-callout');
+ const trip=()=>editingTripId?state.trips.find(t=>String(t.id)===String(editingTripId)):null;
+ const key=()=>String(trip()?.id||editingTripId||'');
+ const stable=v=>{
+   if(Array.isArray(v))return v.map(stable);
+   if(v&&typeof v==='object'){const o={};Object.keys(v).sort().forEach(k=>{if(!/^(_|ui|view)/i.test(k))o[k]=stable(v[k])});return o}
+   return v;
+ };
+ const hash=str=>{let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
+ const fingerprint=()=>{const t=trip();return t?hash(JSON.stringify(stable(t))):''};
+ const read=()=>{try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch{return {}}};
+ const downloadedFingerprint=()=>read()[key()]||'';
+ const isCurrent=()=>{const k=key(),f=fingerprint();return !!k&&!!f&&downloadedFingerprint()===f};
+ const apply=()=>{
+   const a=A();if(!a)return;
+   if(isCurrent())a.style.setProperty('display','none','important');
+   else a.style.removeProperty('display');
+ };
+ window.wwMarkCurrentItineraryPdfDownloaded=()=>{
+   const k=key(),f=fingerprint();if(!k||!f)return;
+   const m=read();m[k]=f;localStorage.setItem(STORE,JSON.stringify(m));apply();
+ };
+ window.wwRefreshPdfCalloutFreshness=apply;
+ const oldSave=save;
+ save=function(){const r=oldSave.apply(this,arguments);queueMicrotask(apply);return r};
+ document.addEventListener('click',()=>requestAnimationFrame(apply),true);
+ new MutationObserver(()=>requestAnimationFrame(apply)).observe(document.documentElement,{childList:true,subtree:true});
+ requestAnimationFrame(()=>requestAnimationFrame(apply));
 })();
