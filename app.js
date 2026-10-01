@@ -6033,3 +6033,36 @@ wwOpenQuickInfo=function(row,id){
     const pdf=new Blob(parts,{type:'application/pdf'}),url=URL.createObjectURL(pdf),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse','ww-download-pressed')}},180);
   };
 })();
+
+/* === WozzaWorld hotfix — calmer preparing animation + Download as PDF header callout === */
+(()=>{
+  const applyCallout=()=>{
+    const d=document.getElementById('masterItineraryDialog');
+    const head=d?.querySelector('.master-itinerary-head');
+    if(!head)return;
+    let img=head.querySelector('.ww-download-pdf-callout');
+    if(!img){
+      img=document.createElement('img');
+      img.className='ww-download-pdf-callout';
+      img.src='download-as-pdf-callout.png';
+      img.alt='Download as PDF';
+      img.draggable=false;
+      head.appendChild(img);
+    }
+  };
+  const st=document.createElement('style');
+  st.id='ww-download-callout-slower-prep-011026';
+  st.textContent=`
+    /* Same Android-style motion, just calmer. */
+    .ww-export-ready-tick .ww-prep-arrow{animation-duration:1.4s!important}
+    /* Exact supplied illustration in the spare itinerary-header area. */
+    .master-itinerary-head{position:relative!important}
+    .ww-download-pdf-callout{position:absolute!important;right:4px!important;top:54px!important;width:138px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-download-pdf-callout{display:none!important}
+    @media(max-width:420px){.ww-download-pdf-callout{width:128px!important;right:2px!important;top:54px!important}}
+  `;
+  document.head.appendChild(st);
+  document.addEventListener('click',()=>requestAnimationFrame(applyCallout),true);
+  new MutationObserver(()=>requestAnimationFrame(applyCallout)).observe(document.documentElement,{childList:true,subtree:true});
+  requestAnimationFrame(()=>requestAnimationFrame(applyCallout));
+})();
