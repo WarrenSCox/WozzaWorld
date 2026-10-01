@@ -5237,10 +5237,12 @@ wwOpenQuickInfo=function(row,id){
     const companionSummary=Object.entries(companions).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,c])=>`${n}: ${c} trip${c===1?'':'s'}`).join(', ')||'Mostly/entirely solo or not recorded';
     const modes={}; completed.flatMap(t=>typeof tripTravelModes==='function'?tripTravelModes(t):[]).forEach(m=>{m=String(m||'').trim();if(m)modes[m]=(modes[m]||0)+1});
     const modeSummary=Object.entries(modes).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`${m}: ${n}`).join(', ')||'Not enough data';
+    const activityTypes={}; completed.forEach(t=>(t.destinations||[]).forEach(stop=>(stop.itinerary||[]).forEach(item=>{const raw=String(item?.category||'Other').trim()||'Other';const type=/^see & do$/i.test(raw)?'Other':raw;activityTypes[type]=(activityTypes[type]||0)+1})));
+    const activityTypeSummary=Object.entries(activityTypes).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([type,n])=>`${type}: ${n}`).join(', ')||'Not enough data';
     const topCountries=visited.map(c=>[c,typeof countryTrips==='function'?Math.max(1,countryTrips(c).length):1]).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>`${c}: ${n} trip${n===1?'':'s'}`).join(', ');
     const topRated=completed.filter(t=>Number(t.rating)>0).sort((a,b)=>Number(b.rating)-Number(a.rating)).slice(0,8).map(t=>`${t.name||'Untitled trip'}: ${Number(t.rating)}/5`).join(', ')||'Not enough data';
     const score=textOf('#travelHealthCard .travel-health-score')||textOf('#travelHealthCard');
-    return `Act as my personal travel analyst. Analyse the WozzaWorld travel statistics below and give me a concise, friendly, useful report.\n\nPlease include:\n1. A short summary of my travel style.\n2. Interesting patterns in where and how I travel.\n3. My strongest travel habits.\n4. Gaps or opportunities in my travel experience.\n5. 5 personalised destination or trip-style recommendations, explaining why each fits my existing travel history.\n6. A few achievable ideas for broadening my travel experiences.\n\nBase the analysis only on the data supplied. Do not invent trips, preferences or personal details. Treat upcoming and bucket-list destinations as plans/interests, not places I have already visited.\n\nWOZZAWORLD STATS\nTravel score: ${score||'Not available'}\nCountries visited: ${visited.length} of 193 (${(visited.length/193*100).toFixed(1)}%)\nVisited countries: ${visited.join(', ')||'None recorded'}\nCompleted trips: ${completed.length}\nUpcoming destinations: ${going.join(', ')||'None recorded'}\nBucket list: ${bucket.join(', ')||'None recorded'}\nMost visited countries: ${topCountries||'Not enough data'}\nAverage trip rating: ${avg}${ratings.length?' / 5':''}\nHighest-rated trips: ${topRated}\nTravel companions: ${companionSummary}\nTravel modes: ${modeSummary}\nTrip styles/vibes: ${vibeSummary}`;
+    return `Act as my personal travel analyst. Analyse the WozzaWorld travel statistics below and give me a concise, friendly, useful report.\n\nPlease include:\n1. A short summary of my travel style.\n2. Interesting patterns in where and how I travel, including meaningful patterns in my activity types where the data supports them.\n3. My strongest travel habits.\n4. Gaps or opportunities in my travel experience.\n5. 5 personalised destination or trip-style recommendations, explaining why each fits my existing travel history.\n6. A few achievable ideas for broadening my travel experiences.\n\nBase the analysis only on the data supplied. Do not invent trips, preferences or personal details. Treat upcoming and bucket-list destinations as plans/interests, not places I have already visited.\n\nWOZZAWORLD STATS\nTravel score: ${score||'Not available'}\nCountries visited: ${visited.length} of 193 (${(visited.length/193*100).toFixed(1)}%)\nVisited countries: ${visited.join(', ')||'None recorded'}\nCompleted trips: ${completed.length}\nUpcoming destinations: ${going.join(', ')||'None recorded'}\nBucket list: ${bucket.join(', ')||'None recorded'}\nMost visited countries: ${topCountries||'Not enough data'}\nAverage trip rating: ${avg}${ratings.length?' / 5':''}\nHighest-rated trips: ${topRated}\nTravel companions: ${companionSummary}\nTravel modes: ${modeSummary}\nActivity types: ${activityTypeSummary}\nTrip styles/vibes: ${vibeSummary}`;
   }
   function toast(msg){
     let t=document.getElementById('wozzaAiToast');if(!t){t=document.createElement('div');t.id='wozzaAiToast';t.className='wozza-ai-toast';document.body.appendChild(t)}
@@ -5741,4 +5743,57 @@ wwOpenQuickInfo=function(row,id){
     }
   `;
   document.head.appendChild(st);
+})();
+
+/* === WozzaWorld hotfix — Activity Types Travel Insight + AI context 01 Oct 2026 === */
+(()=>{
+  if(window.__wozzaActivityTypeInsights011026)return;window.__wozzaActivityTypeInsights011026=true;
+
+  const cleanType=raw=>{
+    const v=String(raw||'').trim();
+    if(!v)return 'Other';
+    const map={
+      'food':'Food','food/drinks':'Food / Drinks','food & drinks':'Food / Drinks','drinks':'Drinks',
+      'explore':'Explore','travel':'Travel','accommodation':'Accommodation','other':'Other','see & do':'Other',
+      'airport':'Airport','boat trip':'Boat Trip','spa':'Spa','cycle':'Cycle','cycling':'Cycle','tour':'Tour',
+      'theatre':'Theatre','cafe':'Cafe','café':'Cafe','library':'Library','museum':'Museum','gallery':'Gallery','shopping':'Shopping'
+    };
+    return map[v.toLowerCase()]||v;
+  };
+  function activityTypeRows(){
+    const counts={};
+    (state.trips||[]).forEach(trip=>(trip.destinations||[]).forEach(stop=>(stop.itinerary||[]).forEach(item=>{
+      const type=cleanType(item?.category);counts[type]=(counts[type]||0)+1;
+    })));
+    return Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+  }
+  function renderActivityTypes(){
+    const track=document.getElementById('passportStatsTrack');if(!track)return;
+    let slide=document.getElementById('activityTypesStatsSlide');
+    if(!slide){
+      slide=document.createElement('article');slide.id='activityTypesStatsSlide';slide.className='passport-stats-slide activity-types-slide';
+      slide.innerHTML='<h4>ACTIVITY TYPES</h4><div id="activityTypesChart" class="activity-types-chart"></div>';
+      const stops=document.getElementById('tripsPerYearStatsSlide');
+      if(stops?.nextSibling)track.insertBefore(slide,stops.nextSibling);else track.appendChild(slide);
+    }
+    const host=slide.querySelector('#activityTypesChart'),rows=activityTypeRows();if(!host)return;
+    if(!rows.length){host.innerHTML='<p class="muted">Add itinerary activities to build your chart.</p>';return}
+    const max=Math.max(...rows.map(x=>x[1]),1);
+    host.innerHTML=rows.map(([name,count])=>`<div class="activity-type-bar-row"><span class="activity-type-bar-label">${esc(name)}</span><div class="activity-type-bar-track"><i style="width:${Math.max(5,count/max*100)}%"></i></div><strong>${count}</strong></div>`).join('');
+  }
+  const oldRender=window.renderPassportCarouselStats;
+  if(typeof oldRender==='function')window.renderPassportCarouselStats=function(){const out=oldRender.apply(this,arguments);renderActivityTypes();return out};
+  const css=document.createElement('style');css.id='wozza-activity-type-insights-style';css.textContent=`
+    .activity-types-slide{padding-bottom:12px!important}
+    .activity-types-slide h4{text-transform:uppercase!important}
+    .activity-types-chart{width:100%;padding:10px 6px 4px;display:flex;flex-direction:column;gap:9px;box-sizing:border-box}
+    .activity-type-bar-row{display:grid;grid-template-columns:minmax(92px,1.25fr) minmax(110px,2.4fr) 28px;gap:9px;align-items:center;min-height:25px;color:#073f52}
+    .activity-type-bar-label{font-size:12px;font-weight:850;line-height:1.05;text-align:right;overflow-wrap:anywhere}
+    .activity-type-bar-track{height:13px;border-radius:999px;background:rgba(7,132,154,.12);overflow:hidden}
+    .activity-type-bar-track i{display:block;height:100%;min-width:5px;border-radius:999px;background:#07849a}
+    .activity-type-bar-row strong{font-size:12px;font-weight:950;text-align:left}
+    @media(max-width:380px){.activity-type-bar-row{grid-template-columns:minmax(78px,1.15fr) minmax(92px,2.2fr) 24px;gap:7px}.activity-type-bar-label,.activity-type-bar-row strong{font-size:11px}}
+  `;document.getElementById(css.id)?.remove();document.head.appendChild(css);
+  renderActivityTypes();
+  requestAnimationFrame(()=>{renderActivityTypes();if(typeof setPassportStatsSlide==='function'&&document.getElementById('passportStatsTrack'))setPassportStatsSlide(passportStatsSlide||0)});
 })();
