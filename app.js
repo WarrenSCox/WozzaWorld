@@ -6021,17 +6021,10 @@ wwOpenQuickInfo=function(row,id){
     });
     if(logo){
       const footerW=360,footerH=120,ratio=Math.min(footerW/logo.naturalWidth,footerH/logo.naturalHeight);
-      const dw=logo.naturalWidth*ratio,dh=logo.naturalHeight*ratio;
-      const footerBottom=H-pad;
-      const logoY=footerBottom-dh;
-      ctx.save();
-      ctx.fillStyle='#17323c';
-      ctx.font=`900 24px ${font}`;
-      ctx.textAlign='center';
-      ctx.textBaseline='alphabetic';
-      ctx.fillText('G E N E R A T E D  B Y',W/2,logoY-18);
-      ctx.restore();
-      ctx.drawImage(logo,(W-dw)/2,logoY,dw,dh);
+      const dw=logo.naturalWidth*ratio,dh=logo.naturalHeight*ratio,label='G E N E R A T E D  B Y',footerGap=26;
+      ctx.save();ctx.fillStyle='#17323c';ctx.font=`900 24px ${font}`;ctx.textAlign='left';ctx.textBaseline='middle';
+      const labelW=ctx.measureText(label).width,groupW=labelW+footerGap+dw,groupX=(W-groupW)/2,logoY=H-pad-dh,centreY=logoY+dh/2;
+      ctx.fillText(label,groupX,centreY);ctx.restore();ctx.drawImage(logo,groupX+labelW+footerGap,logoY,dw,dh);
     }
     /* PDF keeps the exact visual export while adding real clickable link annotations over the visibly-spelled URLs. */
     const jpegUrl=canvas.toDataURL('image/jpeg',.94),jpegBin=atob(jpegUrl.split(',')[1]),jpegBytes=new Uint8Array(jpegBin.length);for(let i=0;i<jpegBin.length;i++)jpegBytes[i]=jpegBin.charCodeAt(i);
@@ -6071,9 +6064,9 @@ wwOpenQuickInfo=function(row,id){
     .ww-export-ready-tick .ww-prep-arrow{animation-duration:1.4s!important}
     /* Exact supplied illustration in the spare itinerary-header area. */
     .master-itinerary-head{position:relative!important}
-    .ww-download-pdf-callout{position:absolute!important;right:-14px!important;top:36px!important;width:99px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
+    .ww-download-pdf-callout{position:absolute!important;right:-17px!important;top:36px!important;width:99px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
     #masterItineraryDialog[data-ww-view="daily"] .ww-download-pdf-callout{display:none!important}
-    @media(max-width:420px){.ww-download-pdf-callout{width:92px!important;right:-14px!important;top:36px!important}}
+    @media(max-width:420px){.ww-download-pdf-callout{width:92px!important;right:-17px!important;top:36px!important}}
   `;
   document.head.appendChild(st);
   document.addEventListener('click',()=>requestAnimationFrame(applyCallout),true);
