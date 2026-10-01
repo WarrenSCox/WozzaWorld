@@ -6062,12 +6062,26 @@ wwOpenQuickInfo=function(row,id){
     .ww-export-ready-tick .ww-prep-arrow{animation-duration:1.4s!important}
     /* Exact supplied illustration in the spare itinerary-header area. */
     .master-itinerary-head{position:relative!important}
-    .ww-download-pdf-callout{position:absolute!important;right:-8px!important;top:42px!important;width:99px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
+    .ww-download-pdf-callout{position:absolute!important;right:-14px!important;top:36px!important;width:99px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
     #masterItineraryDialog[data-ww-view="daily"] .ww-download-pdf-callout{display:none!important}
-    @media(max-width:420px){.ww-download-pdf-callout{width:92px!important;right:-8px!important;top:42px!important}}
+    @media(max-width:420px){.ww-download-pdf-callout{width:92px!important;right:-14px!important;top:36px!important}}
   `;
   document.head.appendChild(st);
   document.addEventListener('click',()=>requestAnimationFrame(applyCallout),true);
   new MutationObserver(()=>requestAnimationFrame(applyCallout)).observe(document.documentElement,{childList:true,subtree:true});
   requestAnimationFrame(()=>requestAnimationFrame(applyCallout));
+})();
+
+/* WozzaWorld: PDF callout hides after download; returns after itinerary changes. */
+(()=>{
+ const D=()=>document.getElementById('masterItineraryDialog'), A=()=>D()?.querySelector('.ww-download-pdf-callout');
+ const hide=()=>{let d=D(),a=A();if(d)d.dataset.wwPdfDownloaded='1';if(a)a.style.setProperty('display','none','important')};
+ const show=()=>{let d=D(),a=A();if(d)delete d.dataset.wwPdfDownloaded;if(a)a.style.removeProperty('display')};
+ document.addEventListener('click',e=>{
+   if(e.target.closest?.('.master-itinerary-capture'))return hide();
+   let d=D();if(d?.dataset.wwPdfDownloaded!=='1')return;
+   if(e.target.closest?.('.master-itinerary-add,.master-itinerary-edit,[data-action="edit"],[data-action="add"],[data-action="delete"],[data-action="remove"],[data-action="save"],.activity-edit,.activity-delete,.todo-check,.todo-add'))show();
+ },true);
+ for(const ev of ['input','change'])document.addEventListener(ev,e=>{let d=D();if(d?.dataset.wwPdfDownloaded==='1'&&d.contains(e.target))show()},true);
+ new MutationObserver(()=>{let d=D(),a=A();if(d?.dataset.wwPdfDownloaded==='1'&&a)a.style.setProperty('display','none','important')}).observe(document.documentElement,{childList:true,subtree:true});
 })();
