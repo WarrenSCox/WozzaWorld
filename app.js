@@ -2990,7 +2990,7 @@ async function wwCaptureFullItinerary(){
 .master-itinerary-head>div{display:flex!important;flex-direction:column!important;gap:4px!important}
 .master-itinerary-head h2{order:1!important;margin:0!important;line-height:1.02!important}
 .master-itinerary-head small.master-itinerary-date-range{order:2!important;margin:2px 0 0!important;line-height:1.25!important}
-.master-itinerary-head .master-itinerary-companions{order:3!important;display:inline-flex!important;align-items:center!important;gap:6px!important;width:max-content!important;margin:1px 0 0!important;color:#7b858a!important;font-size:15px!important;font-weight:650!important;line-height:1.25!important;letter-spacing:0!important}.master-itinerary-head .master-itinerary-companions svg{width:18px!important;height:18px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important;flex:0 0 auto!important}
+.master-itinerary-head .master-itinerary-companions{order:3!important;display:flex!important;align-items:flex-start!important;gap:6px!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;margin:1px 0 0!important;color:#7b858a!important;font-size:15px!important;font-weight:650!important;line-height:1.25!important;letter-spacing:0!important}.master-itinerary-head .master-itinerary-companions>span{display:block!important;min-width:0!important;max-width:100%!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important}.master-itinerary-head .master-itinerary-companions svg{width:18px!important;height:18px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important;flex:0 0 auto!important}
 .master-itinerary-head .master-itinerary-companions[hidden]{display:none!important}
 .master-itinerary-close,.master-itinerary-capture{position:absolute!important;top:0!important;transform:none!important;width:48px!important;height:48px!important;border-radius:50%!important;background:#fff!important;color:#123542!important;display:grid!important;place-items:center!important;margin:0!important}
 .master-itinerary-close{right:0!important}.master-itinerary-capture{right:56px!important;font-size:21px!important}
@@ -6037,139 +6037,17 @@ wwOpenQuickInfo=function(row,id){
     const escPdf=s=>String(s).replace(/([\\()])/g,'\\$1');linkRects.forEach((r,i)=>{const sx=pageW/W,sy=pageH/H,x1=r.x*sx,x2=(r.x+r.w)*sx,y1=pageH-(r.y+r.h)*sy,y2=pageH-r.y*sy;obj(firstAnnot+i,`<< /Type /Annot /Subtype /Link /Rect [${x1.toFixed(2)} ${y1.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)}] /Border [0 0 0] /A << /S /URI /URI (${escPdf(r.url)}) >> >>`)});
     const contentObj=firstAnnot+linkRects.length,stream=`q ${pageW.toFixed(2)} 0 0 ${pageH.toFixed(2)} 0 0 cm /Im0 Do Q`;obj(contentObj,`<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}\nendstream`);
     const xref=total,pdfObjCount=contentObj;push(`xref\n0 ${pdfObjCount+1}\n0000000000 65535 f \n`);for(let i=1;i<=pdfObjCount;i++)push(`${String(offsets[i]).padStart(10,'0')} 00000 n \n`);push(`trailer\n<< /Size ${pdfObjCount+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
-    const pdf=new Blob(parts,{type:'application/pdf'}),url=URL.createObjectURL(pdf),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.pdf`;document.body.appendChild(a);a.click();a.remove();window.wwMarkCurrentItineraryPdfDownloaded?.();setTimeout(()=>URL.revokeObjectURL(url),4000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse','ww-download-pressed')}},180);
+    const pdf=new Blob(parts,{type:'application/pdf'}),url=URL.createObjectURL(pdf),a=document.createElement('a');a.href=url;a.download=`${(meta.name||'trip-itinerary').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')}-itinerary.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);setTimeout(()=>{if(btn){delete btn.dataset.exportBusy;btn.classList.remove('ww-download-pulse','ww-download-pressed')}},180);
   };
 })();
 
-/* === WozzaWorld hotfix — calmer preparing animation + Download as PDF header callout === */
+/* === WozzaWorld hotfix — calmer preparing animation === */
 (()=>{
-  const applyCallout=()=>{
-    const d=document.getElementById('masterItineraryDialog');
-    const head=d?.querySelector('.master-itinerary-head');
-    if(!head)return;
-    let img=head.querySelector('.ww-download-pdf-callout');
-    if(!img){
-      img=document.createElement('img');
-      img.className='ww-download-pdf-callout';
-      img.src='download-as-pdf-callout.png';
-      img.alt='Download as PDF';
-      img.draggable=false;
-      head.appendChild(img);
-    }
-  };
   const st=document.createElement('style');
-  st.id='ww-download-callout-slower-prep-011026';
+  st.id='ww-download-preparing-animation-011026';
   st.textContent=`
-    /* Same Android-style motion, just calmer. */
+    /* Preserve the accepted, slightly slower Android-style preparing motion. */
     .ww-export-ready-tick .ww-prep-arrow{animation-duration:1.4s!important}
-    /* Exact supplied illustration in the spare itinerary-header area. */
-    .master-itinerary-head{position:relative!important}
-    .ww-download-pdf-callout{position:absolute!important;right:-17px!important;top:36px!important;width:99px!important;height:auto!important;display:block!important;object-fit:contain!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;z-index:2!important}
-    #masterItineraryDialog[data-ww-view="daily"] .ww-download-pdf-callout{display:none!important}
-    @media(max-width:420px){.ww-download-pdf-callout{width:92px!important;right:-17px!important;top:36px!important}}
   `;
   document.head.appendChild(st);
-  document.addEventListener('click',()=>requestAnimationFrame(applyCallout),true);
-  new MutationObserver(()=>requestAnimationFrame(applyCallout)).observe(document.documentElement,{childList:true,subtree:true});
-  requestAnimationFrame(()=>requestAnimationFrame(applyCallout));
-})();
-
-
-
-
-/* === WozzaWorld — persistent per-trip PDF freshness prompt === */
-(()=>{
- const STORE='wozzaworld-pdf-export-fingerprints-v1';
- const D=()=>document.getElementById('masterItineraryDialog');
- const A=()=>D()?.querySelector('.ww-download-pdf-callout');
- const trip=()=>editingTripId?state.trips.find(t=>String(t.id)===String(editingTripId)):null;
- const key=()=>String(trip()?.id||editingTripId||'');
- const stable=v=>{
-   if(Array.isArray(v))return v.map(stable);
-   if(v&&typeof v==='object'){const o={};Object.keys(v).sort().forEach(k=>{if(!/^(_|ui|view)/i.test(k))o[k]=stable(v[k])});return o}
-   return v;
- };
- const hash=str=>{let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
- const fingerprint=()=>{const t=trip();return t?hash(JSON.stringify(stable(t))):''};
- const read=()=>{try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch{return {}}};
- const downloadedFingerprint=()=>read()[key()]||'';
- const isCurrent=()=>{const k=key(),f=fingerprint();return !!k&&!!f&&downloadedFingerprint()===f};
- const apply=()=>{
-   const a=A();if(!a)return;
-   if(isCurrent())a.style.setProperty('display','none','important');
-   else a.style.removeProperty('display');
- };
- window.wwMarkCurrentItineraryPdfDownloaded=()=>{
-   const k=key(),f=fingerprint();if(!k||!f)return;
-   const m=read();m[k]=f;localStorage.setItem(STORE,JSON.stringify(m));apply();
- };
- window.wwRefreshPdfCalloutFreshness=apply;
- const oldSave=save;
- save=function(){const r=oldSave.apply(this,arguments);queueMicrotask(apply);return r};
- document.addEventListener('click',()=>requestAnimationFrame(apply),true);
- new MutationObserver(()=>requestAnimationFrame(apply)).observe(document.documentElement,{childList:true,subtree:true});
- requestAnimationFrame(()=>requestAnimationFrame(apply));
-})();
-
-/* === WozzaWorld hotfix — natural companion wrap around PDF handwriting 02 Oct 2026 === */
-(()=>{
-  const fit=()=>{
-    const d=document.getElementById('masterItineraryDialog');
-    const head=d?.querySelector('.master-itinerary-head');
-    const companions=head?.querySelector('.master-itinerary-companions');
-    const callout=head?.querySelector('.ww-download-pdf-callout');
-    if(!head||!companions||!callout)return;
-    /* Put the real handwriting asset in the companions' own formatting context.
-       Its float is therefore the only boundary: text uses all remaining pixels
-       beside it, then automatically returns to full width below it. */
-    if(callout.parentElement!==companions) companions.insertBefore(callout,companions.firstChild);
-  };
-  const st=document.createElement('style');
-  st.id='ww-companion-float-around-download-callout-021026';
-  st.textContent=`
-    .master-itinerary-head .master-itinerary-companions{
-      display:block!important;
-      width:100%!important;
-      max-width:none!important;
-      min-width:0!important;
-      margin:5px 0 0!important;
-      overflow:visible!important;
-    }
-    .master-itinerary-head .master-itinerary-companions>svg{
-      float:left!important;
-      margin:2px 7px 0 0!important;
-    }
-    .master-itinerary-head .master-itinerary-companions>span{
-      display:block!important;
-      width:auto!important;
-      max-width:none!important;
-      min-width:0!important;
-      white-space:normal!important;
-      overflow-wrap:normal!important;
-      word-break:normal!important;
-    }
-    .master-itinerary-head .master-itinerary-companions .ww-download-pdf-callout{
-      position:static!important;
-      float:right!important;
-      width:99px!important;
-      height:auto!important;
-      margin:-43px -17px 5px 14px!important;
-      object-fit:contain!important;
-      pointer-events:none!important;
-      user-select:none!important;
-      -webkit-user-drag:none!important;
-      z-index:auto!important;
-    }
-    #masterItineraryDialog[data-ww-view="daily"] .master-itinerary-companions .ww-download-pdf-callout{display:none!important}
-    @media(max-width:420px){
-      .master-itinerary-head .master-itinerary-companions .ww-download-pdf-callout{
-        width:92px!important;
-        margin-right:-17px!important;
-      }
-    }
-  `;
-  document.head.appendChild(st);
-  document.addEventListener('click',()=>requestAnimationFrame(fit),true);
-  new MutationObserver(()=>requestAnimationFrame(fit)).observe(document.documentElement,{childList:true,subtree:true});
-  requestAnimationFrame(()=>requestAnimationFrame(fit));
 })();
