@@ -6111,36 +6111,65 @@ wwOpenQuickInfo=function(row,id){
  requestAnimationFrame(()=>requestAnimationFrame(apply));
 })();
 
-
-/* === WozzaWorld hotfix — companion wrap: 75% first two lines beside PDF callout 02 Oct 2026 === */
+/* === WozzaWorld hotfix — natural companion wrap around PDF handwriting 02 Oct 2026 === */
 (()=>{
-  const sync=()=>{
-    const d=document.getElementById('masterItineraryDialog'),head=d?.querySelector('.master-itinerary-head');
-    if(!head)return;
-    const callout=head.querySelector('.ww-download-pdf-callout'),comp=head.querySelector('.master-itinerary-companions');
-    if(!comp)return;
-    const visible=!!callout && getComputedStyle(callout).display!=='none' && callout.getBoundingClientRect().width>0;
-    comp.classList.toggle('ww-has-pdf-callout',visible);
+  const fit=()=>{
+    const d=document.getElementById('masterItineraryDialog');
+    const head=d?.querySelector('.master-itinerary-head');
+    const companions=head?.querySelector('.master-itinerary-companions');
+    const callout=head?.querySelector('.ww-download-pdf-callout');
+    if(!head||!companions||!callout)return;
+    /* Put the real handwriting asset in the companions' own formatting context.
+       Its float is therefore the only boundary: text uses all remaining pixels
+       beside it, then automatically returns to full width below it. */
+    if(callout.parentElement!==companions) companions.insertBefore(callout,companions.firstChild);
   };
-  const st=document.createElement('style');st.id='ww-dynamic-itinerary-companions-021026';st.textContent=`
-    .master-itinerary-head>div{min-width:0!important;width:100%!important}
+  const st=document.createElement('style');
+  st.id='ww-companion-float-around-download-callout-021026';
+  st.textContent=`
     .master-itinerary-head .master-itinerary-companions{
-      position:relative!important;display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
-      box-sizing:border-box!important;overflow:visible!important;padding-left:24px!important;
+      display:block!important;
+      width:100%!important;
+      max-width:none!important;
+      min-width:0!important;
+      margin:5px 0 0!important;
+      overflow:visible!important;
     }
     .master-itinerary-head .master-itinerary-companions>svg{
-      position:absolute!important;left:0!important;top:1px!important;margin:0!important;
+      float:left!important;
+      margin:2px 7px 0 0!important;
     }
     .master-itinerary-head .master-itinerary-companions>span{
-      display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;white-space:normal!important;
-      overflow-wrap:normal!important;word-break:normal!important;line-height:1.25!important;
+      display:block!important;
+      width:auto!important;
+      max-width:none!important;
+      min-width:0!important;
+      white-space:normal!important;
+      overflow-wrap:normal!important;
+      word-break:normal!important;
     }
-    .master-itinerary-head .master-itinerary-companions.ww-has-pdf-callout>span::before{
-      content:"";float:right;width:25%;height:2.5em;pointer-events:none;
+    .master-itinerary-head .master-itinerary-companions .ww-download-pdf-callout{
+      position:static!important;
+      float:right!important;
+      width:99px!important;
+      height:auto!important;
+      margin:-43px -17px 5px 14px!important;
+      object-fit:contain!important;
+      pointer-events:none!important;
+      user-select:none!important;
+      -webkit-user-drag:none!important;
+      z-index:auto!important;
     }
-  `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
-  new MutationObserver(()=>requestAnimationFrame(sync)).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['style','hidden','class']});
-  window.addEventListener('resize',sync,{passive:true});
-  document.addEventListener('click',()=>requestAnimationFrame(sync),true);
-  requestAnimationFrame(()=>requestAnimationFrame(sync));
+    #masterItineraryDialog[data-ww-view="daily"] .master-itinerary-companions .ww-download-pdf-callout{display:none!important}
+    @media(max-width:420px){
+      .master-itinerary-head .master-itinerary-companions .ww-download-pdf-callout{
+        width:92px!important;
+        margin-right:-17px!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+  document.addEventListener('click',()=>requestAnimationFrame(fit),true);
+  new MutationObserver(()=>requestAnimationFrame(fit)).observe(document.documentElement,{childList:true,subtree:true});
+  requestAnimationFrame(()=>requestAnimationFrame(fit));
 })();
