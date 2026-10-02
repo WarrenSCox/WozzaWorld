@@ -6073,3 +6073,28 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — hanging companion icon so wrapped lines reclaim left gap === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-itinerary-companions-hanging-icon-021026';
+  st.textContent=`
+    .master-itinerary-head .master-itinerary-companions{
+      position:relative!important;
+      display:block!important;
+      gap:0!important;
+    }
+    .master-itinerary-head .master-itinerary-companions svg{
+      position:absolute!important;
+      left:0!important;
+      top:1px!important;
+      margin:0!important;
+    }
+    .master-itinerary-head .master-itinerary-companions>span{
+      display:block!important;
+      width:100%!important;
+      text-indent:24px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
