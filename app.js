@@ -6326,3 +6326,37 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — itinerary header country flag + compact actions 02 Oct 2026 === */
+(()=>{
+  if(window.__wwItineraryHeaderFlag021026)return;
+  window.__wwItineraryHeaderFlag021026=true;
+  const st=document.createElement('style');st.id='ww-itinerary-header-flag-021026';st.textContent=`
+    .master-itinerary-head{padding-right:152px!important}
+    .master-itinerary-close,.master-itinerary-capture,.master-itinerary-trip-flag{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;box-sizing:border-box!important}
+    .master-itinerary-close{right:0!important}
+    .master-itinerary-capture{right:52px!important}
+    .master-itinerary-trip-flag{position:absolute!important;top:0!important;right:104px!important;border-radius:50%!important;background:#fff!important;border:1px solid rgba(16,47,59,.10)!important;padding:3px!important;margin:0!important;display:grid!important;place-items:center!important;overflow:hidden!important;perspective:240px!important}
+    .master-itinerary-trip-flag-slot{width:36px!important;height:36px!important;border-radius:50%!important;overflow:hidden!important;display:grid!important;place-items:center!important;transform-origin:50% 50%;backface-visibility:hidden}
+    .master-itinerary-trip-flag-slot img{display:block!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;object-fit:cover!important;border-radius:50%!important;margin:0!important;padding:0!important}
+    .master-itinerary-trip-flag-slot.flap-out{animation:wozzaAdaptiveFlapOut .16s ease-in forwards}
+    .master-itinerary-trip-flag-slot.flap-in{animation:wozzaAdaptiveFlapIn .20s ease-out forwards}
+    @media(prefers-reduced-motion:reduce){.master-itinerary-trip-flag-slot.flap-out,.master-itinerary-trip-flag-slot.flap-in{animation:none!important}}
+  `;document.head.appendChild(st);
+
+  const oldApply=wwApplyItineraryTripHeader;
+  wwApplyItineraryTripHeader=function(d){
+    const r=oldApply.apply(this,arguments),head=d?.querySelector('.master-itinerary-head');if(!head)return r;
+    let countries=[...new Set(wwTripStopRows().map(row=>row.querySelector('.trip-stop-country')?.value?.trim()).filter(Boolean))];
+    if(!countries.length&&editingTripId){const trip=state.trips.find(t=>String(t.id)===String(editingTripId));if(trip)countries=[...new Set(tripCountries(trip).filter(Boolean))]}
+    let holder=head.querySelector('.master-itinerary-trip-flag');
+    if(!countries.length){if(holder){clearInterval(holder._wwFlagTimer);holder.remove()}return r}
+    if(!holder){holder=document.createElement('span');holder.className='master-itinerary-trip-flag';holder.setAttribute('aria-label','Trip country');holder.innerHTML='<span class="master-itinerary-trip-flag-slot"></span>';head.insertBefore(holder,head.querySelector('.master-itinerary-capture'))}
+    clearInterval(holder._wwFlagTimer);
+    const slot=holder.querySelector('.master-itinerary-trip-flag-slot');let index=0;
+    const paint=country=>{slot.innerHTML=flagMarkup(country,'master-itinerary-trip-flag-img');holder.title=country;holder.setAttribute('aria-label',`Trip country: ${country}`)};
+    paint(countries[0]);
+    if(countries.length>1){holder._wwFlagTimer=setInterval(()=>{if(!holder.isConnected){clearInterval(holder._wwFlagTimer);return}index=(index+1)%countries.length;slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{paint(countries[index]);slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},4000)}
+    return r;
+  };
+})();
