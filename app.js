@@ -6393,3 +6393,26 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — itinerary date/companions +4px; flag -2% 02 Oct 2026 === */
+(()=>{
+  if(document.getElementById('ww-itinerary-date-companions-flag-polish-021026'))return;
+  const st=document.createElement('style');
+  st.id='ww-itinerary-date-companions-flag-polish-021026';
+  st.textContent=`
+    .master-itinerary-head small.master-itinerary-date-range,
+    .master-itinerary-head .master-itinerary-companions{
+      top:12px!important;
+    }
+    .master-itinerary-trip-flag-slot,
+    .master-itinerary-trip-flag-slot img{
+      width:39.735px!important;
+      height:39.735px!important;
+      min-width:39.735px!important;
+      min-height:39.735px!important;
+      max-width:39.735px!important;
+      max-height:39.735px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
