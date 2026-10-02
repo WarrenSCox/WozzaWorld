@@ -6311,3 +6311,18 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld surgical polish — stop delete circle +3% 02 Oct 2026 === */
+(()=>{
+  if(window.__wwStopDeleteScale021026)return;
+  window.__wwStopDeleteScale021026=true;
+  const st=document.createElement('style');
+  st.id='ww-stop-delete-scale-021026';
+  st.textContent=`
+    #tripDestinationStops .remove-destination-stop{
+      transform:scale(1.03)!important;
+      transform-origin:center!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
