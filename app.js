@@ -6051,3 +6051,25 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — companions use full itinerary header width === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-itinerary-companions-full-width-021026';
+  st.textContent=`
+    /* The header keeps 116px reserved for Download/Close for title + date only.
+       Companions sit below those controls, so reclaim that width and wrap at the card edge. */
+    .master-itinerary-head .master-itinerary-companions{
+      width:calc(100% + 116px)!important;
+      max-width:none!important;
+      padding-right:0!important;
+    }
+    .master-itinerary-head .master-itinerary-companions>span{
+      flex:1 1 auto!important;
+      min-width:0!important;
+      max-width:none!important;
+      white-space:normal!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
