@@ -6416,3 +6416,24 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — keep itinerary companions on one responsive line 02 Oct 2026 === */
+(()=>{
+  if(document.getElementById('ww-itinerary-companions-single-line-021026'))return;
+  const st=document.createElement('style');
+  st.id='ww-itinerary-companions-single-line-021026';
+  st.textContent=`
+    .master-itinerary-head .master-itinerary-companions{
+      white-space:nowrap!important;
+      overflow:visible!important;
+    }
+    .master-itinerary-head .master-itinerary-companions>span{
+      white-space:nowrap!important;
+      width:auto!important;
+      max-width:none!important;
+      font-size:clamp(12px,3.55vw,15px)!important;
+      letter-spacing:-.1px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
