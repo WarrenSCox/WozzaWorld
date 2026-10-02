@@ -6105,9 +6105,10 @@ wwOpenQuickInfo=function(row,id){
   style.id='wozza-time-picker-style';
   style.textContent=`
     .wozza-calendar-time{cursor:pointer!important;caret-color:transparent}
-    #wozzaTimePicker{width:min(350px,calc(100vw - 42px));max-width:none;padding:0;border:0;border-radius:24px;background:transparent;overflow:visible;color:#073f52}
-    #wozzaTimePicker::backdrop{background:rgba(7,63,82,.20);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-    .wozza-time-card{background:#f4fbfc;border-radius:24px;overflow:hidden;box-shadow:0 22px 60px rgba(7,63,82,.30);font-family:inherit}
+    .wozza-time-layer{position:absolute;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(7,63,82,.20);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border-radius:inherit}
+    .wozza-time-layer[hidden]{display:none!important}
+    .wozza-calendar{position:relative}
+    .wozza-time-card{width:min(350px,100%);background:#f4fbfc;border-radius:24px;overflow:hidden;box-shadow:0 22px 60px rgba(7,63,82,.30);font-family:inherit;color:#073f52}
     .wozza-time-head{background:#087b8c;color:#fff;text-align:center;padding:19px 18px 17px}
     .wozza-time-head h3{margin:0;font-size:22px;font-weight:900}.wozza-time-head p{margin:4px 0 0;font-size:12px;font-weight:750;opacity:.82}
     .wozza-time-body{padding:18px 16px 20px}.wozza-time-labels{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px;text-align:center;color:#6f7e82;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.45px}
@@ -6121,41 +6122,40 @@ wwOpenQuickInfo=function(row,id){
 
   let picked={hour:null,minute:null,period:null},source=null;
   const ensure=()=>{
-    let d=document.getElementById('wozzaTimePicker');if(d)return d;
-    d=document.createElement('dialog');d.id='wozzaTimePicker';d.setAttribute('aria-label','Choose time');
+    const cal=wozzaCalendarEnsure().querySelector('.wozza-calendar');
+    let layer=cal.querySelector('.wozza-time-layer');if(layer)return layer;
+    layer=document.createElement('div');layer.className='wozza-time-layer';layer.hidden=true;layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.setAttribute('aria-label','Choose time');
     const hours=Array.from({length:12},(_,i)=>i+1),mins=Array.from({length:60},(_,i)=>String(i).padStart(2,'0'));
-    d.innerHTML=`<div class="wozza-time-card"><div class="wozza-time-head"><h3>Choose time</h3><p>Tap an hour, minute and AM or PM</p></div><div class="wozza-time-body"><div class="wozza-time-labels"><span>Hour</span><span>Minute</span><span>AM / PM</span></div><div class="wozza-time-columns"><div class="wozza-time-column wozza-time-hours">${hours.map(x=>`<button type="button" class="wozza-time-option" data-time-hour="${x}">${x}</button>`).join('')}</div><div class="wozza-time-column wozza-time-minutes">${mins.map(x=>`<button type="button" class="wozza-time-option" data-time-minute="${x}">${x}</button>`).join('')}</div><div class="wozza-time-column wozza-time-period">${['AM','PM'].map(x=>`<button type="button" class="wozza-time-option" data-time-period="${x}">${x}</button>`).join('')}</div></div><div class="wozza-time-hint">Your time is applied automatically once all three are selected.</div></div><button type="button" class="wozza-time-cancel">Cancel</button></div>`;
-    document.body.appendChild(d);
-    d.querySelector('.wozza-time-cancel').onclick=()=>d.close();
-    d.addEventListener('cancel',e=>{e.preventDefault();d.close()});
-    d.addEventListener('click',e=>{if(e.target===d)d.close()});
-    d.addEventListener('click',e=>{
+    layer.innerHTML=`<div class="wozza-time-card"><div class="wozza-time-head"><h3>Choose time</h3><p>Tap an hour, minute and AM or PM</p></div><div class="wozza-time-body"><div class="wozza-time-labels"><span>Hour</span><span>Minute</span><span>AM / PM</span></div><div class="wozza-time-columns"><div class="wozza-time-column wozza-time-hours">${hours.map(x=>`<button type="button" class="wozza-time-option" data-time-hour="${x}">${x}</button>`).join('')}</div><div class="wozza-time-column wozza-time-minutes">${mins.map(x=>`<button type="button" class="wozza-time-option" data-time-minute="${x}">${x}</button>`).join('')}</div><div class="wozza-time-column wozza-time-period">${['AM','PM'].map(x=>`<button type="button" class="wozza-time-option" data-time-period="${x}">${x}</button>`).join('')}</div></div><div class="wozza-time-hint">Your time is applied automatically once all three are selected.</div></div><button type="button" class="wozza-time-cancel">Cancel</button></div>`;
+    cal.appendChild(layer);
+    const close=()=>{layer.hidden=true;source?.focus?.({preventScroll:true})};
+    layer.querySelector('.wozza-time-cancel').onclick=close;
+    layer.addEventListener('click',e=>{if(e.target===layer)close()});
+    layer.addEventListener('click',e=>{
       const b=e.target.closest('.wozza-time-option');if(!b)return;
       if(b.dataset.timeHour)picked.hour=Number(b.dataset.timeHour);
       if(b.dataset.timeMinute!=null)picked.minute=b.dataset.timeMinute;
       if(b.dataset.timePeriod)picked.period=b.dataset.timePeriod;
-      const key=b.dataset.timeHour?'timeHour':b.dataset.timeMinute!=null?'timeMinute':'timePeriod';
       b.closest('.wozza-time-column').querySelectorAll('.wozza-time-option').forEach(x=>x.classList.toggle('selected',x===b));
       b.scrollIntoView({block:'center',behavior:'smooth'});
       if(picked.hour!=null&&picked.minute!=null&&picked.period){
         let h=picked.hour%12;if(picked.period==='PM')h+=12;
         const value=`${String(h).padStart(2,'0')}:${picked.minute}`;
-        if(source){source.value=value;source.dispatchEvent(new Event('input',{bubbles:true}));source.dispatchEvent(new Event('change',{bubbles:true}));}
-        setTimeout(()=>d.close(),120);
+        if(source){source.value=value;source.dispatchEvent(new Event('input',{bubbles:true}));source.dispatchEvent(new Event('change',{bubbles:true}))}
+        setTimeout(close,120);
       }
     });
-    return d;
+    return layer;
   };
   const open=tm=>{
     if(!tm||tm.disabled)return;
     source=tm;picked={hour:null,minute:null,period:null};
-    const d=ensure();d.querySelectorAll('.wozza-time-option').forEach(x=>x.classList.remove('selected'));
+    const layer=ensure();layer.querySelectorAll('.wozza-time-option').forEach(x=>x.classList.remove('selected'));
     const m=/^(\d{2}):(\d{2})$/.exec(tm.value||'');
     if(m){const h24=Number(m[1]);picked.hour=h24%12||12;picked.minute=m[2];picked.period=h24>=12?'PM':'AM';
-      d.querySelector(`[data-time-hour="${picked.hour}"]`)?.classList.add('selected');d.querySelector(`[data-time-minute="${picked.minute}"]`)?.classList.add('selected');d.querySelector(`[data-time-period="${picked.period}"]`)?.classList.add('selected');
-    }
-    if(!d.open)d.showModal();
-    requestAnimationFrame(()=>{d.querySelectorAll('.wozza-time-option.selected').forEach(x=>x.scrollIntoView({block:'center'}));d.querySelector('.wozza-time-option.selected')?.focus({preventScroll:true})});
+      layer.querySelector(`[data-time-hour="${picked.hour}"]`)?.classList.add('selected');layer.querySelector(`[data-time-minute="${picked.minute}"]`)?.classList.add('selected');layer.querySelector(`[data-time-period="${picked.period}"]`)?.classList.add('selected')}
+    layer.hidden=false;
+    requestAnimationFrame(()=>layer.querySelectorAll('.wozza-time-option.selected').forEach(x=>x.scrollIntoView({block:'center'})));
   };
   document.addEventListener('click',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm)return;e.preventDefault();e.stopPropagation();open(tm)},true);
   document.addEventListener('keydown',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm||(e.key!=='Enter'&&e.key!==' '))return;e.preventDefault();open(tm)},true);
