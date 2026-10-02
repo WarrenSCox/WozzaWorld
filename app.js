@@ -432,6 +432,12 @@ async function closeSheet(){
    document.body.classList.toggle('trips-view',!!origin.tripsView);
    $$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen===origin.screen));
    $$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target===origin.screen));
+ } else if(origin?.type==='itinerary'){
+   wwOpenTripItinerary();
+   requestAnimationFrame(()=>{
+     const d=wwMasterItineraryDialog();
+     if(Number.isFinite(origin.scrollTop))d.scrollTop=origin.scrollTop;
+   });
  }
 }
 function attachTripRatingEvents(){$$('[data-trip-rating] button').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();const wrap=b.closest('[data-trip-rating]'),t=state.trips.find(x=>String(x.id)===String(wrap?.dataset.tripRating));if(!t)return;t.rating=Number(b.dataset.rate)||0;save();toast(`Rated ${t.rating} out of 5 ★`)})}
@@ -6352,10 +6358,19 @@ wwOpenQuickInfo=function(row,id){
     if(!countries.length&&editingTripId){const trip=state.trips.find(t=>String(t.id)===String(editingTripId));if(trip)countries=[...new Set(tripCountries(trip).filter(Boolean))]}
     let holder=head.querySelector('.master-itinerary-trip-flag');
     if(!countries.length){if(holder){clearInterval(holder._wwFlagTimer);holder.remove()}return r}
-    if(!holder){holder=document.createElement('span');holder.className='master-itinerary-trip-flag';holder.setAttribute('aria-label','Trip country');holder.innerHTML='<span class="master-itinerary-trip-flag-slot"></span>';head.insertBefore(holder,head.querySelector('.master-itinerary-capture'))}
+    if(!holder){holder=document.createElement('button');holder.type='button';holder.className='master-itinerary-trip-flag';holder.setAttribute('aria-label','Trip country');holder.innerHTML='<span class="master-itinerary-trip-flag-slot"></span>';head.insertBefore(holder,head.querySelector('.master-itinerary-capture'))}
     clearInterval(holder._wwFlagTimer);
     const slot=holder.querySelector('.master-itinerary-trip-flag-slot');let index=0;
-    const paint=country=>{slot.innerHTML=flagMarkup(country,'master-itinerary-trip-flag-img');holder.title=country;holder.setAttribute('aria-label',`Trip country: ${country}`)};
+    const paint=country=>{slot.innerHTML=flagMarkup(country,'master-itinerary-trip-flag-img');holder.dataset.currentCountry=country;holder.title=`Open ${country}`;holder.setAttribute('aria-label',`Open ${country} country page`)};
+    holder.onclick=e=>{
+      e.preventDefault();e.stopPropagation();
+      const country=holder.dataset.currentCountry?.trim();if(!country)return;
+      const dialog=wwMasterItineraryDialog();
+      const origin={type:'itinerary',scrollTop:dialog?.scrollTop||0};
+      clearInterval(holder._wwFlagTimer);
+      if(dialog?.open)dialog.close();
+      openCountry(country,origin);
+    };
     paint(countries[0]);
     if(countries.length>1){holder._wwFlagTimer=setInterval(()=>{if(!holder.isConnected){clearInterval(holder._wwFlagTimer);return}index=(index+1)%countries.length;slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{paint(countries[index]);slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},4000)}
     return r;
