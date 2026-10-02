@@ -6437,3 +6437,26 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — itinerary companions natural wrap only when needed 02 Oct 2026 === */
+(()=>{
+  if(document.getElementById('ww-itinerary-companions-natural-wrap-021026'))return;
+  const st=document.createElement('style');
+  st.id='ww-itinerary-companions-natural-wrap-021026';
+  st.textContent=`
+    .master-itinerary-head .master-itinerary-companions{
+      white-space:normal!important;
+      overflow:visible!important;
+    }
+    .master-itinerary-head .master-itinerary-companions>span{
+      white-space:normal!important;
+      width:100%!important;
+      max-width:100%!important;
+      font-size:15px!important;
+      letter-spacing:0!important;
+      overflow-wrap:normal!important;
+      word-break:normal!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
