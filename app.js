@@ -6337,8 +6337,8 @@ wwOpenQuickInfo=function(row,id){
     .master-itinerary-close{right:0!important}
     .master-itinerary-capture{right:52px!important}
     .master-itinerary-trip-flag{position:absolute!important;top:0!important;right:104px!important;border-radius:50%!important;background:transparent!important;border:0!important;padding:0!important;margin:0!important;display:grid!important;place-items:center!important;overflow:hidden!important;perspective:240px!important}
-    .master-itinerary-trip-flag-slot{width:42.68px!important;height:42.68px!important;border-radius:50%!important;overflow:hidden!important;display:grid!important;place-items:center!important;transform-origin:50% 50%;backface-visibility:hidden}
-    .master-itinerary-trip-flag-slot img{display:block!important;width:42.68px!important;height:42.68px!important;min-width:42.68px!important;min-height:42.68px!important;max-width:42.68px!important;max-height:42.68px!important;object-fit:cover!important;border-radius:50%!important;margin:0!important;padding:0!important}
+    .master-itinerary-trip-flag-slot{width:40.546px!important;height:40.546px!important;border-radius:50%!important;overflow:hidden!important;display:grid!important;place-items:center!important;transform-origin:50% 50%;backface-visibility:hidden}
+    .master-itinerary-trip-flag-slot img{display:block!important;width:40.546px!important;height:40.546px!important;min-width:40.546px!important;min-height:40.546px!important;max-width:40.546px!important;max-height:40.546px!important;object-fit:cover!important;border-radius:50%!important;margin:0!important;padding:0!important}
     .master-itinerary-trip-flag-slot.flap-out{animation:wozzaAdaptiveFlapOut .16s ease-in forwards}
     .master-itinerary-trip-flag-slot.flap-in{animation:wozzaAdaptiveFlapIn .20s ease-out forwards}
     @media(prefers-reduced-motion:reduce){.master-itinerary-trip-flag-slot.flap-out,.master-itinerary-trip-flag-slot.flap-in{animation:none!important}}
