@@ -6110,3 +6110,37 @@ wwOpenQuickInfo=function(row,id){
  new MutationObserver(()=>requestAnimationFrame(apply)).observe(document.documentElement,{childList:true,subtree:true});
  requestAnimationFrame(()=>requestAnimationFrame(apply));
 })();
+
+
+/* === WozzaWorld hotfix — dynamic itinerary companion wrapping 02 Oct 2026 === */
+(()=>{
+  const sync=()=>{
+    const d=document.getElementById('masterItineraryDialog'),head=d?.querySelector('.master-itinerary-head');
+    if(!head)return;
+    const callout=head.querySelector('.ww-download-pdf-callout'),comp=head.querySelector('.master-itinerary-companions');
+    if(!comp)return;
+    const visible=!!callout && getComputedStyle(callout).display!=='none' && callout.getBoundingClientRect().width>0;
+    let reserve=0;
+    if(visible){
+      const hr=head.getBoundingClientRect(),cr=callout.getBoundingClientRect();
+      reserve=Math.max(0,hr.right-cr.left+6);
+    }
+    head.style.setProperty('--ww-companion-reserve',`${reserve}px`);
+  };
+  const st=document.createElement('style');st.id='ww-dynamic-itinerary-companions-021026';st.textContent=`
+    .master-itinerary-head>div{min-width:0!important}
+    .master-itinerary-head .master-itinerary-companions{
+      display:flex!important;width:auto!important;max-width:calc(100% - var(--ww-companion-reserve,0px))!important;
+      min-width:0!important;align-items:flex-start!important;box-sizing:border-box!important;overflow:visible!important;
+    }
+    .master-itinerary-head .master-itinerary-companions>span{
+      display:block!important;min-width:0!important;max-width:100%!important;white-space:normal!important;
+      overflow-wrap:normal!important;word-break:normal!important;line-height:1.25!important;
+    }
+    .master-itinerary-head .master-itinerary-companions svg{margin-top:1px!important}
+  `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
+  new MutationObserver(()=>requestAnimationFrame(sync)).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['style','hidden','class']});
+  window.addEventListener('resize',sync,{passive:true});
+  document.addEventListener('click',()=>requestAnimationFrame(sync),true);
+  requestAnimationFrame(()=>requestAnimationFrame(sync));
+})();
