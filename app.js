@@ -6099,66 +6099,30 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
-/* === WozzaWorld custom activity time picker (02 Oct 2026) === */
+/* === WozzaWorld clock-face activity time picker (02 Oct 2026) === */
 (()=>{
-  const style=document.createElement('style');
-  style.id='wozza-time-picker-style';
-  style.textContent=`
-    .wozza-calendar-time{cursor:pointer!important;caret-color:transparent}
-    .wozza-time-layer{position:absolute;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(7,63,82,.20);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border-radius:inherit}
-    .wozza-time-layer[hidden]{display:none!important}
-    .wozza-calendar{position:relative}
-    .wozza-time-card{width:min(350px,100%);background:#f4fbfc;border-radius:24px;overflow:hidden;box-shadow:0 22px 60px rgba(7,63,82,.30);font-family:inherit;color:#073f52}
-    .wozza-time-head{background:#087b8c;color:#fff;text-align:center;padding:19px 18px 17px}
-    .wozza-time-head h3{margin:0;font-size:22px;font-weight:900}.wozza-time-head p{margin:4px 0 0;font-size:12px;font-weight:750;opacity:.82}
-    .wozza-time-body{padding:18px 16px 20px}.wozza-time-labels{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px;text-align:center;color:#6f7e82;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.45px}
-    .wozza-time-columns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.wozza-time-column{height:210px;overflow:auto;scrollbar-width:none;padding:76px 0;box-sizing:border-box;scroll-snap-type:y mandatory;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 1px #dcebed;position:relative}
-    .wozza-time-column::-webkit-scrollbar{display:none}.wozza-time-option{display:flex;width:calc(100% - 12px);height:48px;margin:0 6px;align-items:center;justify-content:center;border:0;background:transparent;border-radius:14px;color:#073f52;font:inherit;font-size:18px;font-weight:850;scroll-snap-align:center;cursor:pointer}
-    .wozza-time-option.selected{background:#e9bd25;color:#17213d}.wozza-time-option:active{transform:scale(.95)}
-    .wozza-time-period .wozza-time-option{font-size:16px}.wozza-time-hint{text-align:center;margin:15px 4px 0;color:#6f7e82;font-size:12px;font-weight:700;line-height:1.35}
-    .wozza-time-cancel{display:block;width:calc(100% - 32px);margin:0 16px 18px;border:0;border-radius:11px;padding:12px;background:#d9534f;color:#fff;font:inherit;font-weight:850;cursor:pointer}
-  `;
-  document.head.appendChild(style);
-
-  let picked={hour:null,minute:null,period:null},source=null;
-  const ensure=()=>{
-    const cal=wozzaCalendarEnsure().querySelector('.wozza-calendar');
-    let layer=cal.querySelector('.wozza-time-layer');if(layer)return layer;
-    layer=document.createElement('div');layer.className='wozza-time-layer';layer.hidden=true;layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.setAttribute('aria-label','Choose time');
-    const hours=Array.from({length:12},(_,i)=>i+1),mins=Array.from({length:60},(_,i)=>String(i).padStart(2,'0'));
-    layer.innerHTML=`<div class="wozza-time-card"><div class="wozza-time-head"><h3>Choose time</h3><p>Tap an hour, minute and AM or PM</p></div><div class="wozza-time-body"><div class="wozza-time-labels"><span>Hour</span><span>Minute</span><span>AM / PM</span></div><div class="wozza-time-columns"><div class="wozza-time-column wozza-time-hours">${hours.map(x=>`<button type="button" class="wozza-time-option" data-time-hour="${x}">${x}</button>`).join('')}</div><div class="wozza-time-column wozza-time-minutes">${mins.map(x=>`<button type="button" class="wozza-time-option" data-time-minute="${x}">${x}</button>`).join('')}</div><div class="wozza-time-column wozza-time-period">${['AM','PM'].map(x=>`<button type="button" class="wozza-time-option" data-time-period="${x}">${x}</button>`).join('')}</div></div><div class="wozza-time-hint">Your time is applied automatically once all three are selected.</div></div><button type="button" class="wozza-time-cancel">Cancel</button></div>`;
-    cal.appendChild(layer);
+  const style=document.createElement('style');style.id='wozza-time-picker-style';style.textContent=`
+    .wozza-calendar-time{cursor:pointer!important;caret-color:transparent}.wozza-calendar{position:relative}
+    .wozza-time-layer{position:absolute;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(7,63,82,.20);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border-radius:inherit}.wozza-time-layer[hidden]{display:none!important}
+    .wozza-time-card{width:min(360px,100%);background:#f4fbfc;border-radius:24px;overflow:hidden;box-shadow:0 22px 60px rgba(7,63,82,.30);font-family:inherit;color:#073f52}
+    .wozza-time-head{background:#087b8c;color:#fff;padding:16px 20px 14px}.wozza-time-kicker{font-size:11px;font-weight:850;opacity:.82;text-transform:uppercase;letter-spacing:.55px;margin-bottom:7px}
+    .wozza-time-display{display:flex;align-items:center;justify-content:center;gap:7px}.wozza-time-part{border:0;border-radius:10px;padding:5px 8px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:38px;font-weight:900;line-height:1;cursor:pointer}.wozza-time-part.active{background:#e9bd25;color:#17213d}.wozza-time-colon{font-size:36px;font-weight:900}.wozza-time-ampm{display:flex;flex-direction:column;margin-left:5px;border:1px solid rgba(255,255,255,.45);border-radius:8px;overflow:hidden}.wozza-time-ampm button{border:0;background:transparent;color:#fff;font:inherit;font-size:12px;font-weight:900;padding:5px 8px;cursor:pointer}.wozza-time-ampm button.selected{background:#e9bd25;color:#17213d}
+    .wozza-clock-wrap{padding:18px 16px 8px;display:flex;justify-content:center}.wozza-clock{width:250px;height:250px;border-radius:50%;background:#e7f1f2;position:relative;touch-action:none;user-select:none}.wozza-clock-center{position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:#087b8c;transform:translate(-50%,-50%);z-index:3}.wozza-clock-hand{position:absolute;left:50%;top:50%;height:3px;width:83px;background:#087b8c;transform-origin:0 50%;z-index:2;border-radius:3px;pointer-events:none}.wozza-clock-hand:after{content:'';position:absolute;right:-8px;top:50%;width:16px;height:16px;border-radius:50%;background:#087b8c;transform:translateY(-50%)}
+    .wozza-clock-number{position:absolute;width:42px;height:42px;margin:-21px;border:0;border-radius:50%;background:transparent;color:#073f52;font:inherit;font-size:16px;font-weight:850;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4}.wozza-clock-number.selected{background:#e9bd25;color:#17213d}.wozza-time-stage{text-align:center;color:#6f7e82;font-size:12px;font-weight:800;margin:0 0 9px}
+    .wozza-time-actions{display:flex;justify-content:flex-end;gap:10px;padding:8px 18px 18px}.wozza-time-actions button{border:0;border-radius:11px;padding:11px 20px;font:inherit;font-weight:900;cursor:pointer}.wozza-time-cancel{background:#d9534f;color:#fff}.wozza-time-ok{background:#25b14b;color:#fff}
+  `;document.head.appendChild(style);
+  let source=null,state={hour:12,minute:0,period:'AM',stage:'hour'},original='';
+  const ensure=()=>{const cal=wozzaCalendarEnsure().querySelector('.wozza-calendar');let layer=cal.querySelector('.wozza-time-layer');if(layer)return layer;layer=document.createElement('div');layer.className='wozza-time-layer';layer.hidden=true;layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.innerHTML=`<div class="wozza-time-card"><div class="wozza-time-head"><div class="wozza-time-kicker">Select time</div><div class="wozza-time-display"><button type="button" class="wozza-time-part wozza-hour-display">12</button><span class="wozza-time-colon">:</span><button type="button" class="wozza-time-part wozza-minute-display">00</button><div class="wozza-time-ampm"><button type="button" data-period="AM">AM</button><button type="button" data-period="PM">PM</button></div></div></div><div class="wozza-clock-wrap"><div class="wozza-clock"><div class="wozza-clock-hand"></div><div class="wozza-clock-center"></div></div></div><div class="wozza-time-stage"></div><div class="wozza-time-actions"><button type="button" class="wozza-time-cancel">Cancel</button><button type="button" class="wozza-time-ok">OK</button></div></div>`;cal.appendChild(layer);
     const close=()=>{layer.hidden=true;source?.focus?.({preventScroll:true})};
-    layer.querySelector('.wozza-time-cancel').onclick=close;
-    layer.addEventListener('click',e=>{if(e.target===layer)close()});
-    layer.addEventListener('click',e=>{
-      const b=e.target.closest('.wozza-time-option');if(!b)return;
-      if(b.dataset.timeHour)picked.hour=Number(b.dataset.timeHour);
-      if(b.dataset.timeMinute!=null)picked.minute=b.dataset.timeMinute;
-      if(b.dataset.timePeriod)picked.period=b.dataset.timePeriod;
-      b.closest('.wozza-time-column').querySelectorAll('.wozza-time-option').forEach(x=>x.classList.toggle('selected',x===b));
-      b.scrollIntoView({block:'center',behavior:'smooth'});
-      if(picked.hour!=null&&picked.minute!=null&&picked.period){
-        let h=picked.hour%12;if(picked.period==='PM')h+=12;
-        const value=`${String(h).padStart(2,'0')}:${picked.minute}`;
-        if(source){source.value=value;source.dispatchEvent(new Event('input',{bubbles:true}));source.dispatchEvent(new Event('change',{bubbles:true}))}
-        setTimeout(close,120);
-      }
-    });
-    return layer;
-  };
-  const open=tm=>{
-    if(!tm)return;
-    source=tm;picked={hour:null,minute:null,period:null};
-    const layer=ensure();layer.querySelectorAll('.wozza-time-option').forEach(x=>x.classList.remove('selected'));
-    const m=/^(\d{2}):(\d{2})$/.exec(tm.value||'');
-    if(m){const h24=Number(m[1]);picked.hour=h24%12||12;picked.minute=m[2];picked.period=h24>=12?'PM':'AM';
-      layer.querySelector(`[data-time-hour="${picked.hour}"]`)?.classList.add('selected');layer.querySelector(`[data-time-minute="${picked.minute}"]`)?.classList.add('selected');layer.querySelector(`[data-time-period="${picked.period}"]`)?.classList.add('selected')}
-    layer.hidden=false;
-    requestAnimationFrame(()=>layer.querySelectorAll('.wozza-time-option.selected').forEach(x=>x.scrollIntoView({block:'center'})));
-  };
-  document.addEventListener('click',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm)return;e.preventDefault();e.stopPropagation();open(tm)},true);
-  document.addEventListener('keydown',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm||(e.key!=='Enter'&&e.key!==' '))return;e.preventDefault();open(tm)},true);
-  const patch=()=>{const tm=document.querySelector('.wozza-calendar-time');if(tm){tm.type='text';tm.readOnly=true;tm.inputMode='none';tm.placeholder='--:--';tm.setAttribute('aria-label','Choose time')}};
-  const originalEnsure=wozzaCalendarEnsure;wozzaCalendarEnsure=function(){const ov=originalEnsure();patch();return ov};patch();
+    layer.querySelector('.wozza-time-cancel').onclick=()=>{if(source)source.value=original;close()};
+    layer.querySelector('.wozza-time-ok').onclick=()=>{let h=state.hour%12;if(state.period==='PM')h+=12;const value=`${String(h).padStart(2,'0')}:${String(state.minute).padStart(2,'0')}`;if(source){source.value=value;source.dispatchEvent(new Event('input',{bubbles:true}));source.dispatchEvent(new Event('change',{bubbles:true}))}close()};
+    layer.querySelector('.wozza-hour-display').onclick=()=>{state.stage='hour';render(layer)};layer.querySelector('.wozza-minute-display').onclick=()=>{state.stage='minute';render(layer)};
+    layer.querySelectorAll('[data-period]').forEach(b=>b.onclick=()=>{state.period=b.dataset.period;render(layer)});
+    layer.addEventListener('click',e=>{const b=e.target.closest('.wozza-clock-number');if(!b)return;if(state.stage==='hour'){state.hour=Number(b.dataset.value);state.stage='minute'}else state.minute=Number(b.dataset.value);render(layer)});
+    return layer};
+  const render=layer=>{layer.querySelector('.wozza-hour-display').textContent=String(state.hour).padStart(2,'0');layer.querySelector('.wozza-minute-display').textContent=String(state.minute).padStart(2,'0');layer.querySelector('.wozza-hour-display').classList.toggle('active',state.stage==='hour');layer.querySelector('.wozza-minute-display').classList.toggle('active',state.stage==='minute');layer.querySelectorAll('[data-period]').forEach(b=>b.classList.toggle('selected',b.dataset.period===state.period));layer.querySelector('.wozza-time-stage').textContent=state.stage==='hour'?'Choose the hour':'Choose the minute';
+    const clock=layer.querySelector('.wozza-clock');clock.querySelectorAll('.wozza-clock-number').forEach(n=>n.remove());const vals=state.stage==='hour'?Array.from({length:12},(_,i)=>i+1):Array.from({length:12},(_,i)=>i*5);const selected=state.stage==='hour'?state.hour:Math.round(state.minute/5)*5%60;vals.forEach((v,i)=>{const a=(i*30-90)*Math.PI/180,r=98,b=document.createElement('button');b.type='button';b.className='wozza-clock-number'+(v===selected?' selected':'');b.dataset.value=v;b.textContent=state.stage==='minute'?String(v).padStart(2,'0'):v;b.style.left=`${125+Math.cos(a)*r}px`;b.style.top=`${125+Math.sin(a)*r}px`;clock.appendChild(b)});const idx=state.stage==='hour'?(state.hour%12):selected/5;layer.querySelector('.wozza-clock-hand').style.transform=`rotate(${idx*30-90}deg)`};
+  const open=tm=>{if(!tm)return;source=tm;original=tm.value||'';const m=/^(\d{2}):(\d{2})$/.exec(original);if(m){const h=Number(m[1]);state={hour:h%12||12,minute:Number(m[2]),period:h>=12?'PM':'AM',stage:'hour'}}else state={hour:12,minute:0,period:'AM',stage:'hour'};const layer=ensure();render(layer);layer.hidden=false};
+  document.addEventListener('click',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm)return;e.preventDefault();e.stopPropagation();open(tm)},true);document.addEventListener('keydown',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm||(e.key!=='Enter'&&e.key!==' '))return;e.preventDefault();open(tm)},true);
+  const patch=()=>{const tm=document.querySelector('.wozza-calendar-time');if(tm){tm.type='text';tm.readOnly=true;tm.inputMode='none';tm.placeholder='--:--';tm.setAttribute('aria-label','Choose time')}};const originalEnsure=wozzaCalendarEnsure;wozzaCalendarEnsure=function(){const ov=originalEnsure();patch();return ov};patch();
 })();
