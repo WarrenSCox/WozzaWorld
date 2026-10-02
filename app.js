@@ -6360,3 +6360,17 @@ wwOpenQuickInfo=function(row,id){
     return r;
   };
 })();
+
+/* === WozzaWorld hotfix — itinerary date one-line + 5% smaller 02 Oct 2026 === */
+(()=>{
+  if(document.getElementById('ww-itinerary-date-one-line-021026'))return;
+  const st=document.createElement('style');
+  st.id='ww-itinerary-date-one-line-021026';
+  st.textContent=`
+    .master-itinerary-head small.master-itinerary-date-range{
+      white-space:nowrap!important;
+      font-size:95%!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
