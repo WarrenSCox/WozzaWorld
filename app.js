@@ -6127,3 +6127,195 @@ wwOpenQuickInfo=function(row,id){
   document.addEventListener('click',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm)return;e.preventDefault();e.stopPropagation();open(tm)},true);document.addEventListener('keydown',e=>{const tm=e.target.closest?.('.wozza-calendar-time');if(!tm||(e.key!=='Enter'&&e.key!==' '))return;e.preventDefault();open(tm)},true);
   const patch=()=>{const tm=document.querySelector('.wozza-calendar-time');if(tm){tm.type='text';tm.readOnly=true;tm.inputMode='none';tm.placeholder='--:--';tm.setAttribute('aria-label','Choose time')}};const originalEnsure=wozzaCalendarEnsure;wozzaCalendarEnsure=function(){const ov=originalEnsure();patch();return ov};patch();
 })();
+
+/* === WozzaWorld hotfix — warn before closing an Activity with unsaved changes 02 Oct 2026 === */
+(()=>{
+  if(window.__wwActivityUnsavedClose021026)return;
+  window.__wwActivityUnsavedClose021026=true;
+
+  const SNAP='wwActivityOpenSnapshot';
+  let bypassClose=false;
+
+  function activitySnapshot(d){
+    if(!d)return '';
+    const controls=[...d.querySelectorAll('input,textarea,select')].filter(el=>el.type!=='button'&&el.type!=='submit'&&el.type!=='reset');
+    const values=controls.map((el,i)=>({
+      k:el.id||el.name||`${el.tagName}:${i}`,
+      v:el.type==='checkbox'||el.type==='radio'?!!el.checked:el.value,
+      iso:el.dataset?.iso||''
+    }));
+    return JSON.stringify({
+      values,
+      category:d.dataset.category||'',
+      bookmarked:d.dataset.bookmarked||'0',
+      bookingStatus:d.dataset.bookingStatus||''
+    });
+  }
+
+  function setActivityBaseline(d){
+    if(!d)return;
+    d.dataset[SNAP]=activitySnapshot(d);
+  }
+
+  function activityHasChanges(d){
+    if(!d)return false;
+    const base=d.dataset[SNAP];
+    if(base==null)return false;
+    return activitySnapshot(d)!==base;
+  }
+
+  function closeActivityDirect(d){
+    if(!d)return;
+    bypassClose=true;
+    try{d.close()}finally{bypassClose=false}
+  }
+
+  function ensureUnsavedPrompt(d){
+    let o=d.querySelector('.ww-activity-unsaved-overlay');
+    if(o)return o;
+    o=document.createElement('div');
+    o.className='ww-activity-unsaved-overlay';
+    o.hidden=true;
+    o.innerHTML=`
+      <div class="ww-activity-unsaved-card" role="dialog" aria-modal="true" aria-labelledby="wwActivityUnsavedTitle">
+        <button type="button" class="ww-activity-unsaved-x" aria-label="Return to activity">×</button>
+        <div class="ww-activity-unsaved-icon">✓</div>
+        <h3 id="wwActivityUnsavedTitle">Save your changes?</h3>
+        <p>You’ve made changes to this activity. What would you like to do?</p>
+        <div class="ww-activity-unsaved-actions">
+          <button type="button" class="ww-unsaved-keep">Save &amp; keep editing</button>
+          <button type="button" class="ww-unsaved-save-close">Save &amp; close</button>
+          <button type="button" class="ww-unsaved-discard">Close without saving</button>
+        </div>
+      </div>`;
+    d.appendChild(o);
+    o.addEventListener('click',e=>{if(e.target===o){o.hidden=true}});
+    o.querySelector('.ww-activity-unsaved-x').onclick=()=>{o.hidden=true};
+    return o;
+  }
+
+  function savedActivityId(row,beforeIds,existingId){
+    const items=itineraryItemsForRow(row);
+    if(existingId&&items.some(x=>String(x.id)===String(existingId)))return existingId;
+    return String(items.find(x=>!beforeIds.has(String(x.id)))?.id||'');
+  }
+
+  function showUnsavedPrompt(d){
+    const o=ensureUnsavedPrompt(d);
+    o.hidden=false;
+
+    o.querySelector('.ww-unsaved-discard').onclick=()=>{
+      o.hidden=true;
+      closeActivityDirect(d);
+    };
+
+    o.querySelector('.ww-unsaved-save-close').onclick=()=>{
+      o.hidden=true;
+      const wasOpen=d.open;
+      saveStopItinerary();
+      /* If validation prevented saving, keep the editor open and retain its dirty state. */
+      if(wasOpen&&d.open)return;
+    };
+
+    o.querySelector('.ww-unsaved-keep').onclick=()=>{
+      const row=activeItineraryRow;
+      if(!row)return;
+      const existingId=activeItineraryId||'';
+      const beforeIds=new Set(itineraryItemsForRow(row).map(x=>String(x.id)));
+      o.hidden=true;
+      const wasOpen=d.open;
+      saveStopItinerary();
+      /* Required-field/date validation can leave the Activity dialog open. */
+      if(wasOpen&&d.open)return;
+      const id=savedActivityId(row,beforeIds,existingId);
+      if(!id)return;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        if(typeof wwOpenActivityDetailsSafely==='function')wwOpenActivityDetailsSafely(row,id);
+        else openStopItinerary(row,id);
+      }));
+    };
+  }
+
+  function requestActivityClose(d){
+    if(!d||!d.open)return;
+    if(!activityHasChanges(d)){closeActivityDirect(d);return}
+    showUnsavedPrompt(d);
+  }
+
+  function bindActivityCloseGuard(d){
+    if(!d)return;
+    const x=d.querySelector('.stop-itinerary-close');
+    const close=d.querySelector('.itin-cancel');
+    if(x)x.onclick=e=>{e.preventDefault();e.stopPropagation();requestActivityClose(d)};
+    if(close)close.onclick=e=>{e.preventDefault();e.stopPropagation();requestActivityClose(d)};
+    if(!d.dataset.wwUnsavedGuardBound){
+      d.dataset.wwUnsavedGuardBound='1';
+      d.addEventListener('click',e=>{
+        if(e.target===d&&!bypassClose){
+          e.preventDefault();e.stopImmediatePropagation();requestActivityClose(d);
+        }
+      },true);
+      d.addEventListener('cancel',e=>{
+        if(bypassClose)return;
+        e.preventDefault();requestActivityClose(d);
+      });
+    }
+  }
+
+  const previousOpen=openStopItinerary;
+  openStopItinerary=function(row,id=''){
+    const out=previousOpen.apply(this,arguments);
+    const d=document.getElementById('stopItineraryDialog');
+    if(d){
+      bindActivityCloseGuard(d);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        bindActivityCloseGuard(d);
+        setActivityBaseline(d);
+      }));
+    }
+    return out;
+  };
+
+  /* Other late Activity polish routines can reassign the footer Close handler; keep it guarded. */
+  const mo=new MutationObserver(()=>{
+    const d=document.getElementById('stopItineraryDialog');
+    if(d?.open)bindActivityCloseGuard(d);
+  });
+  mo.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['open']});
+
+  const st=document.createElement('style');
+  st.id='ww-activity-unsaved-close-style';
+  st.textContent=`
+#stopItineraryDialog{position:relative!important}
+#stopItineraryDialog .ww-activity-unsaved-overlay{
+  position:fixed!important;inset:0!important;z-index:99999!important;
+  display:flex;align-items:center;justify-content:center;
+  padding:22px;box-sizing:border-box;
+  background:rgba(3,65,77,.64);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+#stopItineraryDialog .ww-activity-unsaved-overlay[hidden]{display:none!important}
+#stopItineraryDialog .ww-activity-unsaved-card{
+  position:relative;width:min(100%,520px);box-sizing:border-box;
+  border-radius:30px;background:#eef9fc;padding:28px 24px 24px;
+  box-shadow:0 18px 48px rgba(0,45,55,.28);text-align:center;color:#083f4e;
+}
+#stopItineraryDialog .ww-activity-unsaved-x{
+  position:absolute;right:15px;top:12px;border:0;background:transparent;color:#083f4e;
+  font-size:32px;line-height:1;width:42px;height:42px;padding:0;cursor:pointer;
+}
+#stopItineraryDialog .ww-activity-unsaved-icon{
+  width:62px;height:62px;border-radius:50%;margin:2px auto 14px;
+  display:grid;place-items:center;background:#f3bf22;color:#102b43;font-size:34px;font-weight:900;
+}
+#stopItineraryDialog .ww-activity-unsaved-card h3{margin:0 38px 8px;font-size:24px;line-height:1.15;font-weight:900}
+#stopItineraryDialog .ww-activity-unsaved-card p{margin:0 auto 22px;max-width:390px;color:#63767c;font-size:14px;font-weight:700;line-height:1.45}
+#stopItineraryDialog .ww-activity-unsaved-actions{display:grid;gap:10px}
+#stopItineraryDialog .ww-activity-unsaved-actions button{
+  min-height:48px;border:0;border-radius:14px;padding:10px 14px;font:800 14px/1.15 Inter,sans-serif;cursor:pointer;
+}
+#stopItineraryDialog .ww-unsaved-keep{background:#f3bf22;color:#102b43}
+#stopItineraryDialog .ww-unsaved-save-close{background:#20b84b;color:#fff}
+#stopItineraryDialog .ww-unsaved-discard{background:#e45450;color:#fff}
+`;
+  document.head.appendChild(st);
+})();
