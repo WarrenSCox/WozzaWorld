@@ -6141,13 +6141,14 @@ wwOpenQuickInfo=function(row,id){
     #wwActivityUnsavedDialog{border:0!important;background:transparent!important;padding:18px!important;max-width:390px!important;width:calc(100% - 32px)!important}
     #wwActivityUnsavedDialog::backdrop{background:rgba(7,36,46,.48)!important;backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important}
     #wwActivityUnsavedDialog .trip-unsaved-card{background:#edf5f4!important;border-radius:24px!important;padding:22px!important;box-shadow:0 18px 55px rgba(6,40,52,.28)!important;color:#172f3a!important;position:relative!important}
-    #wwActivityUnsavedDialog .trip-unsaved-card h3{margin:0 0 8px!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:20px!important;white-space:nowrap!important;text-align:center!important;padding:0 38px!important}
+    #wwActivityUnsavedDialog .trip-unsaved-card h3{margin:0 0 8px!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:18px!important;white-space:nowrap!important;text-align:center!important;padding:0 46px!important}
     #wwActivityUnsavedDialog .trip-unsaved-card p{margin:0 0 18px!important;font-size:14px!important;line-height:1.45!important;color:#53666d!important}
     #wwActivityUnsavedDialog .trip-unsaved-actions{display:grid!important;gap:9px!important}
-    #wwActivityUnsavedDialog .ww-unsaved-close{position:absolute!important;top:14px!important;right:14px!important;width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;padding:0!important;border-radius:50%!important;border:0!important;background:rgba(8,76,94,.08)!important;color:#084c5e!important;font-size:28px!important;font-weight:500!important;line-height:38px!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important}
+    #wwActivityUnsavedDialog .ww-unsaved-close{position:absolute!important;top:18px!important;right:18px!important;width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;padding:0!important;border-radius:50%!important;border:0!important;background:rgba(8,76,94,.08)!important;color:#084c5e!important;font-size:28px!important;font-weight:500!important;line-height:38px!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important}
     #wwActivityUnsavedDialog .trip-unsaved-actions button{min-height:44px!important;border-radius:999px!important;border:0!important;font:inherit!important;font-weight:800!important;padding:10px 16px!important}
-    #wwActivityUnsavedSaveContinue,#wwActivityUnsavedSaveClose{background:#e9bf2e!important;color:#172f3a!important}
-    #wwActivityUnsavedLeave{background:#fff2ef!important;color:#b43831!important}
+    #wwActivityUnsavedSaveContinue{background:#e9bf2e!important;color:#172f3a!important}
+    #wwActivityUnsavedSaveClose{background:#25b14b!important;color:#fff!important}
+    #wwActivityUnsavedLeave{background:#e25550!important;color:#fff!important}
   `;
   document.head.appendChild(st);
 
