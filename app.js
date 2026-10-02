@@ -6374,3 +6374,22 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld hotfix — lower itinerary title/date/companions block 8px; actions fixed 02 Oct 2026 === */
+(()=>{
+  if(document.getElementById('ww-itinerary-info-lower-021026'))return;
+  const st=document.createElement('style');
+  st.id='ww-itinerary-info-lower-021026';
+  st.textContent=`
+    .master-itinerary-head h2,
+    .master-itinerary-head small.master-itinerary-date-range,
+    .master-itinerary-head .master-itinerary-companions{
+      position:relative!important;
+      top:8px!important;
+    }
+    .master-itinerary-head .master-itinerary-companions svg{
+      top:1px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
