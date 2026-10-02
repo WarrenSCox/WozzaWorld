@@ -6112,7 +6112,7 @@ wwOpenQuickInfo=function(row,id){
 })();
 
 
-/* === WozzaWorld hotfix — dynamic itinerary companion wrapping 02 Oct 2026 === */
+/* === WozzaWorld hotfix — natural companion wrapping around PDF callout 02 Oct 2026 === */
 (()=>{
   const sync=()=>{
     const d=document.getElementById('masterItineraryDialog'),head=d?.querySelector('.master-itinerary-head');
@@ -6120,24 +6120,33 @@ wwOpenQuickInfo=function(row,id){
     const callout=head.querySelector('.ww-download-pdf-callout'),comp=head.querySelector('.master-itinerary-companions');
     if(!comp)return;
     const visible=!!callout && getComputedStyle(callout).display!=='none' && callout.getBoundingClientRect().width>0;
-    let reserve=0;
+    let reserve=0,obstacleH=0;
     if(visible){
-      const hr=head.getBoundingClientRect(),cr=callout.getBoundingClientRect();
+      const hr=head.getBoundingClientRect(),cr=callout.getBoundingClientRect(),pr=comp.getBoundingClientRect();
       reserve=Math.max(0,hr.right-cr.left+6);
+      obstacleH=Math.max(0,cr.bottom-pr.top+4);
     }
-    head.style.setProperty('--ww-companion-reserve',`${reserve}px`);
+    comp.style.setProperty('--ww-companion-reserve',`${reserve}px`);
+    comp.style.setProperty('--ww-companion-obstacle-h',`${obstacleH}px`);
+    comp.classList.toggle('ww-has-pdf-callout',visible&&reserve>0&&obstacleH>0);
   };
   const st=document.createElement('style');st.id='ww-dynamic-itinerary-companions-021026';st.textContent=`
-    .master-itinerary-head>div{min-width:0!important}
+    .master-itinerary-head>div{min-width:0!important;width:100%!important}
     .master-itinerary-head .master-itinerary-companions{
-      display:flex!important;width:auto!important;max-width:calc(100% - var(--ww-companion-reserve,0px))!important;
-      min-width:0!important;align-items:flex-start!important;box-sizing:border-box!important;overflow:visible!important;
+      position:relative!important;display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
+      box-sizing:border-box!important;overflow:visible!important;padding-left:24px!important;
+    }
+    .master-itinerary-head .master-itinerary-companions>svg{
+      position:absolute!important;left:0!important;top:1px!important;margin:0!important;
     }
     .master-itinerary-head .master-itinerary-companions>span{
-      display:block!important;min-width:0!important;max-width:100%!important;white-space:normal!important;
+      display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;white-space:normal!important;
       overflow-wrap:normal!important;word-break:normal!important;line-height:1.25!important;
     }
-    .master-itinerary-head .master-itinerary-companions svg{margin-top:1px!important}
+    .master-itinerary-head .master-itinerary-companions.ww-has-pdf-callout>span::before{
+      content:"";float:right;width:var(--ww-companion-reserve,0px);height:var(--ww-companion-obstacle-h,0px);
+      pointer-events:none;
+    }
   `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
   new MutationObserver(()=>requestAnimationFrame(sync)).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['style','hidden','class']});
   window.addEventListener('resize',sync,{passive:true});
