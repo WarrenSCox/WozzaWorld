@@ -6477,28 +6477,88 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
-/* === WozzaWorld hotfix — itinerary country card top-layer handoff 03 Oct 2026 === */
+/* === WozzaWorld hotfix — itinerary country card true top-layer overlay 03 Oct 2026 ===
+   Root cause: #masterItineraryDialog is a modal <dialog> in the browser top layer,
+   while #countrySheet is a normal fixed <aside>. z-index cannot cross that boundary.
+   Keep the itinerary open and temporarily move the existing country sheet/backdrop
+   into a second modal <dialog>, which is then placed above the itinerary in top layer. */
 (()=>{
   if(window.__wwItineraryCountryTopLayer031026)return;
   window.__wwItineraryCountryTopLayer031026=true;
-  const oldApply=wwApplyItineraryTripHeader;
-  wwApplyItineraryTripHeader=function(d){
-    const r=oldApply.apply(this,arguments);
-    const holder=d?.querySelector('.master-itinerary-trip-flag');
-    if(!holder)return r;
-    holder.onclick=e=>{
-      e.preventDefault();e.stopPropagation();
-      const country=holder.dataset.currentCountry?.trim();
-      if(!country)return;
-      const dialog=wwMasterItineraryDialog();
-      const origin={type:'itinerary',scrollTop:dialog?.scrollTop||0};
-      clearInterval(holder._wwFlagTimer);
-      /* A <dialog showModal()> lives in the browser top layer. The country card is
-         a fixed sheet, so it cannot visually sit above that layer. Fully close the
-         itinerary first, then wait two paint frames before opening the sheet. */
-      if(dialog?.open)dialog.close();
-      requestAnimationFrame(()=>requestAnimationFrame(()=>openCountry(country,origin)));
-    };
-    return r;
+
+  const ensureLayer=()=>{
+    let layer=document.getElementById('itineraryCountryTopLayer');
+    if(layer)return layer;
+    layer=document.createElement('dialog');
+    layer.id='itineraryCountryTopLayer';
+    layer.setAttribute('aria-label','Country details');
+    layer.innerHTML='<div class="itinerary-country-layer-mount"></div>';
+    document.body.appendChild(layer);
+    const st=document.createElement('style');
+    st.id='ww-itinerary-country-top-layer-031026';
+    st.textContent=`
+      #itineraryCountryTopLayer{
+        position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+        max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;
+        border:0!important;background:transparent!important;overflow:visible!important;
+      }
+      #itineraryCountryTopLayer::backdrop{background:transparent!important}
+      #itineraryCountryTopLayer .itinerary-country-layer-mount{position:fixed!important;inset:0!important;pointer-events:none!important}
+      #itineraryCountryTopLayer #sheetBackdrop,#itineraryCountryTopLayer #countrySheet{pointer-events:auto!important}
+    `;
+    document.head.appendChild(st);
+    return layer;
   };
+
+  const restoreCountryNodes=()=>{
+    const layer=document.getElementById('itineraryCountryTopLayer');
+    const sheet=document.getElementById('countrySheet');
+    const backdrop=document.getElementById('sheetBackdrop');
+    if(layer?.open)layer.close();
+    /* Restore the original body-level structure after the country card is closed. */
+    if(backdrop&&backdrop.parentElement!==document.body)document.body.appendChild(backdrop);
+    if(sheet&&sheet.parentElement!==document.body)document.body.appendChild(sheet);
+  };
+
+  const originalCloseSheet=closeSheet;
+  closeSheet=async function(){
+    const wasItineraryOverlay=countryCardOrigin?.type==='itinerary-top-layer';
+    const out=await originalCloseSheet.apply(this,arguments);
+    if(wasItineraryOverlay)restoreCountryNodes();
+    return out;
+  };
+
+  /* Capture before the older flag onclick. The itinerary stays open underneath;
+     the country card is promoted into its own newer top-layer dialog. */
+  document.addEventListener('click',e=>{
+    const flag=e.target.closest?.('.master-itinerary-trip-flag');
+    if(!flag)return;
+    const itinerary=document.getElementById('masterItineraryDialog');
+    if(!itinerary?.open)return;
+    const country=flag.dataset.currentCountry?.trim();
+    if(!country)return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    clearInterval(flag._wwFlagTimer);
+
+    const layer=ensureLayer();
+    const mount=layer.querySelector('.itinerary-country-layer-mount');
+    const backdrop=document.getElementById('sheetBackdrop');
+    const sheet=document.getElementById('countrySheet');
+    if(!mount||!backdrop||!sheet)return;
+
+    mount.appendChild(backdrop);
+    mount.appendChild(sheet);
+    if(!layer.open)layer.showModal();
+    openCountry(country,{type:'itinerary-top-layer'});
+  },true);
+
+  /* Escape while the country overlay is frontmost closes only the country card. */
+  document.addEventListener('cancel',e=>{
+    if(e.target?.id!=='itineraryCountryTopLayer')return;
+    e.preventDefault();
+    closeSheet();
+  },true);
 })();
