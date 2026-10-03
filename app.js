@@ -8429,3 +8429,58 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — flag shadow artefact + Tasks + calmer itinerary CTA 03 Oct 2026 === */
+(()=>{
+  if(window.__wwFlagTaskCtaFix031026)return;
+  window.__wwFlagTaskCtaFix031026=true;
+  const st=document.createElement('style');
+  st.id='ww-flag-task-cta-fix-031026';
+  st.textContent=`
+    /* Undo wrapper shadows that create square/white blocks. */
+    .trip-flag-slot,
+    .overview-flag,
+    .trip-stop-summary-flag-slot{
+      box-shadow:none!important;
+      background:transparent!important;
+    }
+
+    /* Apply elevation to the actual circular flag surface only. */
+    #tripList .trip-flag-slot .trip-country-flag,
+    #tripDestinationStops .trip-stop-summary-flag,
+    .overview-flag img,
+    .overview-flag .flag-img,
+    .overview-flag .trip-country-flag-img{
+      box-shadow:0 4px 10px rgba(7,54,65,.14)!important;
+      border-radius:50%!important;
+      background:transparent!important;
+    }
+
+    /* Calmer action typography. */
+    #tripDialog .itinerary-swipe-prompt{
+      font-size:16px!important;
+      font-weight:700!important;
+      letter-spacing:0!important;
+      text-transform:none!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* Activity editor terminology: To do -> Tasks. */
+  const rename=()=>{
+    document.querySelectorAll('.itin-todo-title').forEach(el=>{if(el.textContent.trim().toLowerCase()==='to do')el.textContent='Tasks'});
+    document.querySelectorAll('.itinerary-quick-info-block small').forEach(el=>{if(el.textContent.trim().toLowerCase()==='to do')el.textContent='Tasks'});
+
+    /* Itinerary CTA sentence case, preserving the existing started/not-started state. */
+    document.querySelectorAll('#tripDialog .itinerary-swipe-prompt').forEach(p=>{
+      const t=p.textContent.trim().toLowerCase();
+      if(t==='itinerary')p.textContent='Itinerary';
+      else if(t==='create itinerary')p.textContent='Create itinerary';
+    });
+  };
+  rename();
+  const mo=new MutationObserver(()=>rename());
+  mo.observe(document.body,{childList:true,subtree:true});
+})();
+
