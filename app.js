@@ -8428,3 +8428,41 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+/* === WozzaWorld — surgical exact collapse-shadow bin + Details +2px 03 Oct 2026 === */
+(()=>{
+  if(window.__wwExactCollapseShadowDetails2px031026)return;
+  window.__wwExactCollapseShadowDetails2px031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-exact-collapse-shadow-details-2px-031026';
+  st.textContent=`
+    /* Details: previous alignment + 2px to the right. */
+    #tripDestinationStops .trip-destination-stop.single-stop:not(.collapsed) .trip-stop-number{
+      margin-left:2px!important;
+    }
+
+    /* Preserve requested +2% size on the actual stop bin button. */
+    #tripDestinationStops .trip-destination-stop .remove-destination-stop{
+      transform:scale(1.02)!important;
+      transform-origin:center!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* Copy the collapse button's actual computed shadow so the two circles match exactly,
+     regardless of which stylesheet supplies that shadow. */
+  const sync=()=>{
+    document.querySelectorAll('#tripDestinationStops .trip-destination-stop').forEach(row=>{
+      const collapse=row.querySelector('.stop-collapse-toggle');
+      const bin=row.querySelector('.remove-destination-stop');
+      if(!collapse||!bin)return;
+      const shadow=getComputedStyle(collapse).boxShadow;
+      bin.style.setProperty('box-shadow',shadow,'important');
+    });
+  };
+  sync();
+  requestAnimationFrame(sync);
+  const host=document.getElementById('tripDestinationStops');
+  if(host)new MutationObserver(()=>requestAnimationFrame(sync)).observe(host,{childList:true,subtree:true});
+})();
