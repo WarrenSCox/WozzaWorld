@@ -8014,3 +8014,112 @@ wwOpenQuickInfo=function(row,id){
   },true);
 })();
 
+
+
+/* === WozzaWorld — definitive Main Itinerary -> Daily back-stack + Daily date width 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyOriginDateWidthDeep031026)return;
+  window.__wwDailyOriginDateWidthDeep031026=true;
+
+  /*
+    Do not infer origin from a particular header wrapper: the existing itinerary
+    code already marks the real clickable day/date controls with data-ww-daily-date.
+  */
+  let masterDailyOrigin=null;
+  const master=()=>document.getElementById('masterItineraryDialog');
+
+  document.addEventListener('pointerdown',e=>{
+    const d=master();
+    if(!d?.open || d.classList.contains('ww-daily-plan-v2'))return;
+    const hit=e.target.closest?.('[data-ww-daily-date]');
+    if(!hit)return;
+    const iso=String(hit.dataset.wwDailyDate||'');
+    if(!iso)return;
+    const shell=d.querySelector('.master-itinerary-shell');
+    masterDailyOrigin={
+      iso,
+      dialogScroll:d.scrollTop||0,
+      shellScroll:shell?.scrollTop||0
+    };
+  },true);
+
+  /* Keyboard activation of the same marked day/date controls. */
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const d=master();
+    if(!d?.open || d.classList.contains('ww-daily-plan-v2'))return;
+    const hit=e.target.closest?.('[data-ww-daily-date]');
+    if(!hit)return;
+    const iso=String(hit.dataset.wwDailyDate||'');
+    if(!iso)return;
+    const shell=d.querySelector('.master-itinerary-shell');
+    masterDailyOrigin={iso,dialogScroll:d.scrollTop||0,shellScroll:shell?.scrollTop||0};
+  },true);
+
+  function restoreMainFromDaily(e){
+    const d=master();
+    if(!d?.open || !d.classList.contains('ww-daily-plan-v2') || !masterDailyOrigin)return false;
+
+    e?.preventDefault?.();
+    e?.stopImmediatePropagation?.();
+
+    const origin=masterDailyOrigin;
+    masterDailyOrigin=null;
+
+    /* Same native dialog: Trip page never gets a chance to paint between views. */
+    d.classList.remove('ww-daily-plan-v2');
+    d.removeAttribute('data-ww-view');
+    delete d.dataset.wwDailyIso;
+    wwRenderMasterItinerary();
+
+    requestAnimationFrame(()=>{
+      d.scrollTop=origin.dialogScroll;
+      const shell=d.querySelector('.master-itinerary-shell');
+      if(shell)shell.scrollTop=origin.shellScroll;
+    });
+    return true;
+  }
+
+  /* Capture before the original close handler bound on the X. */
+  document.addEventListener('click',e=>{
+    const d=master();
+    if(!d?.open || !d.classList.contains('ww-daily-plan-v2'))return;
+    if(e.target.closest?.('.master-itinerary-close'))restoreMainFromDaily(e);
+  },true);
+
+  /* Browser/Android back follows the same stack. */
+  master()?.addEventListener('cancel',e=>{
+    if(master()?.classList.contains('ww-daily-plan-v2')&&masterDailyOrigin){
+      e.preventDefault();
+      restoreMainFromDaily(e);
+    }
+  },true);
+
+  const st=document.createElement('style');
+  st.id='ww-daily-date-width-deepfix-031026';
+  st.textContent=`
+    /*
+      Daily schedule header: DAY owns only its intrinsic text width.
+      Reduce its horizontal padding from the earlier 14px-per-side rule so the
+      full weekday/date receives the reclaimed width. Plus column is unchanged.
+    */
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead{
+      grid-template-columns:max-content minmax(0,1fr) 50px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>b{
+      width:auto!important;
+      min-width:0!important;
+      padding-left:9px!important;
+      padding-right:9px!important;
+      white-space:nowrap!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>span{
+      min-width:0!important;
+      white-space:nowrap!important;
+      overflow:visible!important;
+      text-overflow:clip!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
