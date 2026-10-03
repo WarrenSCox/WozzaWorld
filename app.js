@@ -7242,3 +7242,83 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — Daily Plan final compact header + active todos 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyFinalCompact031026)return;
+  window.__wwDailyFinalCompact031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-daily-final-compact-031026';
+  st.textContent=`
+    /* DAILY PLAN ONLY: push the country flag + close controls to the far right. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+      grid-template-columns:minmax(0,1fr) auto auto!important;
+      column-gap:10px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div:first-child{
+      min-width:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag{
+      justify-self:end!important;
+      margin-left:auto!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{
+      justify-self:end!important;
+    }
+
+    /* Compact day header: enough room for Monday 19 Oct 2026 on one line. */
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead{
+      grid-template-columns:126px minmax(0,1fr) 62px!important;
+      overflow:hidden!important;
+      border-radius:18px 18px 0 0!important;
+      background:#fff!important;
+      isolation:isolate!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>b{
+      font-size:17px!important;
+      line-height:1!important;
+      white-space:nowrap!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>span{
+      font-size:17px!important;
+      line-height:1.15!important;
+      white-space:nowrap!important;
+      overflow:hidden!important;
+      text-overflow:clip!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-add{
+      width:46px!important;height:46px!important;min-width:46px!important;
+      font-size:31px!important;line-height:1!important;
+      justify-self:center!important;
+      align-self:center!important;
+      padding:0!important;margin:0!important;
+    }
+
+    /* The white header owns/clips both upper corners, preventing mustard bleed. */
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-schedule{
+      overflow:hidden!important;
+      border-radius:18px!important;
+      background:#fff!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-schedule .master-itinerary-daybody{
+      background:var(--mustard,#ffc21c)!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* Final Daily-only pass: completed tasks are irrelevant to today's action list. */
+  const previousDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    const out=previousDaily.apply(this,arguments);
+    const d=document.getElementById('masterItineraryDialog');
+    if(!d?.classList.contains('ww-daily-plan-v2'))return out;
+    d.querySelectorAll('.ww-itinerary-todo-list .ww-daily-todo-item.is-done').forEach(el=>el.remove());
+    const section=d.querySelector('.ww-itinerary-trip-todos');
+    const list=section?.querySelector('.ww-itinerary-todo-list');
+    if(section&&list&&!list.children.length)section.hidden=true;
+    return out;
+  };
+})();
+
