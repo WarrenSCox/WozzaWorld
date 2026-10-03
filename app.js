@@ -7123,3 +7123,122 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — Daily Plan ONLY: strict date-scoped Notes + To Dos 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyStrictNotesTodos031026)return;
+  window.__wwDailyStrictNotesTodos031026=true;
+
+  const style=document.createElement('style');
+  style.id='ww-daily-strict-notes-todos-031026';
+  style.textContent=`
+    /* Daily Plan only — never changes normal itinerary/trip sections. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-notes[hidden],
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-itinerary-trip-todos[hidden]{display:none!important}
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-notes textarea{
+      resize:none!important;overflow:hidden!important;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const activitiesForDate=iso=>
+    wwMasterActivities().filter(x=>x.startDate===iso||(!x.startDate&&x.endDate===iso));
+
+  const canonicalTodoRow=id=>{
+    if(!id)return null;
+    return [...(document.querySelectorAll('#tripTodoList > .trip-todo-row')||[])]
+      .find(r=>String(r.dataset.todoId||'')===String(id))||null;
+  };
+
+  function strictDailyTodos(iso){
+    const vals=[],seen=new Set();
+    activitiesForDate(iso).forEach(activity=>{
+      const activityId=String(activity.id||'');
+      const ids=[...(Array.isArray(activity.todoIds)?activity.todoIds:[]),...(activity.todoId?[activity.todoId]:[])]
+        .map(String).filter(Boolean);
+      ids.forEach(id=>{
+        if(seen.has(id))return;
+        const row=canonicalTodoRow(id);
+        /* BOTH sides must agree on ownership. This rejects stale/polluted todoIds. */
+        if(!row||String(row.dataset.activityId||'')!==activityId)return;
+        const text=row.querySelector('.trip-todo-input')?.value?.trim()||'';
+        if(!text)return;
+        seen.add(id);
+        vals.push({id,text,done:row.classList.contains('is-done')});
+      });
+    });
+    return vals;
+  }
+
+  function strictDailyNotes(iso){
+    return activitiesForDate(iso)
+      .map(x=>({id:String(x.id||''),name:String(x.name||'Activity').trim(),notes:String(x.notes||'').trim()}))
+      .filter(x=>x.notes);
+  }
+
+  function paintDailySupportingInfo(d,iso){
+    if(!d||!d.classList.contains('ww-daily-plan-v2'))return;
+
+    /* NOTES: never use the shared Trip notes value in Daily Plan. */
+    const notesSection=d.querySelector('.master-itinerary-trip-notes');
+    if(notesSection){
+      const notes=strictDailyNotes(iso);
+      notesSection.hidden=!notes.length;
+      const area=notesSection.querySelector('textarea');
+      if(area){
+        area.readOnly=true;
+        area.value=notes.map(x=>notes.length>1?`${x.name}\n${x.notes}`:x.notes).join('\n\n');
+        area.style.height='0px';
+        requestAnimationFrame(()=>{area.style.height=Math.max(72,area.scrollHeight+2)+'px'});
+      }
+    }
+
+    /* TO DOS: activity.todoIds AND canonical todo.activityId must agree. */
+    const todoSection=d.querySelector('.ww-itinerary-trip-todos');
+    if(todoSection){
+      const vals=strictDailyTodos(iso);
+      todoSection.hidden=!vals.length;
+      todoSection.classList.add('ww-daily-readonly-todos');
+      const add=todoSection.querySelector('.ww-itinerary-add-todo');
+      if(add)add.hidden=true;
+      const list=todoSection.querySelector('.ww-itinerary-todo-list');
+      if(list){
+        list.innerHTML=vals.map(v=>
+          `<div class="ww-daily-todo-item${v.done?' is-done':''}" data-id="${esc(v.id)}"><span>${esc(v.text)}</span></div>`
+        ).join('');
+      }
+    }
+  }
+
+  /* Final wrapper: runs after all legacy Daily Schedule wrappers and therefore
+     overrides shared Trip Notes / weaker historical To Do filtering only here. */
+  const priorDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    const out=priorDaily.apply(this,arguments);
+    const d=document.getElementById('masterItineraryDialog');
+    paintDailySupportingInfo(d,iso);
+    return out;
+  };
+
+  /* Restore shared Notes editing semantics when leaving Daily Plan.
+     Existing normal renderers repopulate the actual value. */
+  const restoreNormal=()=>{
+    const d=document.getElementById('masterItineraryDialog');
+    const area=d?.querySelector('#masterItineraryTripNotes');
+    if(area)area.readOnly=false;
+  };
+
+  const priorRender=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){
+    restoreNormal();
+    return priorRender.apply(this,arguments);
+  };
+
+  const priorOpen=wwOpenTripItinerary;
+  wwOpenTripItinerary=function(){
+    restoreNormal();
+    return priorOpen.apply(this,arguments);
+  };
+})();
+
