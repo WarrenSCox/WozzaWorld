@@ -2697,8 +2697,14 @@ if(!window.__wozzaStopFlagCountryNavigation){
     const country=slot.dataset.stopCountry||slot.closest('.trip-destination-stop')?.querySelector('.trip-stop-country')?.value?.trim();
     if(!country)return false;
     const trip=document.querySelector('#tripDialog[open]');
-    if(trip){ trip.close(); window.__wozzaReturnToTripAfterCountry=true; }
-    openCountry(country);
+    /* Keep the Trip itself open as the immediate parent. Country is mounted
+       in the dedicated top-layer dialog, so closing Country simply reveals
+       this exact Trip again regardless of whether Trip came from Home or Trips. */
+    if(trip){
+      window.__wozzaTripCountryReturnScroll=trip.scrollTop;
+      window.__wozzaReturnToTripAfterCountry=false;
+    }
+    openCountry(country,{type:'trip-overlay'});
     return true;
   };
   document.addEventListener('click',e=>{
@@ -6636,6 +6642,7 @@ wwOpenQuickInfo=function(row,id){
 /* === WozzaWorld hotfix — Country returns to immediate open Trip parent 03 Oct 2026 === */
 (()=>{
   if(window.__wwCountryImmediateTripParent031026)return;
+  return; /* superseded: Trip now remains open underneath Country */
   window.__wwCountryImmediateTripParent031026=true;
 
   let wwCountryOpenedOverTrip=false;
