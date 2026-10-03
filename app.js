@@ -6631,3 +6631,80 @@ wwOpenQuickInfo=function(row,id){
   },true);
 })();
 
+
+
+/* === WozzaWorld hotfix — Country returns to immediate open Trip parent 03 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryImmediateTripParent031026)return;
+  window.__wwCountryImmediateTripParent031026=true;
+
+  let wwCountryOpenedOverTrip=false;
+
+  function tripIsOpen(){
+    const d=document.getElementById('tripDialog');
+    return !!(d && d.open);
+  }
+
+  /* Mark Country as a child of the currently open Trip regardless of whether
+     that Trip itself came from Home or Trips. */
+  document.addEventListener('click',e=>{
+    const flag=e.target.closest?.(
+      '#tripDialog[open] #tripDestinationStops .trip-stop-summary-flag-slot,'+
+      '#tripDialog[open] .trip-country-flag[data-trip-country]'
+    );
+    if(flag) wwCountryOpenedOverTrip=true;
+  },true);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const flag=e.target.closest?.(
+      '#tripDialog[open] #tripDestinationStops .trip-stop-summary-flag-slot,'+
+      '#tripDialog[open] .trip-country-flag[data-trip-country]'
+    );
+    if(flag) wwCountryOpenedOverTrip=true;
+  },true);
+
+  /* Country close must reveal the still-open Trip — never navigate to the
+     Trip's own origin (Home/Trips). The Trip retains its original origin so
+     closing the Trip afterwards still goes back to the correct place. */
+  const cleanAfterCountryClose=()=>{
+    if(!wwCountryOpenedOverTrip)return;
+    wwCountryOpenedOverTrip=false;
+
+    const trip=document.getElementById('tripDialog');
+    if(trip && !trip.open){
+      try{ trip.showModal(); }catch(_){}
+    }
+
+    /* Ensure the Trip is the active modal again after the Country top layer
+       has been removed. */
+    requestAnimationFrame(()=>{
+      if(trip?.open){
+        trip.style.pointerEvents='auto';
+        try{ trip.focus({preventScroll:true}); }catch(_){}
+      }
+    });
+  };
+
+  const bind=()=>{
+    const close=document.getElementById('sheetClose');
+    const backdrop=document.getElementById('sheetBackdrop');
+    [close,backdrop].filter(Boolean).forEach(el=>{
+      if(el.dataset.wwTripParentCloseBound)return;
+      el.dataset.wwTripParentCloseBound='1';
+      el.addEventListener('click',()=>queueMicrotask(cleanAfterCountryClose),true);
+    });
+  };
+  bind();
+
+  const sheet=document.getElementById('countrySheet');
+  if(sheet){
+    new MutationObserver(()=>{
+      bind();
+      if(wwCountryOpenedOverTrip && !sheet.classList.contains('open')){
+        cleanAfterCountryClose();
+      }
+    }).observe(sheet,{attributes:true,subtree:true,attributeFilter:['class','aria-hidden']});
+  }
+})();
+
