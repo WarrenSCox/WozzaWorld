@@ -6919,3 +6919,207 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — isolated Daily Plan layout v2 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyPlanIsolatedV2031026)return;
+  window.__wwDailyPlanIsolatedV2031026=true;
+
+  const css=document.createElement('style');
+  css.id='ww-daily-plan-isolated-v2-031026';
+  css.textContent=`
+    /* Everything below is deliberately DAILY-ONLY. */
+    #masterItineraryDialog.ww-daily-plan-v2{
+      width:min(680px,calc(100vw - 24px))!important;
+      height:auto!important;
+      max-height:calc(100dvh - 24px)!important;
+      margin:auto!important;
+      padding:0!important;
+      overflow:auto!important;
+      scrollbar-width:none!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2::-webkit-scrollbar{display:none!important}
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell{
+      width:100%!important;height:auto!important;max-height:none!important;
+      display:block!important;overflow:visible!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+      min-height:86px!important;height:auto!important;
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) 46px 46px!important;
+      gap:10px!important;align-items:center!important;
+      box-sizing:border-box!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div{
+      min-width:0!important;width:auto!important;padding:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head h2{display:none!important}
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head small{
+      display:block!important;position:static!important;top:auto!important;
+      margin:0!important;white-space:nowrap!important;
+      font-size:18px!important;font-weight:900!important;line-height:1!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-companions,
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-capture{display:none!important}
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag{
+      display:flex!important;position:static!important;grid-column:2!important;grid-row:1!important;
+      justify-self:center!important;align-self:center!important;margin:0!important;
+      width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+      padding:0!important;border:0!important;border-radius:50%!important;overflow:hidden!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag-slot,
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag-slot img{
+      width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+      max-width:42px!important;max-height:42px!important;border-radius:50%!important;object-fit:cover!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{
+      display:grid!important;place-items:center!important;position:static!important;
+      grid-column:3!important;grid-row:1!important;justify-self:end!important;align-self:center!important;
+      margin:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent{
+      overflow:visible!important;max-height:none!important;height:auto!important;min-height:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead{
+      display:grid!important;grid-template-columns:auto minmax(0,1fr) 58px!important;
+      align-items:center!important;background:#fff!important;border-radius:18px 18px 0 0!important;
+      overflow:hidden!important;min-height:58px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead b{
+      align-self:stretch!important;display:flex!important;align-items:center!important;
+      padding:0 16px!important;background:#087f91!important;color:#fff!important;
+      font-size:16px!important;font-weight:900!important;white-space:nowrap!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead span{
+      padding:0 14px!important;font-size:16px!important;font-weight:900!important;
+      color:#172f3a!important;min-width:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-add{
+      width:44px!important;height:44px!important;border:0!important;border-radius:50%!important;
+      background:#087f91!important;color:#fff!important;font-size:31px!important;font-weight:900!important;
+      line-height:1!important;justify-self:center!important;padding:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-day{
+      margin-top:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-daybody{
+      border-radius:0 0 18px 18px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryAdd{display:none!important}
+  `;
+  document.head.appendChild(css);
+
+  const isoForRow=row=>row?.querySelector('.trip-destination-from')?.value||'';
+  const endForRow=row=>row?.querySelector('.trip-destination-to')?.value||isoForRow(row);
+  const rowForDate=iso=>{
+    const rows=wwTripStopRows();
+    return rows.find(r=>{
+      const a=isoForRow(r),b=endForRow(r);
+      return a&&iso>=a&&iso<=(b||a);
+    }) || rows.find((r,i)=>wwMasterActivities().some(x=>x._stopIndex===i&&(x.startDate===iso||x.endDate===iso))) || rows[0];
+  };
+  const countryForDate=iso=>{
+    const r=rowForDate(iso);
+    return r?.querySelector('.trip-stop-country')?.value?.trim()||'';
+  };
+  const dayNumber=iso=>{
+    const meta=wwItineraryTripMeta();
+    const start=String(meta?.start||'') || isoForRow(wwTripStopRows()[0]);
+    if(!start||!iso)return 1;
+    const a=new Date(start+'T12:00:00'),b=new Date(iso+'T12:00:00');
+    return Math.max(1,Math.round((b-a)/86400000)+1);
+  };
+  const openAddForDate=iso=>{
+    const row=rowForDate(iso);
+    if(!row)return;
+    const d=wwMasterItineraryDialog();
+    if(d.open)d.close();
+    openStopItinerary(row);
+    /* Existing quick-add machinery recognises the requested date through the
+       activity date input once its editor exists. */
+    requestAnimationFrame(()=>{
+      const inp=document.getElementById('itinStartDate');
+      if(inp){
+        inp.dataset.iso=iso;
+        inp.value=pretty(iso);
+        inp.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+    });
+  };
+
+  const previousDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    const out=previousDaily.apply(this,arguments);
+    const d=wwMasterItineraryDialog();
+    d.classList.remove('ww-daily-plan-mode');
+    d.classList.add('ww-daily-plan-v2');
+    d.dataset.wwView='daily';
+    d.dataset.wwDailyIso=iso;
+
+    const head=d.querySelector('.master-itinerary-head');
+    const eyebrow=head?.querySelector('small');
+    const title=head?.querySelector('h2');
+    if(title)title.textContent='';
+    if(eyebrow){
+      eyebrow.hidden=false;
+      eyebrow.textContent='DAILY PLAN';
+      eyebrow.classList.remove('master-itinerary-date-range');
+      eyebrow.removeAttribute('role');eyebrow.removeAttribute('tabindex');
+    }
+
+    /* Daily-specific country flag. It uses the stop covering this date, not
+       the main itinerary's rotating/multi-country state. */
+    let flag=head?.querySelector('.master-itinerary-trip-flag');
+    const country=countryForDate(iso);
+    if(flag){
+      clearInterval(flag._wwFlagTimer);
+      flag.hidden=!country;
+      if(country){
+        flag.dataset.currentCountry=country;
+        flag.innerHTML=`<span class="master-itinerary-trip-flag-slot">${flagMarkup(country,'master-itinerary-trip-flag-img')}</span>`;
+        flag.setAttribute('aria-label',`Open ${country} country page`);
+        flag.onclick=e=>{e.preventDefault();e.stopPropagation();countryCardOrigin={type:'itinerary-overlay'};openCountry(country,{type:'itinerary-overlay'})};
+      }
+    }
+
+    /* Replace only the daily schedule markup with the normal itinerary day
+       header pattern; Notes / To Do sections appended by existing wrappers stay put. */
+    const host=d.querySelector('#masterItineraryContent');
+    const all=wwMasterActivities().filter(x=>x.startDate===iso||(!x.startDate&&x.endDate===iso));
+    host.innerHTML=`
+      <section class="master-itinerary-day ww-daily-plan-schedule">
+        <div class="ww-daily-plan-dayhead">
+          <b>DAY ${dayNumber(iso)}</b>
+          <span>${esc(wwItineraryDayLabel(iso))}</span>
+          <button type="button" class="ww-daily-plan-add" aria-label="Add activity">+</button>
+        </div>
+        <div class="master-itinerary-daybody">
+          ${all.length?all.map(wwActivityScheduleRow).join(''):'<div class="master-itinerary-empty"><strong>Nothing planned yet</strong><p>There are no activities scheduled for this day.</p></div>'}
+        </div>
+      </section>`;
+    wwWireItineraryActivityActions(host,d);
+    host.querySelector('.ww-daily-plan-add').onclick=()=>openAddForDate(iso);
+
+    /* Existing Daily Plan notes / read-only to-do wrappers run before us.
+       Re-run their last daily wrapper once by preserving their DOM where present
+       is unnecessary; they are generated outside #masterItineraryContent. */
+    d.scrollTop=0;
+    return out;
+  };
+
+  /* Normal itinerary always sheds daily-only class. */
+  const normalRender=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){
+    const d=wwMasterItineraryDialog();
+    d.classList.remove('ww-daily-plan-v2');
+    return normalRender.apply(this,arguments);
+  };
+  const normalOpen=wwOpenTripItinerary;
+  wwOpenTripItinerary=function(){
+    const d=wwMasterItineraryDialog();
+    d.classList.remove('ww-daily-plan-v2');
+    return normalOpen.apply(this,arguments);
+  };
+})();
+
