@@ -2581,7 +2581,7 @@ const _wwItineraryDialog=itineraryDialog;
 itineraryDialog=function(){const d=_wwItineraryDialog();if(d.dataset.v13)return d;d.dataset.v13='1';
  const sd=d.querySelector('#itinStartDate')?.closest('label'),ed=d.querySelector('#itinEndDate')?.closest('label');if(sd)sd.childNodes[0].textContent='Start';if(ed)ed.childNodes[0].textContent='Finish';
  const loc=d.querySelector('#itinLocation')?.closest('label');if(loc&&!d.querySelector('#itinContact'))loc.insertAdjacentHTML('afterend','<label>Contact details<textarea id="itinContact" rows="1" placeholder="Phone, email, contact person…"></textarea></label>');
- const oldTodo=d.querySelector('#itinTodo')?.closest('label');if(oldTodo)oldTodo.outerHTML='<section class="itin-todo-section"><div class="itin-todo-title">To do</div><div id="itinTodoList" class="trip-todo-list"></div><button type="button" id="itinTodoAdd" class="itin-todo-add">＋ Add more</button></section>';
+ const oldTodo=d.querySelector('#itinTodo')?.closest('label');if(oldTodo)oldTodo.outerHTML='<section class="itin-todo-section"><div class="itin-todo-title">Tasks</div><div id="itinTodoList" class="trip-todo-list"></div><button type="button" id="itinTodoAdd" class="itin-todo-add">＋ Add more</button></section>';
  return d};
 const _wwOpenStopItinerary=openStopItinerary;
 openStopItinerary=function(row,id=''){_wwOpenStopItinerary(row,id);const d=itineraryDialog(),items=itineraryItemsForRow(row),x=items.find(i=>String(i.id)===String(id))||{};renderItineraryCategoryBank(d,x.category||'Food & drink');d.dataset.activityDraftId=id||'';d.dataset.todoDraft=JSON.stringify(activityTodoDraftFromItem(x));const c=d.querySelector('#itinContact');if(c)c.value=x.contact||'';const sd=d.querySelector('#itinStartDate'),ed=d.querySelector('#itinEndDate');if(sd&&sd.dataset.iso)sd.value=pretty(sd.dataset.iso)+(x.startTime?` · ${x.startTime}`:'');if(ed&&ed.dataset.iso)ed.value=pretty(ed.dataset.iso)+(x.endTime?` · ${x.endTime}`:'');renderActivityTodoEditor(d)};
@@ -8371,5 +8371,37 @@ wwOpenQuickInfo=function(row,id){
 
   /* Re-clean after common editor/view actions that update existing text in place. */
   document.addEventListener('click',()=>requestAnimationFrame(()=>clean()),true);
+})();
+
+
+
+/* === WozzaWorld — surgical Trip editor + Activity wording polish 03 Oct 2026 === */
+(()=>{
+  if(window.__wwBase2TripEditorPolish031026)return;
+  window.__wwBase2TripEditorPolish031026=true;
+  const st=document.createElement('style');
+  st.id='ww-base2-trip-editor-polish-031026';
+  st.textContent=`
+    /* Single-stop expanded editor: destination is already shown in the field below.
+       Keep "Details", remove only the repeated destination name. */
+    #tripDestinationStops .trip-destination-stop.single-stop:not(.collapsed) .trip-stop-summary{
+      display:none!important;
+    }
+
+    /* Bring Details onto the same visual left line as the form-field text. */
+    #tripDestinationStops .trip-destination-stop.single-stop:not(.collapsed) .trip-stop-number{
+      font-size:14px!important;
+      font-weight:700!important;
+      margin-left:28px!important;
+      margin-right:auto!important;
+    }
+
+    /* Existing button is 11px; a restrained increase without making it shout. */
+    #tripDialog .itinerary-swipe-prompt{
+      font-size:14px!important;
+      font-weight:800!important;
+    }
+  `;
+  document.head.appendChild(st);
 })();
 
