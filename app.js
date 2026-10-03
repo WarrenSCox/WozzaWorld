@@ -7557,3 +7557,33 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — Daily Plan surgical top controls right-anchor 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyControlsRight031026)return;
+  window.__wwDailyControlsRight031026=true;
+  const st=document.createElement('style');
+  st.id='ww-daily-controls-right-031026';
+  st.textContent=`
+    /* ONLY the Daily Plan top flag + close controls: anchor pair to right edge. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+      grid-template-columns:auto 1fr auto auto!important;
+      width:100%!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div:first-child{
+      grid-column:1!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag{
+      grid-column:3!important;
+      margin-left:0!important;
+      justify-self:end!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{
+      grid-column:4!important;
+      justify-self:end!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
