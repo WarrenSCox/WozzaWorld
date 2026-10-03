@@ -6571,3 +6571,63 @@ wwOpenQuickInfo=function(row,id){
   }
 })();
 
+
+
+/* === WozzaWorld hotfix — Trips flags keep Trip/Trips page open under Country 03 Oct 2026 === */
+(()=>{
+  if(window.__wwTripFlagCountryOverlay031026)return;
+  window.__wwTripFlagCountryOverlay031026=true;
+
+  /* Expanded Trip page: stop flag.
+     Capture before the legacy handler which closes #tripDialog. */
+  document.addEventListener('click',e=>{
+    const slot=e.target.closest?.('#tripDialog[open] #tripDestinationStops .trip-stop-summary-flag-slot');
+    if(!slot)return;
+    const country=(slot.dataset.stopCountry ||
+      slot.closest('.trip-destination-stop')?.querySelector('.trip-stop-country')?.value || '').trim();
+    if(!country)return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openCountry(country,{type:'trip-overlay'});
+  },true);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const slot=e.target.closest?.('#tripDialog[open] #tripDestinationStops .trip-stop-summary-flag-slot');
+    if(!slot)return;
+    const country=(slot.dataset.stopCountry ||
+      slot.closest('.trip-destination-stop')?.querySelector('.trip-stop-country')?.value || '').trim();
+    if(!country)return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openCountry(country,{type:'trip-overlay'});
+  },true);
+
+  /* Trips list card flag — works whether the card is collapsed or expanded.
+     Give Country an explicit Trips origin so closing it cannot fall back to Home. */
+  document.addEventListener('click',e=>{
+    const flag=e.target.closest?.('#tripList .trip-country-flag[data-trip-country]');
+    if(!flag)return;
+    const country=(flag.dataset.tripCountry||'').trim();
+    if(!country)return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openCountry(country,{type:'screen',screen:'trips',tripsView:true});
+  },true);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const flag=e.target.closest?.('#tripList .trip-country-flag[data-trip-country]');
+    if(!flag)return;
+    const country=(flag.dataset.tripCountry||'').trim();
+    if(!country)return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openCountry(country,{type:'screen',screen:'trips',tripsView:true});
+  },true);
+})();
+
