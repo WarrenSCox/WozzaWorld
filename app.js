@@ -7955,3 +7955,62 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — Daily Plan X returns to originating Main Itinerary 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyBackToMaster031026)return;
+  window.__wwDailyBackToMaster031026=true;
+
+  const d=wwMasterItineraryDialog();
+  if(!d)return;
+
+  let dailyCameFromMaster=false;
+  let masterScrollY=0;
+
+  /* The day/date heading on the already-open Main Itinerary is the route into
+     Daily Plan. Remember that parent and its scroll position before Daily renders. */
+  d.addEventListener('click',e=>{
+    if(d.classList.contains('ww-daily-plan-v2'))return;
+    const dayHead=e.target.closest?.('.master-itinerary-dayhead,.ww-daily-plan-dayhead');
+    if(!dayHead)return;
+    if(e.target.closest?.('button'))return;
+    dailyCameFromMaster=true;
+    masterScrollY=d.scrollTop||d.querySelector('.master-itinerary-shell')?.scrollTop||0;
+  },true);
+
+  function backToMaster(e){
+    if(!d.open || !d.classList.contains('ww-daily-plan-v2') || !dailyCameFromMaster)return false;
+    e?.preventDefault?.();
+    e?.stopImmediatePropagation?.();
+
+    dailyCameFromMaster=false;
+
+    /* Re-render in the SAME native dialog instead of closing it. This means
+       Trip never becomes visible between Daily Plan and Main Itinerary. */
+    d.classList.remove('ww-daily-plan-v2');
+    delete d.dataset.wwDailyIso;
+    wwRenderMasterItinerary();
+
+    requestAnimationFrame(()=>{
+      d.scrollTop=masterScrollY;
+      const shell=d.querySelector('.master-itinerary-shell');
+      if(shell) shell.scrollTop=masterScrollY;
+    });
+    return true;
+  }
+
+  /* X is a Back action only when Daily Plan originated from Main Itinerary. */
+  d.addEventListener('click',e=>{
+    if(e.target.closest?.('.master-itinerary-close')) backToMaster(e);
+  },true);
+
+  /* Android/browser Back / Escape should follow the same stack. */
+  d.addEventListener('cancel',e=>{
+    if(d.classList.contains('ww-daily-plan-v2') && dailyCameFromMaster){
+      e.preventDefault();
+      backToMaster(e);
+    }
+  },true);
+})();
+
