@@ -8550,3 +8550,36 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld — Country > Trip top-layer handoff 03 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryTripTopLayerHandoff031026)return;
+  window.__wwCountryTripTopLayerHandoff031026=true;
+
+  /*
+    Country cards live inside #wwCountryTopDialog. When a trip is opened from
+    #countryTrips, retire ONLY that native top-layer host before the existing
+    trip-card handler opens #tripDialog. Do not call closeSheet(), do not alter
+    countryCardOrigin, and do not replace any Trip / Itinerary / Daily flag
+    handlers. This makes the Country > Trip route enter the same modal state as
+    Trips overview > Trip while preserving all existing return-path logic.
+  */
+  document.addEventListener('click',e=>{
+    const card=e.target.closest?.('#countryTrips [data-open-trip]');
+    if(!card)return;
+    const top=document.getElementById('wwCountryTopDialog');
+    if(top?.open)top.close();
+    if(top)top.style.pointerEvents='none';
+  },true);
+
+  /* Keyboard activation follows the same handoff before the card's existing
+     keydown handler opens the trip editor. */
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const card=e.target.closest?.('#countryTrips [data-open-trip]');
+    if(!card)return;
+    const top=document.getElementById('wwCountryTopDialog');
+    if(top?.open)top.close();
+    if(top)top.style.pointerEvents='none';
+  },true);
+})();
