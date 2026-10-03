@@ -7322,3 +7322,215 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — Daily Plan consolidated polish + day-focus entry 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyConsolidated031026)return;
+  window.__wwDailyConsolidated031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-daily-consolidated-031026';
+  st.textContent=`
+    /* Top bar: title left, flag + close genuinely anchored to the right. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) auto auto!important;
+      align-items:center!important;
+      column-gap:8px!important;
+      width:100%!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div:first-child{min-width:0!important}
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag{
+      justify-self:end!important;margin-left:auto!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{
+      justify-self:end!important;
+      width:42px!important;height:42px!important;min-width:42px!important;
+      font-size:28px!important;line-height:1!important;padding:0!important;
+    }
+
+    /* Daily header mirrors the compact proportions of the main itinerary. */
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead{
+      display:grid!important;
+      grid-template-columns:102px minmax(0,1fr) 50px!important;
+      align-items:center!important;
+      gap:0!important;
+      min-height:64px!important;
+      padding:0 12px 0 0!important;
+      overflow:hidden!important;
+      border-radius:18px 18px 0 0!important;
+      background:#fff!important;
+      isolation:isolate!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>b{
+      align-self:stretch!important;display:flex!important;align-items:center!important;justify-content:center!important;
+      margin:0!important;padding:0 8px!important;
+      font-size:15px!important;line-height:1!important;white-space:nowrap!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>span{
+      min-width:0!important;margin:0!important;padding:0 12px!important;
+      font-size:15px!important;line-height:1.1!important;font-weight:800!important;
+      white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-add{
+      width:36px!important;height:36px!important;min-width:36px!important;
+      margin:0!important;padding:0!important;justify-self:end!important;align-self:center!important;
+      font-size:25px!important;line-height:1!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-schedule{
+      overflow:hidden!important;border-radius:18px!important;background:#fff!important;
+    }
+
+    /* Daily notes are display-only: no focus/caret/border animation on tap. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-notes textarea{
+      pointer-events:none!important;caret-color:transparent!important;resize:none!important;
+      outline:none!important;box-shadow:none!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-notes textarea:focus,
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-notes textarea:focus-visible{
+      outline:none!important;box-shadow:none!important;border-color:rgba(23,47,58,.12)!important;
+    }
+
+    /* Main itinerary: only DAY/date text advertises the focus-on-day action. */
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead>b[data-ww-daily-date],
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead>span[data-ww-daily-date]{
+      cursor:pointer!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  const dateActivities=iso=>wwMasterActivities().filter(x=>x.startDate===iso||(!x.startDate&&x.endDate===iso));
+
+  function ensureDailyFlag(d,iso){
+    const head=d?.querySelector('.master-itinerary-head');
+    if(!head)return;
+    let flag=head.querySelector('.master-itinerary-trip-flag');
+
+    /* On first-ever Daily Plan entry the main itinerary has not yet created its
+       flag control. Create the same control here instead of depending on that lifecycle. */
+    if(!flag){
+      flag=document.createElement('button');
+      flag.type='button';
+      flag.className='master-itinerary-trip-flag';
+      flag.setAttribute('aria-label','Open country page');
+      const close=head.querySelector('.master-itinerary-close');
+      if(close)head.insertBefore(flag,close);else head.appendChild(flag);
+    }
+
+    const activities=dateActivities(iso);
+    const rows=wwTripStopRows();
+    let row=null;
+    const first=activities[0];
+    if(first&&Number.isInteger(Number(first._stopIndex)))row=rows[Number(first._stopIndex)]||null;
+
+    if(!row){
+      row=rows.find(r=>{
+        const a=r.querySelector('.trip-destination-from')?.value||'';
+        const b=r.querySelector('.trip-destination-to')?.value||a;
+        return a&&iso>=a&&iso<=(b||a);
+      })||null;
+    }
+
+    /* If editor rows are not yet initialised, resolve from the saved trip itself. */
+    let country=row?.querySelector('.trip-stop-country')?.value?.trim()||'';
+    if(!country&&editingTripId){
+      const trip=state.trips.find(t=>String(t.id)===String(editingTripId));
+      const stops=trip?.destinations||[];
+      let stop=null;
+      if(first&&Number.isInteger(Number(first._stopIndex)))stop=stops[Number(first._stopIndex)]||null;
+      stop=stop||stops.find(x=>{
+        const a=String(x.from||x.startDate||x.dateFrom||'');
+        const b=String(x.to||x.endDate||x.dateTo||a);
+        return a&&iso>=a&&iso<=(b||a);
+      })||stops[0]||null;
+      country=String(stop?.country||stop?.destinationCountry||'').trim();
+    }
+
+    clearInterval(flag._wwFlagTimer);
+    flag.hidden=!country;
+    if(!country)return;
+    flag.dataset.currentCountry=country;
+    flag.innerHTML=`<span class="master-itinerary-trip-flag-slot">${flagMarkup(country,'master-itinerary-trip-flag-img')}</span>`;
+    flag.setAttribute('aria-label',`Open ${country} country page`);
+    flag.onclick=e=>{
+      e.preventDefault();e.stopPropagation();
+      countryCardOrigin={type:'itinerary-overlay'};
+      openCountry(country,{type:'itinerary-overlay'});
+    };
+  }
+
+  function finaliseDaily(d,iso){
+    if(!d?.classList.contains('ww-daily-plan-v2'))return;
+    ensureDailyFlag(d,iso);
+
+    const notes=d.querySelector('#masterItineraryTripNotes');
+    if(notes){
+      notes.readOnly=true;
+      notes.tabIndex=-1;
+      notes.onpointerdown=e=>e.preventDefault();
+      notes.onclick=e=>{e.preventDefault();notes.blur()};
+    }
+
+    /* Completed tasks never appear in the Daily Plan. */
+    d.querySelectorAll('.ww-itinerary-todo-list .ww-daily-todo-item.is-done').forEach(el=>el.remove());
+    const todoSection=d.querySelector('.ww-itinerary-trip-todos');
+    const todoList=todoSection?.querySelector('.ww-itinerary-todo-list');
+    if(todoSection&&todoList&&!todoList.children.length)todoSection.hidden=true;
+  }
+
+  const priorDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    const out=priorDaily.apply(this,arguments);
+    finaliseDaily(document.getElementById('masterItineraryDialog'),iso);
+    return out;
+  };
+
+  /* Main itinerary day/date = focus that exact date in the Daily Plan.
+     The + remains its own independent Add Activity action. */
+  function wireMainDayFocus(){
+    const d=document.getElementById('masterItineraryDialog');
+    if(!d||d.classList.contains('ww-daily-plan-v2'))return;
+    const activities=wwMasterActivities();
+    d.querySelectorAll('#masterItineraryContent .master-itinerary-day').forEach(day=>{
+      const head=day.querySelector('.master-itinerary-dayhead');
+      const activity=day.querySelector('.master-itinerary-activity');
+      if(!head||!activity)return;
+      const item=activities.find(x=>String(x.id)===String(activity.dataset.id));
+      const iso=item?.startDate||'';
+      if(!iso)return;
+      [head.querySelector(':scope > b'),head.querySelector(':scope > span')].filter(Boolean).forEach(el=>{
+        el.dataset.wwDailyDate=iso;
+        el.setAttribute('role','button');
+        el.setAttribute('tabindex','0');
+        const open=e=>{
+          if(e.type==='keydown'&&e.key!=='Enter'&&e.key!==' ')return;
+          e.preventDefault();e.stopPropagation();
+          wwOpenDailySchedule(iso);
+        };
+        el.onclick=open;el.onkeydown=open;
+      });
+    });
+  }
+
+  const priorHierarchy=wwRenderTripHierarchy;
+  wwRenderTripHierarchy=function(){
+    const d=document.getElementById('masterItineraryDialog');
+    if(d){
+      const notes=d.querySelector('#masterItineraryTripNotes');
+      if(notes){notes.readOnly=false;notes.removeAttribute('tabindex');notes.onpointerdown=null;notes.onclick=null}
+    }
+    const out=priorHierarchy.apply(this,arguments);
+    wireMainDayFocus();
+    return out;
+  };
+  wwRenderMasterItinerary=wwRenderTripHierarchy;
+
+  const priorTripOpen=wwOpenTripItinerary;
+  wwOpenTripItinerary=function(){
+    const out=priorTripOpen.apply(this,arguments);
+    wireMainDayFocus();
+    return out;
+  };
+})();
+
