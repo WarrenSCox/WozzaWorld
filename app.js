@@ -6022,7 +6022,7 @@ wwOpenQuickInfo=function(row,id){
     ctx.fillStyle='#17323c';ctx.font=`900 48px ${font}`;const titleLines=wrap(meta.name,contentW-300,`900 48px ${font}`);titleLines.forEach((l,i)=>{ctx.fillText(l,pad,y+44);if(i===titleLines.length-1&&flagText){const tw=ctx.measureText(l).width;ctx.font=`34px ${font}`;ctx.fillText(flagText,pad+tw+16,y+42);ctx.font=`900 48px ${font}`}y+=52});
     if(meta.dateRange){ctx.fillStyle='#078fa3';ctx.font=`900 23px ${font}`;ctx.fillText(meta.dateRange,pad,y+22);y+=38}
     const headerBottom=y;ctx.fillStyle='#17323c';ctx.font=`900 92px ${font}`;ctx.textAlign='right';ctx.fillText('Itinerary',W-pad,pad+78);ctx.textAlign='left';y=headerBottom+12;
-    measured.forEach((gs,si)=>{if(!gs.length)return;if(multi){ctx.fillStyle='#078fa3';ctx.font=`900 25px ${font}`;ctx.fillText(String(wwStopName(rows[si],si)).toUpperCase(),pad,y+28);y+=48}
+    measured.forEach((gs,si)=>{if(!gs.length)return;if(multi){ctx.fillStyle='#078fa3';ctx.font=`900 25px ${font}`;const stopLabel=String(wwStopName(rows[si],si)).toUpperCase(),stopCountry=canonicalCountry(rows[si]?.querySelector('.trip-stop-country')?.value||''),stopFlag=countries.length>1?countryCodeToEmoji(flags[stopCountry]||''):'';ctx.fillText(stopLabel+(stopFlag?'  '+stopFlag:''),pad,y+28);y+=48}
       gs.forEach(([date,list])=>{
         ctx.fillStyle='#fff';rr(ctx,pad,y,contentW,68,22,true);ctx.fillStyle='#078fa3';rr(ctx,pad,y,132,68,22,true);ctx.fillRect(pad+110,y,22,68);ctx.fillStyle='#fff';ctx.font=`900 21px ${font}`;ctx.fillText(date==='unscheduled'?'FLEXIBLE':`DAY ${dayNo.get(date)}`,pad+20,y+42);ctx.fillStyle='#17323c';ctx.font=`800 22px ${font}`;ctx.fillText(date==='unscheduled'?'TO BE SCHEDULED':wwItineraryDayLabel(date),pad+154,y+42);y+=76;
         list.forEach(r=>{const x=r.x;ctx.fillStyle='#ffc94a';rr(ctx,pad,y,contentW,r.rh,20,true);
@@ -8213,156 +8213,57 @@ wwOpenQuickInfo=function(row,id){
 
 
 
-/* === WozzaWorld — itinerary controls -10%, multi-country export flags, compact Daily DAY 03 Oct 2026 === */
+/* === WozzaWorld — corrected real-target itinerary + Daily sizing 03 Oct 2026 === */
 (()=>{
-  if(window.__wwItinExportDailyPolish031026)return;
-  window.__wwItinExportDailyPolish031026=true;
-
+  if(window.__wwRealTargetSizing031026)return;
+  window.__wwRealTargetSizing031026=true;
   const st=document.createElement('style');
-  st.id='ww-itin-export-daily-polish-031026';
+  st.id='ww-real-target-sizing-031026';
   st.textContent=`
-    /* MAIN ITINERARY ONLY: all three circular header controls exactly 10% smaller.
-       Daily Plan is explicitly excluded. */
-    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag,
-    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-download,
+    /* MAIN ITINERARY ONLY.
+       Existing winning size is 44px, so exact 10% reduction = 39.6px. */
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-close,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-capture,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag{
+      width:39.6px!important;
+      height:39.6px!important;
+      min-width:39.6px!important;
+      min-height:39.6px!important;
+    }
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag-slot,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag-slot img{
+      width:36.49px!important;
+      height:36.49px!important;
+      min-width:36.49px!important;
+      min-height:36.49px!important;
+      max-width:36.49px!important;
+      max-height:36.49px!important;
+    }
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-capture svg{
+      width:24.3px!important;height:24.3px!important;
+    }
     #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-close{
-      width:45px!important;
-      height:45px!important;
-      min-width:45px!important;
-      min-height:45px!important;
-    }
-    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag img{
-      width:45px!important;height:45px!important;
-    }
-    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-download svg,
-    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-close svg{
-      transform:scale(.9)!important;
-      transform-origin:center!important;
+      font-size:25.2px!important;
     }
 
-    /* DAILY PLAN: smaller DAY label = genuinely narrower intrinsic teal column.
-       Date typography and + column are deliberately unchanged. */
+    /* DAILY PLAN ONLY: smaller label + less padding genuinely frees date width. */
     #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead{
       grid-template-columns:max-content minmax(0,1fr) 50px!important;
     }
     #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>b{
       width:auto!important;
       min-width:0!important;
-      font-size:16px!important;
+      font-size:13px!important;
       line-height:1!important;
-      padding-left:7px!important;
-      padding-right:7px!important;
+      padding-left:5px!important;
+      padding-right:5px!important;
       white-space:nowrap!important;
     }
     #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>span{
       min-width:0!important;
       white-space:nowrap!important;
     }
-
-    /* Export-only flag marker, deliberately inert in normal app UI. */
-    .ww-export-country-flag{
-      display:inline-block!important;
-      margin-left:6px!important;
-      font-size:.92em!important;
-      line-height:1!important;
-      vertical-align:baseline!important;
-    }
   `;
   document.head.appendChild(st);
-
-  /* ISO alpha-2 -> emoji; use the app's existing country metadata/flag resolver
-     where possible, with common country-name aliases as a fallback. */
-  const aliases={
-    'united kingdom':'GB','uk':'GB','england':'GB','scotland':'GB','wales':'GB',
-    'hungary':'HU','algeria':'DZ','france':'FR','spain':'ES','italy':'IT',
-    'germany':'DE','portugal':'PT','netherlands':'NL','belgium':'BE',
-    'austria':'AT','croatia':'HR','greece':'GR','czech republic':'CZ','czechia':'CZ',
-    'poland':'PL','ireland':'IE','iceland':'IS','norway':'NO','sweden':'SE',
-    'denmark':'DK','finland':'FI','switzerland':'CH','turkey':'TR','türkiye':'TR',
-    'united states':'US','usa':'US','canada':'CA','mexico':'MX','japan':'JP',
-    'thailand':'TH','vietnam':'VN','australia':'AU','new zealand':'NZ',
-    'egypt':'EG','morocco':'MA','south africa':'ZA','united arab emirates':'AE'
-  };
-  const emojiFromCode=code=>{
-    code=String(code||'').trim().toUpperCase();
-    return /^[A-Z]{2}$/.test(code)
-      ? String.fromCodePoint(...[...code].map(c=>127397+c.charCodeAt(0)))
-      : '';
-  };
-  const countryEmoji=name=>{
-    name=String(name||'').trim();
-    if(!name)return '';
-    /* Prefer any country record already shipped with WozzaWorld. */
-    try{
-      const pools=[
-        window.COUNTRIES,window.countries,window.countryData,
-        window.COUNTRY_DATA,window.COUNTRY_META
-      ].filter(Boolean);
-      for(const pool of pools){
-        const vals=Array.isArray(pool)?pool:Object.values(pool);
-        const hit=vals.find(x=>String(x?.name||x?.country||'').toLowerCase()===name.toLowerCase());
-        if(hit){
-          if(hit.emoji)return hit.emoji;
-          const e=emojiFromCode(hit.code||hit.iso2||hit.alpha2);
-          if(e)return e;
-        }
-      }
-    }catch(_){}
-    return emojiFromCode(aliases[name.toLowerCase()]);
-  };
-
-  function currentTripStops(){
-    try{
-      const trip=state?.trips?.find?.(t=>String(t.id)===String(editingTripId));
-      return trip?.destinations||[];
-    }catch(_){return []}
-  }
-  function multiCountry(){
-    const set=new Set(currentTripStops().map(x=>String(x.country||x.destinationCountry||'').trim().toLowerCase()).filter(Boolean));
-    return set.size>1;
-  }
-
-  /*
-    Export-only enhancement. Run just before print/export paint and only when
-    the trip actually spans >1 country. It targets country section headings
-    inside the generated export/print surface, never the live itinerary.
-  */
-  function decorateExportCountryHeaders(){
-    if(!multiCountry())return;
-    const stops=currentTripStops();
-    const names=[...new Set(stops.map(x=>String(x.country||x.destinationCountry||'').trim()).filter(Boolean))];
-    if(names.length<2)return;
-
-    const roots=[
-      document.getElementById('wwItineraryExport'),
-      document.getElementById('itineraryExport'),
-      document.querySelector('.itinerary-export'),
-      document.querySelector('.ww-itinerary-export'),
-      document.querySelector('.print-itinerary')
-    ].filter(Boolean);
-    if(!roots.length)return;
-
-    roots.forEach(root=>{
-      root.querySelectorAll('h1,h2,h3,h4,.country-heading,.itinerary-country,.stop-country').forEach(el=>{
-        if(el.querySelector('.ww-export-country-flag'))return;
-        const txt=(el.textContent||'').trim().toLowerCase();
-        const name=names.find(n=>txt===n.toLowerCase()||txt.startsWith(n.toLowerCase()+' '));
-        if(!name)return;
-        const flag=countryEmoji(name);
-        if(!flag)return;
-        const span=document.createElement('span');
-        span.className='ww-export-country-flag';
-        span.textContent=flag;
-        el.appendChild(span);
-      });
-    });
-  }
-
-  window.addEventListener('beforeprint',decorateExportCountryHeaders);
-  document.addEventListener('click',e=>{
-    if(e.target.closest?.('[id*="export" i],[class*="export" i],[aria-label*="export" i],[title*="export" i]')){
-      requestAnimationFrame(()=>requestAnimationFrame(decorateExportCountryHeaders));
-    }
-  },true);
 })();
 
