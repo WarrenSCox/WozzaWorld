@@ -7834,3 +7834,124 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — definitive Daily title inset + single Activity return owner 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDefinitiveActivityReturn031026)return;
+  window.__wwDefinitiveActivityReturn031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-definitive-daily-title-return-031026';
+  st.textContent=`
+    /* DAILY PLAN ONLY: the actual header container owns the left alignment.
+       Flag and X keep their established absolute right coordinates. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+      padding-left:0!important;
+      margin-left:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div:first-child{
+      position:absolute!important;
+      left:0!important;
+      top:50%!important;
+      transform:translateY(-50%)!important;
+      margin:0!important;padding:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head small{
+      margin:0!important;padding:0!important;text-align:left!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  let returnOrigin=null;
+  let restoring=false;
+  const master=()=>document.getElementById('masterItineraryDialog');
+  const activity=()=>document.getElementById('stopItineraryDialog');
+
+  function captureOrigin(){
+    const d=master();
+    if(!d?.open)return;
+    returnOrigin=d.classList.contains('ww-daily-plan-v2')
+      ? {kind:'daily',iso:String(d.dataset.wwDailyIso||'')}
+      : {kind:'master',iso:''};
+  }
+
+  /* Capture before any legacy click/open handler can close the parent. */
+  document.addEventListener('click',e=>{
+    const d=master();
+    if(!d?.open)return;
+    if(e.target.closest?.('.ww-daily-plan-add,#masterItineraryAdd,.ww-day-quick-add,#itineraryStopChooser .itinerary-stop-options button')){
+      captureOrigin();
+    }
+  },true);
+
+  /* Also capture programmatic Activity launches while the itinerary is open. */
+  const priorOpen=openStopItinerary;
+  openStopItinerary=function(){
+    if(!returnOrigin)captureOrigin();
+    return priorOpen.apply(this,arguments);
+  };
+
+  function restoreOrigin(){
+    if(restoring||!returnOrigin)return;
+    restoring=true;
+    const o=returnOrigin;
+    returnOrigin=null;
+
+    /* Render the requested parent immediately, not in a later competing callback. */
+    const d=wwMasterItineraryDialog();
+    if(o.kind==='daily'&&o.iso){
+      wwOpenDailySchedule(o.iso);
+    }else{
+      d.classList.remove('ww-daily-plan-v2');
+      wwRenderMasterItinerary();
+      if(!d.open)d.showModal();
+    }
+
+    requestAnimationFrame(()=>{restoring=false});
+  }
+
+  /*
+    Final save wrapper. Existing historical wrappers are allowed to persist data,
+    but any itinerary they try to reopen is immediately superseded by the one
+    captured origin. We do not schedule another delayed navigation callback.
+  */
+  const priorSave=saveStopItinerary;
+  saveStopItinerary=function(){
+    const wanted=returnOrigin;
+    const out=priorSave.apply(this,arguments);
+    const a=activity();
+
+    /* Validation failure: Activity remains open, therefore don't navigate. */
+    if(a?.open)return out;
+
+    if(wanted){
+      returnOrigin=wanted;
+      restoreOrigin();
+    }
+    return out;
+  };
+
+  /*
+    Close path: native dialog close is the single hand-off point. Capture phase
+    registration is unnecessary; the parent is restored synchronously in the close
+    event before the browser gets another animation frame.
+  */
+  activity()?.addEventListener('close',()=>{
+    if(returnOrigin)restoreOrigin();
+  });
+
+  /*
+    Old wrappers may have queued a master-itinerary reopen with requestAnimationFrame.
+    During our return window, force any such late render back to the intended origin
+    before paint rather than allowing an intermediate screen to flash.
+  */
+  const priorMasterRender=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){
+    if(restoring&&returnOrigin?.kind==='daily'&&returnOrigin.iso){
+      return wwOpenDailySchedule(returnOrigin.iso);
+    }
+    return priorMasterRender.apply(this,arguments);
+  };
+})();
+
