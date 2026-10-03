@@ -8405,3 +8405,26 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — surgical trip Details alignment + bin polish 03 Oct 2026 === */
+(()=>{
+  if(window.__wwTripDetailsBinPolish031026)return;
+  window.__wwTripDetailsBinPolish031026=true;
+  const st=document.createElement('style');
+  st.id='ww-trip-details-bin-polish-031026';
+  st.textContent=`
+    /* Align Details with the left edge of the form fields below. */
+    #tripDestinationStops .trip-destination-stop.single-stop:not(.collapsed) .trip-stop-number{
+      margin-left:0!important;
+    }
+
+    /* Only the stop delete/bin circular button: +2% and a subtle shadow. */
+    #tripDestinationStops .trip-destination-stop .trip-stop-remove{
+      transform:scale(1.02)!important;
+      box-shadow:0 3px 8px rgba(16,48,58,.14)!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
