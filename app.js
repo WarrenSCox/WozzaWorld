@@ -8211,3 +8211,158 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — itinerary controls -10%, multi-country export flags, compact Daily DAY 03 Oct 2026 === */
+(()=>{
+  if(window.__wwItinExportDailyPolish031026)return;
+  window.__wwItinExportDailyPolish031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-itin-export-daily-polish-031026';
+  st.textContent=`
+    /* MAIN ITINERARY ONLY: all three circular header controls exactly 10% smaller.
+       Daily Plan is explicitly excluded. */
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-download,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-close{
+      width:45px!important;
+      height:45px!important;
+      min-width:45px!important;
+      min-height:45px!important;
+    }
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag img{
+      width:45px!important;height:45px!important;
+    }
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-download svg,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-close svg{
+      transform:scale(.9)!important;
+      transform-origin:center!important;
+    }
+
+    /* DAILY PLAN: smaller DAY label = genuinely narrower intrinsic teal column.
+       Date typography and + column are deliberately unchanged. */
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead{
+      grid-template-columns:max-content minmax(0,1fr) 50px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>b{
+      width:auto!important;
+      min-width:0!important;
+      font-size:16px!important;
+      line-height:1!important;
+      padding-left:7px!important;
+      padding-right:7px!important;
+      white-space:nowrap!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>span{
+      min-width:0!important;
+      white-space:nowrap!important;
+    }
+
+    /* Export-only flag marker, deliberately inert in normal app UI. */
+    .ww-export-country-flag{
+      display:inline-block!important;
+      margin-left:6px!important;
+      font-size:.92em!important;
+      line-height:1!important;
+      vertical-align:baseline!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* ISO alpha-2 -> emoji; use the app's existing country metadata/flag resolver
+     where possible, with common country-name aliases as a fallback. */
+  const aliases={
+    'united kingdom':'GB','uk':'GB','england':'GB','scotland':'GB','wales':'GB',
+    'hungary':'HU','algeria':'DZ','france':'FR','spain':'ES','italy':'IT',
+    'germany':'DE','portugal':'PT','netherlands':'NL','belgium':'BE',
+    'austria':'AT','croatia':'HR','greece':'GR','czech republic':'CZ','czechia':'CZ',
+    'poland':'PL','ireland':'IE','iceland':'IS','norway':'NO','sweden':'SE',
+    'denmark':'DK','finland':'FI','switzerland':'CH','turkey':'TR','türkiye':'TR',
+    'united states':'US','usa':'US','canada':'CA','mexico':'MX','japan':'JP',
+    'thailand':'TH','vietnam':'VN','australia':'AU','new zealand':'NZ',
+    'egypt':'EG','morocco':'MA','south africa':'ZA','united arab emirates':'AE'
+  };
+  const emojiFromCode=code=>{
+    code=String(code||'').trim().toUpperCase();
+    return /^[A-Z]{2}$/.test(code)
+      ? String.fromCodePoint(...[...code].map(c=>127397+c.charCodeAt(0)))
+      : '';
+  };
+  const countryEmoji=name=>{
+    name=String(name||'').trim();
+    if(!name)return '';
+    /* Prefer any country record already shipped with WozzaWorld. */
+    try{
+      const pools=[
+        window.COUNTRIES,window.countries,window.countryData,
+        window.COUNTRY_DATA,window.COUNTRY_META
+      ].filter(Boolean);
+      for(const pool of pools){
+        const vals=Array.isArray(pool)?pool:Object.values(pool);
+        const hit=vals.find(x=>String(x?.name||x?.country||'').toLowerCase()===name.toLowerCase());
+        if(hit){
+          if(hit.emoji)return hit.emoji;
+          const e=emojiFromCode(hit.code||hit.iso2||hit.alpha2);
+          if(e)return e;
+        }
+      }
+    }catch(_){}
+    return emojiFromCode(aliases[name.toLowerCase()]);
+  };
+
+  function currentTripStops(){
+    try{
+      const trip=state?.trips?.find?.(t=>String(t.id)===String(editingTripId));
+      return trip?.destinations||[];
+    }catch(_){return []}
+  }
+  function multiCountry(){
+    const set=new Set(currentTripStops().map(x=>String(x.country||x.destinationCountry||'').trim().toLowerCase()).filter(Boolean));
+    return set.size>1;
+  }
+
+  /*
+    Export-only enhancement. Run just before print/export paint and only when
+    the trip actually spans >1 country. It targets country section headings
+    inside the generated export/print surface, never the live itinerary.
+  */
+  function decorateExportCountryHeaders(){
+    if(!multiCountry())return;
+    const stops=currentTripStops();
+    const names=[...new Set(stops.map(x=>String(x.country||x.destinationCountry||'').trim()).filter(Boolean))];
+    if(names.length<2)return;
+
+    const roots=[
+      document.getElementById('wwItineraryExport'),
+      document.getElementById('itineraryExport'),
+      document.querySelector('.itinerary-export'),
+      document.querySelector('.ww-itinerary-export'),
+      document.querySelector('.print-itinerary')
+    ].filter(Boolean);
+    if(!roots.length)return;
+
+    roots.forEach(root=>{
+      root.querySelectorAll('h1,h2,h3,h4,.country-heading,.itinerary-country,.stop-country').forEach(el=>{
+        if(el.querySelector('.ww-export-country-flag'))return;
+        const txt=(el.textContent||'').trim().toLowerCase();
+        const name=names.find(n=>txt===n.toLowerCase()||txt.startsWith(n.toLowerCase()+' '));
+        if(!name)return;
+        const flag=countryEmoji(name);
+        if(!flag)return;
+        const span=document.createElement('span');
+        span.className='ww-export-country-flag';
+        span.textContent=flag;
+        el.appendChild(span);
+      });
+    });
+  }
+
+  window.addEventListener('beforeprint',decorateExportCountryHeaders);
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('[id*="export" i],[class*="export" i],[aria-label*="export" i],[title*="export" i]')){
+      requestAnimationFrame(()=>requestAnimationFrame(decorateExportCountryHeaders));
+    }
+  },true);
+})();
+
