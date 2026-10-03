@@ -8583,3 +8583,41 @@ wwOpenQuickInfo=function(row,id){
     if(top)top.style.pointerEvents='none';
   },true);
 })();
+
+/* === WozzaWorld — Country card fresh-open scroll + popup blur 03 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryFreshOpenBlur031026)return;
+  window.__wwCountryFreshOpenBlur031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-fresh-open-blur-031026';
+  st.textContent=`
+    #wwCountryTopDialog::backdrop{
+      background:rgba(5,34,51,.32)!important;
+      backdrop-filter:blur(7px)!important;
+      -webkit-backdrop-filter:blur(7px)!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* Preserve the complete existing Country/navigation stack. Only reset the
+     Country sheet's own scroll position for each fresh Country opening. */
+  const previousOpenCountry=openCountry;
+  openCountry=function(){
+    const sheet=document.getElementById('countrySheet');
+    if(sheet){
+      sheet.scrollTop=0;
+      try{sheet.scrollTo({top:0,left:0,behavior:'auto'})}catch(_){}
+    }
+    const result=previousOpenCountry.apply(this,arguments);
+    const opened=document.getElementById('countrySheet');
+    if(opened){
+      opened.scrollTop=0;
+      requestAnimationFrame(()=>{
+        opened.scrollTop=0;
+        try{opened.scrollTo({top:0,left:0,behavior:'auto'})}catch(_){}
+      });
+    }
+    return result;
+  };
+})();
