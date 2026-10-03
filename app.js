@@ -6369,7 +6369,10 @@ wwOpenQuickInfo=function(row,id){
       const origin={type:'itinerary',scrollTop:dialog?.scrollTop||0};
       clearInterval(holder._wwFlagTimer);
       if(dialog?.open)dialog.close();
-      openCountry(country,origin);
+      // Let the native <dialog> leave the browser top layer before opening the
+      // country sheet. Without this frame boundary the sheet can render while
+      // the itinerary is still composited above it on mobile browsers.
+      requestAnimationFrame(()=>openCountry(country,origin));
     };
     paint(countries[0]);
     if(countries.length>1){holder._wwFlagTimer=setInterval(()=>{if(!holder.isConnected){clearInterval(holder._wwFlagTimer);return}index=(index+1)%countries.length;slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{paint(countries[index]);slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},4000)}
