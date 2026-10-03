@@ -6715,3 +6715,207 @@ wwOpenQuickInfo=function(row,id){
   }
 })();
 
+
+
+/* === WozzaWorld hotfix — itinerary date calendar + isolated Daily Plan polish 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyPlanPolish031026)return;
+  window.__wwDailyPlanPolish031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-daily-plan-polish-031026';
+  st.textContent=`
+    /* DAILY PLAN ONLY. Do not alter the main itinerary layout. */
+    #masterItineraryDialog.ww-daily-plan-mode{
+      width:min(680px,calc(100vw - 24px))!important;
+      height:min(760px,calc(100dvh - 32px))!important;
+      max-height:calc(100dvh - 32px)!important;
+      margin:auto!important;
+      padding:0!important;
+      overflow:hidden!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-shell{
+      width:100%!important;
+      height:100%!important;
+      max-height:none!important;
+      display:flex!important;
+      flex-direction:column!important;
+      overflow:hidden!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-head{
+      flex:0 0 auto!important;
+      min-height:118px!important;
+      box-sizing:border-box!important;
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) 54px!important;
+      align-items:start!important;
+      column-gap:12px!important;
+      position:relative!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-head>div{
+      min-width:0!important;
+      width:auto!important;
+      padding-right:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-head h2{
+      position:static!important;
+      top:auto!important;
+      margin-top:4px!important;
+      white-space:normal!important;
+      overflow:visible!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-head small{
+      position:static!important;
+      top:auto!important;
+      display:block!important;
+      white-space:nowrap!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-head .master-itinerary-companions{
+      position:static!important;
+      top:auto!important;
+      margin-top:8px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-trip-flag,
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-capture{
+      display:none!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode .master-itinerary-close{
+      grid-column:2!important;
+      grid-row:1!important;
+      position:static!important;
+      justify-self:end!important;
+      align-self:start!important;
+      margin:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode #masterItineraryContent{
+      flex:1 1 auto!important;
+      min-height:0!important;
+      overflow-y:auto!important;
+      overscroll-behavior:contain;
+      scrollbar-width:none!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode #masterItineraryContent::-webkit-scrollbar{
+      display:none!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-mode #masterItineraryAdd{
+      display:none!important;
+    }
+
+    /* Only adds tap semantics to the date on the NORMAL itinerary. */
+    #masterItineraryDialog:not(.ww-daily-plan-mode) .master-itinerary-date-range{
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* Keep a read-only range calendar above the itinerary instead of closing it. */
+  function wwOpenItineraryReadOnlyCalendar(){
+    const rows=wwTripStopRows();
+    if(!rows.length)return;
+    const first=rows[0],last=rows[rows.length-1]||first;
+    const start=first?.querySelector('.trip-destination-from')?.value||'';
+    const end=(rows.length===1?first:last)?.querySelector('.trip-destination-to')?.value||'';
+    if(!start&&!end)return;
+
+    wozzaCalendarTarget=null;
+    wozzaCalendarMode='range';
+    wozzaCalendarRangeStart=start||end;
+    wozzaCalendarRangeEnd=end||start;
+    if(wozzaCalendarRangeEnd<wozzaCalendarRangeStart)
+      [wozzaCalendarRangeStart,wozzaCalendarRangeEnd]=[wozzaCalendarRangeEnd,wozzaCalendarRangeStart];
+
+    const dt=wozzaDateFromIso(wozzaCalendarRangeStart)||new Date();
+    wozzaCalendarView=new Date(dt.getFullYear(),dt.getMonth(),1);
+    const ov=wozzaCalendarEnsure();
+    ov.querySelector('.wozza-calendar')?.classList.remove('year-mode');
+    wozzaCalendarRender();
+    if(!ov.open)ov.showModal();
+  }
+
+  document.addEventListener('click',e=>{
+    const date=e.target.closest?.('#masterItineraryDialog[open]:not(.ww-daily-plan-mode) .master-itinerary-date-range');
+    if(!date)return;
+    e.preventDefault();e.stopPropagation();
+    wwOpenItineraryReadOnlyCalendar();
+  },true);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const date=e.target.closest?.('#masterItineraryDialog[open]:not(.ww-daily-plan-mode) .master-itinerary-date-range');
+    if(!date)return;
+    e.preventDefault();e.stopPropagation();
+    wwOpenItineraryReadOnlyCalendar();
+  },true);
+
+  /* Add keyboard semantics whenever the normal itinerary header is painted. */
+  const previousApply=wwApplyItineraryTripHeader;
+  wwApplyItineraryTripHeader=function(d){
+    const r=previousApply.apply(this,arguments);
+    const date=d?.querySelector('.master-itinerary-date-range');
+    if(date){
+      date.setAttribute('role','button');
+      date.setAttribute('tabindex','0');
+      date.setAttribute('aria-label','Open trip calendar');
+    }
+    return r;
+  };
+
+  /* Isolate Daily Plan from all main-itinerary header decoration.
+     The old implementation reused the same dialog and left flag/capture/date
+     classes behind, which is why its header jumped and inherited flag offsets. */
+  const previousDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(iso){
+    const d=wwMasterItineraryDialog();
+
+    /* Render with existing proven activity logic first. */
+    previousDaily.call(this,iso);
+
+    d.classList.add('ww-daily-plan-mode');
+
+    const head=d.querySelector('.master-itinerary-head');
+    const small=head?.querySelector('small');
+    const title=head?.querySelector('h2');
+    const companions=head?.querySelector('.master-itinerary-companions');
+    const flag=head?.querySelector('.master-itinerary-trip-flag');
+    const cap=head?.querySelector('.master-itinerary-capture');
+
+    if(small){
+      small.textContent='DAILY PLAN';
+      small.classList.remove('master-itinerary-date-range');
+      small.removeAttribute('role');
+      small.removeAttribute('tabindex');
+      small.removeAttribute('aria-label');
+    }
+    if(title) title.textContent=wwItineraryDayLabel(iso);
+    if(companions) companions.hidden=true;
+    if(flag){ clearInterval(flag._wwFlagTimer); flag.hidden=true; }
+    if(cap) cap.hidden=true;
+
+    d.scrollTop=0;
+    const host=d.querySelector('#masterItineraryContent');
+    if(host)host.scrollTop=0;
+  };
+
+  /* Any normal itinerary render/open explicitly leaves Daily Plan mode.
+     This is deliberately class-scoped so the painstaking main itinerary CSS
+     remains byte-for-byte untouched. */
+  const previousRender=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){
+    const d=wwMasterItineraryDialog();
+    d.classList.remove('ww-daily-plan-mode');
+    d.querySelector('.master-itinerary-trip-flag')?.removeAttribute('hidden');
+    d.querySelector('.master-itinerary-capture')?.removeAttribute('hidden');
+    return previousRender.apply(this,arguments);
+  };
+
+  const previousTripOpen=wwOpenTripItinerary;
+  wwOpenTripItinerary=function(){
+    const d=wwMasterItineraryDialog();
+    d.classList.remove('ww-daily-plan-mode');
+    d.querySelector('.master-itinerary-trip-flag')?.removeAttribute('hidden');
+    d.querySelector('.master-itinerary-capture')?.removeAttribute('hidden');
+    return previousTripOpen.apply(this,arguments);
+  };
+})();
+
