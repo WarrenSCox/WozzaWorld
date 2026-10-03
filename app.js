@@ -8267,3 +8267,58 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — freeze main banner on Home + Passport only 03 Oct 2026 === */
+(()=>{
+  if(window.__wwFreezeHomePassportHeader031026)return;
+  window.__wwFreezeHomePassportHeader031026=true;
+  const st=document.createElement('style');
+  st.id='ww-freeze-home-passport-header-031026';
+  st.textContent=`
+    /*
+      Trips already has the desired behaviour, so leave it alone.
+      Home + Passport use a fixed topbar and receive matching top clearance.
+      Every rule explicitly excludes map-view: World View/Map is untouched.
+    */
+    body:not(.map-view):has(.screen[data-screen="home"].active) .topbar,
+    body:not(.map-view):has(.screen[data-screen="me"].active) .topbar{
+      position:fixed!important;
+      top:0!important;
+      left:0!important;
+      right:0!important;
+      width:100%!important;
+      z-index:130!important;
+      box-sizing:border-box!important;
+    }
+    body:not(.map-view):has(.screen[data-screen="home"].active) main,
+    body:not(.map-view):has(.screen[data-screen="me"].active) main{
+      padding-top:var(--ww-fixed-main-header-h,96px)!important;
+    }
+    @media(max-width:560px){
+      body:not(.map-view):has(.screen[data-screen="home"].active) main,
+      body:not(.map-view):has(.screen[data-screen="me"].active) main{
+        padding-top:var(--ww-fixed-main-header-h,92px)!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* Measure the real rendered header so the content starts exactly below it. */
+  const sync=()=>{
+    if(document.body.classList.contains('map-view'))return;
+    const active=document.querySelector('.screen.active')?.dataset.screen;
+    if(active!=='home'&&active!=='me')return;
+    const bar=document.querySelector('.topbar');
+    if(bar)document.documentElement.style.setProperty(
+      '--ww-fixed-main-header-h',
+      `${Math.ceil(bar.getBoundingClientRect().height)}px`
+    );
+  };
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('.header-nav-item'))requestAnimationFrame(()=>requestAnimationFrame(sync));
+  },true);
+  window.addEventListener('resize',sync,{passive:true});
+  requestAnimationFrame(()=>requestAnimationFrame(sync));
+})();
+
