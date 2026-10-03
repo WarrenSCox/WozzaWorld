@@ -8518,3 +8518,35 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld — surgical itinerary flag ring removal 03 Oct 2026 === */
+(()=>{
+  if(window.__wwItineraryFlagRingRemoval031026)return;
+  window.__wwItineraryFlagRingRemoval031026=true;
+  const st=document.createElement('style');
+  st.id='ww-itinerary-flag-ring-removal-031026';
+  st.textContent=`
+    /* Flag controls only: remove the light/cream halo by letting the flag artwork
+       fill the full circular control. Preserve the existing control shadow. */
+    #masterItineraryDialog .master-itinerary-trip-flag{
+      padding:0!important;
+      border:0!important;
+      background:transparent!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag-slot,
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag-slot img{
+      width:37.4px!important;height:37.4px!important;
+      min-width:37.4px!important;min-height:37.4px!important;
+      max-width:37.4px!important;max-height:37.4px!important;
+      border:0!important;outline:0!important;
+    }
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag-slot,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag-slot img{
+      width:36.828px!important;height:36.828px!important;
+      min-width:36.828px!important;min-height:36.828px!important;
+      max-width:36.828px!important;max-height:36.828px!important;
+      border:0!important;outline:0!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
