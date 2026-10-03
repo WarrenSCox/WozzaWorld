@@ -7736,3 +7736,101 @@ wwOpenQuickInfo=function(row,id){
   });
 })();
 
+
+
+/* === WozzaWorld — Daily title left + seamless Activity parent reveal 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyLeftSmoothReturn031026)return;
+  window.__wwDailyLeftSmoothReturn031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-daily-title-left-smooth-return-031026';
+  st.textContent=`
+    /* DAILY PLAN ONLY: move just the title to the left content edge.
+       Flag + X retain their established absolute positions exactly. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div:first-child{
+      margin-left:0!important;
+      padding-left:0!important;
+      text-align:left!important;
+      transform:none!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head small{
+      display:block!important;
+      text-align:left!important;
+      margin-left:0!important;
+      transform:none!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  /*
+    Smooth the return without changing the navigation destination.
+    The prior origin-navigation patch restores the parent after Activity's native
+    close event. During that tiny gap the underlying Trip screen can paint.
+    Cover only that handover with a snapshot-coloured veil; remove it immediately
+    after the restored parent has had two animation frames to paint.
+  */
+  let veil=null;
+  function showVeil(){
+    if(veil)return;
+    veil=document.createElement('div');
+    veil.id='wwActivityReturnVeil';
+    veil.setAttribute('aria-hidden','true');
+    veil.style.cssText=[
+      'position:fixed','inset:0','z-index:2147483646',
+      'background:#075967','pointer-events:none','opacity:1',
+      'transition:opacity 90ms ease-out'
+    ].join(';');
+    document.body.appendChild(veil);
+  }
+  function hideVeil(){
+    const v=veil;
+    if(!v)return;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      v.style.opacity='0';
+      setTimeout(()=>{v.remove();if(veil===v)veil=null},100);
+    }));
+  }
+
+  const activityDialog=()=>document.getElementById('stopItineraryDialog');
+
+  /* Only veil Activity -> itinerary/daily returns. The existing origin code is
+     deliberately left untouched and remains responsible for the destination. */
+  document.addEventListener('click',e=>{
+    const d=activityDialog();
+    if(!d?.open)return;
+    if(e.target.closest?.('.stop-itinerary-close,.itin-cancel,.stop-itinerary-actions .primary') || e.target===d){
+      showVeil();
+    }
+  },true);
+
+  document.addEventListener('cancel',e=>{
+    if(e.target===activityDialog()&&e.target.open)showVeil();
+  },true);
+
+  /* Validation/unsaved prompts can leave Activity open; never leave the veil up. */
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('#wwActivityUnsavedSaveClose,#wwActivityUnsavedDiscard')){
+      showVeil();
+    }
+    setTimeout(()=>{
+      if(activityDialog()?.open)hideVeil();
+    },140);
+  },true);
+
+  /* Once either parent view is actually opened/rendered, fade the veil away only
+     after the browser has painted it. */
+  const oldDaily=wwOpenDailySchedule;
+  wwOpenDailySchedule=function(){
+    const out=oldDaily.apply(this,arguments);
+    hideVeil();
+    return out;
+  };
+  const oldMaster=wwRenderMasterItinerary;
+  wwRenderMasterItinerary=function(){
+    const out=oldMaster.apply(this,arguments);
+    hideVeil();
+    return out;
+  };
+})();
+
