@@ -8373,3 +8373,59 @@ wwOpenQuickInfo=function(row,id){
   document.addEventListener('click',()=>requestAnimationFrame(()=>clean()),true);
 })();
 
+
+
+/* === WozzaWorld — unified circular elevation + Trip editor polish 03 Oct 2026 === */
+(()=>{
+  if(window.__wwUnifiedCircleElevationTripPolish031026)return;
+  window.__wwUnifiedCircleElevationTripPolish031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-unified-circle-elevation-trip-polish-031026';
+  st.textContent=`
+    /*
+      One restrained elevation language for circular badges/actions.
+      Size, fill and function stay contextual; only the shadow treatment is unified.
+      Map UI is deliberately not targeted.
+    */
+    .trip-country-flag,
+    .trip-flag-slot,
+    .overview-flag,
+    .trip-stop-summary-flag-slot,
+    #masterItineraryDialog .master-itinerary-trip-flag,
+    #masterItineraryDialog .master-itinerary-capture,
+    #masterItineraryDialog .master-itinerary-close,
+    #masterItineraryDialog .ww-daily-plan-add,
+    #tripDialog .stop-collapse-toggle,
+    #tripDialog .remove-destination-stop,
+    #tripDialog .trip-section-add,
+    #tripDialog .trip-add-circle,
+    #tripDialog button[aria-label="Close"]{
+      box-shadow:0 4px 10px rgba(7,54,65,.14)!important;
+    }
+
+    /* Multi-country list flags keep their overlap, but each badge uses the same lift. */
+    .trip-card-flags .trip-country-flag,
+    .trip-card-flags .trip-flag-slot{
+      box-shadow:0 4px 10px rgba(7,54,65,.14)!important;
+    }
+
+    /*
+      Single-stop expanded editor: "Details Budapest" repeats the destination already
+      visible in the fields/card. Keep Details and hide only the duplicate summary.
+      Collapsed and multi-stop summaries remain untouched.
+    */
+    #tripDestinationStops .trip-destination-stop.single-stop:not(.collapsed) .trip-stop-summary{
+      display:none!important;
+    }
+
+    /* Itinerary CTA: wording is already state-aware; increase text prominence only. */
+    #tripDialog .itinerary-swipe-prompt{
+      font-size:18px!important;
+      font-weight:900!important;
+      letter-spacing:.01em!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
