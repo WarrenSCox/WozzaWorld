@@ -6369,10 +6369,7 @@ wwOpenQuickInfo=function(row,id){
       const origin={type:'itinerary',scrollTop:dialog?.scrollTop||0};
       clearInterval(holder._wwFlagTimer);
       if(dialog?.open)dialog.close();
-      // Let the native <dialog> leave the browser top layer before opening the
-      // country sheet. Without this frame boundary the sheet can render while
-      // the itinerary is still composited above it on mobile browsers.
-      requestAnimationFrame(()=>openCountry(country,origin));
+      openCountry(country,origin);
     };
     paint(countries[0]);
     if(countries.length>1){holder._wwFlagTimer=setInterval(()=>{if(!holder.isConnected){clearInterval(holder._wwFlagTimer);return}index=(index+1)%countries.length;slot.classList.remove('flap-in');slot.classList.add('flap-out');setTimeout(()=>{paint(countries[index]);slot.classList.remove('flap-out');void slot.offsetWidth;slot.classList.add('flap-in')},155)},4000)}
@@ -6478,4 +6475,30 @@ wwOpenQuickInfo=function(row,id){
     }
   `;
   document.head.appendChild(st);
+})();
+
+/* === WozzaWorld hotfix — itinerary country card top-layer handoff 03 Oct 2026 === */
+(()=>{
+  if(window.__wwItineraryCountryTopLayer031026)return;
+  window.__wwItineraryCountryTopLayer031026=true;
+  const oldApply=wwApplyItineraryTripHeader;
+  wwApplyItineraryTripHeader=function(d){
+    const r=oldApply.apply(this,arguments);
+    const holder=d?.querySelector('.master-itinerary-trip-flag');
+    if(!holder)return r;
+    holder.onclick=e=>{
+      e.preventDefault();e.stopPropagation();
+      const country=holder.dataset.currentCountry?.trim();
+      if(!country)return;
+      const dialog=wwMasterItineraryDialog();
+      const origin={type:'itinerary',scrollTop:dialog?.scrollTop||0};
+      clearInterval(holder._wwFlagTimer);
+      /* A <dialog showModal()> lives in the browser top layer. The country card is
+         a fixed sheet, so it cannot visually sit above that layer. Fully close the
+         itinerary first, then wait two paint frames before opening the sheet. */
+      if(dialog?.open)dialog.close();
+      requestAnimationFrame(()=>requestAnimationFrame(()=>openCountry(country,origin)));
+    };
+    return r;
+  };
 })();
