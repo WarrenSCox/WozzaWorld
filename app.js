@@ -7534,3 +7534,26 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — Daily Plan surgical intrinsic DAY column 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyIntrinsicDay031026)return;
+  window.__wwDailyIntrinsicDay031026=true;
+  const st=document.createElement('style');
+  st.id='ww-daily-intrinsic-day-031026';
+  st.textContent=`
+    /* Laser-focused override: DAY column consumes only its text + padding.
+       All reclaimed width belongs to the long-format date. */
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead{
+      grid-template-columns:max-content minmax(0,1fr) 50px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>b{
+      width:auto!important;min-width:0!important;
+      padding-left:14px!important;padding-right:14px!important;
+      white-space:nowrap!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
