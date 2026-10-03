@@ -7637,3 +7637,102 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — compact Daily header + Activity return-origin navigation 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyHeaderActivityReturn031026)return;
+  window.__wwDailyHeaderActivityReturn031026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-daily-header-single-line-031026';
+  st.textContent=`
+    /* DAILY PLAN ONLY: title and right controls share one compact centre line. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+      position:relative!important;
+      display:flex!important;
+      align-items:center!important;
+      width:100%!important;
+      min-height:44px!important;
+      padding:0 96px 0 0!important;
+      margin:0 0 14px!important;
+      box-sizing:border-box!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div:first-child{
+      display:block!important;width:auto!important;margin:0!important;padding:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head small{
+      margin:0!important;line-height:44px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag{
+      position:absolute!important;right:50px!important;top:50%!important;
+      left:auto!important;bottom:auto!important;transform:translateY(-50%)!important;margin:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{
+      position:absolute!important;right:0!important;top:50%!important;
+      left:auto!important;bottom:auto!important;transform:translateY(-50%)!important;margin:0!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  let origin=null;
+  const master=()=>document.getElementById('masterItineraryDialog');
+  const activity=()=>document.getElementById('stopItineraryDialog');
+
+  function rememberOrigin(kind,iso=''){
+    origin={kind,iso:String(iso||'')};
+  }
+  function returnToOrigin(){
+    const o=origin; origin=null;
+    if(!o)return;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      if(activity()?.open)return;
+      if(o.kind==='daily'&&o.iso){
+        wwOpenDailySchedule(o.iso);
+        return;
+      }
+      if(o.kind==='master'){
+        wwRenderMasterItinerary();
+        const d=wwMasterItineraryDialog();
+        if(!d.open)d.showModal();
+      }
+    }));
+  }
+
+  /* Capture the parent at the actual Add click, before legacy launch code closes it. */
+  document.addEventListener('click',e=>{
+    const d=master();
+    if(!d?.open)return;
+    if(e.target.closest?.('.ww-daily-plan-add')){
+      rememberOrigin('daily',d.dataset.wwDailyIso||'');
+      return;
+    }
+    if(e.target.closest?.('#masterItineraryAdd,.ww-day-quick-add')){
+      rememberOrigin('master');
+    }
+  },true);
+
+  /* Multi-stop chooser sits between itinerary and Activity. Preserve the origin
+     while choosing a stop rather than allowing that intermediate dialog to replace it. */
+  document.addEventListener('click',e=>{
+    if(!origin)return;
+    if(e.target.closest?.('#itineraryStopChooser .itinerary-stop-options button'))return;
+  },true);
+
+  /* Save: wait until the full existing save-wrapper chain has finished. */
+  const priorSave=saveStopItinerary;
+  saveStopItinerary=function(){
+    const hadOrigin=!!origin;
+    const out=priorSave.apply(this,arguments);
+    if(hadOrigin&&!activity()?.open)returnToOrigin();
+    return out;
+  };
+
+  /* Close/X/backdrop/Escape eventually produce a native close event, including
+     the existing unsaved-changes flow. Return only after Activity is actually shut. */
+  const d=itineraryDialog();
+  d.addEventListener('close',()=>{
+    if(origin)returnToOrigin();
+  });
+})();
+
