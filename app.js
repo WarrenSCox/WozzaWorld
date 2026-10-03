@@ -7587,3 +7587,53 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — Daily Plan surgical absolute right control cluster 03 Oct 2026 === */
+(()=>{
+  if(window.__wwDailyAbsoluteControls031026)return;
+  window.__wwDailyAbsoluteControls031026=true;
+  const st=document.createElement('style');
+  st.id='ww-daily-absolute-controls-031026';
+  st.textContent=`
+    /* Daily Plan ONLY. Stop using the inherited itinerary grid/absolute mix for
+       these two controls. Header is the containing block; X is anchored to its
+       right edge and flag is anchored immediately to the X's left. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+      position:relative!important;
+      display:block!important;
+      width:100%!important;
+      min-height:58px!important;
+      padding-right:104px!important;
+      box-sizing:border-box!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head>div:first-child{
+      display:block!important;
+      width:auto!important;
+      margin:0!important;
+      padding:0!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag{
+      position:absolute!important;
+      top:50%!important;
+      right:54px!important;
+      left:auto!important;
+      bottom:auto!important;
+      transform:translateY(-50%)!important;
+      margin:0!important;
+      z-index:3!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{
+      position:absolute!important;
+      top:50%!important;
+      right:0!important;
+      left:auto!important;
+      bottom:auto!important;
+      transform:translateY(-50%)!important;
+      margin:0!important;
+      z-index:3!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
