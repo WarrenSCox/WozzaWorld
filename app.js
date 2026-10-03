@@ -6477,88 +6477,97 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
-/* === WozzaWorld hotfix — itinerary country card true top-layer overlay 03 Oct 2026 ===
-   Root cause: #masterItineraryDialog is a modal <dialog> in the browser top layer,
-   while #countrySheet is a normal fixed <aside>. z-index cannot cross that boundary.
-   Keep the itinerary open and temporarily move the existing country sheet/backdrop
-   into a second modal <dialog>, which is then placed above the itinerary in top layer. */
-(()=>{
-  if(window.__wwItineraryCountryTopLayer031026)return;
-  window.__wwItineraryCountryTopLayer031026=true;
 
-  const ensureLayer=()=>{
-    let layer=document.getElementById('itineraryCountryTopLayer');
-    if(layer)return layer;
-    layer=document.createElement('dialog');
-    layer.id='itineraryCountryTopLayer';
-    layer.setAttribute('aria-label','Country details');
-    layer.innerHTML='<div class="itinerary-country-layer-mount"></div>';
-    document.body.appendChild(layer);
+/* === WozzaWorld hotfix — itinerary country modal cleanup / interaction restore 03 Oct 2026 === */
+(()=>{
+  if(window.__wwItineraryCountryModalCleanup031026)return;
+  window.__wwItineraryCountryModalCleanup031026=true;
+
+  function wwCountryTopDialog(){
+    let d=document.getElementById('wwCountryTopDialog');
+    if(d)return d;
+    d=document.createElement('dialog');
+    d.id='wwCountryTopDialog';
+    d.setAttribute('aria-label','Country details');
+    d.style.cssText='border:0;padding:0;margin:0;width:100vw;height:100dvh;max-width:none;max-height:none;background:transparent;overflow:visible;';
     const st=document.createElement('style');
-    st.id='ww-itinerary-country-top-layer-031026';
+    st.id='ww-country-top-dialog-cleanup-031026';
     st.textContent=`
-      #itineraryCountryTopLayer{
-        position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
-        max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;
-        border:0!important;background:transparent!important;overflow:visible!important;
-      }
-      #itineraryCountryTopLayer::backdrop{background:transparent!important}
-      #itineraryCountryTopLayer .itinerary-country-layer-mount{position:fixed!important;inset:0!important;pointer-events:none!important}
-      #itineraryCountryTopLayer #sheetBackdrop,#itineraryCountryTopLayer #countrySheet{pointer-events:auto!important}
+      #wwCountryTopDialog::backdrop{background:transparent}
+      #wwCountryTopDialog #countrySheet{z-index:2!important}
+      #wwCountryTopDialog #sheetBackdrop{z-index:1!important}
     `;
     document.head.appendChild(st);
-    return layer;
+    document.body.appendChild(d);
+    d.addEventListener('cancel',e=>{e.preventDefault();document.getElementById('sheetClose')?.click()});
+    d.addEventListener('close',()=>{
+      /* A closed native dialog must never be left as an invisible pointer blocker. */
+      d.style.pointerEvents='none';
+    });
+    return d;
+  }
+
+  function wwMountCountryInTopDialog(){
+    const d=wwCountryTopDialog(),sheet=document.getElementById('countrySheet'),backdrop=document.getElementById('sheetBackdrop');
+    if(!sheet||!backdrop)return null;
+    if(backdrop.parentNode!==d)d.appendChild(backdrop);
+    if(sheet.parentNode!==d)d.appendChild(sheet);
+    d.style.pointerEvents='auto';
+    if(!d.open)d.showModal();
+    return d;
+  }
+
+  function wwCloseCountryTopDialog(){
+    const d=document.getElementById('wwCountryTopDialog');
+    if(d?.open)d.close();
+    if(d)d.style.pointerEvents='none';
+  }
+
+  const baseOpenCountry=openCountry;
+  openCountry=function(c,origin=null){
+    /* Put the country UI in its own genuine top-layer dialog first. */
+    wwMountCountryInTopDialog();
+    return baseOpenCountry(c,origin);
   };
 
-  const restoreCountryNodes=()=>{
-    const layer=document.getElementById('itineraryCountryTopLayer');
-    const sheet=document.getElementById('countrySheet');
-    const backdrop=document.getElementById('sheetBackdrop');
-    if(layer?.open)layer.close();
-    /* Restore the original body-level structure after the country card is closed. */
-    if(backdrop&&backdrop.parentElement!==document.body)document.body.appendChild(backdrop);
-    if(sheet&&sheet.parentElement!==document.body)document.body.appendChild(sheet);
+  /* The existing country close handlers were bound before this hotfix.
+     Capture the close action as well, so the top-layer host is ALWAYS removed. */
+  const closeTargets=()=>[
+    document.getElementById('sheetClose'),
+    document.getElementById('sheetBackdrop')
+  ].filter(Boolean);
+
+  closeTargets().forEach(el=>el.addEventListener('click',()=>{
+    /* Let the existing closeSheet handler clear the country card, then remove
+       the native modal host on the same event. */
+    queueMicrotask(wwCloseCountryTopDialog);
+  }));
+
+  /* Rewire the itinerary flag after the existing header renderer runs.
+     Keep the itinerary open underneath; the country dialog is the higher top layer. */
+  const previousApply=wwApplyItineraryTripHeader;
+  wwApplyItineraryTripHeader=function(d){
+    const result=previousApply.apply(this,arguments);
+    const holder=d?.querySelector('.master-itinerary-trip-flag');
+    if(holder){
+      holder.onclick=e=>{
+        e.preventDefault();e.stopPropagation();
+        const country=holder.dataset.currentCountry?.trim();
+        if(!country)return;
+        clearInterval(holder._wwFlagTimer);
+        countryCardOrigin={type:'itinerary-overlay'};
+        openCountry(country,{type:'itinerary-overlay'});
+      };
+    }
+    return result;
   };
 
-  const originalCloseSheet=closeSheet;
-  closeSheet=async function(){
-    const wasItineraryOverlay=countryCardOrigin?.type==='itinerary-top-layer';
-    const out=await originalCloseSheet.apply(this,arguments);
-    if(wasItineraryOverlay)restoreCountryNodes();
-    return out;
-  };
-
-  /* Capture before the older flag onclick. The itinerary stays open underneath;
-     the country card is promoted into its own newer top-layer dialog. */
-  document.addEventListener('click',e=>{
-    const flag=e.target.closest?.('.master-itinerary-trip-flag');
-    if(!flag)return;
-    const itinerary=document.getElementById('masterItineraryDialog');
-    if(!itinerary?.open)return;
-    const country=flag.dataset.currentCountry?.trim();
-    if(!country)return;
-
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    clearInterval(flag._wwFlagTimer);
-
-    const layer=ensureLayer();
-    const mount=layer.querySelector('.itinerary-country-layer-mount');
-    const backdrop=document.getElementById('sheetBackdrop');
-    const sheet=document.getElementById('countrySheet');
-    if(!mount||!backdrop||!sheet)return;
-
-    mount.appendChild(backdrop);
-    mount.appendChild(sheet);
-    if(!layer.open)layer.showModal();
-    openCountry(country,{type:'itinerary-top-layer'});
-  },true);
-
-  /* Escape while the country overlay is frontmost closes only the country card. */
-  document.addEventListener('cancel',e=>{
-    if(e.target?.id!=='itineraryCountryTopLayer')return;
-    e.preventDefault();
-    closeSheet();
-  },true);
+  /* If any other route closes/hides the country sheet, remove the host too. */
+  const sheet=document.getElementById('countrySheet');
+  if(sheet){
+    new MutationObserver(()=>{
+      if(!sheet.classList.contains('open'))wwCloseCountryTopDialog();
+    }).observe(sheet,{attributes:true,attributeFilter:['class','aria-hidden']});
+  }
 })();
+
