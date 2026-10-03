@@ -8466,3 +8466,55 @@ wwOpenQuickInfo=function(row,id){
   const host=document.getElementById('tripDestinationStops');
   if(host)new MutationObserver(()=>requestAnimationFrame(sync)).observe(host,{childList:true,subtree:true});
 })();
+
+/* === WozzaWorld — surgical final circle sizing / spacing polish 03 Oct 2026 === */
+(()=>{
+  if(window.__wwCircleSizingSpacing031026)return;
+  window.__wwCircleSizingSpacing031026=true;
+  const st=document.createElement('style');
+  st.id='ww-circle-sizing-spacing-031026';
+  st.textContent=`
+    /* Pending 1px refinement: Details is now 3px right from the aligned baseline. */
+    #tripDestinationStops .trip-destination-stop.single-stop:not(.collapsed) .trip-stop-number{
+      margin-left:3px!important;
+    }
+
+    /* DAILY PLAN ONLY — flag + close 15% smaller; positions remain right aligned. */
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag,
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{
+      width:37.4px!important;height:37.4px!important;
+      min-width:37.4px!important;min-height:37.4px!important;
+      box-shadow:0 3px 8px rgba(16,48,58,.14)!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag-slot,
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-trip-flag-slot img{
+      width:34.45px!important;height:34.45px!important;
+      min-width:34.45px!important;min-height:34.45px!important;
+      max-width:34.45px!important;max-height:34.45px!important;
+    }
+    #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close{font-size:23.8px!important;}
+
+    /* MAIN ITINERARY ONLY — current 39.6px controls reduced by a further exact 7%. */
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-close,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-capture,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag{
+      width:36.828px!important;height:36.828px!important;
+      min-width:36.828px!important;min-height:36.828px!important;
+      box-shadow:0 3px 8px rgba(16,48,58,.14)!important;
+    }
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-close{right:0!important;font-size:23.44px!important;}
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-capture{right:44.828px!important;}
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag{right:89.656px!important;}
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head{padding-right:135px!important;}
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag-slot,
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-trip-flag-slot img{
+      width:33.936px!important;height:33.936px!important;
+      min-width:33.936px!important;min-height:33.936px!important;
+      max-width:33.936px!important;max-height:33.936px!important;
+    }
+    #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-capture svg{
+      width:22.6px!important;height:22.6px!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
