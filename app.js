@@ -8123,3 +8123,91 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — Calendar back-stack + Country Trips header 03 Oct 2026 === */
+(()=>{
+  if(window.__wwCalendarDailyBackAndTripsHeader031026)return;
+  window.__wwCalendarDailyBackAndTripsHeader031026=true;
+
+  let dailyOpenedFromTripCalendar=false;
+
+  /*
+    The real route is Itinerary -> trip range Calendar -> Daily Plan.
+    Mark that exact transition at the calendar day itself.
+  */
+  document.addEventListener('click',e=>{
+    const day=e.target.closest?.('#wozzaCalendarOverlay .wozza-calendar-day[data-cal-date]');
+    if(!day || wozzaCalendarMode!=='range' || day.disabled)return;
+    dailyOpenedFromTripCalendar=true;
+  },true);
+
+  function returnDailyToCalendar(e){
+    const d=document.getElementById('masterItineraryDialog');
+    if(!dailyOpenedFromTripCalendar || !d?.open || !d.classList.contains('ww-daily-plan-v2'))return false;
+
+    e?.preventDefault?.();
+    e?.stopImmediatePropagation?.();
+    dailyOpenedFromTripCalendar=false;
+
+    /*
+      Restore the itinerary IN THE SAME master dialog first, then put the
+      existing trip calendar back on top. Therefore:
+      Daily X -> Calendar, Calendar X -> Itinerary.
+    */
+    d.classList.remove('ww-daily-plan-v2');
+    d.classList.remove('ww-daily-plan-mode');
+    d.removeAttribute('data-ww-view');
+    delete d.dataset.wwDailyIso;
+    wwRenderMasterItinerary();
+
+    requestAnimationFrame(()=>{
+      wozzaCalendarOpenTripRange();
+    });
+    return true;
+  }
+
+  /* Beat the master dialog's original direct X -> close handler. */
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-close')){
+      returnDailyToCalendar(e);
+    }
+  },true);
+
+  /* Android/browser back follows the same stack. */
+  document.getElementById('masterItineraryDialog')?.addEventListener('cancel',e=>{
+    if(returnDailyToCalendar(e))e.preventDefault();
+  },true);
+
+  /* Country page: exact supplied Trips artwork above Add a trip. */
+  function ensureCountryTripsHeader(){
+    const add=document.getElementById('addCountryTrip');
+    if(!add)return;
+    let img=document.getElementById('countryTripsHeaderAsset');
+    if(!img){
+      img=document.createElement('img');
+      img.id='countryTripsHeaderAsset';
+      img.className='country-trips-header-asset';
+      img.src='trips-country-header.png';
+      img.alt='Trips';
+      add.insertAdjacentElement('beforebegin',img);
+    }
+  }
+  ensureCountryTripsHeader();
+
+  const st=document.createElement('style');
+  st.id='ww-country-trips-header-style-031026';
+  st.textContent=`
+    #countrySheet .country-trips-header-asset{
+      display:block!important;
+      width:min(100%,430px)!important;
+      height:auto!important;
+      object-fit:contain!important;
+      margin:12px auto 8px!important;
+      pointer-events:none!important;
+      user-select:none!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
