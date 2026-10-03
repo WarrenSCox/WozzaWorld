@@ -2594,7 +2594,7 @@ wozzaCalendarCommit=function(){const target=wozzaCalendarTarget,isActivity=wozza
 function wwTripStopRows(){return $$('#tripDestinationStops .trip-destination-stop')}
 function wwStopName(row,i=0){return row?.querySelector('.trip-destination-name')?.value?.trim()||row?.querySelector('.trip-stop-summary')?.textContent?.trim()||`Stop ${i+1}`}
 function wwMasterActivities(){const out=[];wwTripStopRows().forEach((row,si)=>itineraryItemsForRow(row).forEach(item=>out.push({...item,_row:row,_stopIndex:si,_stopName:wwStopName(row,si)})));return out.sort((a,b)=>String(a.startDate||'9999').localeCompare(String(b.startDate||'9999'))||String(a.startTime||'99:99').localeCompare(String(b.startTime||'99:99'))||a._stopIndex-b._stopIndex)}
-function wwRefreshItineraryButtons(){const has=wwMasterActivities().length>0;wwTripStopRows().forEach(row=>{const p=row.querySelector('.itinerary-swipe-prompt');if(p){p.innerHTML=`<span>→</span> ${has?'View':'Create'} itinerary`;p.setAttribute('aria-label',`${has?'View':'Create'} trip itinerary`)}})}
+function wwRefreshItineraryButtons(){const has=wwMasterActivities().length>0;wwTripStopRows().forEach(row=>{const p=row.querySelector('.itinerary-swipe-prompt');if(p){p.textContent=has?'ITINERARY':'CREATE ITINERARY';p.setAttribute('aria-label',has?'Itinerary':'Create itinerary')}})}
 function wwMasterItineraryDialog(){let d=document.getElementById('masterItineraryDialog');if(d)return d;d=document.createElement('dialog');d.id='masterItineraryDialog';d.className='master-itinerary-dialog';d.innerHTML=`<div class="master-itinerary-shell"><header class="master-itinerary-head"><div><small>TRIP ITINERARY</small><h2>Itinerary</h2></div><button type="button" class="master-itinerary-close" aria-label="Close">×</button></header><div id="masterItineraryContent"></div><button type="button" id="masterItineraryAdd" class="master-itinerary-add">＋ ADD ACTIVITY</button></div>`;document.body.appendChild(d);d.querySelector('.master-itinerary-close').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target===d)d.close()});d.querySelector('#masterItineraryAdd').onclick=wwAddActivityFromMaster;return d}
 function wwRenderMasterItinerary(){const d=wwMasterItineraryDialog(),host=d.querySelector('#masterItineraryContent'),items=wwMasterActivities();if(!items.length){host.innerHTML='<div class="master-itinerary-empty"><strong>Start planning your trip</strong><p>Add your first activity and your day-by-day itinerary will build here.</p></div>';return}const groups=new Map();items.forEach(x=>{const key=x.startDate||'unscheduled';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x)});let day=0;host.innerHTML=[...groups].map(([date,list])=>{day++;const title=date==='unscheduled'?'TO BE SCHEDULED':pretty(date);return `<section class="master-itinerary-day"><div class="master-itinerary-dayhead"><b>DAY ${day}</b><span>${esc(title)}</span></div><div class="master-itinerary-daybody">${list.map(x=>`<button type="button" class="master-itinerary-activity" data-stop="${x._stopIndex}" data-id="${esc(x.id)}"><time>${esc(x.tbc?'TBC':(x.flexible?'Flexible':(x.startTime||'—')))}</time><span class="master-itinerary-icon">${itineraryIcon(x)}</span><span><strong>${esc(x.name||'Activity')}</strong><small>${esc(x._stopName)}</small></span></button>`).join('')}</div></section>`}).join('');host.querySelectorAll('.master-itinerary-activity').forEach(b=>b.onclick=()=>{const row=wwTripStopRows()[Number(b.dataset.stop)];if(row){d.close();openStopItinerary(row,b.dataset.id)}})}
 function wwOpenMasterItinerary(){wwRenderMasterItinerary();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()}
@@ -8320,5 +8320,56 @@ wwOpenQuickInfo=function(row,id){
   },true);
   window.addEventListener('resize',sync,{passive:true});
   requestAnimationFrame(()=>requestAnimationFrame(sync));
+})();
+
+
+
+/* === WozzaWorld — surgical UI wording cleanup 03 Oct 2026 === */
+(()=>{
+  if(window.__wwSurgicalWording031026)return;
+  window.__wwSurgicalWording031026=true;
+
+  const exact=new Map([
+    ['TRAVEL COMPANIONS','COMPANIONS'],
+    ['Travel Companions','Companions'],
+    ['THE VIBE','VIBE'],
+    ['The Vibe','Vibe'],
+    ['TO DO LIST','TASKS'],
+    ['To Do List','Tasks'],
+    ['TRIP RATING','RATING'],
+    ['Trip Rating','Rating']
+  ]);
+
+  function clean(root=document){
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode())nodes.push(walker.currentNode);
+    for(const n of nodes){
+      const raw=n.nodeValue||'',trim=raw.trim(),rep=exact.get(trim);
+      if(!rep)continue;
+      n.nodeValue=raw.replace(trim,rep);
+    }
+
+    /* Trip-card itinerary prompt only: state comes from whether itinerary exists.
+       No arrow/span survives. */
+    root.querySelectorAll?.('.itinerary-swipe-prompt').forEach(p=>{
+      const has=wwMasterActivities?.().length>0;
+      p.textContent=has?'ITINERARY':'CREATE ITINERARY';
+      p.setAttribute('aria-label',has?'Itinerary':'Create itinerary');
+    });
+  }
+
+  clean();
+  const mo=new MutationObserver(ms=>{
+    for(const m of ms){
+      for(const n of m.addedNodes){
+        if(n.nodeType===1||n.nodeType===11)clean(n);
+      }
+    }
+  });
+  mo.observe(document.body,{childList:true,subtree:true});
+
+  /* Re-clean after common editor/view actions that update existing text in place. */
+  document.addEventListener('click',()=>requestAnimationFrame(()=>clean()),true);
 })();
 
