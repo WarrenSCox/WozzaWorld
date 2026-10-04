@@ -2627,7 +2627,7 @@ function wwOpenDailySchedule(iso){const all=wwMasterActivities().filter(x=>x.sta
 const _wwCalRenderDailyV15=wozzaCalendarRender;
 wozzaCalendarRender=function(){_wwCalRenderDailyV15();if(wozzaCalendarMode!=='range')return;wozzaCalendarEnsure().querySelectorAll('.wozza-calendar-day[data-cal-date]').forEach(b=>{const iso=b.dataset.calDate,inTrip=iso>=wozzaCalendarRangeStart&&iso<=wozzaCalendarRangeEnd;b.disabled=!inTrip;b.classList.toggle('has-daily-schedule',inTrip);if(inTrip)b.onclick=()=>{wozzaCalendarClose();wwOpenDailySchedule(iso)}})};
 /* One stop = its itinerary. Multiple stops = the live master itinerary. */
-function wwOpenTripItinerary(){const rows=wwTripStopRows();if(rows.length===1){wwRenderMasterItinerary();const d=wwMasterItineraryDialog();d.querySelector('.master-itinerary-head small').textContent='STOP ITINERARY';d.querySelector('.master-itinerary-head h2').textContent=wwStopName(rows[0],0);d.querySelector('#masterItineraryAdd').hidden=false;if(!d.open)d.showModal();return}wwOpenMasterItinerary()}
+function wwOpenTripItinerary(){const rows=wwTripStopRows();if(rows.length===1){wwRenderMasterItinerary();const d=wwMasterItineraryDialog();d.querySelector('.master-itinerary-head small').textContent='STOP ITINERARY';d.querySelector('.master-itinerary-head h2').textContent=wwStopName(rows[0],0);d.querySelector('#masterItineraryAdd').hidden=false;if(!d.open)d.show();return}wwOpenMasterItinerary()}
 const _wwRenderMasterV15=wwRenderMasterItinerary;
 wwRenderMasterItinerary=function(){_wwRenderMasterV15();const d=wwMasterItineraryDialog();d.querySelector('.master-itinerary-head small').textContent=wwTripStopRows().length>1?'MASTER ITINERARY':'STOP ITINERARY';d.querySelector('.master-itinerary-head h2').textContent=wwTripStopRows().length>1?'Itinerary':wwStopName(wwTripStopRows()[0],0);d.querySelector('#masterItineraryAdd').hidden=false};
 wwOpenMasterItinerary=function(){wwRenderMasterItinerary();const d=wwMasterItineraryDialog();if(!d.open)d.showModal()};
@@ -8622,33 +8622,39 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
-/* === WozzaWorld — route-aware Country presentation 04 Oct 2026 === */
+
+/* === WozzaWorld — route-aware Country popup polish 04 Oct 2026 === */
 (()=>{
-  if(window.__wwRouteAwareCountryPresentation041026)return;
-  window.__wwRouteAwareCountryPresentation041026=true;
+  if(window.__wwCountryRoutePopupPolish041026)return;
+  window.__wwCountryRoutePopupPolish041026=true;
 
   const st=document.createElement('style');
-  st.id='ww-route-aware-country-presentation-041026';
+  st.id='ww-country-route-popup-polish-041026';
   st.textContent=`
-    /* HOME -> Country: preserve the existing bottom sheet exactly, with no
-       blur/dim layer. Keep Home visible and interactive behind it. */
-    #wwCountryTopDialog.ww-country-from-home::backdrop{
-      background:transparent!important;
+    /* The Country host is deliberately non-modal so the main app navigation
+       remains usable. Its own sheet/backdrop still receive normal interaction. */
+    #wwCountryTopDialog{
+      z-index:9000!important;
+      pointer-events:none!important;
+    }
+    #wwCountryTopDialog #sheetBackdrop,
+    #wwCountryTopDialog #countrySheet{
+      pointer-events:auto!important;
+    }
+    body .topbar{
+      z-index:9002!important;
+    }
+
+    /* Home keeps the established bottom-sheet presentation and no blur. */
+    #wwCountryTopDialog.ww-country-from-home #sheetBackdrop.open{
+      background:rgba(0,0,0,.25)!important;
       backdrop-filter:none!important;
       -webkit-backdrop-filter:none!important;
     }
-    #wwCountryTopDialog.ww-country-from-home #sheetBackdrop{
-      background:transparent!important;
-      opacity:0!important;
-      pointer-events:none!important;
-    }
 
-    /* Everywhere else -> Country: same Country UI presented as a 90% popup. */
-    #wwCountryTopDialog.ww-country-popup #sheetBackdrop{
-      background:transparent!important;
-    }
-    #wwCountryTopDialog.ww-country-popup::backdrop{
-      background:rgba(5,34,51,.24)!important;
+    /* Everywhere else: slightly larger 94% centred popup. */
+    #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+      background:rgba(5,34,51,.32)!important;
       backdrop-filter:blur(7px)!important;
       -webkit-backdrop-filter:blur(7px)!important;
     }
@@ -8657,43 +8663,58 @@ wwOpenQuickInfo=function(row,id){
       top:50%!important;
       right:auto!important;
       bottom:auto!important;
-      width:min(650px,90vw)!important;
-      max-width:90vw!important;
-      max-height:90dvh!important;
+      width:min(94vw,700px)!important;
+      max-width:94vw!important;
+      height:auto!important;
+      max-height:94dvh!important;
       border-radius:28px!important;
+      transform:translate(-50%,-50%)!important;
       padding-bottom:calc(24px + env(safe-area-inset-bottom))!important;
-      transform:translate(-50%,-50%) scale(.90)!important;
-      transform-origin:center center!important;
-      box-shadow:0 18px 60px rgba(0,0,0,.22)!important;
     }
-    #wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open{
-      transform:translate(-50%,-50%) scale(.90)!important;
+
+    /* Hide only the visible Country scrollbar; scrolling remains enabled. */
+    #countrySheet{
+      scrollbar-width:none!important;
+      -ms-overflow-style:none!important;
     }
-    @media (orientation:landscape){
-      #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-        left:50%!important;
-        top:50%!important;
-        width:min(900px,90vw)!important;
-        max-width:90vw!important;
-        max-height:90dvh!important;
-      }
+    #countrySheet::-webkit-scrollbar{
+      width:0!important;
+      height:0!important;
+      display:none!important;
     }
   `;
   document.head.appendChild(st);
 
   const previousOpenCountry=openCountry;
   openCountry=function(c,origin=null){
-    /* Resolve the route exactly as the existing Country navigation does. */
     const resolvedOrigin=origin||currentCountryCardOrigin();
-    const fromHome=resolvedOrigin?.type==='screen' &&
-      resolvedOrigin?.screen==='home' && !resolvedOrigin?.tripsView;
-
-    const result=previousOpenCountry.apply(this,arguments);
+    const fromHome=resolvedOrigin?.type==='screen' && resolvedOrigin?.screen==='home' && !resolvedOrigin?.tripsView;
+    const result=previousOpenCountry.call(this,c,origin);
     const host=document.getElementById('wwCountryTopDialog');
     if(host){
-      host.classList.toggle('ww-country-from-home',fromHome);
+      host.classList.toggle('ww-country-from-home',!!fromHome);
       host.classList.toggle('ww-country-popup',!fromHome);
+      /* The older cleanup sets this to auto when Country opens. Keep only the
+         Country children interactive so the host itself cannot swallow nav taps. */
+      host.style.pointerEvents='none';
     }
     return result;
   };
+
+  /* Top navigation always wins over an open Country card. Dismiss Country
+     without restoring its old origin; the nav's existing handler then performs
+     the requested Home / Map / Trips / Passport navigation normally. */
+  document.addEventListener('click',e=>{
+    const nav=e.target.closest?.('.header-nav-item');
+    if(!nav)return;
+    const sheet=document.getElementById('countrySheet');
+    if(!sheet?.classList.contains('open'))return;
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden','true');
+    document.getElementById('sheetBackdrop')?.classList.remove('open');
+    countryCardOrigin=null;
+    const host=document.getElementById('wwCountryTopDialog');
+    if(host?.open)host.close();
+    if(host)host.style.pointerEvents='none';
+  },true);
 })();
