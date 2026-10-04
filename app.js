@@ -8621,3 +8621,88 @@ wwOpenQuickInfo=function(row,id){
     return result;
   };
 })();
+
+
+/* === WozzaWorld — route-aware Country presentation 04 Oct 2026 === */
+(()=>{
+  if(window.__wwRouteAwareCountryPresentation041026)return;
+  window.__wwRouteAwareCountryPresentation041026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-route-aware-country-presentation-041026';
+  st.textContent=`
+    /* Neutral frosted layer: suppress the strong teal/blue cast behind Country. */
+    #wwCountryTopDialog::backdrop{
+      background:rgba(245,248,247,.56)!important;
+      backdrop-filter:blur(7px)!important;
+      -webkit-backdrop-filter:blur(7px)!important;
+    }
+
+    /* Home keeps the existing Country bottom-sheet presentation unchanged. */
+    #wwCountryTopDialog.ww-country-from-home #countrySheet{
+      /* deliberately no geometry overrides */
+    }
+
+    /* Everywhere except Home: Country is a genuine full-screen page. */
+    #wwCountryTopDialog.ww-country-fullscreen{
+      background:#eefafa!important;
+      overflow:hidden!important;
+    }
+    #wwCountryTopDialog.ww-country-fullscreen::backdrop{
+      background:rgba(245,248,247,.72)!important;
+    }
+    #wwCountryTopDialog.ww-country-fullscreen #sheetBackdrop{
+      display:none!important;
+    }
+    #wwCountryTopDialog.ww-country-fullscreen #countrySheet.sheet{
+      position:absolute!important;
+      inset:0!important;
+      left:0!important;right:0!important;top:0!important;bottom:0!important;
+      width:100%!important;
+      max-width:none!important;
+      height:100dvh!important;
+      max-height:100dvh!important;
+      margin:0!important;
+      border-radius:0!important;
+      transform:none!important;
+      box-shadow:none!important;
+      overflow-x:hidden!important;
+      overflow-y:auto!important;
+      padding-top:calc(12px + env(safe-area-inset-top))!important;
+    }
+    #wwCountryTopDialog.ww-country-fullscreen #countrySheet.sheet.open{
+      transform:none!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  const previousOpenCountry=openCountry;
+  openCountry=function(c,origin=null){
+    /* Resolve exactly the same origin the existing navigation stack will use. */
+    const resolvedOrigin=origin||currentCountryCardOrigin();
+    const fromHome=resolvedOrigin?.type==='screen' && resolvedOrigin?.screen==='home';
+    const result=previousOpenCountry.call(this,c,origin);
+    const host=document.getElementById('wwCountryTopDialog');
+    if(host){
+      host.classList.toggle('ww-country-from-home',fromHome);
+      host.classList.toggle('ww-country-fullscreen',!fromHome);
+    }
+    const sheet=document.getElementById('countrySheet');
+    if(sheet){
+      sheet.scrollTop=0;
+      requestAnimationFrame(()=>{sheet.scrollTop=0});
+    }
+    return result;
+  };
+
+  /* Clear presentation state after Country closes; navigation/origin logic remains untouched. */
+  const clearMode=()=>{
+    const host=document.getElementById('wwCountryTopDialog');
+    if(!host)return;
+    host.classList.remove('ww-country-from-home','ww-country-fullscreen');
+  };
+  ['sheetClose','sheetBackdrop'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('click',()=>queueMicrotask(clearMode));
+  });
+})();
