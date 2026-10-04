@@ -6519,7 +6519,10 @@ wwOpenQuickInfo=function(row,id){
     if(backdrop.parentNode!==d)d.appendChild(backdrop);
     if(sheet.parentNode!==d)d.appendChild(sheet);
     d.style.pointerEvents='auto';
-    if(!d.open)d.showModal();
+    if(!d.open){
+      if(window.__wwOpeningCountryFromHome041026)d.show();
+      else d.showModal();
+    }
     return d;
   }
 
@@ -8689,7 +8692,9 @@ wwOpenQuickInfo=function(row,id){
   openCountry=function(c,origin=null){
     const resolvedOrigin=origin||currentCountryCardOrigin();
     const fromHome=resolvedOrigin?.type==='screen' && resolvedOrigin?.screen==='home' && !resolvedOrigin?.tripsView;
+    window.__wwOpeningCountryFromHome041026=!!fromHome;
     const result=previousOpenCountry.call(this,c,origin);
+    window.__wwOpeningCountryFromHome041026=false;
     const host=document.getElementById('wwCountryTopDialog');
     if(host){
       host.classList.toggle('ww-country-from-home',!!fromHome);
@@ -8718,47 +8723,3 @@ wwOpenQuickInfo=function(row,id){
     if(host)host.style.pointerEvents='none';
   },true);
 })();
-
-
-/* === WozzaWorld — surgical Home→Country top-nav exemption 04 Oct 2026 === */
-(()=>{
-  if(window.__wwHomeCountryTopNavExemption041026)return;
-  window.__wwHomeCountryTopNavExemption041026=true;
-
-  const st=document.createElement('style');
-  st.id='ww-home-country-top-nav-exemption-041026';
-  st.textContent=`
-    body.ww-country-from-home header,
-    body.ww-country-from-home .app-header,
-    body.ww-country-from-home .top-nav,
-    body.ww-country-from-home nav[aria-label="Primary"],
-    body.ww-country-from-home nav[aria-label="Main"]{
-      filter:none!important;
-      -webkit-filter:none!important;
-      pointer-events:auto!important;
-      position:relative!important;
-      z-index:2147483646!important;
-    }
-    body.ww-country-from-home header *,
-    body.ww-country-from-home .app-header *,
-    body.ww-country-from-home .top-nav *{
-      pointer-events:auto!important;
-    }
-  `;
-  document.head.appendChild(st);
-
-  const sheet=document.getElementById('countrySheet');
-  if(!sheet)return;
-
-  const sync=()=>{
-    const open=sheet.classList.contains('open');
-    /* Home-origin country sheets are the normal non-popup presentation. */
-    const popup=sheet.classList.contains('ww-country-route-popup') ||
-                document.body.classList.contains('ww-country-route-popup');
-    document.body.classList.toggle('ww-country-from-home',open&&!popup);
-  };
-
-  new MutationObserver(sync).observe(sheet,{attributes:true,attributeFilter:['class','aria-hidden']});
-  sync();
-})();
-
