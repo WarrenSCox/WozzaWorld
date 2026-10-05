@@ -9133,27 +9133,43 @@ wwOpenQuickInfo=function(row,id){
   polishTrips();
 })();
 
-/* === WozzaWorld — Country card requested polish, baseline main (10), 05 Oct 2026 === */
+/* === WozzaWorld — Country card cumulative polish from baseline (10), 05 Oct 2026 === */
 (()=>{
-  if(window.__wwCountryBaseline10Polish051026)return;
-  window.__wwCountryBaseline10Polish051026=true;
-
+  if(window.__wwCountryBaseline10Cumulative051026)return;
+  window.__wwCountryBaseline10Cumulative051026=true;
   const st=document.createElement('style');
-  st.id='ww-country-baseline10-polish-051026';
+  st.id='ww-country-baseline10-cumulative-051026';
   st.textContent=`
-    /* Keep the existing plane asset/circle; level only the plane artwork. */
+    /* Plane: near-horizontal with the nose lifted a final 3 degrees. */
     #countrySheet .ww-country-trip-plane img{
-      transform:rotate(45deg)!important;
+      transform:rotate(42deg)!important;
       transform-origin:center!important;
     }
 
-    /* Trips + Summary use one shared midpoint size. */
+    /* Four country actions: true square ratio, preserving the existing four-column widths. */
+    #countrySheet .choice-grid button,
+    #countrySheet .country-status-grid button,
+    #countrySheet .ww-country-fast-facts-action{
+      aspect-ratio:1 / 1!important;
+      min-height:0!important;
+      height:auto!important;
+      padding-top:8px!important;
+      padding-bottom:8px!important;
+      justify-content:center!important;
+    }
+
+    /* Countdown sits visually on the same row as the trip name. */
+    #countrySheet .country-trip-countdown{
+      transform:translateY(-16px)!important;
+    }
+
+    /* Trips + Summary use the same midpoint heading size. */
     #countrySheet .ww-country-trips-section-head strong,
     #countrySheet .country-info-summary h3{
       font-size:17px!important;
     }
 
-    /* Matching section divider above Trips; existing divider after Add a trip remains. */
+    /* Matching divider above Trips; lower divider after Add a trip stays in place. */
     #countrySheet .ww-country-trips-top-divider{
       display:block!important;
       border:0!important;
@@ -9167,8 +9183,6 @@ wwOpenQuickInfo=function(row,id){
     const list=document.getElementById('countryTrips');
     const head=document.querySelector('#countrySheet .ww-country-trips-section-head');
     if(!list||!head)return;
-
-    /* One divider above Trips. */
     let top=head.previousElementSibling;
     if(!top?.classList.contains('ww-country-trips-top-divider')){
       document.querySelector('#countrySheet .ww-country-trips-top-divider')?.remove();
@@ -9176,8 +9190,6 @@ wwOpenQuickInfo=function(row,id){
       top.className='ww-country-trips-top-divider';
       head.insertAdjacentElement('beforebegin',top);
     }
-
-    /* Preserve the existing lower divider after Add a trip. */
     const add=document.getElementById('addCountryTrip');
     if(add && !add.nextElementSibling?.classList.contains('ww-country-trips-divider')){
       const lower=document.createElement('hr');
