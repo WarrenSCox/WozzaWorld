@@ -607,7 +607,7 @@ function renderSheet(){
  const pills=$('#countrySummaryPills');if(pills){pills.innerHTML='';pills.style.display='none'};
  const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';const infoBtn=$('#countryInfoButton');if(infoBtn){infoBtn.onclick=e=>{e.preventDefault();openCountryInfo()}}
  $$('.choice-grid button').forEach(b=>{const selected=countryHasStatus(currentCountry,b.dataset.status);b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',selected?'true':'false');const tick=b.querySelector('.status-tick');if(tick)tick.textContent=selected?'✓':'';const bucket=b.querySelector('.status-bucket');if(bucket)bucket.classList.toggle('filled',selected);const clock=b.querySelector('.status-clock');if(clock)clock.classList.toggle('filled',selected)});
- $('#countryTrips').innerHTML=trips.length?trips.map(t=>{const td=orderedTripDates(t),dates=td.start?`${pretty(td.start)}${td.end&&td.end!==td.start?' – '+pretty(td.end):''}`:'Dates not set',r=Math.max(0,Math.min(5,Number(t.rating)||0)),days=countdownDays(td.start),count=days===null&&tripIsOnHorizon(t)?'PLANNING':days===0?'TODAY ✈':days>0?`${days} DAYS TO GO`:'';return `<div class="country-trip-card" data-open-trip="${esc(t.id||'')}" role="button" tabindex="0"><div class="country-trip-copy"><strong>${esc(t.name)}</strong><p>${dates}</p>${r?`<div class="country-trip-rating" aria-label="${r} out of 5 stars">${'★'.repeat(r)}${'☆'.repeat(5-r)}</div>`:''}</div><div class="country-trip-side">${count?`<span class="countdown-badge country-trip-countdown">${count}</span>`:''}<span class="country-trip-chevron" aria-hidden="true">›</span></div></div>`}).join(''):'<p class="muted country-no-trips">No trips for this country yet.</p>';
+ $('#countryTrips').innerHTML=trips.length?trips.map(t=>{const td=orderedTripDates(t),dates=td.start?`${pretty(td.start)}${td.end&&td.end!==td.start?' – '+pretty(td.end):''}`:'Dates not set',r=Math.max(0,Math.min(5,Number(t.rating)||0)),days=countdownDays(td.start),count=days===null&&tripIsOnHorizon(t)?'PLANNING':days===0?'TODAY ✈':days>0?`${days} DAYS TO GO`:'';return `<div class="country-trip-card" data-open-trip="${esc(t.id||'')}" role="button" tabindex="0"><div class="country-trip-copy"><strong>${esc(t.name)}</strong><p>${dates}</p>${r?`<div class="country-trip-rating" aria-label="${r} out of 5 stars">${'★'.repeat(r)}${'☆'.repeat(5-r)}</div>`:''}</div><div class="country-trip-side">${count?`<span class="countdown-badge country-trip-countdown">${count}</span>`:''}<span class="country-trip-chevron" aria-hidden="true">›</span></div></div>`}).join(''):'<p class="muted country-no-trips">Add a trip to get started 😃</p>';
  const info=$('#countryInfoSummary');if(info){const cityNames=cities.map(x=>x.name),parts=[];if(cityNames.length)parts.push(`<div><strong>Destinations</strong><p>${cityNames.map(esc).join(' · ')}</p></div>`);if(companions.length)parts.push(`<div><strong>Travel companions</strong><p>${companions.map(esc).join(' · ')}</p></div>`);info.innerHTML=`<h3>SUMMARY</h3>${parts.join('')}`}
  attachTripCardEvents($('#countryTrips'));
 }
@@ -9889,7 +9889,7 @@ wwOpenQuickInfo=function(row,id){
 
     if(head)head.hidden=!hasTrips;
     if(topDivider)topDivider.hidden=!hasTrips;
-    list.hidden=!hasTrips;
+    list.hidden=false;
     if(lowerDivider)lowerDivider.hidden=!hasTrips;
     if(summary)summary.hidden=!hasTrips;
     add.hidden=false;
