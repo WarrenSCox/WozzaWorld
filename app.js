@@ -9800,7 +9800,35 @@ wwOpenQuickInfo=function(row,id){
   if(window.__wwInfoSearchAppOnly051026)return;
   window.__wwInfoSearchAppOnly051026=true;
 
+  function ensureInfoControlSizing(){
+    if(document.getElementById('wwInfoControlSizing051026'))return;
+    const style=document.createElement('style');
+    style.id='wwInfoControlSizing051026';
+    style.textContent=`
+      #countryInfoDialog #countryInfoClose,
+      #countryInfoDialog #countryInfoGoogleSearch{
+        width:33px!important;height:33px!important;min-width:33px!important;min-height:33px!important;
+      }
+      #countryInfoDialog #countryInfoClose{font-size:22.5px!important}
+      #countryInfoDialog #countryInfoGoogleSearch svg{width:15px!important;height:15px!important}
+      #countryInfoDialog #countryInfoGoogleSearch{right:57px!important}
+      #countryInfoDialog .country-facts-accordion-icon{
+        flex-basis:41.6px!important;width:41.6px!important;height:41.6px!important;font-size:24.8px!important;
+      }
+      @media(orientation:landscape) and (max-height:650px){
+        #countryInfoDialog #countryInfoClose,
+        #countryInfoDialog #countryInfoGoogleSearch{width:25.5px!important;height:25.5px!important;min-width:25.5px!important;min-height:25.5px!important}
+        #countryInfoDialog #countryInfoClose{font-size:18px!important}
+        #countryInfoDialog #countryInfoGoogleSearch svg{width:12px!important;height:12px!important}
+        #countryInfoDialog #countryInfoGoogleSearch{right:49.5px!important}
+        #countryInfoDialog .country-facts-accordion-icon{flex-basis:28.8px!important;width:28.8px!important;height:28.8px!important;font-size:18.4px!important}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function ensureInfoSearchButton(){
+    ensureInfoControlSizing();
     const dialog=document.getElementById('countryInfoDialog');
     const close=document.getElementById('countryInfoClose');
     if(!dialog||!close)return;
