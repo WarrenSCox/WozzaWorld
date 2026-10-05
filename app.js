@@ -9794,3 +9794,50 @@ wwOpenQuickInfo=function(row,id){
 
   bindCountryHeroInfo();
 })();
+
+/* === WozzaWorld — Info page Google search button, app.js-only — 05 Oct 2026 === */
+(()=>{
+  if(window.__wwInfoSearchAppOnly051026)return;
+  window.__wwInfoSearchAppOnly051026=true;
+
+  function ensureInfoSearchButton(){
+    const dialog=document.getElementById('countryInfoDialog');
+    const close=document.getElementById('countryInfoClose');
+    if(!dialog||!close)return;
+
+    let search=document.getElementById('countryInfoGoogleSearch');
+    if(!search){
+      search=document.createElement('button');
+      search.type='button';
+      search.id='countryInfoGoogleSearch';
+      search.className='country-facts-close';
+      search.setAttribute('aria-label','Search this country on Google');
+      search.setAttribute('title','Search Google');
+      search.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L21 21"></path></svg>';
+      close.parentNode.insertBefore(search,close);
+    }
+
+    /* Match the existing close control without changing index.html/styles.css. */
+    Object.assign(search.style,{
+      right:'58px',
+      boxShadow:'0 4px 10px rgba(15,56,70,.18)',
+      display:'grid',
+      placeItems:'center'
+    });
+    close.style.boxShadow='0 4px 10px rgba(15,56,70,.18)';
+
+    search.onclick=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const country=String(currentCountry||'').trim();
+      if(country)window.open(`https://www.google.com/search?q=${encodeURIComponent(country)}`,'_blank','noopener');
+    };
+  }
+
+  const originalOpenCountryInfo=openCountryInfo;
+  openCountryInfo=async function(){
+    ensureInfoSearchButton();
+    return originalOpenCountryInfo.apply(this,arguments);
+  };
+  ensureInfoSearchButton();
+})();
