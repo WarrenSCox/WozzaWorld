@@ -9051,3 +9051,84 @@ wwOpenQuickInfo=function(row,id){
   refreshTripsSection();
 })();
 
+
+/* === WozzaWorld — Country Trips final placement + asset consistency 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryTripsFinalPolish051026)return;
+  window.__wwCountryTripsFinalPolish051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-trips-final-polish-051026';
+  st.textContent=`
+    /* Plane circle stays as designed, but the plane itself is the app's existing air.png asset. */
+    #countrySheet .country-trip-card::before{content:""!important}
+    #countrySheet .ww-country-trip-plane{
+      position:absolute!important;left:15px!important;top:50%!important;
+      transform:translateY(-50%)!important;
+      width:58px!important;height:58px!important;border-radius:50%!important;
+      display:grid!important;place-items:center!important;
+      background:#def6fb!important;pointer-events:none!important;
+    }
+    #countrySheet .ww-country-trip-plane img{
+      width:34px!important;height:34px!important;object-fit:contain!important;
+      display:block!important;
+    }
+    #countrySheet #addCountryTrip{
+      margin:12px 0 0!important;
+      box-shadow:0 3px 8px rgba(16,48,58,.08)!important;
+    }
+    /* More breathing room after the Trips divider before Summary begins. */
+    #countrySheet .ww-country-trips-divider{
+      margin:20px 0 26px!important;
+    }
+    @media(max-width:390px){
+      #countrySheet .ww-country-trip-plane{left:13px!important;width:54px!important;height:54px!important}
+      #countrySheet .ww-country-trip-plane img{width:32px!important;height:32px!important}
+    }
+  `;
+  document.head.appendChild(st);
+
+  function polishTrips(){
+    const list=document.getElementById('countryTrips');
+    const add=document.getElementById('addCountryTrip');
+    if(!list||!add)return;
+
+    /* Exact requested order: heading -> trip cards -> Add Trip -> divider -> Summary. */
+    if(list.nextElementSibling!==add)list.insertAdjacentElement('afterend',add);
+    let divider=add.nextElementSibling;
+    if(!divider?.classList.contains('ww-country-trips-divider')){
+      document.querySelector('#countrySheet .ww-country-trips-divider')?.remove();
+      divider=document.createElement('hr');
+      divider.className='ww-country-trips-divider';
+      add.insertAdjacentElement('afterend',divider);
+    }
+
+    /* Use the existing WozzaWorld plane asset, never a recreated glyph. */
+    list.querySelectorAll('.country-trip-card').forEach(card=>{
+      let icon=card.querySelector('.ww-country-trip-plane');
+      if(!icon){
+        icon=document.createElement('span');
+        icon.className='ww-country-trip-plane';
+        icon.setAttribute('aria-hidden','true');
+        icon.innerHTML='<img src="air.png" alt="">';
+        card.prepend(icon);
+      }
+    });
+
+    /* Make TRIPS use the exact live typography of the SUMMARY heading. */
+    const tripsTitle=document.querySelector('#countrySheet .ww-country-trips-section-head strong');
+    const summaryTitle=document.querySelector('#countrySheet .country-info-summary h3');
+    if(tripsTitle&&summaryTitle){
+      const cs=getComputedStyle(summaryTitle);
+      ['fontFamily','fontSize','fontWeight','letterSpacing','lineHeight','color','textTransform'].forEach(p=>tripsTitle.style[p]=cs[p]);
+    }
+  }
+
+  const previousRenderSheet=renderSheet;
+  renderSheet=function(){
+    const out=previousRenderSheet.apply(this,arguments);
+    polishTrips();
+    return out;
+  };
+  polishTrips();
+})();
