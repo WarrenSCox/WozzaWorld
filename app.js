@@ -9132,3 +9132,65 @@ wwOpenQuickInfo=function(row,id){
   };
   polishTrips();
 })();
+
+/* === WozzaWorld — Country card requested polish, baseline main (10), 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryBaseline10Polish051026)return;
+  window.__wwCountryBaseline10Polish051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-baseline10-polish-051026';
+  st.textContent=`
+    /* Keep the existing plane asset/circle; level only the plane artwork. */
+    #countrySheet .ww-country-trip-plane img{
+      transform:rotate(45deg)!important;
+      transform-origin:center!important;
+    }
+
+    /* Trips + Summary use one shared midpoint size. */
+    #countrySheet .ww-country-trips-section-head strong,
+    #countrySheet .country-info-summary h3{
+      font-size:17px!important;
+    }
+
+    /* Matching section divider above Trips; existing divider after Add a trip remains. */
+    #countrySheet .ww-country-trips-top-divider{
+      display:block!important;
+      border:0!important;
+      border-top:1px solid #d7e0e2!important;
+      margin:20px 0 17px!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  function applyCountryPolish(){
+    const list=document.getElementById('countryTrips');
+    const head=document.querySelector('#countrySheet .ww-country-trips-section-head');
+    if(!list||!head)return;
+
+    /* One divider above Trips. */
+    let top=head.previousElementSibling;
+    if(!top?.classList.contains('ww-country-trips-top-divider')){
+      document.querySelector('#countrySheet .ww-country-trips-top-divider')?.remove();
+      top=document.createElement('hr');
+      top.className='ww-country-trips-top-divider';
+      head.insertAdjacentElement('beforebegin',top);
+    }
+
+    /* Preserve the existing lower divider after Add a trip. */
+    const add=document.getElementById('addCountryTrip');
+    if(add && !add.nextElementSibling?.classList.contains('ww-country-trips-divider')){
+      const lower=document.createElement('hr');
+      lower.className='ww-country-trips-divider';
+      add.insertAdjacentElement('afterend',lower);
+    }
+  }
+
+  const previousRenderSheet=renderSheet;
+  renderSheet=function(){
+    const out=previousRenderSheet.apply(this,arguments);
+    applyCountryPolish();
+    return out;
+  };
+  applyCountryPolish();
+})();
