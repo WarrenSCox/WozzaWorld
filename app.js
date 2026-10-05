@@ -9808,20 +9808,20 @@ wwOpenQuickInfo=function(row,id){
     style.textContent=`
       #countryInfoDialog #countryInfoClose,
       #countryInfoDialog #countryInfoGoogleSearch{
-        width:33px!important;height:33px!important;min-width:33px!important;min-height:33px!important;
+        width:36.3px!important;height:36.3px!important;min-width:36.3px!important;min-height:36.3px!important;
       }
-      #countryInfoDialog #countryInfoClose{font-size:22.5px!important}
-      #countryInfoDialog #countryInfoGoogleSearch svg{width:15px!important;height:15px!important}
-      #countryInfoDialog #countryInfoGoogleSearch{right:57px!important}
+      #countryInfoDialog #countryInfoClose{font-size:24.75px!important}
+      #countryInfoDialog #countryInfoGoogleSearch svg{width:16.5px!important;height:16.5px!important}
+      #countryInfoDialog #countryInfoGoogleSearch{right:60.3px!important}
       #countryInfoDialog .country-facts-accordion-icon{
         flex-basis:41.6px!important;width:41.6px!important;height:41.6px!important;font-size:24.8px!important;
       }
       @media(orientation:landscape) and (max-height:650px){
         #countryInfoDialog #countryInfoClose,
-        #countryInfoDialog #countryInfoGoogleSearch{width:25.5px!important;height:25.5px!important;min-width:25.5px!important;min-height:25.5px!important}
-        #countryInfoDialog #countryInfoClose{font-size:18px!important}
-        #countryInfoDialog #countryInfoGoogleSearch svg{width:12px!important;height:12px!important}
-        #countryInfoDialog #countryInfoGoogleSearch{right:49.5px!important}
+        #countryInfoDialog #countryInfoGoogleSearch{width:28.05px!important;height:28.05px!important;min-width:28.05px!important;min-height:28.05px!important}
+        #countryInfoDialog #countryInfoClose{font-size:19.8px!important}
+        #countryInfoDialog #countryInfoGoogleSearch svg{width:13.2px!important;height:13.2px!important}
+        #countryInfoDialog #countryInfoGoogleSearch{right:52.05px!important}
         #countryInfoDialog .country-facts-accordion-icon{flex-basis:28.8px!important;width:28.8px!important;height:28.8px!important;font-size:18.4px!important}
       }
     `;
@@ -9869,4 +9869,37 @@ wwOpenQuickInfo=function(row,id){
     return originalOpenCountryInfo.apply(this,arguments);
   };
   ensureInfoSearchButton();
+})();
+
+
+/* === WozzaWorld — Empty country trip state polish, 05 Oct 2026 === */
+(()=>{
+  if(window.__wwEmptyCountryTripState051026)return;
+  window.__wwEmptyCountryTripState051026=true;
+
+  function syncEmptyCountryTripState(){
+    const list=document.getElementById('countryTrips');
+    const add=document.getElementById('addCountryTrip');
+    const summary=document.getElementById('countryInfoSummary');
+    if(!list||!add)return;
+    const hasTrips=countryTrips(currentCountry).length>0;
+    const head=document.querySelector('#countrySheet .ww-country-trips-section-head');
+    const topDivider=document.querySelector('#countrySheet .ww-country-trips-top-divider');
+    const lowerDivider=document.querySelector('#countrySheet .ww-country-trips-divider');
+
+    if(head)head.hidden=!hasTrips;
+    if(topDivider)topDivider.hidden=!hasTrips;
+    list.hidden=!hasTrips;
+    if(lowerDivider)lowerDivider.hidden=!hasTrips;
+    if(summary)summary.hidden=!hasTrips;
+    add.hidden=false;
+  }
+
+  const previousRenderSheet=renderSheet;
+  renderSheet=function(){
+    const out=previousRenderSheet.apply(this,arguments);
+    syncEmptyCountryTripState();
+    return out;
+  };
+  syncEmptyCountryTripState();
 })();
