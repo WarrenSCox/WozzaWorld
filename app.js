@@ -9206,3 +9206,61 @@ wwOpenQuickInfo=function(row,id){
   };
   applyCountryPolish();
 })();
+
+/* === WozzaWorld — Country background scroll lock + Fast Facts icon polish 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryScrollLockInfoIcon051026)return;
+  window.__wwCountryScrollLockInfoIcon051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-scroll-lock-info-icon-051026';
+  st.textContent=`
+    /* Keep the Fast Facts mark perfectly circular and 10% less dominant. */
+    #countrySheet .ww-country-fast-facts-icon{
+      aspect-ratio:1 / 1!important;
+      flex:0 0 auto!important;
+      flex-shrink:0!important;
+      border-radius:50%!important;
+      transform:scale(.9)!important;
+      transform-origin:center!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  let locked=false,lockedY=0;
+  const lockBackground=()=>{
+    if(locked)return;
+    locked=true;
+    lockedY=window.scrollY||window.pageYOffset||0;
+    const b=document.body;
+    b.dataset.wwCountryScrollLocked='1';
+    b.style.position='fixed';
+    b.style.top=`-${lockedY}px`;
+    b.style.left='0';
+    b.style.right='0';
+    b.style.width='100%';
+    b.style.overflow='hidden';
+  };
+  const unlockBackground=()=>{
+    if(!locked)return;
+    locked=false;
+    const b=document.body;
+    const y=lockedY;
+    delete b.dataset.wwCountryScrollLocked;
+    b.style.position='';
+    b.style.top='';
+    b.style.left='';
+    b.style.right='';
+    b.style.width='';
+    b.style.overflow='';
+    window.scrollTo(0,y);
+  };
+  const sync=()=>{
+    const sheet=document.getElementById('countrySheet');
+    sheet?.classList.contains('open')?lockBackground():unlockBackground();
+  };
+
+  const sheet=document.getElementById('countrySheet');
+  if(sheet)new MutationObserver(sync).observe(sheet,{attributes:true,attributeFilter:['class','aria-hidden']});
+  sync();
+})();
