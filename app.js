@@ -8723,3 +8723,112 @@ wwOpenQuickInfo=function(row,id){
     if(host)host.style.pointerEvents='none';
   },true);
 })();
+
+
+/* === WozzaWorld — Country four-action row + Fast Facts move 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryFourActions051026)return;
+  window.__wwCountryFourActions051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-four-actions-051026';
+  st.textContent=`
+    /* Hero Fast Facts control moves into the action row. */
+    #countrySheet #countryInfoButton{display:none!important}
+
+    /* Four equal actions; existing three retain their original buttons/handlers. */
+    #countrySheet .choice-grid,
+    #countrySheet .country-status-grid{
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      gap:8px!important;
+    }
+    #countrySheet .choice-grid button,
+    #countrySheet .country-status-grid button,
+    #countrySheet .ww-country-fast-facts-action{
+      min-width:0!important;
+      padding-left:5px!important;
+      padding-right:5px!important;
+      font-size:clamp(11px,3vw,15px)!important;
+      line-height:1.12!important;
+    }
+    #countrySheet .choice-grid button svg,
+    #countrySheet .country-status-grid button svg{
+      max-width:42px!important;
+      max-height:42px!important;
+    }
+    #countrySheet .ww-country-fast-facts-action{
+      appearance:none;
+      border:1px solid rgba(21,48,71,.10);
+      background:#fff;
+      color:#153047;
+      border-radius:22px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      min-height:118px;
+      font-family:inherit;
+      cursor:pointer;
+      box-shadow:0 3px 10px rgba(16,48,58,.035);
+    }
+    #countrySheet .ww-country-fast-facts-icon{
+      width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;
+      background:#087db5;color:#fff;
+      border:2px solid #fff;
+      box-shadow:0 0 0 1.5px #087db5;
+      font-family:Georgia,serif;
+      font-size:34px;font-weight:700;font-style:italic;
+      line-height:1;
+      box-sizing:border-box;
+    }
+    #countrySheet .ww-country-fast-facts-label{white-space:nowrap}
+
+    @media (max-width:390px){
+      #countrySheet .choice-grid,
+      #countrySheet .country-status-grid{gap:6px!important}
+      #countrySheet .ww-country-fast-facts-action{border-radius:18px!important}
+      #countrySheet .ww-country-fast-facts-icon{width:38px;height:38px;font-size:30px}
+    }
+    @media (orientation:landscape) and (max-height:650px){
+      #countrySheet .ww-country-fast-facts-action{
+        min-height:54px!important;padding:4px!important;border-radius:14px!important;
+        gap:3px!important;font-size:11px!important;
+      }
+      #countrySheet .ww-country-fast-facts-icon{
+        width:26px!important;height:26px!important;font-size:20px!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  function installFastFactsAction(){
+    const grid=document.querySelector('#countrySheet .choice-grid, #countrySheet .country-status-grid');
+    if(!grid)return;
+    let btn=grid.querySelector('.ww-country-fast-facts-action');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.type='button';
+      btn.className='ww-country-fast-facts-action';
+      btn.innerHTML='<span class="ww-country-fast-facts-icon" aria-hidden="true">i</span><span class="ww-country-fast-facts-label">Fast Facts</span>';
+      btn.setAttribute('aria-label','Fast Facts');
+      grid.appendChild(btn);
+    }
+    btn.onclick=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const existing=document.getElementById('countryInfoButton');
+      if(existing) existing.click();
+      else if(typeof openCountryInfo==='function') openCountryInfo();
+    };
+  }
+
+  const priorRender=renderSheet;
+  renderSheet=function(){
+    const out=priorRender.apply(this,arguments);
+    installFastFactsAction();
+    return out;
+  };
+})();
+
