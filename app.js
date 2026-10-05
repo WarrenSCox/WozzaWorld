@@ -9677,3 +9677,75 @@ wwOpenQuickInfo=function(row,id){
     return previousOpenWozzaSelect.apply(this,arguments);
   };
 })();
+
+/* === WozzaWorld — Country Info label measured baseline alignment 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryInfoMeasuredBaseline051026)return;
+  window.__wwCountryInfoMeasuredBaseline051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-info-measured-baseline-051026';
+  st.textContent=`
+    /* The offset is measured from the rendered native labels, rather than guessed. */
+    #countrySheet .ww-country-fast-facts-label{
+      transform:translateY(var(--ww-info-label-y,0px))!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  function textRectFor(button,labels){
+    if(!button)return null;
+    const wanted=new Set(labels.map(x=>x.toLowerCase()));
+    const walker=document.createTreeWalker(button,NodeFilter.SHOW_TEXT);
+    let node;
+    while((node=walker.nextNode())){
+      const value=String(node.nodeValue||'').trim().replace(/\s+/g,' ');
+      if(!wanted.has(value.toLowerCase()))continue;
+      const range=document.createRange();
+      range.selectNodeContents(node);
+      const rect=range.getBoundingClientRect();
+      if(rect.width||rect.height)return rect;
+    }
+    return null;
+  }
+
+  function alignInfoLabel(){
+    const sheet=document.getElementById('countrySheet');
+    const info=sheet?.querySelector('.ww-country-fast-facts-action');
+    const label=info?.querySelector('.ww-country-fast-facts-label');
+    if(!sheet||!info||!label)return;
+
+    /* Always measure Info from its unshifted position. */
+    label.style.setProperty('--ww-info-label-y','0px');
+
+    const nativeButtons=[...sheet.querySelectorAll('.choice-grid button, .country-status-grid button')]
+      .filter(b=>!b.classList.contains('ww-country-fast-facts-action'));
+    const nativeRects=nativeButtons
+      .map(b=>textRectFor(b,['Visited','Visiting','Bucket list']))
+      .filter(Boolean);
+    const infoRect=textRectFor(info,['Info']);
+    if(!nativeRects.length||!infoRect)return;
+
+    /* All three native labels are the source of truth. Median avoids any one odd measurement. */
+    const centres=nativeRects.map(r=>r.top+r.height/2).sort((a,b)=>a-b);
+    const target=centres[Math.floor(centres.length/2)];
+    const current=infoRect.top+infoRect.height/2;
+    const delta=target-current;
+    label.style.setProperty('--ww-info-label-y',`${delta.toFixed(2)}px`);
+  }
+
+  function queueAlign(){
+    requestAnimationFrame(()=>requestAnimationFrame(alignInfoLabel));
+  }
+
+  const previousRenderSheet=renderSheet;
+  renderSheet=function(){
+    const out=previousRenderSheet.apply(this,arguments);
+    queueAlign();
+    return out;
+  };
+
+  window.addEventListener('resize',queueAlign,{passive:true});
+  if(document.fonts?.ready)document.fonts.ready.then(queueAlign).catch(()=>{});
+  queueAlign();
+})();
