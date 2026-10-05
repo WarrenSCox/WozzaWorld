@@ -9543,3 +9543,48 @@ wwOpenQuickInfo=function(row,id){
   renderSheet=function(){const out=prev.apply(this,arguments);apply();return out};
   apply();
 })();
+
+/* === WozzaWorld — Country Info alignment + country countdown placement 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryInfoCountdownPolish051026)return;
+  window.__wwCountryInfoCountdownPolish051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-info-countdown-polish-051026';
+  st.textContent=`
+    /* Match the Info label baseline to the other three country actions. */
+    #countrySheet .ww-country-fast-facts-label{transform:translateY(-7px)!important}
+
+    /* Another 4% reduction from the current Info icon size. */
+    #countrySheet .ww-country-fast-facts-icon{transform:scale(.821)!important}
+
+    /* Country page only: countdown belongs below the trip date, not in the side rail. */
+    #countrySheet .country-trip-copy .country-trip-countdown{
+      display:table!important;
+      position:static!important;
+      transform:none!important;
+      margin:2px 0 5px!important;
+      width:max-content!important;
+      max-width:100%!important;
+      font-size:9px!important;
+      line-height:1.1!important;
+      padding:5px 7px!important;
+    }
+    #countrySheet .country-trip-side{right:14px!important}
+  `;
+  document.head.appendChild(st);
+
+  function polish(){
+    document.querySelectorAll('#countryTrips .country-trip-card').forEach(card=>{
+      const copy=card.querySelector('.country-trip-copy');
+      const date=copy?.querySelector('p');
+      const badge=card.querySelector('.country-trip-countdown');
+      if(copy&&date&&badge&&badge.parentElement!==copy)date.insertAdjacentElement('afterend',badge);
+      else if(copy&&date&&badge&&badge.previousElementSibling!==date)date.insertAdjacentElement('afterend',badge);
+    });
+  }
+
+  const prev=renderSheet;
+  renderSheet=function(){const out=prev.apply(this,arguments);polish();return out};
+  polish();
+})();
