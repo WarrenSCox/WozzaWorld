@@ -8832,3 +8832,32 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+
+/* === WozzaWorld — Country action cards shorter + subtle lift 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryActionCardsPolish051026)return;
+  window.__wwCountryActionCardsPolish051026=true;
+  const st=document.createElement('style');
+  st.id='ww-country-action-cards-polish-051026';
+  st.textContent=`
+    #countrySheet .choice-grid button,
+    #countrySheet .country-status-grid button,
+    #countrySheet .ww-country-fast-facts-action{
+      min-height:104px!important;
+      padding-top:11px!important;
+      padding-bottom:10px!important;
+      box-shadow:0 3px 8px rgba(16,48,58,.08)!important;
+    }
+    @media (orientation:landscape) and (max-height:650px){
+      #countrySheet .choice-grid button,
+      #countrySheet .country-status-grid button,
+      #countrySheet .ww-country-fast-facts-action{
+        min-height:48px!important;
+        box-shadow:0 2px 6px rgba(16,48,58,.08)!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
