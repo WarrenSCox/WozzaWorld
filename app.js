@@ -9264,3 +9264,101 @@ wwOpenQuickInfo=function(row,id){
   if(sheet)new MutationObserver(sync).observe(sheet,{attributes:true,attributeFilter:['class','aria-hidden']});
   sync();
 })();
+
+/* === WozzaWorld — Country hero cleanup + banner-logo refresh 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryHeroCleanup051026)return;
+  window.__wwCountryHeroCleanup051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-hero-cleanup-051026';
+  st.textContent=`
+    /* The current hero only needs flag + a fluid name/rating stack. Retire the
+       legacy summary-pills row so it cannot reserve vertical space. */
+    #countrySheet .country-hero-minimal{
+      align-items:center!important;
+    }
+    #countrySheet .country-hero-copy{
+      min-width:0!important;
+      display:flex!important;
+      flex-direction:column!important;
+      align-items:flex-start!important;
+      justify-content:center!important;
+    }
+    #countrySheet .country-title-row{
+      display:block!important;
+      width:100%!important;
+      min-width:0!important;
+      padding:0!important;
+      margin:0!important;
+    }
+    #countrySheet .country-title-row h2,
+    #countrySheet .country-hero-copy h2{
+      display:block!important;
+      width:100%!important;
+      min-width:0!important;
+      margin:0!important;
+      padding:0!important;
+      line-height:1.02!important;
+      white-space:normal!important;
+      overflow-wrap:normal!important;
+      word-break:normal!important;
+    }
+    #countrySheet .country-hero-lower-row,
+    #countrySheet .country-summary-pills{
+      display:none!important;
+      height:0!important;
+      min-height:0!important;
+      margin:0!important;
+      padding:0!important;
+      transform:none!important;
+    }
+    #countrySheet .country-rating-row{
+      display:block!important;
+      width:auto!important;
+      min-height:0!important;
+      margin:8px 0 0!important;
+      padding:0!important;
+    }
+    #countrySheet .country-rating-row .country-rating-summary,
+    #countrySheet .country-rating-summary{
+      display:block!important;
+      width:auto!important;
+      min-height:0!important;
+      margin:0!important;
+      padding:0!important;
+      line-height:1!important;
+      align-self:auto!important;
+    }
+    #countrySheet .country-rating-summary span{
+      display:block!important;
+      line-height:1!important;
+      white-space:nowrap!important;
+    }
+    /* Fast Facts now lives in the four-action row, not in the hero. */
+    #countrySheet .country-rating-row #countryInfoButton{display:none!important}
+
+    @media (max-width:430px){
+      #countrySheet .country-rating-row{margin-top:7px!important}
+    }
+    @media (orientation:landscape) and (max-height:650px){
+      #countrySheet .country-title-row,
+      #countrySheet .country-title-row h2,
+      #countrySheet .country-hero-copy h2{padding:0!important;margin:0!important}
+      #countrySheet .country-rating-row{margin-top:5px!important}
+    }
+  `;
+  document.head.appendChild(st);
+
+  const logo=document.getElementById('homeLogo');
+  if(logo){
+    logo.setAttribute('aria-label','Refresh WozzaWorld');
+    logo.title='Refresh WozzaWorld';
+    logo.style.cursor='pointer';
+    logo.onclick=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.reload();
+    };
+  }
+})();
