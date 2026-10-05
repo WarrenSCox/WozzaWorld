@@ -9464,8 +9464,8 @@ wwOpenQuickInfo=function(row,id){
   st.id='ww-country-summary-activities-transport-051026';
   st.textContent=`
     /* Belgium-sized minimum hero, still free to grow for wrapped country names. */
-    #countrySheet .country-hero-minimal{min-height:268px!important;box-sizing:border-box!important}
-    @media(max-width:430px){#countrySheet .country-hero-minimal{min-height:200px!important}}
+    #countrySheet .country-hero-minimal{min-height:201px!important;box-sizing:border-box!important}
+    @media(max-width:430px){#countrySheet .country-hero-minimal{min-height:150px!important}}
 
     /* One divider only: the explicit divider after Add a trip owns this separation. */
     #countrySheet .country-info-summary{border-top:0!important}
