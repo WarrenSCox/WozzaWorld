@@ -9749,3 +9749,48 @@ wwOpenQuickInfo=function(row,id){
   if(document.fonts?.ready)document.fonts.ready.then(queueAlign).catch(()=>{});
   queueAlign();
 })();
+
+/* === WozzaWorld — Country hero opens Info, not Google — 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryHeroInfo051026)return;
+  window.__wwCountryHeroInfo051026=true;
+
+  function bindCountryHeroInfo(){
+    const name=document.getElementById('countryName');
+    const flag=document.getElementById('countryFlag');
+    const openInfo=e=>{
+      e?.preventDefault?.();
+      e?.stopPropagation?.();
+      if(typeof openCountryInfo==='function')openCountryInfo();
+    };
+    [name,flag].forEach(el=>{
+      if(!el)return;
+      el.setAttribute('role','button');
+      el.setAttribute('tabindex','0');
+      el.setAttribute('title','Open country info');
+      el.onclick=openInfo;
+      el.onkeydown=e=>{
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();openInfo(e)}
+      };
+    });
+  }
+
+  const previousRender=renderSheet;
+  renderSheet=function(){
+    const out=previousRender.apply(this,arguments);
+    bindCountryHeroInfo();
+    return out;
+  };
+
+  /* Capture-phase guard also replaces any older delegated Google-search
+     handler attached to the hero flag/title. */
+  document.addEventListener('click',e=>{
+    const target=e.target.closest?.('#countryFlag,#countryName');
+    if(!target||!target.closest('#countrySheet'))return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(typeof openCountryInfo==='function')openCountryInfo();
+  },true);
+
+  bindCountryHeroInfo();
+})();
