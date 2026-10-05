@@ -9588,3 +9588,92 @@ wwOpenQuickInfo=function(row,id){
   renderSheet=function(){const out=prev.apply(this,arguments);polish();return out};
   polish();
 })();
+
+/* === WozzaWorld — surgical country/transport picker corrections 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryTransportPickerCorrections051026)return;
+  window.__wwCountryTransportPickerCorrections051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-transport-picker-corrections-051026';
+  st.textContent=`
+    /* Info label: use the exact native action-label position; no independent nudge. */
+    #countrySheet .ww-country-fast-facts-label{transform:none!important}
+
+    /* Activities summary has been withdrawn from the country page only. */
+    #countrySheet .ww-country-activities-card{display:none!important}
+
+    /* Country trip transport icons: only Plane receives the optical rotation correction. */
+    #countrySheet .ww-country-trip-plane img{transform:none!important;transform-origin:center!important}
+    #countrySheet .ww-country-trip-plane img.ww-country-mode-plane{transform:rotate(42deg)!important}
+
+    /* Transport picker deliberately reuses the Activity Type library geometry. */
+    #wwTransportPicker.ww-activity-type-picker{max-height:min(82vh,720px)!important}
+    #wwTransportPicker .ww-type-picker-shell{max-height:min(82vh,720px)!important;overflow:auto!important;overscroll-behavior:contain!important}
+    #wwTransportPicker .ww-type-picker-option span{overflow-wrap:anywhere}
+  `;
+  document.head.appendChild(st);
+
+  function removeCountryActivities(){
+    document.querySelectorAll('#countrySheet .ww-country-activities-card').forEach(x=>x.remove());
+  }
+
+  function correctCountryTransportIcons(){
+    document.querySelectorAll('#countryTrips .country-trip-card').forEach(card=>{
+      const img=card.querySelector('.ww-country-trip-plane img');
+      if(!img)return;
+      const src=(img.getAttribute('src')||'').split('/').pop().toLowerCase();
+      img.classList.toggle('ww-country-mode-plane',src==='air.png');
+    });
+  }
+
+  function applyCountryCorrections(){removeCountryActivities();correctCountryTransportIcons()}
+  const previousRenderSheet=renderSheet;
+  renderSheet=function(){const out=previousRenderSheet.apply(this,arguments);applyCountryCorrections();return out};
+  applyCountryCorrections();
+
+  const TRANSPORT_ASSETS={
+    'Plane':'air.png','Train':'train.png','Cruise':'sea.png','Ferry':'sea.png','Car':'car.png',
+    'Campervan':'campervan.png','Motorhome':'campervan.png','Narrowboat':'narrowboat.png',
+    'Coach / Bus':'coach-bus.png','Motorbike':'motorbike.png','Bicycle':'bicycle.png',
+    'On foot':'on-foot.png','Other':'other.png'
+  };
+
+  function transportPicker(){
+    let p=document.getElementById('wwTransportPicker');
+    if(p)return p;
+    p=document.createElement('dialog');
+    p.id='wwTransportPicker';
+    p.className='ww-activity-type-picker';
+    p.innerHTML=`<div class="ww-type-picker-shell">
+      <div class="ww-type-picker-head"><div><small>TRAVELLING BY</small><h3>Choose transport</h3></div><button type="button" class="ww-type-picker-close" aria-label="Close">×</button></div>
+      <div class="ww-type-picker-grid">${TRAVEL_MODES.map(name=>`<button type="button" class="ww-type-picker-option" data-mode="${esc(name)}"><img src="${TRANSPORT_ASSETS[name]||'other.png'}" alt=""><span>${esc(name)}</span></button>`).join('')}</div>
+    </div>`;
+    document.body.appendChild(p);
+    p.querySelector('.ww-type-picker-close').onclick=()=>p.close();
+    p.addEventListener('click',e=>{if(e.target===p)p.close()});
+    return p;
+  }
+
+  function openTransportPicker(select){
+    const p=transportPicker();
+    p._targetSelect=select;
+    const current=String(select.value||'').toLowerCase()==='air'?'Plane':String(select.value||'').toLowerCase()==='sea'?'Ferry':select.value;
+    p.querySelectorAll('.ww-type-picker-option').forEach(b=>{
+      b.classList.toggle('selected',b.dataset.mode===current);
+      b.onclick=()=>{
+        select.value=b.dataset.mode;
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+        syncWozzaSelect(select);
+        p.close();
+      };
+    });
+    if(!p.open)p.showModal();
+  }
+
+  const previousOpenWozzaSelect=openWozzaSelect;
+  openWozzaSelect=function(select){
+    if(select?.classList?.contains('trip-travel-mode')){openTransportPicker(select);return}
+    return previousOpenWozzaSelect.apply(this,arguments);
+  };
+})();
