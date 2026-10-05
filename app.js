@@ -8861,3 +8861,193 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
+
+
+/* === WozzaWorld — Country Trips section redesign 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryTripsRedesign051026)return;
+  window.__wwCountryTripsRedesign051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-trips-redesign-051026';
+  st.textContent=`
+    /* Retire the old illustrated Trips asset completely. */
+    #countrySheet #countryTripsHeaderAsset,
+    #countrySheet .country-trips-header-asset{
+      display:none!important;
+    }
+
+    #countrySheet .ww-country-trips-section-head{
+      display:flex!important;
+      align-items:center!important;
+      justify-content:space-between!important;
+      margin:20px 2px 12px!important;
+      padding:0 2px!important;
+    }
+    #countrySheet .ww-country-trips-section-head strong{
+      color:#153047!important;
+      font-size:20px!important;
+      line-height:1!important;
+      font-weight:900!important;
+      letter-spacing:.18em!important;
+    }
+    #countrySheet .ww-country-trips-section-head span{
+      color:#61737c!important;
+      font-size:16px!important;
+      line-height:1!important;
+    }
+
+    #countrySheet #countryTrips{
+      display:flex!important;
+      flex-direction:column!important;
+      gap:9px!important;
+      margin:0!important;
+    }
+    #countrySheet .country-trip-card{
+      position:relative!important;
+      display:flex!important;
+      align-items:center!important;
+      min-height:96px!important;
+      padding:14px 42px 14px 92px!important;
+      margin:0!important;
+      border-radius:22px!important;
+      background:#fff!important;
+      box-shadow:0 3px 10px rgba(16,48,58,.055)!important;
+      box-sizing:border-box!important;
+    }
+    #countrySheet .country-trip-card::before{
+      content:"✈"!important;
+      position:absolute!important;
+      left:15px!important;
+      top:50%!important;
+      transform:translateY(-50%)!important;
+      width:58px!important;
+      height:58px!important;
+      border-radius:50%!important;
+      display:grid!important;
+      place-items:center!important;
+      background:#def6fb!important;
+      color:#087f8d!important;
+      font-size:31px!important;
+      font-weight:900!important;
+      line-height:1!important;
+    }
+    #countrySheet .country-trip-card::after{
+      content:""!important;
+      position:absolute!important;
+      left:82px!important;
+      top:14px!important;
+      bottom:14px!important;
+      width:1px!important;
+      background:#d7e0e2!important;
+    }
+    #countrySheet .country-trip-copy{
+      min-width:0!important;
+      text-align:left!important;
+    }
+    #countrySheet .country-trip-copy strong{
+      display:block!important;
+      color:#153047!important;
+      font-size:18px!important;
+      line-height:1.15!important;
+      font-weight:850!important;
+    }
+    #countrySheet .country-trip-copy p{
+      margin:4px 0 5px!important;
+      color:#61737c!important;
+      font-size:14px!important;
+      line-height:1.2!important;
+    }
+    #countrySheet .country-trip-rating{
+      margin:0!important;
+      color:#f5bd00!important;
+      font-size:20px!important;
+      line-height:1!important;
+      letter-spacing:0!important;
+    }
+    #countrySheet .country-trip-side{
+      position:absolute!important;
+      right:14px!important;
+      top:50%!important;
+      transform:translateY(-50%)!important;
+      display:flex!important;
+      align-items:center!important;
+      gap:5px!important;
+    }
+    #countrySheet .country-trip-chevron{
+      color:#617984!important;
+      font-size:36px!important;
+      font-weight:400!important;
+      line-height:1!important;
+    }
+    #countrySheet .country-trip-countdown{
+      font-size:9px!important;
+      padding:5px 7px!important;
+    }
+    #countrySheet .country-no-trips{
+      margin:16px 0 20px!important;
+      text-align:center!important;
+    }
+
+    /* Existing Add Trip button/function stays intact, just belongs to this cleaner section. */
+    #countrySheet #addCountryTrip{
+      margin-top:10px!important;
+    }
+    #countrySheet .ww-country-trips-divider{
+      display:block!important;
+      border:0!important;
+      border-top:1px solid #d7e0e2!important;
+      margin:18px 0 17px!important;
+    }
+
+    @media(max-width:390px){
+      #countrySheet .country-trip-card{
+        min-height:90px!important;
+        padding-left:84px!important;
+      }
+      #countrySheet .country-trip-card::before{
+        left:13px!important;width:54px!important;height:54px!important;font-size:29px!important;
+      }
+      #countrySheet .country-trip-card::after{left:75px!important}
+      #countrySheet .country-trip-copy strong{font-size:17px!important}
+      #countrySheet .country-trip-copy p{font-size:13px!important}
+      #countrySheet .country-trip-rating{font-size:18px!important}
+    }
+  `;
+  document.head.appendChild(st);
+
+  function refreshTripsSection(){
+    const list=document.getElementById('countryTrips');
+    const add=document.getElementById('addCountryTrip');
+    if(!list||!add)return;
+
+    /* Old asset is no longer part of the Country layout. */
+    document.getElementById('countryTripsHeaderAsset')?.remove();
+
+    let head=list.previousElementSibling;
+    if(!head?.classList.contains('ww-country-trips-section-head')){
+      head=document.createElement('div');
+      head.className='ww-country-trips-section-head';
+      list.insertAdjacentElement('beforebegin',head);
+    }
+    const n=countryTrips(currentCountry).length;
+    head.innerHTML=`<strong>TRIPS</strong><span>${n} ${n===1?'trip':'trips'}</span>`;
+
+    let divider=add.nextElementSibling;
+    if(!divider?.classList.contains('ww-country-trips-divider')){
+      divider=document.createElement('hr');
+      divider.className='ww-country-trips-divider';
+      add.insertAdjacentElement('afterend',divider);
+    }
+  }
+
+  const previousRenderSheet=renderSheet;
+  renderSheet=function(){
+    const out=previousRenderSheet.apply(this,arguments);
+    refreshTripsSection();
+    return out;
+  };
+
+  refreshTripsSection();
+})();
+
