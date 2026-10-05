@@ -9362,3 +9362,95 @@ wwOpenQuickInfo=function(row,id){
     };
   }
 })();
+
+/* === WozzaWorld — Info rename + nested scroll lock + divider cleanup 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryInfoRenameScrollDivider051026)return;
+  window.__wwCountryInfoRenameScrollDivider051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-info-rename-scroll-divider-051026';
+  st.textContent=`
+    /* Additional 5% reduction from the already-polished 90% Info icon. */
+    #countrySheet .ww-country-fast-facts-icon{transform:scale(.855)!important}
+    /* While Info is open, the country card behind it must stay still. */
+    #countrySheet.ww-info-background-locked{overflow:hidden!important;touch-action:none!important;overscroll-behavior:none!important}
+  `;
+  document.head.appendChild(st);
+
+  function renameInfoUI(){
+    const action=document.querySelector('#countrySheet .ww-country-fast-facts-action');
+    if(action){
+      const label=action.querySelector('.ww-country-fast-facts-label');
+      if(label)label.textContent='Info';
+      action.setAttribute('aria-label','Info');
+      action.title='Info';
+    }
+    const dialog=document.getElementById('countryInfoDialog');
+    if(dialog){
+      dialog.querySelectorAll('h1,h2,h3,h4,strong,span').forEach(el=>{
+        if(/^\s*fast\s+facts\s*$/i.test(el.textContent||''))el.textContent='Info';
+      });
+      dialog.setAttribute('aria-label','Info');
+    }
+  }
+
+  function cleanLowerDividers(){
+    const add=document.getElementById('addCountryTrip');
+    const summary=document.querySelector('#countrySheet .country-info-summary');
+    if(!add||!summary)return;
+    let node=add.nextElementSibling,kept=false;
+    while(node&&node!==summary){
+      const next=node.nextElementSibling;
+      const isDivider=node.matches('hr,.ww-country-trips-divider') || node.classList.contains('country-divider');
+      if(isDivider){
+        if(!kept){
+          kept=true;
+          node.classList.add('ww-country-trips-divider');
+        }else node.remove();
+      }
+      node=next;
+    }
+  }
+
+  const dialog=document.getElementById('countryInfoDialog');
+  const sheet=document.getElementById('countrySheet');
+  const syncInfoLock=()=>{
+    if(!dialog||!sheet)return;
+    const open=dialog.open||dialog.hasAttribute('open');
+    sheet.classList.toggle('ww-info-background-locked',open);
+    if(open){
+      if(sheet.dataset.wwInfoScrollTop==null)sheet.dataset.wwInfoScrollTop=String(sheet.scrollTop||0);
+    }else if(sheet.dataset.wwInfoScrollTop!=null){
+      sheet.scrollTop=Number(sheet.dataset.wwInfoScrollTop)||0;
+      delete sheet.dataset.wwInfoScrollTop;
+    }
+  };
+  if(dialog)new MutationObserver(()=>{renameInfoUI();syncInfoLock()}).observe(dialog,{attributes:true,attributeFilter:['open'],childList:true,subtree:true});
+
+  const previousRender=renderSheet;
+  renderSheet=function(){
+    const out=previousRender.apply(this,arguments);
+    renameInfoUI();
+    cleanLowerDividers();
+    return out;
+  };
+
+  const previousOpenInfo=openCountryInfo;
+  openCountryInfo=async function(){
+    const out=await previousOpenInfo.apply(this,arguments);
+    renameInfoUI();
+    syncInfoLock();
+    return out;
+  };
+  const previousCloseInfo=closeCountryInfo;
+  closeCountryInfo=function(){
+    const out=previousCloseInfo.apply(this,arguments);
+    requestAnimationFrame(syncInfoLock);
+    return out;
+  };
+
+  renameInfoUI();
+  cleanLowerDividers();
+  syncInfoLock();
+})();
