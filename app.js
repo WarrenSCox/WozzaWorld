@@ -9454,3 +9454,92 @@ wwOpenQuickInfo=function(row,id){
   cleanLowerDividers();
   syncInfoLock();
 })();
+
+/* === WozzaWorld — Country summary/activity/transport polish 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountrySummaryActivitiesTransport051026)return;
+  window.__wwCountrySummaryActivitiesTransport051026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-summary-activities-transport-051026';
+  st.textContent=`
+    /* Belgium-sized minimum hero, still free to grow for wrapped country names. */
+    #countrySheet .country-hero-minimal{min-height:268px!important;box-sizing:border-box!important}
+    @media(max-width:430px){#countrySheet .country-hero-minimal{min-height:200px!important}}
+
+    /* One divider only: the explicit divider after Add a trip owns this separation. */
+    #countrySheet .country-info-summary{border-top:0!important}
+
+    /* Activity summary card uses the same card shell as Destinations / Travel companions. */
+    #countrySheet .ww-country-activity-icons{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:8px}
+    #countrySheet .ww-country-activity-icon{width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px}
+    #countrySheet .ww-country-activity-icon img{display:block;width:30px;height:30px;object-fit:contain}
+    #countrySheet .ww-country-activity-icon .ww-activity-type-asset{width:30px!important;height:30px!important;object-fit:contain!important}
+  `;
+  document.head.appendChild(st);
+
+  function tripByCard(card){
+    const id=card?.dataset?.openTrip;
+    return (state.trips||[]).find(t=>String(t.id||'')===String(id||''));
+  }
+  function countryTripMode(t){
+    if(!t)return '';
+    const modes=tripTravelModes(t);
+    return modes[0]||t.travelMode||'';
+  }
+  function modeAsset(mode){
+    const m=String(mode||'').toLowerCase();
+    const map={air:'air.png',plane:'air.png',sea:'sea.png',ferry:'sea.png',cruise:'sea.png',train:'train.png',car:'car.png',campervan:'campervan.png',motorhome:'campervan.png',narrowboat:'narrowboat.png',motorbike:'motorbike.png',bicycle:'bicycle.png','on foot':'on-foot.png',other:'other.png'};
+    return map[m]||((m.includes('coach')||m.includes('bus'))?'coach-bus.png':'air.png');
+  }
+  function polishCountryTripTransport(){
+    document.querySelectorAll('#countryTrips .country-trip-card').forEach(card=>{
+      const t=tripByCard(card),img=card.querySelector('.ww-country-trip-plane img');
+      if(img&&t){
+        const mode=countryTripMode(t);
+        img.src=modeAsset(mode);
+        img.alt='';
+        img.parentElement?.setAttribute('title',mode||'Travel');
+      }
+    });
+  }
+  function countryActivityCategories(country){
+    const seen=new Map();
+    countryTrips(country).forEach(t=>{
+      (t.destinations||[]).forEach(d=>{
+        const belongs=!d.country||sameCountry(d.country,country)||tripCountries(t).some(c=>sameCountry(c,country));
+        if(!belongs)return;
+        (d.itinerary||[]).forEach(a=>{
+          const cat=String(a?.category||'').trim();
+          if(cat&&!seen.has(cat.toLowerCase()))seen.set(cat.toLowerCase(),cat);
+        });
+      });
+    });
+    return [...seen.values()];
+  }
+  function activityIconMarkup(category){
+    try{return itineraryIcon({category})}catch{return ''}
+  }
+  function polishCountrySummary(){
+    const summary=document.querySelector('#countrySheet .country-info-summary');
+    if(!summary||!currentCountry)return;
+    summary.querySelector('.ww-country-activities-card')?.remove();
+    const cats=countryActivityCategories(currentCountry);
+    if(!cats.length)return;
+    const card=document.createElement('div');
+    card.className='ww-country-activities-card';
+    card.innerHTML=`<strong>Activities</strong><div class="ww-country-activity-icons" aria-label="Activity types">${cats.map(cat=>`<span class="ww-country-activity-icon" title="${esc(cat)}">${activityIconMarkup(cat)}</span>`).join('')}</div>`;
+    summary.appendChild(card);
+  }
+  function enforceSingleDivider(){
+    const add=document.getElementById('addCountryTrip'),summary=document.querySelector('#countrySheet .country-info-summary');
+    if(!add||!summary)return;
+    const dividers=[];let n=add.nextElementSibling;
+    while(n&&n!==summary){if(n.matches('hr,.ww-country-trips-divider,.country-divider'))dividers.push(n);n=n.nextElementSibling}
+    dividers.slice(1).forEach(x=>x.remove());
+  }
+  function apply(){polishCountryTripTransport();polishCountrySummary();enforceSingleDivider()}
+  const prev=renderSheet;
+  renderSheet=function(){const out=prev.apply(this,arguments);apply();return out};
+  apply();
+})();
