@@ -8792,7 +8792,7 @@ wwOpenQuickInfo=function(row,id){
       margin:4px 8px 14px!important;
     }
     #countrySheet .ww-country-trips-head h3{
-      margin:0!important;font-size:19px!important;letter-spacing:.14em!important;
+      margin:0!important;font-size:23px!important;letter-spacing:.14em!important;
       font-weight:900!important;color:#153047!important;
     }
     #countrySheet .ww-country-trips-head span{
@@ -8808,7 +8808,7 @@ wwOpenQuickInfo=function(row,id){
     #countrySheet .country-trip-card::before{
       content:"✈"!important;
       position:absolute!important;left:22px!important;top:50%!important;
-      transform:translateY(-50%) rotate(45deg)!important;
+      transform:translateY(-50%)!important;
       width:66px!important;height:66px!important;border-radius:50%!important;
       display:grid!important;place-items:center!important;
       background:#dff7fb!important;color:#087f8d!important;
@@ -8828,9 +8828,9 @@ wwOpenQuickInfo=function(row,id){
     }
 
     /* Summary becomes one joined white card with icon-led rows and chevrons. */
-    #countrySheet .country-info-summary{padding-top:0!important;border-top:0!important}
+    #countrySheet .country-info-summary{padding-top:0!important}
     #countrySheet .country-info-summary h3{
-      margin:0 8px 14px!important;font-size:19px!important;letter-spacing:.14em!important;font-weight:900!important;
+      margin:0 8px 14px!important;font-size:23px!important;letter-spacing:.14em!important;font-weight:900!important;
     }
     #countrySheet .country-info-summary .ww-country-summary-card{
       background:#fff!important;border-radius:26px!important;overflow:hidden!important;
@@ -8878,14 +8878,7 @@ wwOpenQuickInfo=function(row,id){
       }
       head.innerHTML=`<h3>TRIPS</h3><span>${trips.length} ${trips.length===1?'trip':'trips'}</span>`;
 
-      /* One divider belongs above Trips; the other remains between Add trip and Summary. */
-      if(!head.previousElementSibling?.classList.contains('ww-country-trips-separator')){
-        const topHr=document.createElement('hr');
-        topHr.className='ww-country-addtrip-separator ww-country-trips-separator';
-        head.insertAdjacentElement('beforebegin',topHr);
-      }
-
-      /* Keep the existing Add Trip button and functionality; retain one divider after it. */
+      /* Keep the existing Add Trip button and functionality; only add the mock-up divider after it. */
       const add=[...sheet.querySelectorAll('button')].find(b=>/add a trip/i.test(b.textContent||''));
       if(add && !add.nextElementSibling?.classList.contains('ww-country-addtrip-separator')){
         const hr=document.createElement('hr');
@@ -8926,3 +8919,45 @@ wwOpenQuickInfo=function(row,id){
   };
 })();
 
+
+/* === WozzaWorld surgical country-card polish 05 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryCardPolish051026)return;
+  window.__wwCountryCardPolish051026=true;
+  const st=document.createElement('style');
+  st.id='ww-country-card-polish-051026';
+  st.textContent=`
+    /* Four equal status actions, preserving the approved country-card layout. */
+    #countrySheet .country-status-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+    #countrySheet .ww-country-fast-facts{background:#fff!important;border:1px solid rgba(7,94,120,.08)!important;border-radius:26px!important;color:var(--ink)!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:10px!important;min-height:145px!important;padding:18px 10px 14px!important;font-size:17px!important}
+    #countrySheet .ww-country-fast-facts img{width:54px!important;height:54px!important;object-fit:contain!important}
+    /* Plane on trip card faces horizontally. */
+    #countrySheet .country-trip-card::before{transform:translateY(-50%) rotate(45deg)!important}
+    /* One divider before Trips and one between Add Trip and Summary. */
+    #countrySheet .ww-country-trips-top-separator{margin:18px 0 22px!important;border:0!important;border-top:1px solid #d7e0e2!important}
+    #countrySheet .ww-country-addtrip-separator{margin:18px 0 22px!important}
+    /* Trips and Summary use one shared midpoint size. */
+    #countrySheet .ww-country-trips-head h3,#countrySheet .country-info-summary h3{font-size:22px!important}
+  `;
+  document.head.appendChild(st);
+
+  function polish(){
+    const sheet=document.getElementById('countrySheet'); if(!sheet)return;
+    const grid=sheet.querySelector('.country-status-grid');
+    if(grid){
+      const visited=grid.querySelector('[data-status="visited"] span:last-child'); if(visited)visited.textContent='Visited';
+      const going=grid.querySelector('[data-status="going"] span:last-child'); if(going)going.textContent='Visiting';
+      if(!grid.querySelector('.ww-country-fast-facts')){
+        const b=document.createElement('button'); b.type='button'; b.className='ww-country-fast-facts'; b.innerHTML='<img src="info-icon.svg" alt="" aria-hidden="true"><span>Fast Facts</span>';
+        b.addEventListener('click',()=>document.getElementById('countryInfoButton')?.click()); grid.appendChild(b);
+      }
+    }
+    const head=sheet.querySelector('.ww-country-trips-head');
+    if(head && !head.previousElementSibling?.classList.contains('ww-country-trips-top-separator')){
+      const hr=document.createElement('hr'); hr.className='ww-country-trips-top-separator'; head.insertAdjacentElement('beforebegin',hr);
+    }
+  }
+  const prior=renderSheet;
+  renderSheet=function(){const out=prior.apply(this,arguments);polish();return out};
+  polish();
+})();
