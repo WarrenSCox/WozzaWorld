@@ -10132,3 +10132,75 @@ wwOpenQuickInfo=function(row,id){
  }
 })();
 
+
+
+/* View Activity polish — safe, synchronous, no observers */
+(()=>{
+ const svg={
+  cash:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M7 9H5v2M17 15h2v-2"/></svg>',
+  ticket:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4V7Z"/><path d="M12 8v2M12 14v2"/></svg>',
+  note:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+  todo:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8 11 2 2 5-5M8 17h8"/></svg>'
+ };
+ const inherited=wwOpenQuickInfo;
+ wwOpenQuickInfo=function(row,id){
+  inherited(row,id);
+  const body=document.querySelector('#itineraryQuickInfoBody');if(!body)return;
+  const item=itineraryItemsForRow(row).find(i=>String(i.id)===String(id));if(!item)return;
+  const findLabel=name=>[...body.querySelectorAll('small')].find(x=>x.textContent.trim().toUpperCase()===name);
+  const cardOf=l=>l?.closest('.itinerary-quick-info-row,.itinerary-quick-info-card')||l?.parentElement;
+  const decorate=(card,icon)=>{
+    if(!card||card.querySelector(':scope > .ww-extra-field-icon'))return;
+    card.classList.add('ww-extra-field-with-icon');
+    card.insertAdjacentHTML('afterbegin',`<span class="ww-extra-field-icon">${icon}</span>`);
+  };
+
+  decorate(cardOf(findLabel('COST PER PERSON')),svg.cash);
+  decorate(cardOf(findLabel('BOOKING REFERENCE')),svg.ticket);
+  decorate(cardOf(findLabel('NOTES')),svg.note);
+  decorate(cardOf(findLabel('TO DO')),svg.todo);
+
+  /* Location: whole card searches Google Maps for exactly the stored location text. */
+  const locLabel=findLabel('LOCATION'),locCard=cardOf(locLabel),location=String(item.location||'').trim();
+  if(locCard&&location&&!locCard.closest('a[data-ww-location-map]')){
+    const a=document.createElement('a');a.dataset.wwLocationMap='';a.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(location);
+    a.target='_blank';a.rel='noopener';a.style.cssText='display:block;color:inherit;text-decoration:none';
+    locCard.replaceWith(a);a.appendChild(locCard);
+  }
+
+  /* Email value: shrink only as needed so long addresses remain comfortably inside the card. */
+  const emailLabel=findLabel('CONTACT EMAIL'),emailCard=cardOf(emailLabel);
+  if(emailCard){
+    const value=emailCard.querySelector('strong')||[...emailCard.children].find(x=>x!==emailLabel&&!x.classList.contains('ww-view-field-icon'));
+    if(value){
+      value.classList.add('ww-contact-email-fit');
+      const fit=()=>{
+        value.style.fontSize='';
+        const max=emailCard.clientWidth-82;
+        let size=parseFloat(getComputedStyle(value).fontSize)||16;
+        while(value.scrollWidth>max&&size>12){size-=.5;value.style.fontSize=size+'px'}
+      };
+      requestAnimationFrame(fit);
+    }
+  }
+
+  /* Conditional LINKS heading: only if actual saved hyperlinks are rendered. */
+  body.querySelectorAll('.ww-links-heading').forEach(x=>x.remove());
+  const links=[...body.querySelectorAll('.itinerary-quick-info-link')].filter(a=>!a.classList.contains('ww-contact-action'));
+  if(links.length){
+    const h=document.createElement('div');h.className='ww-links-heading';h.textContent='LINKS';
+    links[0].insertAdjacentElement('beforebegin',h);
+  }
+ };
+ if(!document.getElementById('ww-view-polish-style')){
+  const st=document.createElement('style');st.id='ww-view-polish-style';st.textContent=`
+   .ww-extra-field-with-icon{position:relative!important;padding-left:58px!important}
+   .ww-extra-field-icon{position:absolute!important;left:20px!important;top:50%!important;transform:translateY(-50%)!important;display:grid!important;place-items:center!important;color:#118ca0!important}
+   .ww-extra-field-icon svg{width:23px!important;height:23px!important}
+   .ww-contact-email-fit{display:block!important;white-space:nowrap!important;max-width:100%!important}
+   .ww-links-heading{margin:14px 4px 8px!important;font-size:13px!important;font-weight:800!important;letter-spacing:.06em!important;color:#6f777b!important}
+   #itinContactTelephone{min-height:0!important;height:44px!important;resize:vertical!important;overflow:auto!important}
+  `;document.head.appendChild(st);
+ }
+})();
+
