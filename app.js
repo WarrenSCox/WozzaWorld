@@ -10065,3 +10065,83 @@ wwOpenQuickInfo=function(row,id){
   }
 })();
 
+
+
+/* === WozzaWorld — split activity contacts + inline Other title 06 Oct 2026 === */
+(()=>{
+ const mailIcon='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>';
+ const phoneIcon='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.33 1.84.56 2.8.69A2 2 0 0 1 22 16.9Z"/></svg>';
+ const escAttr=v=>String(v??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ const cleanMail=v=>String(v||'').trim().replace(/^mailto:/i,'');
+ const cleanTel=v=>String(v||'').trim().replace(/^tel:/i,'');
+ const readLegacyContact=x=>{
+   const raw=String(x?.contact||x?.contactDetails||'').trim();
+   return {email:String(x?.contactEmail||'').trim()||(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)?raw:''),phone:String(x?.contactPhone||x?.contactTelephone||'').trim()||((raw&&!raw.includes('@'))?raw:'')};
+ };
+ const previousOpen=window.wwOpenActivityEditor;
+ if(typeof previousOpen==='function')window.wwOpenActivityEditor=function(...args){
+   const out=previousOpen.apply(this,args);
+   const d=document.querySelector('#itineraryActivityDialog');
+   if(!d)return out;
+   const old=d.querySelector('#itinContact');
+   if(old){
+     const source=(typeof editingItineraryActivity!=='undefined'&&editingItineraryActivity)||{};
+     const c=readLegacyContact(source);
+     const wrap=old.closest('label')||old.parentElement;
+     if(wrap&&!d.querySelector('#itinContactEmail')){
+       const box=document.createElement('div');box.className='ww-contact-fields';
+       box.innerHTML=`<label>Contact email<input id="itinContactEmail" type="email" inputmode="email" autocomplete="email" value="${escAttr(c.email)}"></label><label>Contact telephone number<input id="itinContactPhone" type="tel" inputmode="tel" autocomplete="tel" value="${escAttr(c.phone)}"></label>`;
+       wrap.replaceWith(box);
+     }
+   }
+   return out;
+ };
+ // Persist split fields by mirroring into the model immediately before the inherited save reads it.
+ document.addEventListener('click',e=>{
+   const d=document.querySelector('#itineraryActivityDialog');if(!d||!d.open)return;
+   if(!e.target.closest('#itinSave,#itineraryActivitySave,[data-itin-save]'))return;
+   const email=cleanMail(d.querySelector('#itinContactEmail')?.value),phone=cleanTel(d.querySelector('#itinContactPhone')?.value);
+   if(typeof editingItineraryActivity!=='undefined'&&editingItineraryActivity){editingItineraryActivity.contactEmail=email;editingItineraryActivity.contactPhone=phone;editingItineraryActivity.contact=''}
+ },true);
+
+ // Other: edit its title inside the selector/button itself, not in a second row.
+ const style=document.createElement('style');style.id='ww-contact-inline-other-style';style.textContent=`
+ .ww-contact-fields{display:grid;gap:16px}.ww-contact-fields label{display:grid;gap:8px;font-weight:800;color:#24313b}
+ .ww-contact-fields input{width:100%;box-sizing:border-box;border:1px solid rgba(20,55,70,.14);border-radius:18px;background:#fff;padding:15px 16px;font:700 16px/1.2 Inter,sans-serif;color:#24313b}
+ .ww-link-type-choose.ww-other-edit{justify-content:flex-start!important}
+ .ww-other-title{border:0!important;outline:0!important;background:transparent!important;min-width:0!important;width:100%!important;padding:0!important;font:800 12px/1 Inter,sans-serif!important;color:#24313b!important}
+ .ww-view-contact-card{display:flex!important;align-items:center!important;gap:12px!important;text-decoration:none!important}.ww-view-contact-icon{display:grid;place-items:center;flex:0 0 auto}.ww-view-contact-icon svg{width:23px;height:23px}
+ `;if(!document.getElementById(style.id))document.head.appendChild(style);
+
+ const obs=new MutationObserver(()=>{
+   document.querySelectorAll('.ww-typed-link-row[data-link-type="other"]').forEach(r=>{
+     const b=r.querySelector('.ww-link-type-choose');if(!b||b.classList.contains('ww-other-edit'))return;
+     const hidden=r.querySelector('.ww-link-custom-name'),val=hidden?.value||'';
+     b.classList.add('ww-other-edit');b.innerHTML=`<span class="ww-link-type-icon"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"/></svg></span><input class="ww-other-title" maxlength="50" placeholder="Link title" value="${escAttr(val)}">`;
+     hidden?.remove();
+     const input=b.querySelector('.ww-other-title');
+     input.addEventListener('click',ev=>ev.stopPropagation());
+     input.addEventListener('input',()=>{let h=r.querySelector('.ww-link-custom-name');if(!h){h=document.createElement('input');h.type='hidden';h.className='ww-link-custom-name';r.appendChild(h)}h.value=input.value});
+     input.focus();
+   });
+ });
+ obs.observe(document.documentElement,{subtree:true,childList:true});
+
+ // Add clickable split contact cards to View Activity and suppress the inherited generic CONTACT card.
+ const quickObs=new MutationObserver(()=>{
+   const body=document.querySelector('#itineraryQuickInfoBody');if(!body)return;
+   const x=(typeof currentQuickInfoItem!=='undefined'&&currentQuickInfoItem)||null;
+   if(!x)return;
+   const c=readLegacyContact(x);
+   const generic=[...body.querySelectorAll('*')].find(el=>el.children.length===0&&el.textContent.trim().toUpperCase()==='CONTACT');
+   const genericCard=generic?.parentElement;if(genericCard)genericCard.style.display='none';
+   if(body.querySelector('.ww-view-contact-card'))return;
+   const anchor=body.querySelector('.itinerary-quick-info-link,.itinerary-quick-info-edit');
+   const cards=[];
+   if(c.email)cards.push(`<a class="itinerary-quick-info-link ww-view-contact-card" href="mailto:${escAttr(cleanMail(c.email))}"><span class="ww-view-contact-icon">${mailIcon}</span><span><small>CONTACT EMAIL</small><strong>${escAttr(cleanMail(c.email))}</strong></span></a>`);
+   if(c.phone)cards.push(`<a class="itinerary-quick-info-link ww-view-contact-card" href="tel:${escAttr(cleanTel(c.phone).replace(/[^\d+*#]/g,''))}"><span class="ww-view-contact-icon">${phoneIcon}</span><span><small>CONTACT TELEPHONE NUMBER</small><strong>${escAttr(cleanTel(c.phone))}</strong></span></a>`);
+   if(cards.length){if(anchor)anchor.insertAdjacentHTML('beforebegin',cards.join(''));else body.insertAdjacentHTML('beforeend',cards.join(''))}
+ });
+ quickObs.observe(document.documentElement,{subtree:true,childList:true});
+})();
+
