@@ -4316,7 +4316,6 @@ wwOpenQuickInfo=function(row,id){
     document.body.appendChild(p);
     p.querySelector('.ww-type-picker-close').onclick=()=>p.close();
     p.addEventListener('click',e=>{if(e.target===p)p.close()});
-    p.querySelector('#wwActivityUnsavedX').onclick=()=>p.close();
     p.querySelectorAll('.ww-type-picker-option').forEach(b=>b.onclick=()=>{
       const d=document.getElementById('stopItineraryDialog');
       if(!d)return p.close();
