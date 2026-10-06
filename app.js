@@ -971,7 +971,7 @@ const addStopBtn=$('#addTripDestination');if(addStopBtn){addStopBtn.classList.ad
 $('#tripCompanionsToggle')?.addEventListener('click',toggleTripCompanions);$('#tripTodoToggle')?.addEventListener('click',toggleTripTodo);$('#addTripTodo')?.addEventListener('click',()=>addTripTodoRow());$('#tripNotesToggle')?.addEventListener('click',toggleTripNotes);$('#tripNotes')?.addEventListener('input',updateTripNotesSummary);$('#newTripBtn').onclick=()=>openTrip();$('#addCountryTrip').onclick=()=>openTrip(currentCountry);const closeTripEditor=closeTripEditorNow;$('#cancelTrip').onclick=requestCloseTripEditor;$('#closeTripDialog').onclick=requestCloseTripEditor;$('#tripUnsavedCancel')?.addEventListener('click',()=>$('#tripUnsavedDialog').close());$('#tripUnsavedLeave')?.addEventListener('click',()=>{$('#tripUnsavedDialog').close();closeTripEditorNow()});let tripSaveAndContinue=false;$('#tripUnsavedSaveContinue')?.addEventListener('click',()=>{tripSaveAndContinue=true;$('#tripUnsavedDialog').close();$('#tripForm')?.requestSubmit()});$('#tripUnsavedSave')?.addEventListener('click',()=>{tripSaveAndContinue=false;$('#tripUnsavedDialog').close();$('#tripForm')?.requestSubmit()});$('#deleteTripBtn').onclick=()=>{const t=state.trips.find(x=>String(x.id)===String(editingTripId));if(!t)return;showWozzaConfirm('Remove trip?',`Send “${t.name}” to the recycle bin?`,()=>{state.tripRecycleBin.unshift({...structuredClone(t),removedAt:Date.now()});state.trips=state.trips.filter(x=>String(x.id)!==String(t.id));closeTripEditor();save();toast(`${t.name} moved to recycle bin`)},'Move to recycle bin')};
 function parseCities(raw){return {}}
 $$('#tripRatingInput button').forEach(b=>b.onclick=()=>{const n=Number(b.dataset.rating),current=Number($('#tripRating').value)||0;setTripRatingInput(current===1&&n===1?0:n)});
-$('#tripForm').onsubmit=e=>{e.preventDefault();const stops=collectDestinationStops(),countries=[...new Set(stops.map(d=>d.country).filter(Boolean))];if(!countries.length){showWozzaAlert('Please choose a country for at least one stop.');return}let name=$('#tripName').value.trim();if(!name)name=countries.length===1?countries[0]:countries.join(' & ');const firstStop=stops[0]||{},lastStop=stops[stops.length-1]||firstStop,start=firstStop.start||'',end=(stops.length===1?firstStop.end:lastStop.end)||'';const companions=[...new Set($$('#tripCompanionBank .companion-tag.selected').map(b=>b.dataset.companion).filter(Boolean))];const vibes=[...new Set($$('#tripVibeBank .vibe-tag.selected').map(b=>b.dataset.vibe).filter(Boolean))];const existing=editingTripId?state.trips.find(x=>String(x.id)===String(editingTripId)):null,oldCountries=existing?tripCountries(existing).slice():[],t=existing||{id:crypto.randomUUID?.()||String(Date.now())};const tripStatus=existing?.status||'upcoming',hadLegacyDates=!!existing&&!(existing.destinations||[]).some(d=>d.start||d.end)&&!!(existing.start||existing.end),safeStart=hadLegacyDates&&!start?existing.start||'':start,safeEnd=hadLegacyDates&&!end?existing.end||'':end;Object.assign(t,{name,start:safeStart,end:safeEnd,countries,destinations:stops,cities:{},companions,vibes,plan:existing?.plan||'',todos:collectTripTodos(),notes:$('#tripNotes').value.trim(),rating:Number($('#tripRating').value)||0,status:tripStatus});if(!existing)state.trips.push(t);countries.forEach(c=>{if(!state.countryAddedAt[c])state.countryAddedAt[c]=new Date().toISOString()});reconcileTripCountryStatuses([...oldCountries,...countries]);save();if(tripSaveAndContinue){tripSaveAndContinue=false;editingTripId=t.id;setTripDialogMode(true);rememberTripEditorSnapshot();toast(existing?'Trip updated ✓':'Trip created ✈');return}editingTripId=null;tripEditorSnapshot='';$('#tripDialog').close();if(currentCountry){renderSheet();renderCountryLists()}toast(existing?'Trip updated ✓':'Trip created ✈')};
+$('#tripForm').onsubmit=e=>{e.preventDefault();const stops=collectDestinationStops(),countries=[...new Set(stops.map(d=>d.country).filter(Boolean))];if(!countries.length){showWozzaAlert('Please choose a country for at least one stop.');return}let name=$('#tripName').value.trim();if(!name)name=countries.length===1?countries[0]:countries.join(' & ');const firstStop=stops[0]||{},lastStop=stops[stops.length-1]||firstStop,start=firstStop.start||'',end=(stops.length===1?firstStop.end:lastStop.end)||'';const companions=[...new Set($$('#tripCompanionBank .companion-tag.selected').map(b=>b.dataset.companion).filter(Boolean))];const vibes=[...new Set($$('#tripVibeBank .vibe-tag.selected').map(b=>b.dataset.vibe).filter(Boolean))];const existing=editingTripId?state.trips.find(x=>String(x.id)===String(editingTripId)):null,oldCountries=existing?tripCountries(existing).slice():[],t=existing||{id:crypto.randomUUID?.()||String(Date.now())};const tripStatus=existing?.status||'upcoming',hadLegacyDates=!!existing&&!(existing.destinations||[]).some(d=>d.start||d.end)&&!!(existing.start||existing.end),safeStart=hadLegacyDates&&!start?existing.start||'':start,safeEnd=hadLegacyDates&&!end?existing.end||'':end;Object.assign(t,{name,start:safeStart,end:safeEnd,countries,destinations:stops,cities:{},companions,vibes,plan:existing?.plan||'',todos:collectTripTodos(),notes:$('#tripNotes').value.trim(),rating:Number($('#tripRating').value)||0,status:tripStatus});if(!existing)state.trips.push(t);countries.forEach(c=>{if(!state.countryAddedAt[c])state.countryAddedAt[c]=new Date().toISOString()});reconcileTripCountryStatuses([...oldCountries,...countries]);save();if(tripSaveAndContinue){tripSaveAndContinue=false;editingTripId=t.id;setTripDialogMode(true);rememberTripEditorSnapshot();toast(existing?'Trip updated ✓':'Trip created ✈');return}editingTripId=null;tripEditorSnapshot='';$('#tripDialog').close();toast(existing?'Trip updated ✓':'Trip created ✈')};
 $('#cityForm').onsubmit=e=>{e.preventDefault();const typed=$('#cityInput').value.trim(),name=canonicalCity(typed),month=$('#cityMonth').value;if(!typed||!currentCountry)return;if(!name){alert('Please choose a destination from the WozzaWorld suggestions.');return;}state.cities[currentCountry]??=[];let rec=state.cities[currentCountry].find(x=>x.name.toLowerCase()===name.toLowerCase());if(!rec){rec={name,visits:[]};state.cities[currentCountry].push(rec)}if(month&&!rec.visits.includes(month))rec.visits.push(month);$('#cityInput').value='';$('#cityMonth').value='';save()};$('#placeForm').onsubmit=e=>{e.preventDefault();const v=$('#placeInput').value.trim();if(v){(state.places[currentCountry]??=[]).push(v);$('#placeInput').value='';save()}};$('#companionForm').onsubmit=e=>{e.preventDefault();const v=addToCompanionBank($('#companionInput').value.trim());if(v){state.companions[currentCountry]??=[];if(!state.companions[currentCountry].some(x=>x.toLowerCase()===v.toLowerCase()))state.companions[currentCountry].push(v);$('#companionInput').value='';save()}};let memoryTimer;$('#memoryNotes').oninput=e=>{clearTimeout(memoryTimer);memoryTimer=setTimeout(()=>{state.memories[currentCountry]=e.target.value;localStorage.setItem('wozzaworld-state',JSON.stringify(state));renderCountryLists()},250)};$('#confirmRemove').onclick=e=>{e.preventDefault();if(pendingRemoveCountry)removeCountry(pendingRemoveCountry,pendingRemoveStatus);pendingRemoveCountry=null;pendingRemoveStatus=null;$('#removeDialog').close()};
 const carousel=$('#countryCarousel');if(carousel){
   /* One gesture owner for the overview country rows.
@@ -4666,6 +4666,11 @@ wwOpenQuickInfo=function(row,id){
       if(list){list.innerHTML=renderMyTrips();setupTripTitleScroll();attachTripRatingEvents();attachTripCardEvents()}
       /* Keep other trip-derived summaries in step without touching the open editor. */
       try{renderDepartureBoard()}catch(_e){}
+      /* Country card is another trip-derived surface: refresh it from the same saved state. */
+      if(currentCountry){
+        try{renderSheet()}catch(_e){}
+        try{renderCountryLists()}catch(_e){}
+      }
     });
   }
   function persistEditor(){
@@ -9880,39 +9885,6 @@ wwOpenQuickInfo=function(row,id){
 })();
 
 
-/* === WozzaWorld — Empty country trip state polish, 05 Oct 2026 === */
-(()=>{
-  if(window.__wwEmptyCountryTripState051026)return;
-  window.__wwEmptyCountryTripState051026=true;
-
-  function syncEmptyCountryTripState(){
-    const list=document.getElementById('countryTrips');
-    const add=document.getElementById('addCountryTrip');
-    const summary=document.getElementById('countryInfoSummary');
-    if(!list||!add)return;
-    const hasTrips=countryTrips(currentCountry).length>0;
-    const head=document.querySelector('#countrySheet .ww-country-trips-section-head');
-    const topDivider=document.querySelector('#countrySheet .ww-country-trips-top-divider');
-    const lowerDivider=document.querySelector('#countrySheet .ww-country-trips-divider');
-
-    if(head)head.hidden=!hasTrips;
-    if(topDivider)topDivider.hidden=!hasTrips;
-    list.hidden=false;
-    if(lowerDivider)lowerDivider.hidden=!hasTrips;
-    if(summary)summary.hidden=!hasTrips;
-    add.hidden=false;
-  }
-
-  const previousRenderSheet=renderSheet;
-  renderSheet=function(){
-    const out=previousRenderSheet.apply(this,arguments);
-    syncEmptyCountryTripState();
-    return out;
-  };
-  syncEmptyCountryTripState();
-})();
-
-
 /* === WozzaWorld — typed activity links 06 Oct 2026 === */
 (()=>{
   const TYPES={
@@ -10230,15 +10202,12 @@ wwOpenQuickInfo=function(row,id){
 
 
 
-/* === WozzaWorld — country trip state consistency, 06 Oct 2026 === */
+/* === WozzaWorld — canonical dated-trip country status semantics 06 Oct 2026 === */
 (()=>{
- if(window.__wwCountryTripStateConsistency061026)return;window.__wwCountryTripStateConsistency061026=true;
+ if(window.__wwCountryTripStatusCanonical061026)return;window.__wwCountryTripStatusCanonical061026=true;
  const tripDateState=t=>{const td=orderedTripDates(t),today=new Date();today.setHours(0,0,0,0);const start=td.start?new Date(td.start+'T00:00:00'):null,end=td.end?new Date(td.end+'T00:00:00'):null;if(!start&&!end)return'undated';return(end||start)>=today?'upcoming':'past'};
  tripIsOnHorizon=t=>tripDateState(t)==='upcoming';
  reconcileTripCountryStatuses=countries=>{[...new Set((countries||[]).filter(Boolean))].forEach(c=>{const trips=countryTrips(c),hasUpcoming=trips.some(t=>tripDateState(t)==='upcoming'),hasPast=trips.some(t=>tripDateState(t)==='past');setCountryStatus(c,'going',hasUpcoming);if(hasPast){setCountryStatus(c,'visited',true);if(!state.visitHistory.some(x=>sameCountry(x,c)))state.visitHistory.push(c)}})};
- function polish(){if(!currentCountry)return;const list=document.getElementById('countryTrips'),add=document.getElementById('addCountryTrip');if(!list||!add)return;const hasTrips=countryTrips(currentCountry).length>0,head=document.querySelector('#countrySheet .ww-country-trips-section-head'),top=document.querySelector('#countrySheet .ww-country-trips-top-divider'),lower=document.querySelector('#countrySheet .ww-country-trips-divider'),summary=document.getElementById('countryInfoSummary');if(head)head.hidden=!hasTrips;if(top)top.hidden=!hasTrips;if(lower)lower.hidden=!hasTrips;if(summary)summary.hidden=!hasTrips;const empty=list.querySelector('.country-no-trips');if(empty)empty.textContent='Add a trip to get started 😃'}
- const inherited=renderSheet;renderSheet=function(){const out=inherited.apply(this,arguments);polish();requestAnimationFrame(polish);return out};
- polish();
 })();
 
 /* WozzaWorld hotfix 06 Oct 2026: allow the country-card empty state to hide
@@ -10257,3 +10226,39 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(style);
 })();
+
+/* === WozzaWorld — consolidated Country Trips render authority 06 Oct 2026 === */
+(()=>{
+ if(window.__wwCountryTripsCanonical061026)return;window.__wwCountryTripsCanonical061026=true;
+ function syncCountryTripsUI(){
+   if(!currentCountry)return;
+   const list=document.getElementById('countryTrips'),add=document.getElementById('addCountryTrip');
+   if(!list||!add)return;
+   const trips=countryTrips(currentCountry),hasTrips=trips.length>0;
+   let head=document.querySelector('#countrySheet .ww-country-trips-section-head');
+   if(!head){
+     head=document.createElement('div');head.className='ww-country-trips-section-head';
+     list.insertAdjacentElement('beforebegin',head);
+   }
+   head.innerHTML=`<strong>TRIPS</strong><span>${trips.length} ${trips.length===1?'trip':'trips'}</span>`;
+   let top=head.previousElementSibling;
+   if(!top?.classList.contains('ww-country-trips-top-divider')){
+     document.querySelector('#countrySheet .ww-country-trips-top-divider')?.remove();
+     top=document.createElement('hr');top.className='ww-country-trips-top-divider';head.insertAdjacentElement('beforebegin',top);
+   }
+   if(list.nextElementSibling!==add)list.insertAdjacentElement('afterend',add);
+   let lower=add.nextElementSibling;
+   if(!lower?.classList.contains('ww-country-trips-divider')){
+     document.querySelectorAll('#countrySheet .ww-country-trips-divider').forEach(x=>x.remove());
+     lower=document.createElement('hr');lower.className='ww-country-trips-divider';add.insertAdjacentElement('afterend',lower);
+   }
+   head.hidden=!hasTrips;top.hidden=!hasTrips;lower.hidden=!hasTrips;list.hidden=false;add.hidden=false;
+   const summary=document.getElementById('countryInfoSummary');if(summary)summary.hidden=!hasTrips;
+   const empty=list.querySelector('.country-no-trips');if(empty)empty.textContent='Add a trip to get started 😃';
+ }
+ const inherited=renderSheet;
+ renderSheet=function(){const out=inherited.apply(this,arguments);syncCountryTripsUI();return out};
+ window.wwSyncCountryTripsUI=syncCountryTripsUI;
+ syncCountryTripsUI();
+})();
+
