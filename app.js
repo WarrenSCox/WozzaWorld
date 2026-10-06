@@ -5317,7 +5317,7 @@ wwOpenQuickInfo=function(row,id){
   function closeModal(){document.getElementById('wozzaAiModal')?.remove()}
   function openModal(){
     closeModal();const modal=document.createElement('div');modal.id='wozzaAiModal';modal.className='wozza-ai-modal';
-    modal.innerHTML=`<div class="wozza-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="wozzaAiTitle"><div class="wozza-ai-sparkle">✨</div><h3 id="wozzaAiTitle">AI ANALYSIS</h3><p>WozzaWorld will prepare a prompt containing your travel statistics and copy it to your clipboard, then open Google Gemini.</p><p><strong>Your travel stats are not sent to Google by WozzaWorld.</strong> They are shared with Google only if you paste and send the prompt in Gemini. Google's privacy terms will then apply.</p><p class="wozza-ai-continue">Click ‘Abracadabra’ to continue.</p><div class="wozza-ai-actions"><button type="button" class="wozza-ai-cancel">Cancel</button><button type="button" class="wozza-ai-go"><span>Abracadabra</span><img src="activity-see-do.png" alt="" aria-hidden="true"></button></div></div>`;
+    modal.innerHTML=`<div class="wozza-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="wozzaAiTitle"><div class="wozza-ai-sparkle">✨</div><h3 id="wozzaAiTitle">Get AI Analysis</h3><p>WozzaWorld will prepare a prompt containing your travel statistics and copy it to your clipboard, then open Google Gemini.</p><p><strong>Your travel stats are not sent to Google by WozzaWorld.</strong> They are shared with Google only if you paste and send the prompt in Gemini. Google's privacy terms will then apply.</p><p class="wozza-ai-continue">Click ‘Abracadabra’ to continue.</p><div class="wozza-ai-actions"><button type="button" class="wozza-ai-cancel">Cancel</button><button type="button" class="wozza-ai-go"><span>Abracadabra</span><img src="activity-see-do.png" alt="" aria-hidden="true"></button></div></div>`;
     document.body.appendChild(modal);modal.querySelector('.wozza-ai-cancel').onclick=closeModal;modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
     modal.querySelector('.wozza-ai-go').onclick=()=>{
       const prompt=buildPrompt();
@@ -5326,12 +5326,27 @@ wwOpenQuickInfo=function(row,id){
     };
   }
   function setup(){
-    const shell=document.getElementById('passportInsights'),milestones=document.getElementById('milestonesCard');if(!shell||!milestones)return false;
-    let wrap=document.getElementById('passportAiAnalysis');if(!wrap){wrap=document.createElement('div');wrap.id='passportAiAnalysis';wrap.className='passport-ai-analysis';wrap.innerHTML='<button type="button" class="passport-ai-btn"><span>AI ANALYSIS</span><img src="activity-see-do.png" alt="" aria-hidden="true"></button>';wrap.querySelector('button').onclick=openModal}if(wrap.parentElement!==shell)shell.appendChild(wrap);
+    const shell=document.getElementById('passportInsights');if(!shell)return false;
+    let wrap=document.getElementById('passportAiAnalysis');
+    if(!wrap){
+      wrap=document.createElement('div');
+      wrap.id='passportAiAnalysis';
+      wrap.className='passport-ai-analysis';
+      wrap.innerHTML='<button type="button" class="passport-ai-btn"><span>AI ANALYSIS</span><img src="activity-see-do.png" alt="" aria-hidden="true"></button>';
+      wrap.querySelector('button').onclick=openModal;
+    }else{
+      const label=wrap.querySelector('.passport-ai-btn span');if(label)label.textContent='AI ANALYSIS';
+      const btn=wrap.querySelector('.passport-ai-btn');if(btn)btn.onclick=openModal;
+    }
+    /* The launcher belongs to the Travel Insights shell itself, after the tab body.
+       Re-parent it every time setup runs so older DOM placement (before Milestones)
+       cannot win after a re-render. Because it sits outside the individual panels,
+       it remains visible on Score, Stats and Charts. */
+    if(wrap.parentElement!==shell||wrap!==shell.lastElementChild)shell.appendChild(wrap);
     return true;
   }
   const css=document.createElement('style');css.id='wozza-passport-ai-style';css.textContent=`
-    .passport-ai-analysis{width:100%;margin:16px 0 0;display:flex;justify-content:center;box-sizing:border-box}
+    .passport-ai-analysis{width:100%;margin:18px 0 0;display:flex;justify-content:center;box-sizing:border-box}
     .passport-ai-btn{position:relative;overflow:hidden;width:100%;box-sizing:border-box;border:0;border-radius:999px;background:#f5c400;color:#102a34;font:800 18px/1.1 inherit;padding:17px 24px;box-shadow:0 6px 16px rgba(0,0,0,.10);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
     .passport-ai-btn:after{content:"";position:absolute;inset:-70% -45%;background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,0) 47%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 54%,transparent 60%);transform:translateX(-65%) rotate(7deg);animation:milestoneGlimmer 8.5s ease-in-out infinite;pointer-events:none}
     .passport-ai-btn span,.passport-ai-btn img{position:relative;z-index:1}
@@ -5342,6 +5357,7 @@ wwOpenQuickInfo=function(row,id){
     .wozza-ai-continue{font-weight:800!important;margin-top:14px!important}
     .wozza-ai-sparkle{font-size:34px;margin-bottom:5px}.wozza-ai-dialog h3{margin:0 30px 15px;font-size:27px;line-height:1.05}.wozza-ai-dialog p{margin:10px 0;font-size:15px;line-height:1.42}.wozza-ai-actions{display:flex;gap:10px;margin-top:22px}.wozza-ai-actions button{flex:1;border:0;border-radius:999px;padding:14px 12px;font:800 16px/1 inherit;cursor:pointer}.wozza-ai-cancel{background:#f55849;color:#fff}.wozza-ai-go{background:#f5c400;color:#102a34;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
     .wozza-ai-toast{position:fixed;left:50%;bottom:28px;z-index:10100;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#087f8d;color:#fff;border-radius:999px;padding:12px 18px;font:700 14px/1.25 inherit;box-shadow:0 8px 25px rgba(0,0,0,.2);transition:.2s ease;text-align:center;max-width:88vw}.wozza-ai-toast.show{opacity:1;transform:translate(-50%,0)}
+    #passportInsights>#passportAiAnalysis{padding:0 2px 2px!important}
   `;document.head.appendChild(css);
   if(!setup()){const mo=new MutationObserver(()=>{if(setup())mo.disconnect()});mo.observe(document.documentElement,{childList:true,subtree:true})}
 })();
