@@ -9977,11 +9977,32 @@ wwOpenQuickInfo=function(row,id){
     p.addEventListener('click',e=>{if(e.target===p)p.close()});
     return p;
   }
-  function chooseType(current,cb){
+  function otherTitlePopup(currentTitle='',cb){
+    let p=document.getElementById('wwOtherLinkTitleDialog');
+    if(!p){
+      p=document.createElement('dialog');p.id='wwOtherLinkTitleDialog';p.className='ww-other-link-title-dialog';
+      p.innerHTML=`<div class="ww-other-link-title-shell"><div class="ww-other-link-title-head"><div><small>LINK TITLE</small><h3>Name this link</h3></div><button type="button" class="ww-other-link-title-close" aria-label="Close">×</button></div><input class="ww-other-link-title-input" type="text" maxlength="50" placeholder="e.g. Restaurant menu"><button type="button" class="ww-other-link-title-save">SAVE</button></div>`;
+      document.body.appendChild(p);
+      p.querySelector('.ww-other-link-title-close').onclick=()=>p.close();
+      p.addEventListener('click',e=>{if(e.target===p)p.close()});
+    }
+    const input=p.querySelector('.ww-other-link-title-input'),save=p.querySelector('.ww-other-link-title-save');
+    input.value=currentTitle==='Other'?'':currentTitle;
+    const commit=()=>{const title=input.value.trim();if(!title){input.focus();return}p.close();cb(title)};
+    save.onclick=commit;
+    input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();commit()}};
+    if(!p.open)p.showModal();
+    setTimeout(()=>input.focus(),0);
+  }
+  function chooseType(current,currentTitle,cb){
     const p=picker();
     p.querySelectorAll('[data-link-type]').forEach(b=>{
       b.classList.toggle('selected',b.dataset.linkType===current);
-      b.onclick=()=>{cb(b.dataset.linkType);p.close()};
+      b.onclick=()=>{
+        const type=b.dataset.linkType;p.close();
+        if(type==='other')otherTitlePopup(current==='other'?currentTitle:'',title=>cb(type,title));
+        else cb(type,TYPES[type].label);
+      };
     });
     if(!p.open)p.showModal();
   }
@@ -9989,11 +10010,10 @@ wwOpenQuickInfo=function(row,id){
     x=normalLink(x); const type=x.type||'website',meta=TYPES[type]||TYPES.other;
     const val=type==='email'?String(x.url||'').replace(/^mailto:/i,''):String(x.url||'');
     const placeholder=type==='email'?'name@example.com':'https://…';
-    const custom=type==='other'?`<input class="itin-link-name ww-link-custom-name" type="text" maxlength="50" placeholder="Link title" value="${esc(x.name||'')}">`:'';
-    return `<div class="itin-link-row ww-typed-link-row" data-link-row="${i}" data-link-type="${type}">
+    const display=type==='other'?(x.name||'Other'):meta.label;
+    return `<div class="itin-link-row ww-typed-link-row" data-link-row="${i}" data-link-type="${type}" data-link-name="${esc(x.name||display)}">
       <input class="itin-link-url" type="${type==='email'?'email':'text'}" placeholder="${placeholder}" value="${esc(val)}">
-      <button type="button" class="ww-link-type-choose" aria-label="Choose link type"><span class="ww-link-type-icon">${iconSvg(meta.icon)}</span><span>${meta.label}</span></button>
-      ${custom}
+      <button type="button" class="ww-link-type-choose" aria-label="Choose link type"><span class="ww-link-type-icon">${iconSvg(meta.icon)}</span><span>${esc(display)}</span></button>
       <button type="button" class="itin-link-remove" aria-label="Add link">+</button>
     </div>`;
   }
@@ -10010,14 +10030,14 @@ wwOpenQuickInfo=function(row,id){
         if(isAdd)btn.textContent='+';
         else{btn.textContent='';btn.innerHTML='<span aria-hidden="true"></span>'}
         btn.setAttribute('aria-label',isAdd?'Add another link':'Remove link');
-        typeBtn.onclick=()=>chooseType(r.dataset.linkType,type=>{
-          const u=r.querySelector('.itin-link-url')?.value.trim()||'',n=r.querySelector('.ww-link-custom-name')?.value.trim()||'';
+        typeBtn.onclick=()=>chooseType(r.dataset.linkType,r.dataset.linkName||'',(type,title)=>{
+          const u=r.querySelector('.itin-link-url')?.value.trim()||'',n=type==='other'?title:TYPES[type].label;
           if(isAdd){vals[i]={url:u,name:n,type}; host.innerHTML=''; const draft=[...committed,vals[i]]; wwRenderLinkRows(d,draft)}
           else{committed[i]={...committed[i],url:u,name:n,type};render()}
         });
         if(isAdd)btn.onclick=()=>{
           let url=r.querySelector('.itin-link-url')?.value.trim()||'', type=r.dataset.linkType||'website';
-          const name=r.querySelector('.ww-link-custom-name')?.value.trim()||TYPES[type].label;
+          const name=type==='other'?(r.dataset.linkName||'Other'):TYPES[type].label;
           if(!url){r.querySelector('.itin-link-url')?.focus();return}
           if(type==='email')url=hrefFor({url,type});
           committed.push({url,name,type});render();
@@ -10032,7 +10052,7 @@ wwOpenQuickInfo=function(row,id){
       const type=r.dataset.linkType||'website';
       let url=r.querySelector('.itin-link-url')?.value.trim()||'';
       if(type==='email'&&url)url=hrefFor({url,type});
-      return {url,name:type==='other'?(r.querySelector('.ww-link-custom-name')?.value.trim()||'Other'):TYPES[type].label,type};
+      return {url,name:type==='other'?(r.dataset.linkName||'Other'):TYPES[type].label,type};
     }).filter(x=>x.url);
   };
 
@@ -10055,11 +10075,19 @@ wwOpenQuickInfo=function(row,id){
       .ww-link-type-choose{height:44px!important;border:1px solid rgba(20,55,70,.12)!important;border-radius:16px!important;background:#fff!important;color:#24313b!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:0 10px!important;font:800 12px/1 Inter,sans-serif!important;min-width:0!important}
       .ww-link-type-icon,.ww-link-picker-icon,.ww-quick-link-icon{display:inline-grid!important;place-items:center!important;flex:0 0 auto!important}
       .ww-link-type-icon svg{width:21px!important;height:21px!important}.ww-link-picker-icon svg{width:38px!important;height:38px!important}.ww-quick-link-icon svg{width:20px!important;height:20px!important}
-      .ww-link-custom-name{grid-column:1/3!important;width:100%!important;box-sizing:border-box!important}
       .ww-link-type-picker .ww-type-picker-option{cursor:pointer!important}
       .ww-link-type-picker .ww-link-picker-icon{color:#24313b!important}
       .ww-typed-quick-link{display:flex!important;align-items:center!important;gap:9px!important}
       .ww-typed-quick-link b{margin-left:auto!important}
+      .ww-other-link-title-dialog{border:0!important;padding:0!important;background:transparent!important;max-width:min(90vw,420px)!important;width:100%!important}
+      .ww-other-link-title-dialog::backdrop{background:rgba(0,45,58,.58)!important;backdrop-filter:blur(7px)!important}
+      .ww-other-link-title-shell{background:#fff0c9!important;border-radius:28px!important;padding:24px!important;box-shadow:0 18px 45px rgba(0,50,60,.28)!important}
+      .ww-other-link-title-head{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:16px!important;margin-bottom:18px!important}
+      .ww-other-link-title-head small{display:block!important;color:#118ca0!important;font-weight:900!important;letter-spacing:.08em!important;margin-bottom:4px!important}
+      .ww-other-link-title-head h3{margin:0!important;color:#183441!important;font-size:28px!important;line-height:1!important}
+      .ww-other-link-title-close{width:48px!important;height:48px!important;border:0!important;border-radius:50%!important;background:#fff!important;color:#68777c!important;font-size:34px!important;line-height:1!important}
+      .ww-other-link-title-input{width:100%!important;box-sizing:border-box!important;border:1px solid rgba(20,55,70,.15)!important;border-radius:18px!important;background:#fff!important;padding:15px 16px!important;font:700 16px/1.2 Inter,sans-serif!important;color:#183441!important;margin-bottom:14px!important}
+      .ww-other-link-title-save{width:100%!important;height:48px!important;border:0!important;border-radius:18px!important;background:#118ca0!important;color:#fff!important;font:900 15px/1 Inter,sans-serif!important;letter-spacing:.05em!important}
       @media(max-width:390px){.ww-link-type-choose{font-size:11px!important;padding:0 7px!important}.ww-link-type-icon svg{width:19px!important;height:19px!important}}
     `;document.head.appendChild(st);
   }
@@ -10137,8 +10165,8 @@ wwOpenQuickInfo=function(row,id){
 /* View Activity polish — safe, synchronous, no observers */
 (()=>{
  const svg={
-  cash:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M7 9H5v2M17 15h2v-2"/></svg>',
-  ticket:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4V7Z"/><path d="M12 8v2M12 14v2"/></svg>',
+  cash:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="7" rx="6.5" ry="2.5"/><path d="M5.5 7v4c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5V7"/><path d="M5.5 11v4c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5v-4"/></svg>',
+  ticket:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13 11 22l-9-9V4a2 2 0 0 1 2-2h9l7 7v4Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>',
   note:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
   todo:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8 11 2 2 5-5M8 17h8"/></svg>'
  };
