@@ -3777,7 +3777,12 @@ function wwRenderLinkRows(d,links=[]){
       const isAdd=i===rows.length-1;
       btn.classList.toggle('itin-link-add',isAdd);
       btn.classList.toggle('itin-link-delete',!isAdd);
-      btn.textContent=isAdd?'+':'🗑';
+      if(isAdd){
+        btn.textContent='+';
+      }else{
+        btn.textContent='';
+        btn.innerHTML='<span aria-hidden="true"></span>';
+      }
       btn.setAttribute('aria-label',isAdd?'Add another link':'Remove link');
       if(isAdd){
         btn.onclick=()=>{
