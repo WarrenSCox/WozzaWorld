@@ -10095,7 +10095,7 @@ wwOpenQuickInfo=function(row,id){
 
 
 
-/* View Activity layout polish: Start/Finish/Location/Telephone/Email icons + ordering */
+/* View Activity layout polish — synchronous/idempotent version */
 (()=>{
  const icons={
   clock:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
@@ -10103,29 +10103,32 @@ wwOpenQuickInfo=function(row,id){
   phone:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.33 1.84.56 2.8.69A2 2 0 0 1 22 16.9Z"/></svg>',
   mail:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>'
  };
- const findLabel=(body,name)=>[...body.querySelectorAll('small')].find(x=>x.textContent.trim().toUpperCase()===name);
- const cardOf=l=>l?.closest('.itinerary-quick-info-row,.itinerary-quick-info-card')||l?.parentElement;
- const decorate=(card,svg)=>{
-  if(!card||card.querySelector('.ww-view-field-icon'))return;
-  card.classList.add('ww-view-field-with-icon');
-  card.insertAdjacentHTML('afterbegin',`<span class="ww-view-field-icon">${svg}</span>`);
- };
- const polish=()=>{
-  const body=document.querySelector('#itineraryQuickInfoBody');if(!body)return;
-  const when=findLabel(body,'WHEN'),start=findLabel(body,'START'),finish=findLabel(body,'FINISH'),loc=findLabel(body,'LOCATION'),phone=findLabel(body,'CONTACT TELEPHONE'),mail=findLabel(body,'CONTACT EMAIL');
-  const sl=start||when;if(when)when.textContent='START';
-  const sc=cardOf(sl),fc=cardOf(finish),lc=cardOf(loc),pc=cardOf(phone),mc=cardOf(mail);
+ const inherited=wwOpenQuickInfo;
+ wwOpenQuickInfo=function(row,id){
+  inherited(row,id);
+  const body=document.querySelector('#itineraryQuickInfoBody'); if(!body)return;
+  const label=name=>[...body.querySelectorAll('small')].find(x=>x.textContent.trim().toUpperCase()===name);
+  const card=l=>l?.closest('.itinerary-quick-info-row,.itinerary-quick-info-card')||l?.parentElement;
+  const decorate=(c,svg)=>{
+   if(!c||c.querySelector(':scope > .ww-view-field-icon'))return;
+   c.classList.add('ww-view-field-with-icon');
+   c.insertAdjacentHTML('afterbegin',`<span class="ww-view-field-icon">${svg}</span>`);
+  };
+  const when=label('WHEN'),start=label('START'),finish=label('FINISH'),loc=label('LOCATION'),phone=label('CONTACT TELEPHONE'),mail=label('CONTACT EMAIL');
+  if(when)when.textContent='START';
+  const sc=card(start||when),fc=card(finish),lc=card(loc),pc=card(phone),mc=card(mail);
   decorate(sc,icons.clock);decorate(fc,icons.clock);decorate(lc,icons.pin);decorate(pc,icons.phone);decorate(mc,icons.mail);
-  // Move telephone then email immediately below Location, preserving clickable wrappers.
   const movable=c=>c?.closest('a.ww-contact-action')||c;
   const L=movable(lc),P=movable(pc),M=movable(mc);
-  if(L&&P){L.insertAdjacentElement('afterend',P);if(M)P.insertAdjacentElement('afterend',M)}
+  if(L&&P&&L.nextElementSibling!==P)L.insertAdjacentElement('afterend',P);
+  if(P&&M&&P.nextElementSibling!==M)P.insertAdjacentElement('afterend',M);
  };
- const mo=new MutationObserver(polish);mo.observe(document.documentElement,{subtree:true,childList:true});setTimeout(polish,0);
- const st=document.createElement('style');st.id='ww-view-field-icons-style';st.textContent=`
- .ww-view-field-with-icon{position:relative!important;padding-left:58px!important}
- .ww-view-field-icon{position:absolute!important;left:20px!important;top:50%!important;transform:translateY(-50%)!important;display:grid!important;place-items:center!important;color:#118ca0!important}
- .ww-view-field-icon svg{width:23px!important;height:23px!important}
- `;if(!document.getElementById(st.id))document.head.appendChild(st);
+ if(!document.getElementById('ww-view-field-icons-style')){
+  const st=document.createElement('style');st.id='ww-view-field-icons-style';st.textContent=`
+   .ww-view-field-with-icon{position:relative!important;padding-left:58px!important}
+   .ww-view-field-icon{position:absolute!important;left:20px!important;top:50%!important;transform:translateY(-50%)!important;display:grid!important;place-items:center!important;color:#118ca0!important}
+   .ww-view-field-icon svg{width:23px!important;height:23px!important}
+  `;document.head.appendChild(st);
+ }
 })();
 
