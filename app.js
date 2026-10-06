@@ -10262,3 +10262,15 @@ wwOpenQuickInfo=function(row,id){
  syncCountryTripsUI();
 })();
 
+
+/* WozzaWorld hotfix — keep Recycle Bin close button fixed while bin content scrolls (6 Oct 2026) */
+(()=>{
+  const pinRecycleClose=()=>{
+    const dlg=document.getElementById('recycleDialog');
+    const btn=document.getElementById('closeRecycleDialog');
+    if(!dlg||!btn||btn.parentElement===dlg)return;
+    dlg.appendChild(btn);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',pinRecycleClose,{once:true});
+  else pinRecycleClose();
+})();
