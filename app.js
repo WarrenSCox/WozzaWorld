@@ -5215,6 +5215,10 @@ wwOpenQuickInfo=function(row,id){
     #masterItineraryDialog[data-ww-view="daily"] .ww-itinerary-todo-list{display:grid!important;gap:9px!important}
     #masterItineraryDialog[data-ww-view="daily"] .ww-daily-todo-item{box-sizing:border-box;width:100%;min-height:38px;border:1px solid #d8dfe1;border-radius:18px;background:#fff;color:#172f3a;padding:9px 13px;font-size:13px;font-weight:400;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
     #masterItineraryDialog[data-ww-view="daily"] .ww-daily-todo-item.is-done{text-decoration:line-through;color:#687781;opacity:.72}
+    /* Daily Plan read-only tasks: plain text list inside the existing outer Tasks panel. */
+    #masterItineraryDialog[data-ww-view="daily"] .ww-itinerary-todo-list{gap:7px!important}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-daily-todo-item{position:relative!important;min-height:0!important;border:0!important;border-radius:0!important;background:transparent!important;padding:2px 0 2px 18px!important}
+    #masterItineraryDialog[data-ww-view="daily"] .ww-daily-todo-item::before{content:"•";position:absolute;left:2px;top:2px;font-weight:900}
   `;
   document.head.appendChild(st);
 })();
