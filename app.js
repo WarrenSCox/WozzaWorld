@@ -10378,3 +10378,80 @@ wwOpenQuickInfo=function(row,id){
     requestAnimationFrame(()=>openCountry(country,origin));
   });
 })();
+
+/* === WozzaWorld Passport profile launcher polish — 06 Oct 2026 === */
+(()=>{
+  if(window.__wwPassportProfileLauncher061026)return;window.__wwPassportProfileLauncher061026=true;
+  const st=document.createElement('style');st.id='ww-passport-profile-launcher-061026';st.textContent=`
+    /* The old always-visible name/save strip is replaced by the centre profile launcher. */
+    .ww-passport-name-bar-hidden{display:none!important}
+    .recycle-launch{display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important}
+    .recycle-launch .ww-passport-profile-btn{
+      width:56px!important;height:56px!important;flex:0 0 56px!important;border-radius:50%!important;
+      border:1px solid rgba(255,255,255,.34)!important;background:rgba(255,255,255,.045)!important;
+      color:#fff!important;display:grid!important;place-items:center!important;padding:0!important;
+      box-shadow:0 5px 16px rgba(5,50,65,.10)!important;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)
+    }
+    .recycle-launch .ww-passport-profile-btn svg{width:29px;height:29px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .recycle-launch .ww-recycle-handwriting-hidden{display:none!important}
+    #wwPassportNameDialog{border:0;padding:0;background:transparent;max-width:min(88vw,390px);width:100%}
+    #wwPassportNameDialog::backdrop{background:rgba(7,36,46,.48);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+    #wwPassportNameDialog .ww-profile-card{position:relative;background:#f8e8c2;border-radius:28px;padding:25px 22px 22px;box-shadow:0 20px 50px rgba(5,35,45,.24);color:#17213d}
+    #wwPassportNameDialog h3{margin:0 48px 20px 0;font-size:24px;font-weight:950}
+    #wwPassportNameDialog .ww-profile-close{position:absolute;right:18px;top:17px;width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:#17213d;font-size:30px;line-height:1;box-shadow:0 5px 16px rgba(16,33,63,.10)}
+    #wwPassportNameDialog label{display:block;font-weight:850;font-size:13px;margin-bottom:8px}
+    #wwPassportNameDialog input{box-sizing:border-box;width:100%;border:1px solid rgba(23,33,61,.15);border-radius:18px;background:#fff;padding:14px 16px;font:inherit;font-size:17px;color:#17213d;outline:none}
+    #wwPassportNameDialog input:focus{border-color:#0b8999;box-shadow:0 0 0 3px rgba(11,137,153,.12)}
+    #wwPassportNameDialog .ww-profile-save{width:100%;margin-top:16px;border:0;border-radius:999px;padding:14px 18px;background:#0b8999;color:#fff;font-weight:900;font-size:16px}
+  `;document.getElementById(st.id)?.remove();document.head.appendChild(st);
+
+  function nameBar(){
+    const input=document.getElementById('passportName'); if(!input)return null;
+    const save=document.getElementById('savePassportName');
+    let el=input.closest('.passport-name-card,.passport-name,.name-card,.passport-profile-name');
+    if(!el){
+      el=input.parentElement;
+      while(el&&save&&!el.contains(save)&&el.parentElement&&el.parentElement!==document.body)el=el.parentElement;
+    }
+    return el;
+  }
+  function ensureDialog(){
+    let d=document.getElementById('wwPassportNameDialog');if(d)return d;
+    d=document.createElement('dialog');d.id='wwPassportNameDialog';
+    d.innerHTML=`<form method="dialog" class="ww-profile-card"><button type="button" class="ww-profile-close" aria-label="Close">×</button><h3>Your profile</h3><label for="wwPassportNameInput">Name</label><input id="wwPassportNameInput" maxlength="24" autocomplete="name"><button type="button" class="ww-profile-save">Save</button></form>`;
+    document.body.appendChild(d);
+    const close=()=>d.close();d.querySelector('.ww-profile-close').onclick=close;
+    d.addEventListener('click',e=>{if(e.target===d)close()});
+    const commit=()=>{
+      const original=document.getElementById('passportName'),field=d.querySelector('#wwPassportNameInput');if(!original||!field)return;
+      original.value=field.value;
+      if(typeof savePassportName==='function')savePassportName();else document.getElementById('savePassportName')?.click();
+      close();
+    };
+    d.querySelector('.ww-profile-save').onclick=commit;
+    d.querySelector('#wwPassportNameInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();commit()}});
+    return d;
+  }
+  function openProfile(){
+    const d=ensureDialog(),field=d.querySelector('#wwPassportNameInput');
+    field.value=localStorage.getItem('wozzaworld-first-name')||document.getElementById('passportName')?.value||'';
+    d.showModal();requestAnimationFrame(()=>{field.focus();field.select()});
+  }
+  function install(){
+    const bar=nameBar();if(bar)bar.classList.add('ww-passport-name-bar-hidden');
+    const launch=document.querySelector('.recycle-launch');if(!launch)return false;
+    /* Remove the handwritten Recycle bin caption only; keep the two existing utility buttons. */
+    [...launch.children].forEach(el=>{if(el.id==='openRecycleBin'||el.id==='openBackupRestore'||el.id==='wwPassportProfileButton')return;if(!el.matches('button'))el.classList.add('ww-recycle-handwriting-hidden')});
+    let btn=document.getElementById('wwPassportProfileButton');
+    if(!btn){
+      btn=document.createElement('button');btn.type='button';btn.id='wwPassportProfileButton';btn.className='ww-passport-profile-btn';btn.setAttribute('aria-label','Edit profile name');btn.title='Edit profile name';
+      btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6"></path></svg>';
+      btn.onclick=openProfile;
+    }
+    const recycle=document.getElementById('openRecycleBin');
+    if(recycle)launch.insertBefore(btn,recycle);else launch.appendChild(btn);
+    return true;
+  }
+  let tries=0,t=setInterval(()=>{if(install()||++tries>50)clearInterval(t)},100);
+  requestAnimationFrame(()=>{install();ensureDialog()});
+})();
