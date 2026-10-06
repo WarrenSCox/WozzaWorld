@@ -8703,17 +8703,13 @@ wwOpenQuickInfo=function(row,id){
 
   const previousOpenCountry=openCountry;
   openCountry=function(c,origin=null){
-    const resolvedOrigin=origin||currentCountryCardOrigin();
-    const fromHome=resolvedOrigin?.type==='screen' && resolvedOrigin?.screen==='home' && !resolvedOrigin?.tripsView;
-    window.__wwOpeningCountryFromHome041026=!!fromHome;
-    const result=previousOpenCountry.call(this,c,origin);
+    /* Use one consistent Country popup presentation from every entry point. */
     window.__wwOpeningCountryFromHome041026=false;
+    const result=previousOpenCountry.call(this,c,origin);
     const host=document.getElementById('wwCountryTopDialog');
     if(host){
-      host.classList.toggle('ww-country-from-home',!!fromHome);
-      host.classList.toggle('ww-country-popup',!fromHome);
-      /* The older cleanup sets this to auto when Country opens. Keep only the
-         Country children interactive so the host itself cannot swallow nav taps. */
+      host.classList.remove('ww-country-from-home');
+      host.classList.add('ww-country-popup');
       host.style.pointerEvents='none';
     }
     return result;
