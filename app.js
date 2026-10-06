@@ -10455,3 +10455,68 @@ wwOpenQuickInfo=function(row,id){
   let tries=0,t=setInterval(()=>{if(install()||++tries>50)clearInterval(t)},100);
   requestAnimationFrame(()=>{install();ensureDialog()});
 })();
+
+/* === WozzaWorld Passport profile controls — robust final fix 06 Oct 2026 === */
+(()=>{
+  if(window.__wwPassportProfileRobust061026)return; window.__wwPassportProfileRobust061026=true;
+  const st=document.createElement('style'); st.id='ww-passport-profile-robust-061026'; st.textContent=`
+    section[data-screen="me"] > .passport-name-card{display:none!important}
+    section[data-screen="me"] .recycle-launch{position:relative!important;display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;min-height:64px!important}
+    section[data-screen="me"] .recycle-launch .recycle-handnote{display:none!important}
+    section[data-screen="me"] .recycle-launch #wwPassportProfileButton{
+      position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;
+      width:56px!important;height:56px!important;min-width:56px!important;border-radius:50%!important;
+      border:1px solid rgba(255,255,255,.34)!important;background:rgba(255,255,255,.045)!important;
+      color:#fff!important;display:grid!important;place-items:center!important;padding:0!important;margin:0!important;
+      box-shadow:0 5px 16px rgba(5,50,65,.10)!important;backdrop-filter:blur(2px)!important;-webkit-backdrop-filter:blur(2px)!important;z-index:3!important
+    }
+    section[data-screen="me"] .recycle-launch #wwPassportProfileButton svg{width:30px!important;height:30px!important;display:block!important;fill:none!important;stroke:#fff!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+  `; document.head.appendChild(st);
+
+  function dialog(){
+    let d=document.getElementById('wwPassportNameDialog');
+    if(!d){
+      d=document.createElement('dialog'); d.id='wwPassportNameDialog';
+      d.innerHTML='<form method="dialog" class="ww-profile-card"><button type="button" class="ww-profile-close" aria-label="Close">×</button><h3>Your profile</h3><label for="wwPassportNameInput">Name</label><input id="wwPassportNameInput" maxlength="24" autocomplete="given-name"><button type="button" class="ww-profile-save">Save</button></form>';
+      document.body.appendChild(d);
+      d.querySelector('.ww-profile-close').onclick=()=>d.close();
+      d.addEventListener('click',e=>{if(e.target===d)d.close()});
+      const save=()=>{const src=document.getElementById('passportName'),f=d.querySelector('#wwPassportNameInput');if(!src||!f)return;src.value=f.value;src.dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('savePassportName')?.click();d.close()};
+      d.querySelector('.ww-profile-save').onclick=save;
+      d.querySelector('#wwPassportNameInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save()}});
+    }
+    return d;
+  }
+  function open(){const d=dialog(),f=d.querySelector('#wwPassportNameInput'),src=document.getElementById('passportName');f.value=src?.value||localStorage.getItem('wozzaworld-first-name')||'';d.showModal();requestAnimationFrame(()=>{f.focus();f.select()})}
+  function apply(){
+    document.querySelector('section[data-screen="me"] > .passport-name-card')?.setAttribute('hidden','');
+    const launch=document.querySelector('section[data-screen="me"] .recycle-launch'); if(!launch)return;
+    launch.querySelector('.recycle-handnote')?.remove();
+    let b=document.getElementById('wwPassportProfileButton');
+    if(!b){b=document.createElement('button');b.type='button';b.id='wwPassportProfileButton';b.setAttribute('aria-label','Edit profile name');b.title='Edit profile name';b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20c.7-4 3.2-6 7.5-6s6.8 2 7.5 6"></path></svg>';b.onclick=open;launch.appendChild(b)}
+    else if(b.parentElement!==launch)launch.appendChild(b);
+  }
+  apply(); dialog();
+  const obs=new MutationObserver(apply); obs.observe(document.body,{childList:true,subtree:true});
+  setTimeout(()=>obs.disconnect(),10000);
+})();
+
+/* === WozzaWorld Passport bottom controls — tighter grouping 06 Oct 2026 === */
+(()=>{
+  if(document.getElementById('ww-passport-controls-tight-061026'))return;
+  const st=document.createElement('style');st.id='ww-passport-controls-tight-061026';st.textContent=`
+    section[data-screen="me"] .recycle-launch{
+      justify-content:center!important;
+      gap:34px!important;
+    }
+    section[data-screen="me"] .recycle-launch #wwPassportProfileButton{
+      position:static!important;
+      left:auto!important;top:auto!important;
+      transform:none!important;
+      order:2!important;
+      flex:0 0 auto!important;
+    }
+    section[data-screen="me"] .recycle-launch #openBackupRestore{order:1!important;flex:0 0 auto!important;margin:0!important}
+    section[data-screen="me"] .recycle-launch #openRecycleBin{order:3!important;flex:0 0 auto!important;margin:0!important}
+  `;document.head.appendChild(st);
+})();
