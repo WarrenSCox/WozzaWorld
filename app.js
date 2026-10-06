@@ -4658,7 +4658,32 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(style);
 
-  let timer=0,busy=false,tripSurfaceFrame=0;
+  let timer=0,busy=false,tripSurfaceFrame=0,newTripSeedCountry='';
+
+  /* Remember what Add Trip pre-filled for us. A country supplied by the page itself is
+     not user input, so simply opening + closing Add Trip must not create a trip. */
+  const _wwOpenTripBeforeAutosaveGuard=openTrip;
+  openTrip=function(country=''){
+    newTripSeedCountry=canonicalCountry(country||'')||'';
+    return _wwOpenTripBeforeAutosaveGuard.apply(this,arguments);
+  };
+
+  function newTripHasUserInput(stops){
+    if(editingTripId)return true;
+    if(($('#tripName')?.value||'').trim())return true;
+    if((stops||[]).length!==1)return (stops||[]).length>0;
+    const stop=(stops||[])[0]||{};
+    const stopCountry=canonicalCountry(stop.country||'')||'';
+    if(stopCountry!==newTripSeedCountry)return true;
+    if((stop.name||'').trim()||(stop.start||'').trim()||(stop.end||'').trim()||(stop.travelMode||'').trim())return true;
+    if($$('#tripCompanionBank .companion-tag.selected').length)return true;
+    if($$('#tripVibeBank .vibe-tag.selected').length)return true;
+    if(collectTripTodos().some(x=>String(typeof x==='string'?x:(x?.text||x?.name||'')).trim()))return true;
+    if(($('#tripNotes')?.value||'').trim())return true;
+    if(Number($('#tripRating')?.value)||0)return true;
+    return false;
+  }
+
   function refreshTripSurfaces(){
     cancelAnimationFrame(tripSurfaceFrame);
     tripSurfaceFrame=requestAnimationFrame(()=>{
@@ -4676,8 +4701,10 @@ wwOpenQuickInfo=function(row,id){
   function persistEditor(){
     if(busy||!dialog.open)return false;
     const stops=collectDestinationStops(),countries=[...new Set(stops.map(d=>d.country).filter(Boolean))];
-    /* Do not create a ghost trip until there is at least one real stop/country. */
-    if(!countries.length)return false;
+    /* Existing trips keep true autosave. For a brand-new trip, however, the country
+       pre-filled by Add Trip is only context, not input. Do not create the record until
+       the user actually changes/adds something. */
+    if(!countries.length||(!editingTripId&&!newTripHasUserInput(stops)))return false;
     busy=true;
     try{
       let trip=editingTripId?state.trips.find(x=>String(x.id)===String(editingTripId)):null;
