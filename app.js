@@ -9915,3 +9915,153 @@ wwOpenQuickInfo=function(row,id){
   };
   syncEmptyCountryTripState();
 })();
+
+
+/* === WozzaWorld — typed activity links 06 Oct 2026 === */
+(()=>{
+  const TYPES={
+    website:{label:'Website',icon:'globe'},
+    directions:{label:'Directions',icon:'pin'},
+    email:{label:'Email address',icon:'mail'},
+    other:{label:'Other',icon:'link'}
+  };
+  const iconSvg=kind=>{
+    const paths={
+      globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
+      pin:'<path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/>',
+      mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+      link:'<path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"/>'
+    };
+    return `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths[kind]||paths.link}</svg>`;
+  };
+  const inferType=l=>{
+    const t=String(l?.type||'').toLowerCase(); if(TYPES[t])return t;
+    const n=String(l?.name||'').trim().toLowerCase(),u=String(l?.url||'').trim().toLowerCase();
+    if(u.startsWith('mailto:')||n==='email'||n==='email address')return 'email';
+    if(n==='directions'||n==='map / location'||/google\.[^/]+\/maps|maps\.app|maps\.google|goo\.gl\/maps/.test(u))return 'directions';
+    if(n==='website')return 'website';
+    return 'other';
+  };
+  const normalLink=l=>{
+    const type=inferType(l), raw=String(l?.url||'').trim();
+    return {url:raw,name:type==='other'?String(l?.name||'').trim():TYPES[type].label,type};
+  };
+  const hrefFor=l=>{
+    let u=String(l?.url||'').trim();
+    if(inferType(l)==='email'){
+      u=u.replace(/^mailto:/i,'').trim();
+      return u?`mailto:${u}`:'';
+    }
+    return u;
+  };
+
+  wwActivityLinks=function(item={}){
+    if(Array.isArray(item.links))return item.links.filter(x=>x&&(x.url||x.name)).map(normalLink);
+    const a=[];
+    if(item.locationUrl)a.push({url:item.locationUrl,name:'Directions',type:'directions'});
+    if(item.url)a.push({url:item.url,name:'Website',type:'website'});
+    return a;
+  };
+
+  function picker(){
+    let p=document.getElementById('wwLinkTypePicker');
+    if(p)return p;
+    p=document.createElement('dialog');
+    p.id='wwLinkTypePicker'; p.className='ww-activity-type-picker ww-link-type-picker';
+    p.innerHTML=`<div class="ww-type-picker-shell">
+      <div class="ww-type-picker-head"><div><small>LINK TYPE</small><h3>Choose a link</h3></div><button type="button" class="ww-type-picker-close" aria-label="Close">×</button></div>
+      <div class="ww-type-picker-grid">${Object.entries(TYPES).map(([key,x])=>`<button type="button" class="ww-type-picker-option" data-link-type="${key}"><span class="ww-link-picker-icon">${iconSvg(x.icon)}</span><span>${x.label}</span></button>`).join('')}</div>
+    </div>`;
+    document.body.appendChild(p);
+    p.querySelector('.ww-type-picker-close').onclick=()=>p.close();
+    p.addEventListener('click',e=>{if(e.target===p)p.close()});
+    return p;
+  }
+  function chooseType(current,cb){
+    const p=picker();
+    p.querySelectorAll('[data-link-type]').forEach(b=>{
+      b.classList.toggle('selected',b.dataset.linkType===current);
+      b.onclick=()=>{cb(b.dataset.linkType);p.close()};
+    });
+    if(!p.open)p.showModal();
+  }
+  function rowMarkup(x={},i=0){
+    x=normalLink(x); const type=x.type||'website',meta=TYPES[type]||TYPES.other;
+    const val=type==='email'?String(x.url||'').replace(/^mailto:/i,''):String(x.url||'');
+    const placeholder=type==='email'?'name@example.com':'https://…';
+    const custom=type==='other'?`<input class="itin-link-name ww-link-custom-name" type="text" maxlength="50" placeholder="Link title" value="${esc(x.name||'')}">`:'';
+    return `<div class="itin-link-row ww-typed-link-row" data-link-row="${i}" data-link-type="${type}">
+      <input class="itin-link-url" type="${type==='email'?'email':'text'}" placeholder="${placeholder}" value="${esc(val)}">
+      <button type="button" class="ww-link-type-choose" aria-label="Choose link type"><span class="ww-link-type-icon">${iconSvg(meta.icon)}</span><span>${meta.label}</span></button>
+      ${custom}
+      <button type="button" class="itin-link-remove" aria-label="Add link">+</button>
+    </div>`;
+  }
+  wwRenderLinkRows=function(d,links=[]){
+    const host=d.querySelector('#itinLinksRows');if(!host)return;
+    const committed=(links||[]).filter(x=>x&&(x.url||x.name)).map(normalLink);
+    const render=()=>{
+      const vals=[...committed,{url:'',name:'Website',type:'website'}];
+      host.innerHTML=vals.map(rowMarkup).join('');
+      const rows=$$('.itin-link-row',host);
+      rows.forEach((r,i)=>{
+        const isAdd=i===rows.length-1, btn=r.querySelector('.itin-link-remove'), typeBtn=r.querySelector('.ww-link-type-choose');
+        btn.classList.toggle('itin-link-add',isAdd); btn.classList.toggle('itin-link-delete',!isAdd);
+        if(isAdd)btn.textContent='+';
+        else{btn.textContent='';btn.innerHTML='<span aria-hidden="true"></span>'}
+        btn.setAttribute('aria-label',isAdd?'Add another link':'Remove link');
+        typeBtn.onclick=()=>chooseType(r.dataset.linkType,type=>{
+          const u=r.querySelector('.itin-link-url')?.value.trim()||'',n=r.querySelector('.ww-link-custom-name')?.value.trim()||'';
+          if(isAdd){vals[i]={url:u,name:n,type}; host.innerHTML=''; const draft=[...committed,vals[i]]; wwRenderLinkRows(d,draft)}
+          else{committed[i]={...committed[i],url:u,name:n,type};render()}
+        });
+        if(isAdd)btn.onclick=()=>{
+          let url=r.querySelector('.itin-link-url')?.value.trim()||'', type=r.dataset.linkType||'website';
+          const name=r.querySelector('.ww-link-custom-name')?.value.trim()||TYPES[type].label;
+          if(!url){r.querySelector('.itin-link-url')?.focus();return}
+          if(type==='email')url=hrefFor({url,type});
+          committed.push({url,name,type});render();
+          host.querySelector('.itin-link-row:last-child .itin-link-url')?.focus();
+        };
+        else btn.onclick=()=>{committed.splice(i,1);render()};
+      });
+    }; render();
+  };
+  wwReadLinkRows=function(d){
+    return $$('.itin-link-row',d).map(r=>{
+      const type=r.dataset.linkType||'website';
+      let url=r.querySelector('.itin-link-url')?.value.trim()||'';
+      if(type==='email'&&url)url=hrefFor({url,type});
+      return {url,name:type==='other'?(r.querySelector('.ww-link-custom-name')?.value.trim()||'Other'):TYPES[type].label,type};
+    }).filter(x=>x.url);
+  };
+
+  /* Decorate the existing read-only links after all inherited quick-info rendering has finished. */
+  const previousQuick=wwOpenQuickInfo;
+  wwOpenQuickInfo=function(row,id){
+    previousQuick(row,id);
+    const x=itineraryItemsForRow(row).find(i=>String(i.id)===String(id)),body=document.querySelector('#itineraryQuickInfoBody');
+    if(!x||!body)return;
+    const links=wwActivityLinks(x).filter(l=>l.url);
+    body.querySelectorAll('.itinerary-quick-info-link').forEach(a=>a.remove());
+    const edit=body.querySelector('.itinerary-quick-info-edit');
+    const html=links.map(l=>{const type=inferType(l),m=TYPES[type]||TYPES.other;return `<a class="itinerary-quick-info-link ww-typed-quick-link" href="${esc(hrefFor(l))}" ${type==='email'?'':'target="_blank" rel="noopener"'}><span class="ww-quick-link-icon">${iconSvg(m.icon)}</span><span>${esc(type==='other'?(l.name||'Link'):m.label)}</span><b aria-hidden="true">↗</b></a>`}).join('');
+    if(edit)edit.insertAdjacentHTML('beforebegin',html);else body.insertAdjacentHTML('beforeend',html);
+  };
+
+  if(!document.getElementById('ww-typed-links-style')){
+    const st=document.createElement('style');st.id='ww-typed-links-style';st.textContent=`
+      .ww-typed-link-row{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) auto!important;align-items:center!important}
+      .ww-link-type-choose{height:44px!important;border:1px solid rgba(20,55,70,.12)!important;border-radius:16px!important;background:#fff!important;color:#24313b!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:0 10px!important;font:800 12px/1 Inter,sans-serif!important;min-width:0!important}
+      .ww-link-type-icon,.ww-link-picker-icon,.ww-quick-link-icon{display:inline-grid!important;place-items:center!important;flex:0 0 auto!important}
+      .ww-link-type-icon svg{width:21px!important;height:21px!important}.ww-link-picker-icon svg{width:38px!important;height:38px!important}.ww-quick-link-icon svg{width:20px!important;height:20px!important}
+      .ww-link-custom-name{grid-column:1/3!important;width:100%!important;box-sizing:border-box!important}
+      .ww-link-type-picker .ww-type-picker-option{cursor:pointer!important}
+      .ww-link-type-picker .ww-link-picker-icon{color:#24313b!important}
+      .ww-typed-quick-link{display:flex!important;align-items:center!important;gap:9px!important}
+      .ww-typed-quick-link b{margin-left:auto!important}
+      @media(max-width:390px){.ww-link-type-choose{font-size:11px!important;padding:0 7px!important}.ww-link-type-icon svg{width:19px!important;height:19px!important}}
+    `;document.head.appendChild(st);
+  }
+})();
+
