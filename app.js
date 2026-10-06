@@ -10241,3 +10241,20 @@ wwOpenQuickInfo=function(row,id){
  document.getElementById('tripForm')?.addEventListener('submit',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{if(currentCountry){renderSheet();renderCountryLists()}})));
  polish();
 })();
+
+/* WozzaWorld hotfix 06 Oct 2026: allow the country-card empty state to hide
+   the Trips heading/count and trip dividers. Earlier redesign CSS forces these
+   elements visible with display:* !important, overriding the HTML hidden state. */
+(()=>{
+  if(document.getElementById('ww-country-empty-trips-hidden-fix-061026')) return;
+  const style=document.createElement('style');
+  style.id='ww-country-empty-trips-hidden-fix-061026';
+  style.textContent=`
+    #countrySheet .ww-country-trips-section-head[hidden],
+    #countrySheet .ww-country-trips-top-divider[hidden],
+    #countrySheet .ww-country-trips-divider[hidden]{
+      display:none!important;
+    }
+  `;
+  document.head.appendChild(style);
+})();
