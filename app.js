@@ -10228,3 +10228,16 @@ wwOpenQuickInfo=function(row,id){
  }
 })();
 
+
+
+/* === WozzaWorld — country trip state consistency, 06 Oct 2026 === */
+(()=>{
+ if(window.__wwCountryTripStateConsistency061026)return;window.__wwCountryTripStateConsistency061026=true;
+ const tripDateState=t=>{const td=orderedTripDates(t),today=new Date();today.setHours(0,0,0,0);const start=td.start?new Date(td.start+'T00:00:00'):null,end=td.end?new Date(td.end+'T00:00:00'):null;if(!start&&!end)return'undated';return(end||start)>=today?'upcoming':'past'};
+ tripIsOnHorizon=t=>tripDateState(t)==='upcoming';
+ reconcileTripCountryStatuses=countries=>{[...new Set((countries||[]).filter(Boolean))].forEach(c=>{const trips=countryTrips(c),hasUpcoming=trips.some(t=>tripDateState(t)==='upcoming'),hasPast=trips.some(t=>tripDateState(t)==='past');setCountryStatus(c,'going',hasUpcoming);if(hasPast){setCountryStatus(c,'visited',true);if(!state.visitHistory.some(x=>sameCountry(x,c)))state.visitHistory.push(c)}})};
+ function polish(){if(!currentCountry)return;const list=document.getElementById('countryTrips'),add=document.getElementById('addCountryTrip');if(!list||!add)return;const hasTrips=countryTrips(currentCountry).length>0,head=document.querySelector('#countrySheet .ww-country-trips-section-head'),top=document.querySelector('#countrySheet .ww-country-trips-top-divider'),lower=document.querySelector('#countrySheet .ww-country-trips-divider'),summary=document.getElementById('countryInfoSummary');if(head)head.hidden=!hasTrips;if(top)top.hidden=!hasTrips;if(lower)lower.hidden=!hasTrips;if(summary)summary.hidden=!hasTrips;const empty=list.querySelector('.country-no-trips');if(empty)empty.textContent='Add a trip to get started 😃'}
+ const inherited=renderSheet;renderSheet=function(){const out=inherited.apply(this,arguments);polish();requestAnimationFrame(polish);return out};
+ document.getElementById('tripForm')?.addEventListener('submit',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{if(currentCountry){renderSheet();renderCountryLists()}})));
+ polish();
+})();
