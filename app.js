@@ -10306,3 +10306,32 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld — Country > Trip return-path polish 06 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryTripReturn061026)return;
+  window.__wwCountryTripReturn061026=true;
+
+  let returnCountry='';
+  let returnOrigin=null;
+
+  const rememberCountryTrip=target=>{
+    const card=target?.closest?.('#countryTrips [data-open-trip]');
+    if(!card)return;
+    returnCountry=String(currentCountry||'').trim();
+    returnOrigin=countryCardOrigin ? {...countryCardOrigin} : null;
+  };
+
+  document.addEventListener('click',e=>rememberCountryTrip(e.target),true);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' ')rememberCountryTrip(e.target);
+  },true);
+
+  const tripDialog=document.getElementById('tripDialog');
+  tripDialog?.addEventListener('close',()=>{
+    if(!returnCountry)return;
+    const country=returnCountry, origin=returnOrigin;
+    returnCountry=''; returnOrigin=null;
+    requestAnimationFrame(()=>openCountry(country,origin));
+  });
+})();
