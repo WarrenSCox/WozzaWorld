@@ -1971,7 +1971,7 @@ window.__wozzaWarmVisibleCountryHeroes=()=>{clearTimeout(settleTimer);settleTime
       shell=document.createElement('section');shell.id='passportInsights';shell.className='passport-insights';
       shell.innerHTML='<div class="passport-insights-title">TRAVEL INSIGHTS</div><div class="passport-insights-tabs" role="tablist" aria-label="Travel insights"><button type="button" class="passport-insights-tab is-active" data-insights-tab="score" role="tab" aria-selected="true" aria-label="Travel score">'+ICONS.score+'<span class="insights-underline"></span></button><button type="button" class="passport-insights-tab" data-insights-tab="stats" role="tab" aria-selected="false" aria-label="Stats">'+ICONS.stats+'<span class="insights-underline"></span></button><button type="button" class="passport-insights-tab" data-insights-tab="charts" role="tab" aria-selected="false" aria-label="Charts">'+ICONS.charts+'<span class="insights-underline"></span></button></div><div class="passport-insights-body"></div>';
       score.before(shell);const body=shell.querySelector('.passport-insights-body');
-      [score,grid,charts].forEach((el,i)=>{const panel=document.createElement('div');panel.className='passport-insights-panel'+(i===0?' is-active':'');panel.dataset.insightsPanel=['score','stats','charts'][i];panel.hidden=i!==0;body.appendChild(panel);panel.appendChild(el)});
+      [score,grid,charts].forEach((el,i)=>{const panel=document.createElement('div');panel.className='passport-insights-panel'+(i===0?' is-active':'');panel.dataset.insightsPanel=['score','stats','charts'][i];panel.hidden=i!==0;body.appendChild(panel);if(i===1){const h=document.createElement('div');h.className='passport-quick-stats-heading';h.textContent='QUICK STATS';panel.appendChild(h)}panel.appendChild(el)});
       shell.after(milestones);
       screen.querySelectorAll('.passport-section-heading').forEach(h=>{if(/^(STATS|CHARTS)$/i.test(h.textContent.trim()))h.hidden=true});
       const choose=key=>{
@@ -2002,6 +2002,7 @@ window.__wozzaWarmVisibleCountryHeroes=()=>{clearTimeout(settleTimer);settleTime
     .passport-insights-panel[hidden]{display:none!important}.passport-insights-panel.is-active{display:block}
     .passport-insights .travel-health-card{margin:0!important;padding:10px 2px 4px!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
     .passport-insights .travel-health-kicker{margin-top:2px}
+    .passport-quick-stats-heading{font-family:"Archivo Black",Impact,sans-serif;font-size:clamp(16px,4.5vw,20px);font-weight:950;letter-spacing:.075em;color:#07546a;margin:2px 4px 16px;text-transform:uppercase}
     .passport-insights .stats-grid{margin:2px 0 0!important}
     .passport-insights .passport-stats-carousel{margin:2px 0 0!important;background:rgba(255,255,255,.22)!important}
     .passport-insights-panel[data-insights-panel="charts"] .passport-stats-carousel{border-radius:22px!important}
