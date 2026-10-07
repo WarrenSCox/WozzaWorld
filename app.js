@@ -10772,6 +10772,7 @@ wwOpenQuickInfo=function(row,id){
     holdTimer=setTimeout(()=>{
       holdTimer=null;longPressed=true;
       if(navigator.vibrate)try{navigator.vibrate(25)}catch(_){}
+      window.__wwMapLaunchFromWorldMap=true;
       window.wwOpenCountryGoogleMap?.(country);
     },HOLD_MS);
   },true);
@@ -10847,4 +10848,42 @@ wwOpenQuickInfo=function(row,id){
   },true);
 
   bindHero();
+})();
+
+
+/* === WozzaWorld — World-map Google popup context styling 07 Oct 2026 === */
+(()=>{
+  if(window.__wwWorldMapGoogleContext071026)return;
+  window.__wwWorldMapGoogleContext071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-world-map-google-context-071026';
+  st.textContent=`
+    /* ONLY the popup launched by holding a country on the WozzaWorld map. */
+    #wwCountryMapDialog.ww-from-world-map::backdrop{
+      background:transparent!important;
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
+    }
+    #wwCountryMapDialog.ww-from-world-map .ww-map-card{
+      background:rgba(0,128,139,.32)!important;
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
+    }
+  `;
+  document.head.appendChild(st);
+
+  const original=window.wwOpenCountryGoogleMap;
+  if(typeof original==='function'){
+    window.wwOpenCountryGoogleMap=function(country){
+      const fromWorldMap=!!window.__wwMapLaunchFromWorldMap;
+      window.__wwMapLaunchFromWorldMap=false;
+      const out=original.apply(this,arguments);
+      if(fromWorldMap){
+        const mark=()=>document.getElementById('wwCountryMapDialog')?.classList.add('ww-from-world-map');
+        mark();requestAnimationFrame(mark);
+      }
+      return out;
+    };
+  }
 })();
