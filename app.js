@@ -10789,3 +10789,62 @@ wwOpenQuickInfo=function(row,id){
     e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();longPressed=false;
   },true);
 })();
+
+
+/* === WozzaWorld — Milestones-style Google map popup + full hero Info target 07 Oct 2026 === */
+(()=>{
+  if(window.__wwMapMilestoneHeroInfo071026)return;
+  window.__wwMapMilestoneHeroInfo071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-map-milestone-hero-info-071026';
+  st.textContent=`
+    /* Milestones-style glass teal shell; Google map itself remains opaque. */
+    #wwCountryMapDialog .ww-map-card{
+      background:rgba(0,128,139,.62)!important;
+      border:2px solid rgba(255,255,255,.92)!important;
+      backdrop-filter:blur(12px)!important;
+      -webkit-backdrop-filter:blur(12px)!important;
+      box-sizing:border-box!important;
+    }
+    #wwCountryMapDialog .ww-map-title{color:#fff!important}
+    /* The whole hero is now the Info hit target without changing its artwork/layout. */
+    #countrySheet .country-hero-minimal{cursor:pointer!important}
+  `;
+  document.head.appendChild(st);
+
+  function bindHero(){
+    const hero=document.querySelector('#countrySheet .country-hero-minimal');
+    if(!hero)return;
+    hero.setAttribute('role','button');
+    hero.setAttribute('tabindex','0');
+    hero.setAttribute('title','Open country info');
+    hero.setAttribute('aria-label','Open country info');
+  }
+  const previousRender=renderSheet;
+  renderSheet=function(){
+    const out=previousRender.apply(this,arguments);
+    bindHero();
+    return out;
+  };
+
+  document.addEventListener('click',e=>{
+    const hero=e.target.closest?.('#countrySheet .country-hero-minimal');
+    if(!hero)return;
+    /* The sheet close control sits over the hero visually; never hijack it. */
+    if(e.target.closest?.('#countrySheet .sheet-close'))return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    if(typeof openCountryInfo==='function')openCountryInfo();
+  },true);
+
+  document.addEventListener('keydown',e=>{
+    const hero=e.target.closest?.('#countrySheet .country-hero-minimal');
+    if(!hero||!(e.key==='Enter'||e.key===' '))return;
+    e.preventDefault();
+    if(typeof openCountryInfo==='function')openCountryInfo();
+  },true);
+
+  bindHero();
+})();
