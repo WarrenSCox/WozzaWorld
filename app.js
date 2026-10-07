@@ -11139,3 +11139,68 @@ wwOpenQuickInfo=function(row,id){
   new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
   sync();
 })();
+
+
+/* === WozzaWorld — landscape overlay alignment to usable map area 07 Oct 2026 === */
+(()=>{
+  if(window.__wwLandscapeOverlayAlignment071026)return;
+  window.__wwLandscapeOverlayAlignment071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-landscape-overlay-alignment-071026';
+  st.textContent=`
+    @media (orientation:landscape){
+      /* Centre both overlays between the right edge of the nav rail and the
+         right edge of the viewport, rather than against the whole screen. */
+      body.map-view #countrySheet.sheet{
+        left:calc(50% + (var(--ww-landscape-nav-width, 0px) / 2))!important;
+        max-width:calc(100vw - var(--ww-landscape-nav-width, 0px) - 24px)!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map{
+        transform:translateX(calc(var(--ww-landscape-nav-width, 0px) / 2))!important;
+        max-width:calc(100vw - var(--ww-landscape-nav-width, 0px) - 24px)!important;
+      }
+
+      /* Country card on the world map is a workspace overlay in landscape:
+         no blur/dim layer, and the left navigation rail remains usable. */
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+        pointer-events:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{
+        pointer-events:auto!important;
+      }
+      body.map-view .topbar{
+        pointer-events:auto!important;
+        z-index:9002!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  function syncNavWidth(){
+    const landscape=matchMedia('(orientation:landscape)').matches;
+    const onMap=document.body.classList.contains('map-view');
+    if(!landscape||!onMap){
+      document.documentElement.style.removeProperty('--ww-landscape-nav-width');
+      return;
+    }
+    const nav=document.querySelector('.topbar');
+    if(!nav)return;
+    const r=nav.getBoundingClientRect();
+    /* In landscape the nav is the narrow left rail. Ignore any transient
+       full-width measurement while the responsive layout is settling. */
+    if(r.width>0 && r.width<innerWidth*.35){
+      document.documentElement.style.setProperty('--ww-landscape-nav-width',r.width+'px');
+    }
+  }
+
+  syncNavWidth();
+  requestAnimationFrame(syncNavWidth);
+  setTimeout(syncNavWidth,120);
+  addEventListener('resize',syncNavWidth,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(syncNavWidth,120),{passive:true});
+  new MutationObserver(syncNavWidth).observe(document.body,{attributes:true,attributeFilter:['class']});
+})();
