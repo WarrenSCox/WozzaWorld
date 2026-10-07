@@ -11412,3 +11412,47 @@ wwOpenQuickInfo=function(row,id){
     .observe(document.body,{attributes:true,attributeFilter:['class']});
   requestAnimationFrame(applyResponsiveCountryState);
 })();
+
+
+/* === WozzaWorld — final map/card/info polish 07 Oct 2026 === */
+(()=>{
+  if(window.__wwFinalMapCardInfoPolish071026)return;
+  window.__wwFinalMapCardInfoPolish071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-final-map-card-info-polish-071026';
+  st.textContent=`
+    #countryInfoDialog,
+    #countryInfoDialog *{
+      scrollbar-width:none!important;
+      -ms-overflow-style:none!important;
+    }
+    #countryInfoDialog::-webkit-scrollbar,
+    #countryInfoDialog *::-webkit-scrollbar{
+      width:0!important;
+      height:0!important;
+      display:none!important;
+      background:transparent!important;
+    }
+
+    @media (orientation:portrait){
+      body.map-view::after{
+        left:20px!important;
+        right:140px!important;
+        width:auto!important;
+        max-width:none!important;
+        transform:none!important;
+        box-sizing:border-box!important;
+        text-align:center!important;
+      }
+    }
+
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+        transform:translate(-50%,-50%) scale(.49)!important;
+        transform-origin:center center!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+})();
