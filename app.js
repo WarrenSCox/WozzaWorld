@@ -10532,7 +10532,7 @@ wwOpenQuickInfo=function(row,id){
   st.textContent=`
     #countrySheet .ww-country-fast-facts-action{display:none!important}
     #countrySheet .ww-country-utility-grid{
-      min-width:0;min-height:104px;display:grid!important;
+      min-width:0;min-height:0;aspect-ratio:1 / 1;align-self:start;display:grid!important;
       grid-template-columns:repeat(2,minmax(0,1fr));
       grid-template-rows:repeat(2,minmax(0,1fr));
       gap:7px;padding:7px;box-sizing:border-box;
@@ -10547,12 +10547,13 @@ wwOpenQuickInfo=function(row,id){
     }
     #countrySheet .ww-country-utility-grid button svg{width:26px!important;height:26px!important;max-width:none!important;max-height:none!important;display:block}
     #countrySheet .ww-country-utility-grid .ww-country-mini-info{color:#087db5!important}
+    #countrySheet .ww-country-utility-grid .ww-country-mini-info img{width:30px!important;height:30px!important;object-fit:contain!important;display:block!important}
     #countrySheet .ww-country-utility-grid .ww-country-mini-add{color:#e2aa16!important;font-size:35px!important;font-weight:800!important;line-height:1!important}
     #countrySheet .ww-country-utility-grid .ww-country-mini-pin{color:#ef3340!important}
     #countrySheet .ww-country-utility-grid .ww-country-mini-search{color:#31414d!important}
     #countrySheet .ww-country-utility-grid button:active{transform:scale(.95)}
     @media (orientation:landscape) and (max-height:650px){
-      #countrySheet .ww-country-utility-grid{min-height:48px!important;border-radius:14px!important;gap:3px;padding:3px}
+      #countrySheet .ww-country-utility-grid{min-height:0!important;aspect-ratio:1 / 1!important;border-radius:14px!important;gap:3px;padding:3px}
       #countrySheet .ww-country-utility-grid button{border-radius:8px!important}
       #countrySheet .ww-country-utility-grid button svg{width:17px!important;height:17px!important}
       #countrySheet .ww-country-utility-grid .ww-country-mini-add{font-size:23px!important}
@@ -10569,7 +10570,7 @@ wwOpenQuickInfo=function(row,id){
       box=document.createElement('div');
       box.className='ww-country-utility-grid';
       box.innerHTML=`
-        <button type="button" class="ww-country-mini-info" aria-label="Country info" title="Country info"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10v7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="7" r="1.4" fill="currentColor"/></svg></button>
+        <button type="button" class="ww-country-mini-info" aria-label="Country info" title="Country info"><img src="info-icon.svg" alt="" aria-hidden="true"></button>
         <button type="button" class="ww-country-mini-add" aria-label="Add a trip" title="Add a trip">+</button>
         <button type="button" class="ww-country-mini-pin" aria-label="Location — coming soon" title="Location — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="white"/></svg></button>
         <button type="button" class="ww-country-mini-search" aria-label="Search travel ideas" title="Search travel ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>`;
