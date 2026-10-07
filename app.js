@@ -10887,3 +10887,20 @@ wwOpenQuickInfo=function(row,id){
     };
   }
 })();
+
+
+/* === WozzaWorld — hide world-map country names behind long-press Google popup 07 Oct 2026 === */
+(()=>{
+  if(window.__wwHideWorldLabelsBehindGoogle071026)return;
+  window.__wwHideWorldLabelsBehindGoogle071026=true;
+  const st=document.createElement('style');
+  st.id='ww-hide-world-labels-behind-google-071026';
+  st.textContent=`
+    body:has(#wwCountryMapDialog.ww-from-world-map[open]) #worldMap #countryLabels,
+    body:has(#wwCountryMapDialog.ww-from-world-map[open]) #worldMap .portrait-label-copy{
+      opacity:0!important;
+      visibility:hidden!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
