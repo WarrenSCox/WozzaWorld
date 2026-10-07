@@ -10904,3 +10904,24 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld — Milestones treatment for world-map Google popup 07 Oct 2026 === */
+(()=>{
+  if(window.__wwWorldMapMilestonesTreatment071026)return;
+  window.__wwWorldMapMilestonesTreatment071026=true;
+  const st=document.createElement('style');
+  st.id='ww-world-map-milestones-treatment-071026';
+  st.textContent=`
+    #wwCountryMapDialog.ww-from-world-map .ww-map-card{
+      border-color:rgba(255,255,255,.50)!important;
+    }
+    #wwCountryMapDialog.ww-from-world-map .ww-map-title{
+      color:#fff!important;
+      text-transform:uppercase!important;
+      font-weight:800!important;
+      letter-spacing:.16em!important;
+      line-height:1.05!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
