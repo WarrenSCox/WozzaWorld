@@ -11459,3 +11459,70 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld — landscape country card portrait-style viewport 07 Oct 2026 === */
+(()=>{
+  if(window.__wwLandscapeCountryPortraitStyle071026)return;
+  window.__wwLandscapeCountryPortraitStyle071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-landscape-country-portrait-style-071026';
+  st.textContent=`
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+        top:50%!important;
+        bottom:auto!important;
+        max-height:calc(100dvh - 24px)!important;
+        border-radius:28px!important;
+        overflow-y:auto!important;
+        scrollbar-width:none!important;
+        -ms-overflow-style:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet::-webkit-scrollbar{
+        width:0!important;height:0!important;display:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+        pointer-events:none!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  function applyLandscapeCountryPortraitStyle(){
+    if(!document.body.classList.contains('map-view') || !matchMedia('(orientation:landscape)').matches)return;
+    const sheet=document.getElementById('countrySheet');
+    if(!sheet?.classList.contains('open'))return;
+    const nav=document.querySelector('.topbar');
+    const nr=nav?.getBoundingClientRect();
+    const rail=(nr && nr.width>0 && nr.width<innerWidth*.35)?nr.width:0;
+    const workspace=Math.max(320,innerWidth-rail);
+    /* About 10% wider than the current landscape presentation, but now as a
+       proper tall scrolling sheet like portrait rather than a scaled mini-card. */
+    const width=Math.min(workspace*.64,900);
+    sheet.style.setProperty('left',(rail+workspace/2)+'px','important');
+    sheet.style.setProperty('right','auto','important');
+    sheet.style.setProperty('top','50%','important');
+    sheet.style.setProperty('bottom','auto','important');
+    sheet.style.setProperty('width',width+'px','important');
+    sheet.style.setProperty('max-width',(workspace-24)+'px','important');
+    sheet.style.setProperty('height','calc(100dvh - 24px)','important');
+    sheet.style.setProperty('max-height','calc(100dvh - 24px)','important');
+    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
+    sheet.style.setProperty('transform-origin','center center','important');
+  }
+
+  const priorOpenCountryPortraitStyle=openCountry;
+  openCountry=function(){
+    const out=priorOpenCountryPortraitStyle.apply(this,arguments);
+    applyLandscapeCountryPortraitStyle();
+    requestAnimationFrame(applyLandscapeCountryPortraitStyle);
+    setTimeout(applyLandscapeCountryPortraitStyle,80);
+    setTimeout(applyLandscapeCountryPortraitStyle,240);
+    return out;
+  };
+  addEventListener('resize',()=>requestAnimationFrame(applyLandscapeCountryPortraitStyle),{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(applyLandscapeCountryPortraitStyle,180),{passive:true});
+})();
