@@ -10675,12 +10675,21 @@ wwOpenQuickInfo=function(row,id){
     return apiPromise;
   }
   function dialog(){
-    let d=document.getElementById('wwCountryMapDialog');if(d)return d;
-    d=document.createElement('dialog');d.id='wwCountryMapDialog';
+    /* A Google Map mutates its canvas DOM heavily. Reusing that same dialog/canvas
+       after close can leave the popup in a stale state, so every opening gets a
+       fresh dialog + fresh map canvas. The Maps API script itself remains cached. */
+    document.getElementById('wwCountryMapDialog')?.remove();
+    const d=document.createElement('dialog');d.id='wwCountryMapDialog';
     d.innerHTML=`<div class="ww-map-card"><div class="ww-map-head"><div class="ww-map-title">Map</div><button type="button" class="ww-map-close" aria-label="Close map">×</button></div><div class="ww-map-canvas"><div class="ww-map-status">Loading Google Maps…</div></div></div>`;
     document.body.appendChild(d);
-    d.querySelector('.ww-map-close').onclick=()=>d.close();
-    d.addEventListener('click',e=>{if(e.target===d)d.close()});
+    const close=()=>{
+      if(d.open)d.close();
+      /* Remove only after the dialog has closed; the next pin tap creates a clean one. */
+      setTimeout(()=>{if(d.isConnected)d.remove()},0);
+    };
+    d.querySelector('.ww-map-close').onclick=close;
+    d.addEventListener('click',e=>{if(e.target===d)close()});
+    d.addEventListener('cancel',e=>{e.preventDefault();close()});
     return d;
   }
   function showError(status,title,message){
