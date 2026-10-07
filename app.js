@@ -11300,7 +11300,7 @@ wwOpenQuickInfo=function(row,id){
        centre by half the left rail width so it is centred in the remaining map workspace. */
     sheet.style.setProperty('left',`calc(50% + ${rail/2}px)`,'important');
     sheet.style.setProperty('right','auto','important');
-    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
+    sheet.style.setProperty('transform','translate(-50%,-50%) scale(.60)','important');
     if(back?.classList.contains('open')){
       back.style.setProperty('background','transparent','important');
       back.style.setProperty('backdrop-filter','none','important');
