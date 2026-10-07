@@ -11552,3 +11552,44 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+
+/* === WozzaWorld — unified Google popup heading + remove country-card grabber 07 Oct 2026 === */
+(()=>{
+  if(window.__wwUnifiedGoogleHeadingAndNoGrabber071026)return;
+  window.__wwUnifiedGoogleHeadingAndNoGrabber071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-unified-google-heading-no-grabber-071026';
+  st.textContent=`
+    /* Country card is not draggable: remove the misleading grey handle everywhere. */
+    #countrySheet .grabber{
+      display:none!important;
+    }
+
+    /* Every embedded Google Map popup:
+       match the strong "Explore and Collect" heading treatment. */
+    #wwCountryMapDialog .ww-map-title{
+      text-transform:none!important;
+      letter-spacing:-.025em!important;
+      font-weight:950!important;
+      line-height:1.02!important;
+      font-size:clamp(24px,5.5vw,34px)!important;
+    }
+
+    /* World-map popup keeps its white heading; country-card popup keeps dark ink. */
+    #wwCountryMapDialog.ww-from-world-map .ww-map-title{
+      color:#fff!important;
+    }
+    #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-title{
+      color:#153047!important;
+    }
+
+    @media (orientation:landscape){
+      #wwCountryMapDialog .ww-map-title{
+        font-size:clamp(22px,3vw,32px)!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+})();
