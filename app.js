@@ -11593,3 +11593,55 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+
+/* === WozzaWorld — Google popup headings EXACT Milestones h2 typography 07 Oct 2026 === */
+(()=>{
+  if(window.__wwGooglePopupExactMilestoneHeading071026)return;
+  window.__wwGooglePopupExactMilestoneHeading071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-google-popup-exact-milestone-heading-071026';
+  st.textContent=`
+    /* Exact typography used by .milestones-head h2 ("Explore and Collect"). */
+    #wwCountryMapDialog .ww-map-title,
+    body.map-view #wwCountryMapDialog .ww-map-title,
+    #wwCountryMapDialog.ww-from-world-map .ww-map-title,
+    #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-title{
+      font-family:"Archivo Black",Impact,sans-serif!important;
+      font-size:27px!important;
+      line-height:1.05!important;
+      letter-spacing:-.025em!important;
+      font-weight:400!important;
+      text-transform:none!important;
+    }
+
+    #wwCountryMapDialog.ww-from-world-map .ww-map-title{color:#fff!important}
+    #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-title{color:#153047!important}
+
+    @media(max-width:620px){
+      #wwCountryMapDialog .ww-map-title,
+      body.map-view #wwCountryMapDialog .ww-map-title,
+      #wwCountryMapDialog.ww-from-world-map .ww-map-title,
+      #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-title{
+        font-size:22px!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* The world-map route supplies some country names as ALL CAPS.
+     CSS cannot turn ALL CAPS source text back into proper case, so normalise
+     only all-uppercase popup titles. Already-correct names are left untouched. */
+  const properCase=s=>String(s||'').toLocaleLowerCase().replace(/(^|[\s\-’'])(\p{L})/gu,(m,p,c)=>p+c.toLocaleUpperCase());
+  const fix=()=>{
+    document.querySelectorAll('#wwCountryMapDialog .ww-map-title').forEach(el=>{
+      const s=(el.textContent||'').trim();
+      if(s && s===s.toLocaleUpperCase() && s!==s.toLocaleLowerCase()){
+        el.textContent=properCase(s);
+      }
+    });
+  };
+  fix();
+  new MutationObserver(fix).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
