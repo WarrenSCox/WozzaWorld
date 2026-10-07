@@ -10866,7 +10866,7 @@ wwOpenQuickInfo=function(row,id){
       -webkit-backdrop-filter:none!important;
     }
     #wwCountryMapDialog.ww-from-world-map .ww-map-card{
-      background:rgba(0,128,139,.32)!important;
+      background:rgba(0,128,139,.40)!important;
       backdrop-filter:none!important;
       -webkit-backdrop-filter:none!important;
     }
