@@ -11205,3 +11205,75 @@ wwOpenQuickInfo=function(row,id){
   new MutationObserver(()=>requestAnimationFrame(sync)).observe(document.body,{attributes:true,attributeFilter:['class']});
   sync();
 })();
+
+
+/* === WozzaWorld — FINAL landscape country-card centring + map-only blur — 07 Oct 2026 === */
+(()=>{
+  if(window.__wwLandscapeCountryCardCentreBlur071026)return;
+  window.__wwLandscapeCountryCardCentreBlur071026=true;
+
+  const style=document.createElement('style');
+  style.id='ww-landscape-country-card-centre-blur-071026';
+  style.textContent=`
+    @media (orientation:landscape){
+      /*
+       * Country sheet is centred in the MAP viewport, not the full screen.
+       * The fixed left nav occupies the space before the map content.
+       */
+      body:has(#countrySheet:not([hidden])) #countrySheet{
+        left:calc(var(--nav-w, 0px) + (100vw - var(--nav-w, 0px))/2)!important;
+        right:auto!important;
+        transform:translateX(-50%)!important;
+        margin-left:0!important;
+        margin-right:0!important;
+      }
+
+      /*
+       * Blur only the map layer while the country card is open.
+       * Explicitly keep navigation/header controls out of the filter.
+       */
+      body:has(#countrySheet:not([hidden])) #mapSvg,
+      body:has(#countrySheet:not([hidden])) #worldMap,
+      body:has(#countrySheet:not([hidden])) .map-stage svg,
+      body:has(#countrySheet:not([hidden])) .map-wrap svg,
+      body:has(#countrySheet:not([hidden])) .map-container svg{
+        filter:blur(7px)!important;
+      }
+
+      body:has(#countrySheet:not([hidden])) nav,
+      body:has(#countrySheet:not([hidden])) .side-nav,
+      body:has(#countrySheet:not([hidden])) .sidebar,
+      body:has(#countrySheet:not([hidden])) #sidebar,
+      body:has(#countrySheet:not([hidden])) .app-nav,
+      body:has(#countrySheet:not([hidden])) header{
+        filter:none!important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  function syncNavWidth(){
+    if(!matchMedia('(orientation:landscape)').matches)return;
+    const sheet=document.getElementById('countrySheet');
+    if(!sheet || sheet.hidden)return;
+    const candidates=[
+      document.querySelector('nav'),
+      document.querySelector('.side-nav'),
+      document.querySelector('.sidebar'),
+      document.getElementById('sidebar'),
+      document.querySelector('.app-nav')
+    ].filter(Boolean);
+    const nav=candidates
+      .map(el=>({el,r:el.getBoundingClientRect()}))
+      .filter(x=>x.r.width>40 && x.r.height>innerHeight*.55 && x.r.left<20)
+      .sort((a,b)=>b.r.height-a.r.height)[0];
+    const navW=nav ? Math.max(0,nav.r.right) : 0;
+    document.documentElement.style.setProperty('--nav-w', navW+'px');
+  }
+
+  const observer=new MutationObserver(syncNavWidth);
+  observer.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['hidden','class','style']});
+  addEventListener('resize',syncNavWidth,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(syncNavWidth,80),{passive:true});
+  requestAnimationFrame(syncNavWidth);
+})();
