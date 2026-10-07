@@ -11063,3 +11063,16 @@ wwOpenQuickInfo=function(row,id){
   new MutationObserver(()=>{hideOldRotatePill();enhance()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','open']});
   makeHelpers();hideOldRotatePill();enhance();
 })();
+
+
+/* === WozzaWorld — remove map helper buttons 07 Oct 2026 === */
+(()=>{
+  const remove=()=>{
+    document.getElementById('wwMapPressHelp')?.remove();
+    document.getElementById('wwMapRotateHelp')?.remove();
+    document.getElementById('wwMapHelperToast')?.remove();
+  };
+  remove();
+  const obs=new MutationObserver(remove);
+  obs.observe(document.body,{childList:true,subtree:true});
+})();
