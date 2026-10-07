@@ -11260,3 +11260,86 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld — FINAL audited map-country alignment + rotate hint controller 07 Oct 2026 === */
+(()=>{
+  if(window.__wwFinalMapCountryAlignmentRotate071026)return;
+  window.__wwFinalMapCountryAlignmentRotate071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-final-map-country-alignment-rotate-071026';
+  st.textContent=`
+    body.map-view::after{transition:opacity .55s ease!important}
+    body.map-view.ww-rotate-tip-hidden::after{opacity:0!important;pointer-events:none!important}
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+        pointer-events:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{pointer-events:auto!important}
+    }
+  `;
+  document.head.appendChild(st);
+
+  function railWidth(){
+    const bar=document.querySelector('.topbar');
+    if(!bar)return 0;
+    const r=bar.getBoundingClientRect();
+    return (r.width>0 && r.width<innerWidth*.35)?r.width:0;
+  }
+
+  function alignOpenMapCountry(){
+    if(!document.body.classList.contains('map-view') || !matchMedia('(orientation:landscape)').matches)return;
+    const sheet=document.getElementById('countrySheet');
+    const back=document.getElementById('sheetBackdrop');
+    if(!sheet?.classList.contains('open'))return;
+    const rail=railWidth();
+    /* countrySheet is ultimately positioned against the full viewport. Shift its
+       centre by half the left rail width so it is centred in the remaining map workspace. */
+    sheet.style.setProperty('left',`calc(50% + ${rail/2}px)`,'important');
+    sheet.style.setProperty('right','auto','important');
+    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
+    if(back?.classList.contains('open')){
+      back.style.setProperty('background','transparent','important');
+      back.style.setProperty('backdrop-filter','none','important');
+      back.style.setProperty('-webkit-backdrop-filter','none','important');
+      back.style.setProperty('pointer-events','none','important');
+    }
+  }
+
+  const priorOpen=openCountry;
+  openCountry=function(c,origin=null){
+    const fromMap=(origin?.type==='map') || document.body.classList.contains('map-view');
+    const out=priorOpen.apply(this,arguments);
+    if(fromMap){
+      alignOpenMapCountry();
+      requestAnimationFrame(alignOpenMapCountry);
+      setTimeout(alignOpenMapCountry,80);
+      setTimeout(alignOpenMapCountry,220);
+    }
+    return out;
+  };
+  addEventListener('resize',()=>requestAnimationFrame(alignOpenMapCountry),{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(alignOpenMapCountry,180),{passive:true});
+
+  let onMapLast=false,tipTimer=0;
+  function syncRotateTip(){
+    const onMap=document.body.classList.contains('map-view');
+    if(onMap && !onMapLast){
+      onMapLast=true;
+      clearTimeout(tipTimer);
+      document.body.classList.remove('ww-rotate-tip-hidden');
+      tipTimer=setTimeout(()=>{
+        if(document.body.classList.contains('map-view'))document.body.classList.add('ww-rotate-tip-hidden');
+      },5000);
+    }else if(!onMap && onMapLast){
+      onMapLast=false;
+      clearTimeout(tipTimer);
+      document.body.classList.remove('ww-rotate-tip-hidden');
+    }
+  }
+  new MutationObserver(syncRotateTip).observe(document.body,{attributes:true,attributeFilter:['class']});
+  syncRotateTip();
+})();
