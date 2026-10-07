@@ -10572,7 +10572,7 @@ wwOpenQuickInfo=function(row,id){
       box.className='ww-country-utility-grid';
       box.innerHTML=`
         <button type="button" class="ww-country-mini-info" aria-label="Country info" title="Country info"><img src="info-icon.svg" alt="" aria-hidden="true"></button>
-        <button type="button" class="ww-country-mini-add" aria-label="Add a trip" title="Add a trip"><svg class="ww-country-plus-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="square"/></svg></button>
+        <button type="button" class="ww-country-mini-add" aria-label="Add a trip" title="Add a trip"><svg class="ww-country-plus-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg></button>
         <button type="button" class="ww-country-mini-pin" aria-label="Location — coming soon" title="Location — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="white"/></svg></button>
         <button type="button" class="ww-country-mini-search" aria-label="Search travel ideas" title="Search travel ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>`;
       grid.appendChild(box);
@@ -10595,7 +10595,7 @@ wwOpenQuickInfo=function(row,id){
   const st=document.createElement('style');st.id='ww-country-mini-geometry-071026';st.textContent=`
     #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
       width:24px!important;height:24px!important;max-width:24px!important;max-height:24px!important;
-      margin:0!important;position:relative!important;left:1px!important;top:1px!important;transform:none!important;
+      margin:0!important;position:relative!important;left:0!important;top:0!important;transform:none!important;
       object-fit:contain!important;display:block!important;
     }
     #countrySheet .ww-country-utility-grid .ww-country-mini-add{
@@ -10603,13 +10603,13 @@ wwOpenQuickInfo=function(row,id){
       align-items:center!important;justify-content:center!important;
     }
     #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{
-      width:25px!important;height:25px!important;display:block!important;position:relative!important;top:-2px!important;
+      width:25px!important;height:25px!important;display:block!important;position:relative!important;top:1px!important;left:-1px!important;
       overflow:visible!important;
     }
     #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{width:23.4px!important;height:23.4px!important}
     @media (orientation:landscape) and (max-height:650px){
       #countrySheet .ww-country-utility-grid .ww-country-mini-info img{width:19px!important;height:19px!important;max-width:19px!important;max-height:19px!important}
-      #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{width:17px!important;height:17px!important;top:-1px!important}
+      #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{width:17px!important;height:17px!important;top:2px!important;left:-1px!important}
       #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{width:15.3px!important;height:15.3px!important}
     }
   `;document.head.appendChild(st);
