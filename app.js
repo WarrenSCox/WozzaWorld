@@ -10743,3 +10743,49 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+
+/* === WozzaWorld — World Map long-press opens Google country map 07 Oct 2026 === */
+(()=>{
+  if(window.__wwWorldMapLongPressGoogle071026)return;
+  window.__wwWorldMapLongPressGoogle071026=true;
+
+  const HOLD_MS=650, MOVE_TOLERANCE=10;
+  let holdTimer=null,startX=0,startY=0,target=null,country='',longPressed=false;
+
+  function getCountry(el){
+    if(!el)return '';
+    if(el.classList?.contains('country'))return el.dataset.country||el.__data__?.properties?.name||'';
+    if(el.classList?.contains('map-country-label'))return el.__data__?.country||el.__data__?.name||el.textContent||'';
+    return '';
+  }
+  function clearHold(){
+    if(holdTimer){clearTimeout(holdTimer);holdTimer=null}
+    target=null;country='';
+  }
+  document.addEventListener('pointerdown',e=>{
+    if(!document.body.classList.contains('map-view')||e.pointerType==='mouse'&&e.button!==0)return;
+    const el=e.target.closest?.('#worldMap .country, #worldMap .map-country-label');
+    if(!el)return;
+    const c=String(getCountry(el)||'').trim();if(!c)return;
+    clearHold();target=el;country=c;startX=e.clientX;startY=e.clientY;longPressed=false;
+    holdTimer=setTimeout(()=>{
+      holdTimer=null;longPressed=true;
+      if(navigator.vibrate)try{navigator.vibrate(25)}catch(_){}
+      window.wwOpenCountryGoogleMap?.(country);
+    },HOLD_MS);
+  },true);
+  document.addEventListener('pointermove',e=>{
+    if(!holdTimer)return;
+    if(Math.hypot(e.clientX-startX,e.clientY-startY)>MOVE_TOLERANCE)clearHold();
+  },true);
+  ['pointerup','pointercancel'].forEach(type=>document.addEventListener(type,()=>clearHold(),true));
+  document.addEventListener('click',e=>{
+    if(!longPressed)return;
+    const el=e.target.closest?.('#worldMap .country, #worldMap .map-country-label');
+    if(!el)return;
+    /* Suppress only the synthetic click that follows a successful long press,
+       so the Country Card does not also open. */
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();longPressed=false;
+  },true);
+})();
