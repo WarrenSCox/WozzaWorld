@@ -11204,3 +11204,59 @@ wwOpenQuickInfo=function(row,id){
   addEventListener('orientationchange',()=>setTimeout(syncNavWidth,120),{passive:true});
   new MutationObserver(syncNavWidth).observe(document.body,{attributes:true,attributeFilter:['class']});
 })();
+
+/* === WozzaWorld — audited landscape country-card alignment + real rotate-tip fade 07 Oct 2026 === */
+(()=>{
+  if(window.__wwAuditedLandscapeCountryAndRotate071026)return;
+  window.__wwAuditedLandscapeCountryAndRotate071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-audited-landscape-country-rotate-071026';
+  st.textContent=`
+    /* The rotate message is styles.css body.map-view::after, not a DOM node.
+       Keep it fully visible for five seconds, then fade it out. Removing and
+       re-adding map-view when leaving/returning to World Map restarts it. */
+    @keyframes wwRotateWorldTipFade071026{
+      from{opacity:1}
+      to{opacity:0}
+    }
+    @media (orientation:portrait){
+      body.map-view::after{
+        opacity:1!important;
+        animation:wwRotateWorldTipFade071026 .45s ease 5s forwards!important;
+      }
+    }
+
+    @media (orientation:landscape){
+      /* Country UI is mounted inside a full-screen native <dialog>. Centre the
+         dialog itself in the usable map workspace to the RIGHT of the nav rail.
+         This is the reliable coordinate system; shifting #countrySheet alone
+         was being neutralised by the full-screen top-layer dialog. */
+      body.map-view #wwCountryTopDialog.ww-country-popup{
+        left:var(--worldview-rail-width,clamp(82px,10vw,112px))!important;
+        right:0!important;
+        top:0!important;
+        width:calc(100vw - var(--worldview-rail-width,clamp(82px,10vw,112px)))!important;
+        max-width:none!important;
+        height:100dvh!important;
+        margin:0!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+        left:50%!important;
+        right:auto!important;
+        transform:translate(-50%,-50%)!important;
+        max-width:calc(100% - 24px)!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+        pointer-events:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{
+        pointer-events:auto!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+})();
