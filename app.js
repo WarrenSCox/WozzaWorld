@@ -11343,3 +11343,72 @@ wwOpenQuickInfo=function(row,id){
   new MutationObserver(syncRotateTip).observe(document.body,{attributes:true,attributeFilter:['class']});
   syncRotateTip();
 })();
+
+
+/* === WozzaWorld — portrait restore + landscape country polish + map controls 07 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryResponsivePolish071026)return;
+  window.__wwCountryResponsivePolish071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-responsive-polish-071026';
+  st.textContent=`
+    @media (orientation:portrait){
+      body.map-view .map-filter-btn{
+        right:20px!important;
+        bottom:20px!important;
+      }
+      body.map-view::after{
+        bottom:max(20px,env(safe-area-inset-bottom))!important;
+        max-width:calc(100vw - 120px)!important;
+        overflow:hidden!important;
+        text-overflow:ellipsis!important;
+      }
+    }
+
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+        transform:translate(-50%,-50%) scale(.70)!important;
+        transform-origin:center center!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup::backdrop{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop,
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  function resetPortraitCountryPosition(){
+    if(!matchMedia('(orientation:portrait)').matches)return;
+    const sheet=document.getElementById('countrySheet');
+    const dlg=document.getElementById('wwCountryTopDialog');
+    if(sheet){
+      ['left','right','transform','max-width','width','top'].forEach(p=>sheet.style.removeProperty(p));
+    }
+    if(dlg){
+      ['left','right','top','width','max-width','height','margin'].forEach(p=>dlg.style.removeProperty(p));
+    }
+  }
+
+  function applyResponsiveCountryState(){
+    if(matchMedia('(orientation:portrait)').matches){
+      resetPortraitCountryPosition();
+      return;
+    }
+    if(typeof alignOpenMapCountry==='function')alignOpenMapCountry();
+  }
+
+  addEventListener('resize',()=>requestAnimationFrame(applyResponsiveCountryState),{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(applyResponsiveCountryState,180),{passive:true});
+  new MutationObserver(()=>requestAnimationFrame(applyResponsiveCountryState))
+    .observe(document.body,{attributes:true,attributeFilter:['class']});
+  requestAnimationFrame(applyResponsiveCountryState);
+})();
