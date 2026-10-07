@@ -10587,3 +10587,35 @@ wwOpenQuickInfo=function(row,id){
   renderSheet=function(){const out=previousRender.apply(this,arguments);install();return out};
   install();
 })();
+
+/* === WozzaWorld — Country mini-action icon tuning 07 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryMiniIconTuning071026)return;
+  window.__wwCountryMiniIconTuning071026=true;
+  const st=document.createElement('style');
+  st.id='ww-country-mini-icon-tuning-071026';
+  st.textContent=`
+    /* Existing info asset: 20% smaller than the current 30px rendering. */
+    #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
+      width:24px!important;height:24px!important;
+    }
+    /* Keep the mustard plus centred visually inside its mini-button circle. */
+    #countrySheet .ww-country-utility-grid .ww-country-mini-add{
+      transform:translateY(-2px);
+    }
+    #countrySheet .ww-country-utility-grid .ww-country-mini-add:active{
+      transform:translateY(-2px) scale(.95)!important;
+    }
+    /* Search only: 10% smaller; red location pin remains unchanged. */
+    #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
+      width:23.4px!important;height:23.4px!important;
+    }
+    @media (orientation:landscape) and (max-height:650px){
+      #countrySheet .ww-country-utility-grid .ww-country-mini-info img{width:19px!important;height:19px!important}
+      #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{width:15.3px!important;height:15.3px!important}
+      #countrySheet .ww-country-utility-grid .ww-country-mini-add{transform:translateY(-1px)}
+      #countrySheet .ww-country-utility-grid .ww-country-mini-add:active{transform:translateY(-1px) scale(.95)!important}
+    }
+  `;
+  document.head.appendChild(st);
+})();
