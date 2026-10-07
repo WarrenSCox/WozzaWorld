@@ -10288,7 +10288,7 @@ wwOpenQuickInfo=function(row,id){
      head=document.createElement('div');head.className='ww-country-trips-section-head';
      list.insertAdjacentElement('beforebegin',head);
    }
-   head.innerHTML=`<strong>TRIPS</strong><span>${trips.length} ${trips.length===1?'trip':'trips'}</span>`;
+   head.innerHTML=`<strong>TRIPS</strong>`;
    let top=head.previousElementSibling;
    if(!top?.classList.contains('ww-country-trips-top-divider')){
      document.querySelector('#countrySheet .ww-country-trips-top-divider')?.remove();
