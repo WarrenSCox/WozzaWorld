@@ -11526,3 +11526,46 @@ wwOpenQuickInfo=function(row,id){
   addEventListener('resize',()=>requestAnimationFrame(applyLandscapeCountryPortraitStyle),{passive:true});
   addEventListener('orientationchange',()=>setTimeout(applyLandscapeCountryPortraitStyle,180),{passive:true});
 })();
+
+/* === WozzaWorld — FINAL direct rotate-tip + landscape hero sizing 07 Oct 2026 === */
+(()=>{
+  if(window.__wwFinalDirectRotateTipHero071026)return;
+  window.__wwFinalDirectRotateTipHero071026=true;
+  const st=document.createElement('style');
+  st.id='ww-final-direct-rotate-tip-hero-071026';
+  st.textContent=`
+    @keyframes wwFinalRotateTipFade071026{
+      0%,90%{opacity:1}
+      100%{opacity:0}
+    }
+    @media (orientation:portrait){
+      body.map-view::after{
+        left:70px!important;
+        right:145px!important;
+        width:auto!important;
+        max-width:none!important;
+        transform:none!important;
+        box-sizing:border-box!important;
+        white-space:nowrap!important;
+        overflow:visible!important;
+        text-overflow:clip!important;
+        text-align:center!important;
+        opacity:1!important;
+        animation:wwFinalRotateTipFade071026 5.55s ease forwards!important;
+        pointer-events:none!important;
+      }
+      body.map-view.ww-rotate-tip-hidden::after{
+        opacity:0!important;
+      }
+    }
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet .country-hero-minimal{
+        height:190px!important;
+        min-height:190px!important;
+        max-height:190px!important;
+        box-sizing:border-box!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+})();
