@@ -10925,3 +10925,141 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+
+/* === WozzaWorld — map utility stack + contextual Google-map navigation 07 Oct 2026 === */
+(()=>{
+  if(window.__wwMapUtilityStack071026)return;
+  window.__wwMapUtilityStack071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-map-utility-stack-071026';
+  st.textContent=`
+    /* Country-card red-pin version: restore the original pale shell. */
+    #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-card{
+      background:#edf8f8!important;
+      border-color:transparent!important;
+      backdrop-filter:none!important;
+      -webkit-backdrop-filter:none!important;
+    }
+    #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-title{
+      color:#153047!important;text-transform:none!important;letter-spacing:normal!important;
+    }
+
+    /* Long-press map popup header navigation. */
+    #wwCountryMapDialog.ww-from-world-map .ww-map-title{cursor:pointer!important}
+    #wwCountryMapDialog.ww-from-world-map .ww-map-head-actions{
+      display:flex!important;align-items:center!important;gap:9px!important;flex:0 0 auto!important;
+    }
+    #wwCountryMapDialog.ww-from-world-map .ww-map-country-flag{
+      width:42px;height:42px;min-width:42px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.50);
+      background:rgba(255,255,255,.16);box-shadow:0 4px 14px rgba(16,48,58,.12);
+      display:grid;place-items:center;overflow:hidden;cursor:pointer;
+    }
+    #wwCountryMapDialog.ww-from-world-map .ww-map-country-flag img{
+      width:100%;height:100%;object-fit:cover;display:block;
+    }
+
+    /* Two smaller helpers around the existing filter button. */
+    .ww-map-helper-btn{
+      position:fixed!important;z-index:45!important;border:0!important;border-radius:50%!important;padding:0!important;
+      background:linear-gradient(145deg,#087f91 0%,#12b8c7 58%,#18c9d3 100%)!important;
+      background-color:#0aa4b3!important;color:#fff!important;
+      display:grid!important;place-items:center!important;box-shadow:0 5px 16px rgba(15,56,70,.22)!important;
+      cursor:pointer!important;
+    }
+    .ww-map-helper-btn svg{width:55%;height:55%;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .ww-map-helper-toast{
+      position:fixed;left:50%;bottom:max(22px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);
+      z-index:60;max-width:calc(100vw - 42px);padding:10px 18px;border-radius:999px;
+      background:rgba(34,48,76,.92);color:#fff;text-align:center;font-weight:800;line-height:1.25;
+      box-shadow:0 5px 16px rgba(15,56,70,.20);opacity:0;pointer-events:none;
+      transition:opacity .16s ease,transform .16s ease;
+    }
+    .ww-map-helper-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  `;
+  document.head.appendChild(st);
+
+  const ROTATE_TEXT='Rotate your phone to view map in landscape';
+
+  function hideOldRotatePill(){
+    const candidates=[...document.querySelectorAll('body *')].filter(el=>
+      el.children.length===0 && (el.textContent||'').trim().toLowerCase().includes('rotate your phone') &&
+      (el.textContent||'').trim().toLowerCase().includes('landscape')
+    );
+    candidates.forEach(el=>{el.style.setProperty('display','none','important')});
+  }
+
+  let toastTimer;
+  function helperToast(text){
+    let t=document.getElementById('wwMapHelperToast');
+    if(!t){t=document.createElement('div');t.id='wwMapHelperToast';t.className='ww-map-helper-toast';t.setAttribute('role','status');document.body.appendChild(t)}
+    t.textContent=text;clearTimeout(toastTimer);
+    requestAnimationFrame(()=>t.classList.add('show'));
+    toastTimer=setTimeout(()=>t.classList.remove('show'),4000);
+  }
+
+  function makeHelpers(){
+    const filter=document.getElementById('mapFilterBtn');if(!filter)return;
+    hideOldRotatePill();
+    let press=document.getElementById('wwMapPressHelp');
+    let rotate=document.getElementById('wwMapRotateHelp');
+    if(!press){
+      press=document.createElement('button');press.type='button';press.id='wwMapPressHelp';press.className='ww-map-helper-btn';
+      press.setAttribute('aria-label','How to open detailed country maps');
+      press.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 11V6.5a2 2 0 0 1 4 0V10"/><path d="M13.5 9V5.5a2 2 0 0 1 4 0V11"/><path d="M17.5 10V8a2 2 0 0 1 4 0v6c0 5-3 8-8 8h-1.2c-2.5 0-4.2-1.1-5.6-3l-3.4-4.5a2 2 0 0 1 3-2.6L9.5 15V9a2 2 0 0 1 4 0"/></svg>';
+      press.onclick=()=>helperToast('Press and hold a country to open a detailed map with towns and cities.');
+      document.body.appendChild(press);
+    }
+    if(!rotate){
+      rotate=document.createElement('button');rotate.type='button';rotate.id='wwMapRotateHelp';rotate.className='ww-map-helper-btn';
+      rotate.setAttribute('aria-label','Landscape map tip');
+      rotate.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="14" rx="1.8"/><path d="M5 9a8 8 0 0 0 12 9"/><path d="m16 21 1-3-3-1"/><path d="M19 8a8 8 0 0 0-12-3"/><path d="m8 2-1 3 3 1"/></svg>';
+      rotate.onclick=()=>helperToast(ROTATE_TEXT);
+      document.body.appendChild(rotate);
+    }
+    const position=()=>{
+      const r=filter.getBoundingClientRect();
+      if(!r.width||!document.body.classList.contains('map-view')){press.style.display=rotate.style.display='none';return}
+      press.style.display=rotate.style.display='grid';
+      const small=r.width*.85, gap=10, left=r.left+(r.width-small)/2;
+      [press,rotate].forEach(b=>{b.style.width=b.style.height=small+'px';b.style.left=left+'px'});
+      press.style.top=(r.top-gap-small)+'px';
+      rotate.style.top=(r.bottom+gap)+'px';
+    };
+    position();window.addEventListener('resize',position,{passive:true});
+    new MutationObserver(position).observe(document.body,{attributes:true,attributeFilter:['class']});
+  }
+
+  function openCardFromMapPopup(d,country){
+    if(!country)return;
+    try{if(d?.open)d.close()}catch(_){}
+    setTimeout(()=>{
+      try{d?.remove()}catch(_){}
+      if(typeof openCountry==='function')openCountry(country,{type:'map'});
+    },0);
+  }
+
+  /* Enhance each freshly-created long-press dialog after its context marker lands. */
+  const enhance=()=>{
+    const d=document.getElementById('wwCountryMapDialog');
+    if(!d?.classList.contains('ww-from-world-map')||d.dataset.wwMapNavReady)return;
+    d.dataset.wwMapNavReady='1';
+    const title=d.querySelector('.ww-map-title'),close=d.querySelector('.ww-map-close'),head=d.querySelector('.ww-map-head');
+    const country=(title?.textContent||'').trim();
+    if(!title||!close||!head||!country)return;
+    const go=()=>openCardFromMapPopup(d,country);
+    title.setAttribute('role','button');title.setAttribute('tabindex','0');title.setAttribute('title','Open country card');
+    title.addEventListener('click',go);
+    title.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});
+    let actions=document.createElement('div');actions.className='ww-map-head-actions';
+    close.parentNode.insertBefore(actions,close);actions.appendChild(close);
+    const u=typeof flagUrl==='function'?flagUrl(country):'';
+    if(u){
+      const b=document.createElement('button');b.type='button';b.className='ww-map-country-flag';b.setAttribute('aria-label','Open '+country+' country card');
+      b.innerHTML='<img src="'+u+'" alt="">';b.onclick=go;actions.insertBefore(b,close);
+    }
+  };
+  new MutationObserver(()=>{hideOldRotatePill();enhance()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','open']});
+  makeHelpers();hideOldRotatePill();enhance();
+})();
