@@ -11518,3 +11518,37 @@ wwOpenQuickInfo=function(row,id){
   new MutationObserver(removePortraitRotateHint).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
   addEventListener('orientationchange',()=>setTimeout(removePortraitRotateHint,100),{passive:true});
 })();
+
+/* === WozzaWorld — landscape Google popup taller + 20% wider 07 Oct 2026 === */
+(()=>{
+  if(window.__wwLandscapeGooglePopupTallWide071026)return;
+  window.__wwLandscapeGooglePopupTallWide071026=true;
+  const st=document.createElement('style');
+  st.id='ww-landscape-google-popup-tall-wide-071026';
+  st.textContent=`
+    @media (orientation:landscape){
+      body.map-view #wwCountryMapDialog.ww-from-world-map{
+        width:min(66.24vw,489.6px)!important;
+        max-width:min(calc(100vw - var(--ww-landscape-nav-width,0px) - 24px),489.6px)!important;
+        height:calc(100vh - 20px)!important;
+        max-height:calc(100vh - 20px)!important;
+        transform:translateX(calc(var(--ww-landscape-nav-width,0px) / 2))!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-card{
+        height:100%!important;
+        box-sizing:border-box!important;
+        display:flex!important;
+        flex-direction:column!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-head{
+        flex:0 0 auto!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-canvas{
+        flex:1 1 auto!important;
+        height:auto!important;
+        min-height:0!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+})();
