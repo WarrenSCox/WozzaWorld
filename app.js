@@ -10723,3 +10723,23 @@ wwOpenQuickInfo=function(row,id){
     e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();openCountryMap(currentCountry);
   },true);
 })();
+
+
+/* === WozzaWorld — final compact country icon micro-polish 07 Oct 2026 === */
+(()=>{
+  const st=document.createElement('style');
+  st.id='ww-country-icon-micro-polish-071026';
+  st.textContent=`
+    #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
+      transform:translate(0.5px,0)!important;
+    }
+    #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{
+      transform:translateY(-1px)!important;
+    }
+    #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
+      transform:scale(.93)!important;
+      transform-origin:center!important;
+    }
+  `;
+  document.head.appendChild(st);
+})();
