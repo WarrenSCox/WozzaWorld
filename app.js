@@ -11077,203 +11077,382 @@ wwOpenQuickInfo=function(row,id){
   obs.observe(document.body,{childList:true,subtree:true});
 })();
 
-/* === WozzaWorld — consolidated World Map responsive controller 07 Oct 2026 === */
+
+/* === WozzaWorld — world-map rotate hint: show once per visit, fade after 5s === */
 (()=>{
-  if(window.__wwWorldMapResponsiveController071026)return;
-  window.__wwWorldMapResponsiveController071026=true;
+  if(window.__wwRotateHintFiveSeconds071026)return;
+  window.__wwRotateHintFiveSeconds071026=true;
 
-  const st=document.createElement('style');
-  st.id='ww-world-map-responsive-controller-071026';
-  st.textContent=`
-    /* Country Info: scroll remains functional, chrome stays invisible. */
-    #countryInfoDialog,#countryInfoDialog *{scrollbar-width:none!important;-ms-overflow-style:none!important}
-    #countryInfoDialog::-webkit-scrollbar,#countryInfoDialog *::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;background:transparent!important}
+  let wasOnMap=false, timer=null, entryToken=0;
 
-    /* REAL portrait rotate hint: this is the styles.css body.map-view::after pseudo-element. */
-    @keyframes wwMapRotateHintFade071026{0%,88%{opacity:1}100%{opacity:0}}
-    @media (orientation:portrait){
-      body.map-view .map-filter-btn{right:20px!important;bottom:20px!important}
-      body.map-view::after{
-        left:calc((100vw - 112px)/2)!important;
-        right:auto!important;
-        bottom:max(20px,env(safe-area-inset-bottom))!important;
-        transform:translateX(-50%)!important;
-        width:max-content!important;
-        max-width:none!important;
-        padding:8px 12px!important;
-        border-radius:999px!important;
-        white-space:nowrap!important;
-        overflow:visible!important;
-        text-overflow:clip!important;
-        font-size:11px!important;
-        line-height:1.15!important;
-        opacity:1;
-        animation:wwMapRotateHintFade071026 5.45s ease forwards!important;
-        pointer-events:none!important;
-      }
-    }
+  const findHint=()=>[...document.querySelectorAll('body *')].find(el=>{
+    const t=(el.textContent||'').trim().toLowerCase();
+    return el.children.length===0 && t.includes('rotate your phone') && t.includes('landscape');
+  });
 
-    @media (orientation:landscape){
-      /* Native top-layer country dialog occupies only the usable workspace to the
-         right of the nav rail. This keeps the rail visible and interactive. */
-      body.map-view #wwCountryTopDialog.ww-country-popup{
-        left:var(--ww-map-rail,0px)!important;
-        right:0!important;top:0!important;bottom:0!important;
-        width:calc(100vw - var(--ww-map-rail,0px))!important;
-        max-width:none!important;height:100dvh!important;max-height:none!important;
-        margin:0!important;padding:0!important;
-        pointer-events:none!important;
-      }
-      body.map-view #wwCountryTopDialog.ww-country-popup::backdrop,
-      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop,
-      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
-        background:transparent!important;
-        backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-        pointer-events:none!important;
-      }
-      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-        left:50%!important;right:auto!important;top:50%!important;bottom:auto!important;
-        width:min(64vw,900px)!important;
-        max-width:calc(100% - 28px)!important;
-        height:calc(100dvh - 24px)!important;max-height:calc(100dvh - 24px)!important;
-        transform:translate(-50%,-50%)!important;transform-origin:center center!important;
-        border-radius:28px!important;
-        overflow-y:auto!important;scrollbar-width:none!important;-ms-overflow-style:none!important;
-        pointer-events:auto!important;
-      }
-      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
-
-      /* Landscape hero: portrait-style proportions without the old 201px minimum
-         taking over the top half of the card. */
-      body.map-view #countrySheet .country-hero-minimal{
-        min-height:135px!important;
-        height:135px!important;
-        padding:14px 18px!important;
-        margin:6px 0 10px!important;
-        border-radius:24px!important;
-        grid-template-columns:78px minmax(0,1fr)!important;
-        gap:16px!important;
-        box-sizing:border-box!important;
-      }
-      body.map-view #countrySheet .country-hero-minimal .flag img{width:78px!important;height:52px!important;border-radius:10px!important}
-      body.map-view #countrySheet .country-hero-copy h2{font-size:clamp(28px,3.3vw,42px)!important;margin:0!important}
-
-      /* Google map popup opened from World Map: 25% smaller than its original
-         92vw/680px shell, centred in the usable workspace rather than full screen. */
-      body.map-view #wwCountryMapDialog.ww-from-world-map{
-        width:min(69vw,510px)!important;
-        max-width:calc(100vw - var(--ww-map-rail,0px) - 28px)!important;
-        transform:translateX(calc(var(--ww-map-rail,0px)/2))!important;
-      }
-      body.map-view #wwCountryMapDialog.ww-from-world-map::backdrop{background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-canvas{height:min(46.5vh,390px)!important;min-height:260px!important}
-    }
-  `;
-  document.head.appendChild(st);
-
-  function syncRail(){
-    if(!document.body.classList.contains('map-view')||!matchMedia('(orientation:landscape)').matches){
-      document.documentElement.style.removeProperty('--ww-map-rail');return;
-    }
-    const nav=document.querySelector('.topbar');
-    const r=nav?.getBoundingClientRect();
-    const rail=(r&&r.width>0&&r.width<innerWidth*.35)?r.width:0;
-    document.documentElement.style.setProperty('--ww-map-rail',rail+'px');
-  }
-
-  function clearLegacyInlineCountryLayout(){
-    const sheet=document.getElementById('countrySheet');
-    if(!sheet)return;
-    ['left','right','top','bottom','width','max-width','height','max-height','transform','transform-origin'].forEach(p=>sheet.style.removeProperty(p));
-  }
-
-  function sync(){
-    syncRail();
-    /* Previous hotfixes wrote !important inline geometry. Remove it so this one
-       stylesheet is the sole owner of responsive geometry. */
-    clearLegacyInlineCountryLayout();
-  }
-
-  const priorOpen=openCountry;
-  openCountry=function(){
-    const out=priorOpen.apply(this,arguments);
-    sync();requestAnimationFrame(sync);setTimeout(sync,80);setTimeout(sync,220);
-    return out;
+  const showForEntry=()=>{
+    const hint=findHint();
+    if(!hint)return false;
+    clearTimeout(timer);
+    entryToken++;
+    const token=entryToken;
+    hint.style.setProperty('display','','important');
+    hint.style.setProperty('visibility','visible','important');
+    hint.style.setProperty('opacity','1','important');
+    hint.style.setProperty('transition','opacity .55s ease','important');
+    hint.style.setProperty('pointer-events','none','important');
+    timer=setTimeout(()=>{
+      if(token!==entryToken || !document.body.classList.contains('map-view'))return;
+      hint.style.setProperty('opacity','0','important');
+      setTimeout(()=>{
+        if(token===entryToken && document.body.classList.contains('map-view')){
+          hint.style.setProperty('visibility','hidden','important');
+        }
+      },600);
+    },5000);
+    return true;
   };
-  addEventListener('resize',()=>requestAnimationFrame(sync),{passive:true});
-  addEventListener('orientationchange',()=>setTimeout(sync,180),{passive:true});
-  new MutationObserver(()=>requestAnimationFrame(sync)).observe(document.body,{attributes:true,attributeFilter:['class']});
+
+  const sync=()=>{
+    const onMap=document.body.classList.contains('map-view');
+    if(onMap && !wasOnMap){
+      wasOnMap=true;
+      let tries=0;
+      const wait=()=>{
+        if(!document.body.classList.contains('map-view'))return;
+        if(showForEntry())return;
+        if(++tries<30)setTimeout(wait,100);
+      };
+      wait();
+    }else if(!onMap && wasOnMap){
+      wasOnMap=false; entryToken++; clearTimeout(timer);
+      const hint=findHint();
+      if(hint){
+        hint.style.removeProperty('opacity');
+        hint.style.removeProperty('visibility');
+        hint.style.removeProperty('transition');
+        hint.style.removeProperty('pointer-events');
+      }
+    }
+  };
+
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
   sync();
 })();
 
 
-/* === WozzaWorld — FINAL landscape country-card centring + map-only blur — 07 Oct 2026 === */
+/* === WozzaWorld — landscape overlay alignment to usable map area 07 Oct 2026 === */
 (()=>{
-  if(window.__wwLandscapeCountryCardCentreBlur071026)return;
-  window.__wwLandscapeCountryCardCentreBlur071026=true;
+  if(window.__wwLandscapeOverlayAlignment071026)return;
+  window.__wwLandscapeOverlayAlignment071026=true;
 
-  const style=document.createElement('style');
-  style.id='ww-landscape-country-card-centre-blur-071026';
-  style.textContent=`
+  const st=document.createElement('style');
+  st.id='ww-landscape-overlay-alignment-071026';
+  st.textContent=`
     @media (orientation:landscape){
-      /*
-       * Country sheet is centred in the MAP viewport, not the full screen.
-       * The fixed left nav occupies the space before the map content.
-       */
-      body:has(#countrySheet:not([hidden])) #countrySheet{
-        left:calc(var(--nav-w, 0px) + (100vw - var(--nav-w, 0px))/2)!important;
-        right:auto!important;
-        transform:translateX(-50%)!important;
-        margin-left:0!important;
-        margin-right:0!important;
+      /* Centre both overlays between the right edge of the nav rail and the
+         right edge of the viewport, rather than against the whole screen. */
+      body.map-view #countrySheet.sheet{
+        left:calc(50% + (var(--ww-landscape-nav-width, 0px) / 2))!important;
+        max-width:calc(100vw - var(--ww-landscape-nav-width, 0px) - 24px)!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map{
+        transform:translateX(calc(var(--ww-landscape-nav-width, 0px) / 2))!important;
+        max-width:calc(100vw - var(--ww-landscape-nav-width, 0px) - 24px)!important;
       }
 
-      /*
-       * Blur only the map layer while the country card is open.
-       * Explicitly keep navigation/header controls out of the filter.
-       */
-      body:has(#countrySheet:not([hidden])) #mapSvg,
-      body:has(#countrySheet:not([hidden])) #worldMap,
-      body:has(#countrySheet:not([hidden])) .map-stage svg,
-      body:has(#countrySheet:not([hidden])) .map-wrap svg,
-      body:has(#countrySheet:not([hidden])) .map-container svg{
-        filter:blur(7px)!important;
+      /* Country card on the world map is a workspace overlay in landscape:
+         no blur/dim layer, and the left navigation rail remains usable. */
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+        pointer-events:none!important;
       }
-
-      body:has(#countrySheet:not([hidden])) nav,
-      body:has(#countrySheet:not([hidden])) .side-nav,
-      body:has(#countrySheet:not([hidden])) .sidebar,
-      body:has(#countrySheet:not([hidden])) #sidebar,
-      body:has(#countrySheet:not([hidden])) .app-nav,
-      body:has(#countrySheet:not([hidden])) header{
-        filter:none!important;
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{
+        pointer-events:auto!important;
+      }
+      body.map-view .topbar{
+        pointer-events:auto!important;
+        z-index:9002!important;
       }
     }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(st);
 
   function syncNavWidth(){
-    if(!matchMedia('(orientation:landscape)').matches)return;
-    const sheet=document.getElementById('countrySheet');
-    if(!sheet || sheet.hidden)return;
-    const candidates=[
-      document.querySelector('nav'),
-      document.querySelector('.side-nav'),
-      document.querySelector('.sidebar'),
-      document.getElementById('sidebar'),
-      document.querySelector('.app-nav')
-    ].filter(Boolean);
-    const nav=candidates
-      .map(el=>({el,r:el.getBoundingClientRect()}))
-      .filter(x=>x.r.width>40 && x.r.height>innerHeight*.55 && x.r.left<20)
-      .sort((a,b)=>b.r.height-a.r.height)[0];
-    const navW=nav ? Math.max(0,nav.r.right) : 0;
-    document.documentElement.style.setProperty('--nav-w', navW+'px');
+    const landscape=matchMedia('(orientation:landscape)').matches;
+    const onMap=document.body.classList.contains('map-view');
+    if(!landscape||!onMap){
+      document.documentElement.style.removeProperty('--ww-landscape-nav-width');
+      return;
+    }
+    const nav=document.querySelector('.topbar');
+    if(!nav)return;
+    const r=nav.getBoundingClientRect();
+    /* In landscape the nav is the narrow left rail. Ignore any transient
+       full-width measurement while the responsive layout is settling. */
+    if(r.width>0 && r.width<innerWidth*.35){
+      document.documentElement.style.setProperty('--ww-landscape-nav-width',r.width+'px');
+    }
   }
 
-  const observer=new MutationObserver(syncNavWidth);
-  observer.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['hidden','class','style']});
-  addEventListener('resize',syncNavWidth,{passive:true});
-  addEventListener('orientationchange',()=>setTimeout(syncNavWidth,80),{passive:true});
+  syncNavWidth();
   requestAnimationFrame(syncNavWidth);
+  setTimeout(syncNavWidth,120);
+  addEventListener('resize',syncNavWidth,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(syncNavWidth,120),{passive:true});
+  new MutationObserver(syncNavWidth).observe(document.body,{attributes:true,attributeFilter:['class']});
+})();
+
+/* === WozzaWorld — audited landscape country-card alignment + real rotate-tip fade 07 Oct 2026 === */
+(()=>{
+  if(window.__wwAuditedLandscapeCountryAndRotate071026)return;
+  window.__wwAuditedLandscapeCountryAndRotate071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-audited-landscape-country-rotate-071026';
+  st.textContent=`
+    /* The rotate message is styles.css body.map-view::after, not a DOM node.
+       Keep it fully visible for five seconds, then fade it out. Removing and
+       re-adding map-view when leaving/returning to World Map restarts it. */
+    @keyframes wwRotateWorldTipFade071026{
+      from{opacity:1}
+      to{opacity:0}
+    }
+    @media (orientation:portrait){
+      body.map-view::after{
+        opacity:1!important;
+        animation:wwRotateWorldTipFade071026 .45s ease 5s forwards!important;
+      }
+    }
+
+    @media (orientation:landscape){
+      /* Country UI is mounted inside a full-screen native <dialog>. Centre the
+         dialog itself in the usable map workspace to the RIGHT of the nav rail.
+         This is the reliable coordinate system; shifting #countrySheet alone
+         was being neutralised by the full-screen top-layer dialog. */
+      body.map-view #wwCountryTopDialog.ww-country-popup{
+        left:var(--worldview-rail-width,clamp(82px,10vw,112px))!important;
+        right:0!important;
+        top:0!important;
+        width:calc(100vw - var(--worldview-rail-width,clamp(82px,10vw,112px)))!important;
+        max-width:none!important;
+        height:100dvh!important;
+        margin:0!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+        left:50%!important;
+        right:auto!important;
+        transform:translate(-50%,-50%)!important;
+        max-width:calc(100% - 24px)!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+        pointer-events:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{
+        pointer-events:auto!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+})();
+
+/* === WozzaWorld — FINAL audited map-country alignment + rotate hint controller 07 Oct 2026 === */
+(()=>{
+  if(window.__wwFinalMapCountryAlignmentRotate071026)return;
+  window.__wwFinalMapCountryAlignmentRotate071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-final-map-country-alignment-rotate-071026';
+  st.textContent=`
+    body.map-view::after{transition:opacity .55s ease!important}
+    body.map-view.ww-rotate-tip-hidden::after{opacity:0!important;pointer-events:none!important}
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+        pointer-events:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{pointer-events:auto!important}
+    }
+  `;
+  document.head.appendChild(st);
+
+  function railWidth(){
+    const bar=document.querySelector('.topbar');
+    if(!bar)return 0;
+    const r=bar.getBoundingClientRect();
+    return (r.width>0 && r.width<innerWidth*.35)?r.width:0;
+  }
+
+  function alignOpenMapCountry(){
+    if(!document.body.classList.contains('map-view') || !matchMedia('(orientation:landscape)').matches)return;
+    const sheet=document.getElementById('countrySheet');
+    const back=document.getElementById('sheetBackdrop');
+    if(!sheet?.classList.contains('open'))return;
+    const rail=railWidth();
+    /* countrySheet is ultimately positioned against the full viewport. Shift its
+       centre by half the left rail width so it is centred in the remaining map workspace. */
+    sheet.style.setProperty('left',`calc(50% + ${rail/2}px)`,'important');
+    sheet.style.setProperty('right','auto','important');
+    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
+    if(back?.classList.contains('open')){
+      back.style.setProperty('background','transparent','important');
+      back.style.setProperty('backdrop-filter','none','important');
+      back.style.setProperty('-webkit-backdrop-filter','none','important');
+      back.style.setProperty('pointer-events','none','important');
+    }
+  }
+
+  const priorOpen=openCountry;
+  openCountry=function(c,origin=null){
+    const fromMap=(origin?.type==='map') || document.body.classList.contains('map-view');
+    const out=priorOpen.apply(this,arguments);
+    if(fromMap){
+      alignOpenMapCountry();
+      requestAnimationFrame(alignOpenMapCountry);
+      setTimeout(alignOpenMapCountry,80);
+      setTimeout(alignOpenMapCountry,220);
+    }
+    return out;
+  };
+  addEventListener('resize',()=>requestAnimationFrame(alignOpenMapCountry),{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(alignOpenMapCountry,180),{passive:true});
+
+  let onMapLast=false,tipTimer=0;
+  function syncRotateTip(){
+    const onMap=document.body.classList.contains('map-view');
+    if(onMap && !onMapLast){
+      onMapLast=true;
+      clearTimeout(tipTimer);
+      document.body.classList.remove('ww-rotate-tip-hidden');
+      tipTimer=setTimeout(()=>{
+        if(document.body.classList.contains('map-view'))document.body.classList.add('ww-rotate-tip-hidden');
+      },5000);
+    }else if(!onMap && onMapLast){
+      onMapLast=false;
+      clearTimeout(tipTimer);
+      document.body.classList.remove('ww-rotate-tip-hidden');
+    }
+  }
+  new MutationObserver(syncRotateTip).observe(document.body,{attributes:true,attributeFilter:['class']});
+  syncRotateTip();
+})();
+
+
+/* === WozzaWorld — portrait restore + landscape country polish + map controls 07 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryResponsivePolish071026)return;
+  window.__wwCountryResponsivePolish071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-responsive-polish-071026';
+  st.textContent=`
+    @media (orientation:portrait){
+      body.map-view .map-filter-btn{
+        right:20px!important;
+        bottom:20px!important;
+      }
+      body.map-view::after{
+        bottom:max(20px,env(safe-area-inset-bottom))!important;
+        max-width:calc(100vw - 120px)!important;
+        overflow:hidden!important;
+        text-overflow:ellipsis!important;
+      }
+    }
+
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+        transform:translate(-50%,-50%) scale(.70)!important;
+        transform-origin:center center!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup::backdrop{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+      }
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop,
+      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+        background:transparent!important;
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  function resetPortraitCountryPosition(){
+    if(!matchMedia('(orientation:portrait)').matches)return;
+    const sheet=document.getElementById('countrySheet');
+    const dlg=document.getElementById('wwCountryTopDialog');
+    if(sheet){
+      ['left','right','transform','max-width','width','top'].forEach(p=>sheet.style.removeProperty(p));
+    }
+    if(dlg){
+      ['left','right','top','width','max-width','height','margin'].forEach(p=>dlg.style.removeProperty(p));
+    }
+  }
+
+  function applyResponsiveCountryState(){
+    if(matchMedia('(orientation:portrait)').matches){
+      resetPortraitCountryPosition();
+      return;
+    }
+    if(typeof alignOpenMapCountry==='function')alignOpenMapCountry();
+  }
+
+  addEventListener('resize',()=>requestAnimationFrame(applyResponsiveCountryState),{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(applyResponsiveCountryState,180),{passive:true});
+  new MutationObserver(()=>requestAnimationFrame(applyResponsiveCountryState))
+    .observe(document.body,{attributes:true,attributeFilter:['class']});
+  requestAnimationFrame(applyResponsiveCountryState);
+})();
+
+
+/* === WozzaWorld — final map/card/info polish 07 Oct 2026 === */
+(()=>{
+  if(window.__wwFinalMapCardInfoPolish071026)return;
+  window.__wwFinalMapCardInfoPolish071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-final-map-card-info-polish-071026';
+  st.textContent=`
+    #countryInfoDialog,
+    #countryInfoDialog *{
+      scrollbar-width:none!important;
+      -ms-overflow-style:none!important;
+    }
+    #countryInfoDialog::-webkit-scrollbar,
+    #countryInfoDialog *::-webkit-scrollbar{
+      width:0!important;
+      height:0!important;
+      display:none!important;
+      background:transparent!important;
+    }
+
+    @media (orientation:portrait){
+      body.map-view::after{
+        left:20px!important;
+        right:140px!important;
+        width:auto!important;
+        max-width:none!important;
+        transform:none!important;
+        box-sizing:border-box!important;
+        text-align:center!important;
+      }
+    }
+
+    @media (orientation:landscape){
+      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+        transform:translate(-50%,-50%) scale(.49)!important;
+        transform-origin:center center!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
 })();
