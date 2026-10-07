@@ -10543,7 +10543,8 @@ wwOpenQuickInfo=function(row,id){
       min-width:0!important;min-height:0!important;width:100%!important;height:100%!important;
       margin:0!important;padding:0!important;border:1px solid rgba(21,48,71,.08)!important;
       border-radius:12px!important;background:#fff!important;box-shadow:0 2px 6px rgba(16,48,58,.10)!important;
-      display:grid!important;place-items:center!important;color:#31414d!important;cursor:pointer;
+      display:flex!important;align-items:center!important;justify-content:center!important;
+      position:relative!important;box-sizing:border-box!important;color:#31414d!important;cursor:pointer;
     }
     #countrySheet .ww-country-utility-grid button svg{width:26px!important;height:26px!important;max-width:none!important;max-height:none!important;display:block}
     #countrySheet .ww-country-utility-grid .ww-country-mini-info{color:#087db5!important}
@@ -10571,7 +10572,7 @@ wwOpenQuickInfo=function(row,id){
       box.className='ww-country-utility-grid';
       box.innerHTML=`
         <button type="button" class="ww-country-mini-info" aria-label="Country info" title="Country info"><img src="info-icon.svg" alt="" aria-hidden="true"></button>
-        <button type="button" class="ww-country-mini-add" aria-label="Add a trip" title="Add a trip">+</button>
+        <button type="button" class="ww-country-mini-add" aria-label="Add a trip" title="Add a trip"><svg class="ww-country-plus-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="square"/></svg></button>
         <button type="button" class="ww-country-mini-pin" aria-label="Location — coming soon" title="Location — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="white"/></svg></button>
         <button type="button" class="ww-country-mini-search" aria-label="Search travel ideas" title="Search travel ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>`;
       grid.appendChild(box);
@@ -10588,34 +10589,28 @@ wwOpenQuickInfo=function(row,id){
   install();
 })();
 
-/* === WozzaWorld — Country mini-action icon tuning 07 Oct 2026 === */
+/* === WozzaWorld — Country mini-action geometry fix 07 Oct 2026 === */
 (()=>{
-  if(window.__wwCountryMiniIconTuning071026)return;
-  window.__wwCountryMiniIconTuning071026=true;
-  const st=document.createElement('style');
-  st.id='ww-country-mini-icon-tuning-071026';
-  st.textContent=`
-    /* Existing info asset: 20% smaller than the current 30px rendering. */
+  const old=document.getElementById('ww-country-mini-icon-tuning-071026');if(old)old.remove();
+  const st=document.createElement('style');st.id='ww-country-mini-geometry-071026';st.textContent=`
     #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
-      width:24px!important;height:24px!important;
+      width:24px!important;height:24px!important;max-width:24px!important;max-height:24px!important;
+      margin:0!important;position:relative!important;left:1px!important;top:1px!important;transform:none!important;
+      object-fit:contain!important;display:block!important;
     }
-    /* Keep the mustard plus centred visually inside its mini-button circle. */
     #countrySheet .ww-country-utility-grid .ww-country-mini-add{
-      transform:translateY(-2px);
+      font-size:0!important;line-height:0!important;transform:none!important;
+      align-items:center!important;justify-content:center!important;
     }
-    #countrySheet .ww-country-utility-grid .ww-country-mini-add:active{
-      transform:translateY(-2px) scale(.95)!important;
+    #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{
+      width:25px!important;height:25px!important;display:block!important;position:relative!important;top:-2px!important;
+      overflow:visible!important;
     }
-    /* Search only: 10% smaller; red location pin remains unchanged. */
-    #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
-      width:23.4px!important;height:23.4px!important;
-    }
+    #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{width:23.4px!important;height:23.4px!important}
     @media (orientation:landscape) and (max-height:650px){
-      #countrySheet .ww-country-utility-grid .ww-country-mini-info img{width:19px!important;height:19px!important}
+      #countrySheet .ww-country-utility-grid .ww-country-mini-info img{width:19px!important;height:19px!important;max-width:19px!important;max-height:19px!important}
+      #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{width:17px!important;height:17px!important;top:-1px!important}
       #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{width:15.3px!important;height:15.3px!important}
-      #countrySheet .ww-country-utility-grid .ww-country-mini-add{transform:translateY(-1px)}
-      #countrySheet .ww-country-utility-grid .ww-country-mini-add:active{transform:translateY(-1px) scale(.95)!important}
     }
-  `;
-  document.head.appendChild(st);
+  `;document.head.appendChild(st);
 })();
