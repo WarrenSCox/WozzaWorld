@@ -11300,7 +11300,7 @@ wwOpenQuickInfo=function(row,id){
        centre by half the left rail width so it is centred in the remaining map workspace. */
     sheet.style.setProperty('left',`calc(50% + ${rail/2}px)`,'important');
     sheet.style.setProperty('right','auto','important');
-    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
+    sheet.style.setProperty('transform','translate(-50%,-50%) scale(.49)','important');
     if(back?.classList.contains('open')){
       back.style.setProperty('background','transparent','important');
       back.style.setProperty('backdrop-filter','none','important');
@@ -11645,3 +11645,4 @@ wwOpenQuickInfo=function(row,id){
   fix();
   new MutationObserver(fix).observe(document.body,{childList:true,subtree:true,characterData:true});
 })();
+\n\n/* === WozzaWorld — regression guard: milestone map headings + landscape country scale 07 Oct 2026 === */\n(()=>{\n  if(window.__wwRegressionGuardMapHeadingCountryScale071026)return;\n  window.__wwRegressionGuardMapHeadingCountryScale071026=true;\n  const st=document.createElement('style');\n  st.id='ww-regression-guard-map-heading-country-scale-071026';\n  st.textContent=`\n    #wwCountryMapDialog .ww-map-title,\n    body.map-view #wwCountryMapDialog .ww-map-title,\n    #wwCountryMapDialog.ww-from-world-map .ww-map-title,\n    #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-title{\n      font-family:"Archivo Black",Impact,sans-serif!important;\n      font-size:27px!important;\n      line-height:1.05!important;\n      letter-spacing:-.025em!important;\n      font-weight:400!important;\n      text-transform:none!important;\n    }\n    #wwCountryMapDialog.ww-from-world-map .ww-map-title{color:#fff!important}\n    #wwCountryMapDialog:not(.ww-from-world-map) .ww-map-title{color:#153047!important}\n    @media(max-width:620px){#wwCountryMapDialog .ww-map-title{font-size:22px!important}}\n    @media (orientation:landscape){\n      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{\n        transform:translate(-50%,-50%) scale(.49)!important;\n        transform-origin:center center!important;\n      }\n      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet .country-hero-minimal{\n        min-height:0!important;\n      }\n    }\n  `;\n  document.head.appendChild(st);\n})();\n
