@@ -11076,3 +11076,66 @@ wwOpenQuickInfo=function(row,id){
   const obs=new MutationObserver(remove);
   obs.observe(document.body,{childList:true,subtree:true});
 })();
+
+
+/* === WozzaWorld — world-map rotate hint: show once per visit, fade after 5s === */
+(()=>{
+  if(window.__wwRotateHintFiveSeconds071026)return;
+  window.__wwRotateHintFiveSeconds071026=true;
+
+  let wasOnMap=false, timer=null, entryToken=0;
+
+  const findHint=()=>[...document.querySelectorAll('body *')].find(el=>{
+    const t=(el.textContent||'').trim().toLowerCase();
+    return el.children.length===0 && t.includes('rotate your phone') && t.includes('landscape');
+  });
+
+  const showForEntry=()=>{
+    const hint=findHint();
+    if(!hint)return false;
+    clearTimeout(timer);
+    entryToken++;
+    const token=entryToken;
+    hint.style.setProperty('display','','important');
+    hint.style.setProperty('visibility','visible','important');
+    hint.style.setProperty('opacity','1','important');
+    hint.style.setProperty('transition','opacity .55s ease','important');
+    hint.style.setProperty('pointer-events','none','important');
+    timer=setTimeout(()=>{
+      if(token!==entryToken || !document.body.classList.contains('map-view'))return;
+      hint.style.setProperty('opacity','0','important');
+      setTimeout(()=>{
+        if(token===entryToken && document.body.classList.contains('map-view')){
+          hint.style.setProperty('visibility','hidden','important');
+        }
+      },600);
+    },5000);
+    return true;
+  };
+
+  const sync=()=>{
+    const onMap=document.body.classList.contains('map-view');
+    if(onMap && !wasOnMap){
+      wasOnMap=true;
+      let tries=0;
+      const wait=()=>{
+        if(!document.body.classList.contains('map-view'))return;
+        if(showForEntry())return;
+        if(++tries<30)setTimeout(wait,100);
+      };
+      wait();
+    }else if(!onMap && wasOnMap){
+      wasOnMap=false; entryToken++; clearTimeout(timer);
+      const hint=findHint();
+      if(hint){
+        hint.style.removeProperty('opacity');
+        hint.style.removeProperty('visibility');
+        hint.style.removeProperty('transition');
+        hint.style.removeProperty('pointer-events');
+      }
+    }
+  };
+
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+  sync();
+})();
