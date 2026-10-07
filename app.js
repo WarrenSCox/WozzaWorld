@@ -10572,7 +10572,7 @@ wwOpenQuickInfo=function(row,id){
       box.className='ww-country-utility-grid';
       box.innerHTML=`
         <button type="button" class="ww-country-mini-info" aria-label="Country info" title="Country info"><img src="info-icon.svg" alt="" aria-hidden="true"></button>
-        <button type="button" class="ww-country-mini-add" aria-label="Add a trip" title="Add a trip"><svg class="ww-country-plus-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg></button>
+        <button type="button" class="ww-country-mini-add" aria-label="Add a trip" title="Add a trip"><svg class="ww-country-plus-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="square"/></svg></button>
         <button type="button" class="ww-country-mini-pin" aria-label="Location — coming soon" title="Location — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="currentColor"/><circle cx="12" cy="9" r="2.5" fill="white"/></svg></button>
         <button type="button" class="ww-country-mini-search" aria-label="Search travel ideas" title="Search travel ideas"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>`;
       grid.appendChild(box);
@@ -10595,7 +10595,7 @@ wwOpenQuickInfo=function(row,id){
   const st=document.createElement('style');st.id='ww-country-mini-geometry-071026';st.textContent=`
     #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
       width:24px!important;height:24px!important;max-width:24px!important;max-height:24px!important;
-      margin:0!important;position:relative!important;left:0!important;top:0!important;transform:none!important;
+      margin:0!important;position:relative!important;left:1px!important;top:1px!important;transform:none!important;
       object-fit:contain!important;display:block!important;
     }
     #countrySheet .ww-country-utility-grid .ww-country-mini-add{
@@ -10603,14 +10603,114 @@ wwOpenQuickInfo=function(row,id){
       align-items:center!important;justify-content:center!important;
     }
     #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{
-      width:25px!important;height:25px!important;display:block!important;position:relative!important;top:1px!important;left:-1px!important;
+      width:25px!important;height:25px!important;display:block!important;position:relative!important;top:-2px!important;
       overflow:visible!important;
     }
     #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{width:23.4px!important;height:23.4px!important}
     @media (orientation:landscape) and (max-height:650px){
       #countrySheet .ww-country-utility-grid .ww-country-mini-info img{width:19px!important;height:19px!important;max-width:19px!important;max-height:19px!important}
-      #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{width:17px!important;height:17px!important;top:2px!important;left:-1px!important}
+      #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{width:17px!important;height:17px!important;top:-1px!important}
       #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{width:15.3px!important;height:15.3px!important}
     }
   `;document.head.appendChild(st);
+})();
+
+/* === WozzaWorld — Country Google Map popup 07 Oct 2026 === */
+(()=>{
+  if(window.__wwCountryGoogleMap071026)return;
+  window.__wwCountryGoogleMap071026=true;
+
+  const st=document.createElement('style');
+  st.id='ww-country-google-map-071026';
+  st.textContent=`
+    #wwCountryMapDialog{border:0;padding:0;background:transparent;width:min(92vw,680px);max-width:none;overflow:visible}
+    #wwCountryMapDialog::backdrop{background:rgba(4,34,44,.52);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+    #wwCountryMapDialog .ww-map-card{position:relative;background:#edf8f8;border-radius:30px;padding:18px;box-shadow:0 22px 55px rgba(4,37,48,.26);overflow:hidden}
+    #wwCountryMapDialog .ww-map-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:2px 2px 14px}
+    #wwCountryMapDialog .ww-map-title{min-width:0;color:#153047;font-size:clamp(20px,5vw,28px);font-weight:950;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #wwCountryMapDialog .ww-map-close{width:46px;height:46px;min-width:46px;border:0;border-radius:50%;background:#fff;color:#17213d;font-size:31px;line-height:1;display:grid;place-items:center;padding:0;box-shadow:0 4px 14px rgba(16,48,58,.12)}
+    #wwCountryMapDialog .ww-map-canvas{height:min(62vh,520px);min-height:390px;border-radius:22px;overflow:hidden;background:#dbeaea;position:relative}
+    #wwCountryMapDialog .ww-map-status{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;color:#52656c;font-weight:750;background:#edf8f8;z-index:2}
+    #wwCountryMapDialog .ww-map-status[hidden]{display:none!important}
+    #wwCountryMapDialog .ww-map-error strong{display:block;color:#153047;font-size:18px;margin-bottom:8px}
+    #wwCountryMapDialog .ww-map-error small{display:block;font-weight:500;line-height:1.4}
+    @media (max-width:520px){
+      #wwCountryMapDialog{width:94vw}
+      #wwCountryMapDialog .ww-map-card{border-radius:25px;padding:13px}
+      #wwCountryMapDialog .ww-map-canvas{height:56vh;min-height:360px;border-radius:18px}
+      #wwCountryMapDialog .ww-map-close{width:42px;height:42px;min-width:42px}
+    }
+    /* Final mini-action geometry requested after the deep-audit build. */
+    #countrySheet .ww-country-utility-grid .ww-country-mini-info img{left:0!important;top:0!important}
+    #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{left:0!important;top:1px!important}
+    #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg path{stroke-width:3!important}
+  `;
+  document.head.appendChild(st);
+
+  let apiPromise=null;
+  function loadConfig(){
+    if(window.WOZZAWORLD_GOOGLE_MAPS_API_KEY)return Promise.resolve(window.WOZZAWORLD_GOOGLE_MAPS_API_KEY);
+    return new Promise(resolve=>{
+      const existing=document.querySelector('script[data-ww-google-maps-config]');
+      if(existing){existing.addEventListener('load',()=>resolve(window.WOZZAWORLD_GOOGLE_MAPS_API_KEY||''),{once:true});existing.addEventListener('error',()=>resolve(''),{once:true});return}
+      const s=document.createElement('script');s.src='google-maps-config.js';s.async=true;s.dataset.wwGoogleMapsConfig='1';
+      s.onload=()=>resolve(window.WOZZAWORLD_GOOGLE_MAPS_API_KEY||'');s.onerror=()=>resolve('');document.head.appendChild(s);
+    });
+  }
+  async function loadMaps(){
+    if(window.google?.maps?.Map)return window.google.maps;
+    if(apiPromise)return apiPromise;
+    apiPromise=(async()=>{
+      const key=String(await loadConfig()||'').trim();
+      if(!key||key==='PASTE_YOUR_RESTRICTED_GOOGLE_MAPS_API_KEY_HERE')throw new Error('API_KEY_NOT_CONFIGURED');
+      await new Promise((resolve,reject)=>{
+        const callback='__wwGoogleMapsReady071026';
+        window[callback]=()=>{delete window[callback];resolve()};
+        const s=document.createElement('script');
+        s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&loading=async&v=weekly&callback='+callback;
+        s.async=true;s.onerror=()=>{delete window[callback];reject(new Error('MAPS_LOAD_FAILED'))};document.head.appendChild(s);
+      });
+      return window.google.maps;
+    })().catch(err=>{apiPromise=null;throw err});
+    return apiPromise;
+  }
+  function dialog(){
+    let d=document.getElementById('wwCountryMapDialog');if(d)return d;
+    d=document.createElement('dialog');d.id='wwCountryMapDialog';
+    d.innerHTML=`<div class="ww-map-card"><div class="ww-map-head"><div class="ww-map-title">Map</div><button type="button" class="ww-map-close" aria-label="Close map">×</button></div><div class="ww-map-canvas"><div class="ww-map-status">Loading Google Maps…</div></div></div>`;
+    document.body.appendChild(d);
+    d.querySelector('.ww-map-close').onclick=()=>d.close();
+    d.addEventListener('click',e=>{if(e.target===d)d.close()});
+    return d;
+  }
+  function showError(status,title,message){
+    status.hidden=false;status.classList.add('ww-map-error');
+    status.innerHTML=`<div><strong>${title}</strong><small>${message}</small></div>`;
+  }
+  async function openCountryMap(country){
+    country=String(country||currentCountry||'').trim();if(!country)return;
+    const d=dialog(),title=d.querySelector('.ww-map-title'),canvas=d.querySelector('.ww-map-canvas'),status=d.querySelector('.ww-map-status');
+    title.textContent=country;status.className='ww-map-status';status.hidden=false;status.textContent='Loading Google Maps…';
+    if(!d.open)d.showModal();
+    try{
+      const maps=await loadMaps();
+      status.textContent='Finding '+country+'…';
+      const geocoder=new maps.Geocoder();
+      const result=await new Promise((resolve,reject)=>geocoder.geocode({address:country},(results,code)=>code==='OK'&&results?.[0]?resolve(results[0]):reject(new Error('GEOCODE_'+code))));
+      status.hidden=true;
+      const map=new maps.Map(canvas,{center:result.geometry.location,zoom:5,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});
+      if(result.geometry.viewport)map.fitBounds(result.geometry.viewport,28);
+      setTimeout(()=>maps.event.trigger(map,'resize'),60);
+    }catch(err){
+      const missing=err?.message==='API_KEY_NOT_CONFIGURED';
+      showError(status,missing?'Google Maps key needed':'Google Maps couldn’t load',missing?'Add your restricted browser key to google-maps-config.js, then refresh WozzaWorld.':'Check the Maps JavaScript API/key restrictions and try again.');
+    }
+  }
+  window.wwOpenCountryGoogleMap=openCountryMap;
+
+  /* Capture the red pin even when the compact action block is rebuilt by renderSheet. */
+  document.addEventListener('click',e=>{
+    const pin=e.target.closest?.('#countrySheet .ww-country-mini-pin');if(!pin)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();openCountryMap(currentCountry);
+  },true);
 })();
