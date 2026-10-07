@@ -11437,19 +11437,22 @@ wwOpenQuickInfo=function(row,id){
 
     @media (orientation:portrait){
       body.map-view::after{
-        left:20px!important;
-        right:140px!important;
-        width:auto!important;
-        max-width:none!important;
-        transform:none!important;
+        left:50%!important;
+        right:auto!important;
+        width:max-content!important;
+        max-width:calc(100vw - 150px)!important;
+        transform:translateX(-58%)!important;
         box-sizing:border-box!important;
         text-align:center!important;
+        white-space:nowrap!important;
+        overflow:visible!important;
+        text-overflow:clip!important;
       }
     }
 
     @media (orientation:landscape){
       body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-        transform:translate(-50%,-50%) scale(.49)!important;
+        transform:translate(-50%,-50%) scale(.294)!important;
         transform-origin:center center!important;
       }
     }
