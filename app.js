@@ -11456,3 +11456,65 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* === WozzaWorld — stable-base portrait hint removal + landscape Google map sizing 07 Oct 2026 === */
+(()=>{
+  if(window.__wwStableMapPopupFix071026)return;
+  window.__wwStableMapPopupFix071026=true;
+  const st=document.createElement('style');
+  st.id='ww-stable-map-popup-fix-071026';
+  st.textContent=`
+    /* Portrait: remove the old rotate-phone prompt completely. */
+    @media (orientation:portrait){
+      body.map-view::after{display:none!important;content:none!important}
+    }
+
+    /* Landscape: the long-press Google Map popup is 40% smaller than the
+       stable-base popup and centred in the usable map workspace (right of nav). */
+    @media (orientation:landscape){
+      body.map-view #wwCountryMapDialog.ww-from-world-map{
+        width:min(55.2vw,408px)!important;
+        max-width:min(calc(100vw - var(--ww-landscape-nav-width,0px) - 24px),408px)!important;
+        transform:translateX(calc(var(--ww-landscape-nav-width,0px) / 2))!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-card{
+        padding:11px!important;
+        border-radius:18px!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-head{
+        gap:8px!important;
+        padding:1px 1px 8px!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-title{
+        font-size:17px!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-close,
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-country-flag{
+        width:28px!important;height:28px!important;min-width:28px!important;
+      }
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-close{font-size:20px!important}
+      body.map-view #wwCountryMapDialog.ww-from-world-map .ww-map-canvas{
+        height:min(37.2vh,312px)!important;
+        min-height:0!important;
+        border-radius:13px!important;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+
+  /* The stable base also has JS which can resurrect the rotate hint by inline
+     styles. In portrait, remove the actual hint element as a second safeguard. */
+  function removePortraitRotateHint(){
+    if(!matchMedia('(orientation:portrait)').matches)return;
+    [...document.querySelectorAll('body *')].forEach(el=>{
+      const t=(el.textContent||'').trim().toLowerCase();
+      if(el.children.length===0 && t.includes('rotate your phone') && t.includes('landscape')){
+        el.style.setProperty('display','none','important');
+        el.style.setProperty('visibility','hidden','important');
+      }
+    });
+  }
+  removePortraitRotateHint();
+  new MutationObserver(removePortraitRotateHint).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
+  addEventListener('orientationchange',()=>setTimeout(removePortraitRotateHint,100),{passive:true});
+})();
