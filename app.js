@@ -513,8 +513,9 @@ function factListContent(items,googleSearch=false){
  return `<ul class="country-facts-accordion-list">${items.map(x=>{const text=String(x);return googleSearch?`<li><button type="button" class="country-google-search-item" data-google-search="${esc(text)}">${esc(text)}</button></li>`:`<li>${esc(text)}</li>`}).join('')}</ul>`;
 }
 function countryInfoAccordion(title,content){
+ const displayTitle=({WEATHER:'Weather','INTERESTING FACTS':'Interesting Facts',LANDMARKS:'Landmarks','FAMOUS CUISINE':'Famous Cuisine',LANDSCAPE:'Landscape',WILDLIFE:'Wildlife','GOOD TO KNOW':'Good to Know'})[title]||title;
  return `<details class="country-facts-accordion ww-roadmap-item">
-   <summary>${esc(title)}</summary>
+   <summary>${esc(displayTitle)}</summary>
    <div class="country-facts-accordion-panel ww-roadmap-item-body">${content||'<p class="country-facts-empty-inline">No information available yet.</p>'}</div>
   </details>`;
 }
@@ -11983,6 +11984,15 @@ wwOpenQuickInfo=function(row,id){
     #countryInfoDialog .country-facts-accordion.ww-roadmap-item>summary{display:flex!important;align-items:center!important;justify-content:space-between!important;text-transform:none!important;letter-spacing:normal!important;min-height:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
     #countryInfoDialog .country-facts-accordion.ww-roadmap-item[open]>summary{background:#edf8f8!important;border-bottom:1px solid #e0eeee!important}
     #countryInfoDialog .country-facts-accordion.ww-roadmap-item>.ww-roadmap-item-body{display:block!important;max-height:none!important;overflow:visible!important;background:#fff!important;border:0!important}
+    #countryInfoDialog .country-facts-accordion.ww-roadmap-item>summary{text-transform:none!important}
+    #countryInfoDialog .country-facts-card{background:#f4fbfb!important}
+    @media (orientation:portrait){
+      #countryInfoDialog.country-facts-dialog{height:96dvh!important;max-height:96dvh!important;box-sizing:border-box!important;overflow:hidden!important}
+      #countryInfoDialog .country-facts-card{box-sizing:border-box!important;height:100%!important;max-height:100%!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+    }
+    @media (orientation:landscape){
+      body.map-view #countryInfoDialog #countryInfoBody:has(> .country-guide-photo){row-gap:14px!important}
+    }
     .ww-logo-placeholder .ww-roadmap-divider{border:0;border-top:1px solid #c5dfe1;margin:16px 0 20px}
     .ww-logo-placeholder .ww-logo-placeholder-close{display:block;flex:0 0 auto;margin:12px 26px 22px auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
   `;
