@@ -10311,16 +10311,62 @@ wwOpenQuickInfo=function(row,id){
 })();
 
 
-/* WozzaWorld hotfix — keep Recycle Bin close button fixed while bin content scrolls (6 Oct 2026) */
+/* WozzaWorld — audited Recycle Bin dialog skin + existing fixed-close/scroll layout (8 Oct 2026).
+   Only presentation CSS. Existing renderer, selection, restore/delete, toast and tumbleweed
+   animation remain untouched. This replaces the earlier fixed-close styling block. */
 (()=>{
   if(document.getElementById('ww-recycle-fixed-close-061026'))return;
   const st=document.createElement('style');
   st.id='ww-recycle-fixed-close-061026';
   st.textContent=`
-    #recycleDialog form{overflow:hidden!important;display:flex!important;flex-direction:column!important;position:relative!important}
-    #recycleDialog .recycle-head{flex:0 0 auto!important}
-    #recycleDialog .recycle-list{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important}
-    #recycleDialog #closeRecycleDialog{position:absolute!important;top:18px!important;right:18px!important;z-index:20!important}
+    #recycleDialog{
+      box-sizing:border-box!important;padding:0!important;border:0!important;
+      width:min(420px,calc(100vw - 32px))!important;
+      max-width:calc(100vw - 32px)!important;
+      max-height:min(88dvh,760px)!important;
+      border-radius:24px!important;background:#f4fbfb!important;
+      color:#193d4a!important;box-shadow:0 20px 70px rgba(0,20,30,.35)!important;
+      overflow:hidden!important;
+    }
+    #recycleDialog::backdrop{
+      background:rgba(0,24,35,.55)!important;
+      backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important;
+    }
+    #recycleDialog form{
+      box-sizing:border-box!important;width:100%!important;max-width:100%!important;
+      min-width:0!important;max-height:min(88dvh,760px)!important;
+      margin:0!important;padding:0!important;border:0!important;
+      background:#f4fbfb!important;overflow:hidden!important;
+      display:flex!important;flex-direction:column!important;position:relative!important;
+    }
+    #recycleDialog .recycle-head{
+      box-sizing:border-box!important;flex:0 0 auto!important;
+      width:100%!important;max-width:100%!important;margin:0!important;
+      padding:25px 72px 25px 26px!important;
+      background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+      border-radius:24px 24px 0 0!important;
+    }
+    #recycleDialog .recycle-head h3{
+      margin:0!important;padding:0!important;font-family:inherit!important;
+      font-size:24px!important;font-weight:800!important;line-height:1.3!important;
+      color:#fff!important;
+    }
+    #recycleDialog #closeRecycleDialog{
+      position:absolute!important;top:16px!important;right:16px!important;z-index:20!important;
+      display:grid!important;place-items:center!important;
+      width:40px!important;height:40px!important;padding:0!important;
+      border:0!important;border-radius:50%!important;
+      background:rgba(255,255,255,.17)!important;color:#fff!important;
+      box-shadow:none!important;font-size:28px!important;line-height:1!important;
+    }
+    #recycleDialog .recycle-list{
+      box-sizing:border-box!important;flex:1 1 auto!important;min-height:0!important;
+      width:100%!important;max-width:100%!important;
+      margin:0!important;padding:20px 26px 24px!important;
+      overflow-y:auto!important;overflow-x:hidden!important;
+      overscroll-behavior:contain;
+    }
+    #recycleDialog .recycle-empty-subtitle{color:#193d4a!important}
     #recycleDialog .dialog-actions{flex:0 0 auto!important}
   `;
   document.head.appendChild(st);
