@@ -11694,7 +11694,7 @@ wwOpenQuickInfo=function(row,id){
  @media (orientation:landscape){
   body.map-view #countrySheet .ww-country-utility-grid > button{
    display:flex!important;flex-direction:column!important;align-items:center!important;
-   justify-content:center!important;gap:5px!important;
+   justify-content:center!important;gap:6px!important;
    font-family:inherit!important;
    font-weight:400!important;line-height:1.12!important;color:#31414d!important;
   }
@@ -11703,15 +11703,16 @@ wwOpenQuickInfo=function(row,id){
    white-space:nowrap!important;color:#31414d!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
-   width:32px!important;height:32px!important;max-width:32px!important;max-height:32px!important;
+   width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
    top:0!important;left:0!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
-   width:32px!important;height:32px!important;max-width:32px!important;max-height:32px!important;
+   width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
    top:0!important;left:0!important;
   }
+  body.map-view #countrySheet .country-status-grid > button:first-child .status-icon{width:23px!important;height:23px!important;min-width:23px!important;min-height:23px!important}
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{color:#e2aa16!important}
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg{color:#ef3340!important}
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{color:#31414d!important}
@@ -11742,7 +11743,7 @@ wwOpenQuickInfo=function(row,id){
    body.map-view #countrySheet .country-status-grid > button,
    body.map-view #countrySheet .ww-country-utility-grid > button{
      font-family:inherit!important;
-     font-size:13px!important;
+     font-size:12px!important;
      font-weight:400!important;
      line-height:1.12!important;
      letter-spacing:normal!important;
@@ -11751,7 +11752,7 @@ wwOpenQuickInfo=function(row,id){
    body.map-view #countrySheet .ww-country-utility-grid > button .ww-utility-label{
      display:block!important;
      font-family:inherit!important;
-     font-size:13px!important;
+     font-size:12px!important;
      font-weight:400!important;
      line-height:1.12!important;
      letter-spacing:normal!important;
@@ -11779,32 +11780,4 @@ wwOpenQuickInfo=function(row,id){
  }
  `;
  document.head.appendChild(style);
-})();
-
-
-/* Audited seven-button typography parity — landscape only.
-   Match the actual rendered label on the existing Visited button, rather
-   than assigning another guessed pixel size to the four utility labels. */
-(()=>{
- const sync=()=>{
-   if(!matchMedia('(orientation:landscape)').matches || !document.body.classList.contains('map-view'))return;
-   const sheet=document.getElementById('countrySheet');
-   if(!sheet)return;
-   const native=sheet.querySelector('.choice-grid > button, .country-status-grid > button');
-   const utility=sheet.querySelectorAll('.ww-country-utility-grid > button .ww-utility-label');
-   if(!native || !utility.length)return;
-   const label=[...native.querySelectorAll('span')].find(x=>/^(Visited|Visiting|Bucket list)$/i.test(x.textContent.trim()));
-   const source=label||native;
-   const style=getComputedStyle(source);
-   for(const item of utility){
-     for(const key of ['font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-transform']){
-       item.style.setProperty(key,style.getPropertyValue(key),'important');
-     }
-   }
- };
- const prior=renderSheet;
- renderSheet=function(){const value=prior.apply(this,arguments);requestAnimationFrame(sync);return value};
- window.addEventListener('resize',sync,{passive:true});
- window.addEventListener('orientationchange',sync,{passive:true});
- requestAnimationFrame(sync);
 })();
