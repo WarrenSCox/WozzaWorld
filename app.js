@@ -11680,3 +11680,42 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(st);
 })();
+
+/* Landscape country card: match the Google map dialog footprint without scaling contents */
+(()=>{
+  const style=document.createElement('style');
+  style.id='ww-landscape-country-match-map-081026';
+  style.textContent=`
+  @media (orientation:landscape){
+    body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+      width:min(66.24vw,900px,calc(100vw - var(--ww-landscape-nav-width,0px) - 24px))!important;
+      max-width:none!important;
+      height:calc(100dvh - 40px)!important;
+      max-height:calc(100dvh - 40px)!important;
+      box-sizing:border-box!important;
+      transform:translate(-50%,-50%)!important;
+      transform-origin:center center!important;
+      overflow-y:auto!important;
+    }
+    body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet .country-hero-minimal{
+      min-height:0!important;
+      height:clamp(100px,32dvh,230px)!important;
+      max-height:32dvh!important;
+    }
+  }`;
+  document.head.appendChild(style);
+  function align(){
+    if(!document.body.classList.contains('map-view')||!matchMedia('(orientation:landscape)').matches)return;
+    const sheet=document.querySelector('#wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open');
+    if(!sheet)return;
+    const rail=document.querySelector('.topbar')?.getBoundingClientRect().width||0;
+    const usableRail=rail<innerWidth*.35?rail:0;
+    sheet.style.setProperty('left',`calc(50% + ${usableRail/2}px)`,'important');
+    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
+  }
+  const observer=new MutationObserver(()=>{if(document.querySelector('#wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open'))requestAnimationFrame(align)});
+  observer.observe(document.getElementById('wwCountryTopDialog')||document.body,{attributes:true,attributeFilter:['class'],subtree:true});
+  addEventListener('resize',align,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(align,100),{passive:true});
+  requestAnimationFrame(align);
+})();
