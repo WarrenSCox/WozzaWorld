@@ -11926,6 +11926,15 @@ wwOpenQuickInfo=function(row,id){
     .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
     .ww-logo-placeholder .ww-logo-placeholder-top{background:linear-gradient(120deg,#086579,#0aa3a6);color:#fff;padding:24px 26px;border-radius:24px 24px 0 0}
     .ww-logo-placeholder h2{margin:0;font-size:24px}.ww-logo-placeholder .ww-logo-placeholder-body{padding:20px 26px 22px;min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain}.ww-logo-placeholder p{padding:0;margin:0 0 14px;font-size:15px;line-height:1.55}
+    .ww-logo-placeholder .ww-roadmap-accordion{display:grid;gap:9px;margin:10px 0 18px}
+    .ww-logo-placeholder .ww-roadmap-item{border:1px solid #c4e0e2;border-radius:14px;background:#fff;overflow:hidden}
+    .ww-logo-placeholder .ww-roadmap-item summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;padding:15px 16px;color:#14505a;font-size:15px;font-weight:750;user-select:none}
+    .ww-logo-placeholder .ww-roadmap-item summary::-webkit-details-marker{display:none}
+    .ww-logo-placeholder .ww-roadmap-item summary::after{content:'';display:block;flex:none;width:9px;height:9px;border-right:2px solid #137784;border-bottom:2px solid #137784;transform:rotate(45deg);transition:transform .15s ease;margin-right:4px;margin-top:-5px}
+    .ww-logo-placeholder .ww-roadmap-item[open] summary::after{transform:rotate(225deg);margin-top:5px}
+    .ww-logo-placeholder .ww-roadmap-item[open] summary{border-bottom:1px solid #e0eeee;background:#edf8f8}
+    .ww-logo-placeholder .ww-roadmap-item-body{padding:13px 16px 4px}
+    .ww-logo-placeholder .ww-roadmap-item-body p{margin-bottom:12px}
     .ww-logo-placeholder .ww-roadmap-divider{border:0;border-top:1px solid #c5dfe1;margin:16px 0 20px}
     .ww-logo-placeholder .ww-logo-placeholder-close{display:block;flex:0 0 auto;margin:12px 26px 22px auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
   `;
@@ -11959,13 +11968,11 @@ wwOpenQuickInfo=function(row,id){
     <p>WozzaWorld is an independently developed passion project, created out of a love for travel and exploring the world.</p>
     <p>The app is currently completely free to use, and I'd love to keep making it bigger and better.</p>
     <p>Here are a few ideas I'm hoping to bring to life in the future.</p>
-    <p><strong>🌐 Offline Support</strong></p>
-    <p>Making more of WozzaWorld available without an internet connection, so you can access your adventures wherever you are.</p>
-    <p><strong>🗣️ Multiple Languages</strong></p>
-    <p>Introducing additional languages to make WozzaWorld accessible to more travellers around the world.</p>
-    <p><strong>👫 Friend Connect</strong></p>
-    <p><strong>Because adventures are better shared!</strong></p>
-    <p>An ambition to bring travellers together! Connect with friends, collaborate on trip planning, share recommendations, compare travel stats and celebrate achievements.</p>
+    <div class="ww-roadmap-accordion">
+      <details class="ww-roadmap-item"><summary>Offline Support</summary><div class="ww-roadmap-item-body"><p>Making more of WozzaWorld available without an internet connection, so you can access your adventures wherever you are.</p></div></details>
+      <details class="ww-roadmap-item"><summary>Multiple Languages</summary><div class="ww-roadmap-item-body"><p>Introducing additional languages to make WozzaWorld accessible to more travellers around the world.</p></div></details>
+      <details class="ww-roadmap-item"><summary>Friend Connect</summary><div class="ww-roadmap-item-body"><p><strong>Because adventures are better shared!</strong></p><p>An ambition to bring travellers together! Connect with friends, collaborate on trip planning, share recommendations, compare travel stats and celebrate achievements.</p></div></details>
+    </div>
     <hr class="ww-roadmap-divider">
     <p><strong>💛 Help WozzaWorld Grow</strong></p>
     <p>WozzaWorld is currently free, and everything you see has been developed independently.</p>
@@ -11978,6 +11985,10 @@ wwOpenQuickInfo=function(row,id){
     const id=title==='Privacy'?'wwLogoPrivacyDialog':'wwLogoRoadmapDialog';
     let d=document.getElementById(id);
     if(!d){d=document.createElement('dialog');d.id=id;d.className='ww-logo-placeholder';d.innerHTML=`<div class="ww-logo-placeholder-top"><h2>${title}</h2></div><div class="ww-logo-placeholder-body">${title==='Privacy'?privacyContent:roadmapContent}</div><button type="button" class="ww-logo-placeholder-close">Close</button>`;document.body.appendChild(d);d.querySelector('button').onclick=()=>d.close()}
+    if(title==='App Roadmap'){
+      const items=d.querySelectorAll('.ww-roadmap-item');
+      items.forEach(item=>{item.open=false;if(!item.dataset.wwAccordionBound){item.dataset.wwAccordionBound='1';item.addEventListener('toggle',()=>{if(item.open)items.forEach(other=>{if(other!==item)other.open=false})})}});
+    }
     if(!d.open)d.showModal();
   }
   menu.addEventListener('click',e=>{
