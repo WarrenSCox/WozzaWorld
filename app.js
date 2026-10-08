@@ -11712,7 +11712,10 @@ wwOpenQuickInfo=function(row,id){
    width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
    top:0!important;left:0!important;
   }
-  body.map-view #countrySheet .country-status-grid > button:first-child .status-icon{width:23px!important;height:23px!important;min-width:23px!important;min-height:23px!important}
+  /* Clock face is 34/48 of its 23px SVG: match the visible circle, not the icon box. */
+  body.map-view #countrySheet .country-status-grid > button[data-status="visited"] .status-tick{width:23px!important;height:23px!important;min-width:23px!important;min-height:23px!important}
+  body.map-view #countrySheet .country-status-grid > button[data-status="visited"] .status-tick::before{width:16.3px!important;height:16.3px!important}
+  body.map-view #countrySheet .country-status-grid > button[data-status="visited"] > span:last-child{transform:translateY(1px)!important}
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{color:#e2aa16!important}
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg{color:#ef3340!important}
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{color:#31414d!important}
