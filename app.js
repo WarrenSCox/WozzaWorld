@@ -11922,11 +11922,12 @@ wwOpenQuickInfo=function(row,id){
     #wwLogoMenu .ww-logo-menu-item:hover,#wwLogoMenu .ww-logo-menu-item:focus-visible{background:rgba(255,255,255,.14)}
     #wwLogoMenu .ww-logo-menu-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,51,66,.18)}
     #wwLogoMenu .ww-logo-menu-icon svg{width:25px;height:25px;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
-    .ww-logo-placeholder{border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
+    .ww-logo-placeholder{display:flex;flex-direction:column;max-height:min(85dvh,760px);overflow:hidden;border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
     .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
     .ww-logo-placeholder .ww-logo-placeholder-top{background:linear-gradient(120deg,#086579,#0aa3a6);color:#fff;padding:24px 26px;border-radius:24px 24px 0 0}
-    .ww-logo-placeholder h2{margin:0;font-size:24px}.ww-logo-placeholder .ww-logo-placeholder-body{padding:20px 26px 12px;max-height:min(54dvh,480px);overflow-y:auto}.ww-logo-placeholder p{padding:0;margin:0 0 14px;font-size:15px;line-height:1.55}
-    .ww-logo-placeholder .ww-logo-placeholder-close{display:block;margin:0 26px 22px auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
+    .ww-logo-placeholder h2{margin:0;font-size:24px}.ww-logo-placeholder .ww-logo-placeholder-body{padding:20px 26px 22px;min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain}.ww-logo-placeholder p{padding:0;margin:0 0 14px;font-size:15px;line-height:1.55}
+    .ww-logo-placeholder .ww-roadmap-divider{border:0;border-top:1px solid #c5dfe1;margin:16px 0 20px}
+    .ww-logo-placeholder .ww-logo-placeholder-close{display:block;flex:0 0 auto;margin:12px 26px 22px auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
   `;
   document.head.appendChild(css);
   const icons={
@@ -11953,10 +11954,30 @@ wwOpenQuickInfo=function(row,id){
     <p><strong>External services.</strong> Some features load resources or use third-party services, including Google Maps, mapping data, flags and fonts. These providers may receive technical information such as your IP address when their resources are requested, and apply their own privacy policies.</p>
     <p><strong>AI Analysis.</strong> WozzaWorld prepares a summary of your travel statistics and copies it for use with Google Gemini. You choose whether to paste and submit it to Gemini; it is not automatically submitted by WozzaWorld.</p>
     <p>We aim to minimise unnecessary data collection and be transparent about external services. Your adventures belong to you.</p>`;
+  const roadmapContent=`
+    <p><strong>A little app with big ambitions!</strong></p>
+    <p>WozzaWorld is an independently developed passion project, created out of a love for travel and exploring the world.</p>
+    <p>The app is currently completely free to use, and I'd love to keep making it bigger and better.</p>
+    <p>Here are a few ideas I'm hoping to bring to life in the future.</p>
+    <p><strong>🌐 Offline Support</strong></p>
+    <p>Making more of WozzaWorld available without an internet connection, so you can access your adventures wherever you are.</p>
+    <p><strong>🗣️ Multiple Languages</strong></p>
+    <p>Introducing additional languages to make WozzaWorld accessible to more travellers around the world.</p>
+    <p><strong>👫 Friend Connect</strong></p>
+    <p><strong>Because adventures are better shared!</strong></p>
+    <p>An ambition to bring travellers together! Connect with friends, collaborate on trip planning, share recommendations, compare travel stats and celebrate achievements.</p>
+    <hr class="ww-roadmap-divider">
+    <p><strong>💛 Help WozzaWorld Grow</strong></p>
+    <p>WozzaWorld is currently free, and everything you see has been developed independently.</p>
+    <p>I'd love to introduce these features, but further development takes time, resources and funding. What comes next will depend on the support the app receives and what's realistically achievable.</p>
+    <p>If you enjoy using WozzaWorld and find it useful, please consider making a small voluntary donation to help support its future.</p>
+    <p>There's absolutely no obligation. Every little bit of support would mean a lot, and simply using and enjoying the app is appreciated too!</p>
+    <p><strong>Thank you for being part of the adventure. 🌍</strong></p>
+    <p><em>Note: The roadmap is a collection of ideas and ambitions, not a promise of future features or release dates.</em></p>`;
   function placeholder(title){
     const id=title==='Privacy'?'wwLogoPrivacyDialog':'wwLogoRoadmapDialog';
     let d=document.getElementById(id);
-    if(!d){d=document.createElement('dialog');d.id=id;d.className='ww-logo-placeholder';d.innerHTML=`<div class="ww-logo-placeholder-top"><h2>${title}</h2></div><div class="ww-logo-placeholder-body">${title==='Privacy'?privacyContent:'<p>This section is coming soon.</p>'}</div><button type="button" class="ww-logo-placeholder-close">Close</button>`;document.body.appendChild(d);d.querySelector('button').onclick=()=>d.close()}
+    if(!d){d=document.createElement('dialog');d.id=id;d.className='ww-logo-placeholder';d.innerHTML=`<div class="ww-logo-placeholder-top"><h2>${title}</h2></div><div class="ww-logo-placeholder-body">${title==='Privacy'?privacyContent:roadmapContent}</div><button type="button" class="ww-logo-placeholder-close">Close</button>`;document.body.appendChild(d);d.querySelector('button').onclick=()=>d.close()}
     if(!d.open)d.showModal();
   }
   menu.addEventListener('click',e=>{
@@ -11972,58 +11993,59 @@ wwOpenQuickInfo=function(row,id){
 })();
 
 
-/* === WozzaWorld local-first privacy + unified dialog presentation 08 Oct 2026 ===
-   Existing launcher elements remain in the DOM for menu reuse; only their
-   Passport presentation is hidden. No backup/profile/bin event handlers change. */
+
+/* Audited dialog layout repair: correct inner form/header geometry without changing handlers. */
 (()=>{
-  if(document.getElementById('ww-unified-dialog-style-081026'))return;
-  const style=document.createElement('style');
-  style.id='ww-unified-dialog-style-081026';
+  if(document.getElementById('ww-dialog-layout-repair-081026'))return;
+  const style=document.createElement('style');style.id='ww-dialog-layout-repair-081026';
   style.textContent=`
     section[data-screen="me"] .recycle-launch{display:none!important}
-    #wwPassportNameDialog, #backupRestoreDialog{
-      box-sizing:border-box!important;width:min(420px,calc(100vw - 32px))!important;
-      max-width:calc(100vw - 32px)!important;max-height:min(88dvh,760px)!important;
+    #wwPassportNameDialog,#backupRestoreDialog{
+      box-sizing:border-box!important;width:min(440px,calc(100vw - 32px))!important;
+      max-width:calc(100vw - 32px)!important;max-height:min(85dvh,760px)!important;
       padding:0!important;border:0!important;border-radius:24px!important;
       background:#f4fbfb!important;color:#193d4a!important;
       box-shadow:0 20px 70px rgba(0,20,30,.35)!important;overflow:hidden!important
     }
     #wwPassportNameDialog::backdrop,#backupRestoreDialog::backdrop{
-      background:rgba(0,24,35,.55)!important;
-      backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important
+      background:rgba(0,24,35,.55)!important;backdrop-filter:blur(5px)!important;
+      -webkit-backdrop-filter:blur(5px)!important
     }
     #wwPassportNameDialog .ww-profile-card,#backupRestoreDialog form{
       position:relative!important;box-sizing:border-box!important;width:100%!important;
-      min-width:0!important;max-height:min(88dvh,760px)!important;overflow-y:auto!important;
+      min-width:0!important;max-height:min(85dvh,760px)!important;overflow-y:auto!important;
       padding:0 26px 24px!important;margin:0!important;border:0!important;
-      border-radius:24px!important;background:#f4fbfb!important;
-      color:#193d4a!important;box-shadow:none!important
+      border-radius:24px!important;background:#f4fbfb!important;color:#193d4a!important;
+      box-shadow:none!important
     }
     #wwPassportNameDialog h3,#backupRestoreDialog .recycle-head{
-      box-sizing:border-box!important;margin:0 -26px 22px!important;
-      padding:25px 70px 25px 26px!important;
+      display:block!important;box-sizing:border-box!important;width:calc(100% + 52px)!important;
+      max-width:none!important;margin:0 -26px 22px!important;
+      padding:25px 65px 25px 26px!important;border:0!important;
+      border-radius:24px 24px 0 0!important;
       background:linear-gradient(120deg,#086579,#0aa3a6)!important;
-      color:white!important;border-radius:24px 24px 0 0!important
+      color:#fff!important;box-shadow:none!important
     }
     #wwPassportNameDialog h3,#backupRestoreDialog .recycle-head h3{
       font-size:24px!important;font-weight:800!important;line-height:1.3!important;
-      color:#fff!important;margin:0!important
+      color:#fff!important
     }
-    #backupRestoreDialog .recycle-head{padding-right:70px!important}
+    #backupRestoreDialog .recycle-head h3{margin:0!important;padding:0!important;
+      background:none!important;border:0!important;width:auto!important;max-width:none!important;
+      font-size:24px!important;white-space:nowrap!important}
     #wwPassportNameDialog label{color:#193d4a!important}
-    #wwPassportNameDialog .ww-profile-save,
-    #backupRestoreDialog .backup-restore-actions button{
+    #wwPassportNameDialog .ww-profile-save,#backupRestoreDialog .backup-restore-actions button{
       background:#e9bd2a!important;color:#193d4a!important;border:0!important;
       border-radius:999px!important;font-weight:800!important;cursor:pointer!important
     }
     #wwPassportNameDialog .ww-profile-save{width:auto!important;display:block!important;
       margin:20px 0 0 auto!important;padding:11px 28px!important}
     #wwPassportNameDialog .ww-profile-close,#backupRestoreDialog .dialog-close-x{
-      position:absolute!important;top:15px!important;right:16px!important;z-index:2!important;
-      display:grid!important;place-items:center!important;width:39px!important;height:39px!important;
-      padding:0!important;border:0!important;border-radius:50%!important;
-      background:rgba(255,255,255,.15)!important;color:#fff!important;
-      box-shadow:none!important;font-size:28px!important;line-height:1!important
+      position:absolute!important;top:15px!important;right:16px!important;left:auto!important;
+      z-index:5!important;display:grid!important;place-items:center!important;
+      width:39px!important;height:39px!important;padding:0!important;
+      border:0!important;border-radius:50%!important;background:rgba(255,255,255,.18)!important;
+      color:#fff!important;box-shadow:none!important;font-size:28px!important;line-height:1!important
     }
     #backupRestoreDialog .backup-last-date{color:#193d4a!important}
     #backupRestoreDialog .backup-safe-note{color:#506872!important}
