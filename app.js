@@ -11763,3 +11763,20 @@ wwOpenQuickInfo=function(row,id){
  `;
  document.head.appendChild(style);
 })();
+
+/* Portrait-only country utility label isolation — 08 Oct 2026.
+   Labels are inserted by the landscape enhancement even in portrait.
+   Keep them in the DOM for landscape, but never lay them out in portrait. */
+(()=>{
+ const style=document.createElement('style');
+ style.id='ww-portrait-country-utility-label-isolation-081026';
+ style.textContent=`
+ @media (orientation:portrait){
+   #countrySheet .ww-country-utility-grid > button .ww-utility-label{
+     display:none!important;
+     visibility:hidden!important;
+   }
+ }
+ `;
+ document.head.appendChild(style);
+})();
