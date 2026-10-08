@@ -11691,6 +11691,8 @@ wwOpenQuickInfo=function(row,id){
  const style=document.createElement('style');
  style.id='ww-landscape-country-utility-labels-081026';
  style.textContent=`
+ /* Labels exist in the DOM in both orientations; portrait retains icon-only utilities. */
+ #countrySheet .ww-country-utility-grid > button .ww-utility-label{display:none!important}
  @media (orientation:landscape){
   body.map-view #countrySheet .ww-country-utility-grid > button{
    display:flex!important;flex-direction:column!important;align-items:center!important;
