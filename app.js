@@ -11697,21 +11697,41 @@ wwOpenQuickInfo=function(row,id){
   body.map-view #countrySheet .ww-country-utility-grid > button{
    display:flex!important;flex-direction:column!important;align-items:center!important;
    justify-content:center!important;gap:7px!important;
-   font-family:inherit!important;font-size:clamp(11px,3vw,15px)!important;
+   font-family:inherit!important;font-size:15px!important;
    font-weight:400!important;line-height:1.12!important;color:#31414d!important;
+  }
+  body.map-view #countrySheet .choice-grid > button,
+  body.map-view #countrySheet .country-status-grid > button{
+   font-family:inherit!important;font-size:15px!important;font-weight:400!important;
+   line-height:1.12!important;gap:7px!important;
+  }
+  body.map-view #countrySheet .choice-grid .status-icon,
+  body.map-view #countrySheet .country-status-grid .status-icon{
+   width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;
+  }
+  body.map-view #countrySheet .choice-grid .status-tick,
+  body.map-view #countrySheet .country-status-grid .status-tick{
+   width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;
+   font-size:18px!important;line-height:25px!important;
+  }
+  body.map-view #countrySheet .choice-grid .status-clock svg,
+  body.map-view #countrySheet .choice-grid .status-bucket svg,
+  body.map-view #countrySheet .country-status-grid .status-clock svg,
+  body.map-view #countrySheet .country-status-grid .status-bucket svg{
+   width:29px!important;height:29px!important;max-width:29px!important;max-height:29px!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid > button .ww-utility-label{
    display:block!important;font:inherit!important;line-height:1.12!important;
    white-space:nowrap!important;color:#31414d!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
-   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
+   width:29px!important;height:29px!important;max-width:29px!important;max-height:29px!important;
    top:0!important;left:0!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
-   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
+   width:29px!important;height:29px!important;max-width:29px!important;max-height:29px!important;
    top:0!important;left:0!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{color:#e2aa16!important}
