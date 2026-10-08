@@ -11967,8 +11967,7 @@ wwOpenQuickInfo=function(row,id){
     #wwLogoMenu .ww-logo-menu-item:hover,#wwLogoMenu .ww-logo-menu-item:focus-visible{background:rgba(255,255,255,.14)}
     #wwLogoMenu .ww-logo-menu-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,51,66,.18)}
     #wwLogoMenu .ww-logo-menu-icon svg{width:25px;height:25px;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
-    .ww-logo-placeholder:not([open]){display:none!important}
-    .ww-logo-placeholder[open]{display:flex;flex-direction:column;max-height:min(85dvh,760px);overflow:hidden;border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
+    .ww-logo-placeholder{display:flex;flex-direction:column;max-height:min(85dvh,760px);overflow:hidden;border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
     .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
     .ww-logo-placeholder .ww-logo-placeholder-top{background:linear-gradient(120deg,#086579,#0aa3a6);color:#fff;padding:24px 26px;border-radius:24px 24px 0 0}
     .ww-logo-placeholder h2{margin:0;font-size:24px}.ww-logo-placeholder .ww-logo-placeholder-body{padding:20px 26px 22px;min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain}.ww-logo-placeholder p{padding:0;margin:0 0 14px;font-size:15px;line-height:1.55}
@@ -11988,12 +11987,11 @@ wwOpenQuickInfo=function(row,id){
     #countryInfoDialog .country-facts-accordion.ww-roadmap-item>summary{text-transform:none!important}
     #countryInfoDialog .country-facts-card{background:#f4fbfb!important}
     @media (orientation:portrait){
-      #countryInfoDialog.country-facts-dialog{height:94dvh!important;max-height:94dvh!important;width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;box-sizing:border-box!important;overflow:hidden!important}
+      #countryInfoDialog.country-facts-dialog{height:96dvh!important;max-height:96dvh!important;box-sizing:border-box!important;overflow:hidden!important}
       #countryInfoDialog .country-facts-card{box-sizing:border-box!important;height:100%!important;max-height:100%!important;overflow-y:auto!important;overscroll-behavior:contain!important}
     }
     @media (orientation:landscape){
       body.map-view #countryInfoDialog #countryInfoBody:has(> .country-guide-photo){row-gap:14px!important}
-      #countryInfoDialog .country-facts-accordion.ww-roadmap-item{margin-bottom:5px!important}
     }
     .ww-logo-placeholder .ww-roadmap-divider{border:0;border-top:1px solid #c5dfe1;margin:16px 0 20px}
     .ww-logo-placeholder .ww-logo-placeholder-close{display:block;flex:0 0 auto;margin:12px 26px 22px auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
