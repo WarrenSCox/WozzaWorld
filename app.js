@@ -11784,3 +11784,123 @@ wwOpenQuickInfo=function(row,id){
  `;
  document.head.appendChild(style);
 })();
+
+/* Homepage country cards: reuse audited map landscape action geometry. */
+(()=>{
+ const style=document.createElement('style');
+ style.id='ww-home-country-landscape-parity-081026';
+ style.textContent=`
+ @media (orientation:landscape){
+  body.ww-home-country-landscape #countrySheet.sheet.open{
+   position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+   transform:translate(-50%,-50%)!important;transform-origin:center center!important;
+   width:min(760px,84vw)!important;max-width:min(760px,84vw)!important;
+   height:auto!important;max-height:90dvh!important;overflow-y:auto!important;
+   box-sizing:border-box!important;border-radius:28px!important;
+  }
+  body.ww-home-country-landscape #countrySheet .country-hero-minimal{
+   min-height:0!important;height:clamp(85px,23dvh,150px)!important;max-height:23dvh!important;
+  }
+  body.ww-home-country-landscape #sheetBackdrop.open{
+   position:fixed!important;inset:0!important;
+   background:rgba(8,27,39,.58)!important;
+   backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important;
+  }
+ }
+ 
+ @media (orientation:landscape){
+  body.ww-home-country-landscape #countrySheet .choice-grid,
+  body.ww-home-country-landscape #countrySheet .country-status-grid{
+   display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;
+   grid-template-rows:minmax(0,1fr)!important;gap:8px!important;align-items:stretch!important;
+  }
+  body.ww-home-country-landscape #countrySheet .choice-grid > button,
+  body.ww-home-country-landscape #countrySheet .country-status-grid > button{
+   grid-row:1!important;min-width:0!important;width:100%!important;height:100%!important;
+  }
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid{
+   display:contents!important;aspect-ratio:auto!important;padding:0!important;border:0!important;
+   background:none!important;box-shadow:none!important;
+  }
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button{
+   grid-row:1!important;min-width:0!important;min-height:0!important;
+   height:100%!important;width:100%!important;border-radius:14px!important;
+   box-shadow:0 3px 8px rgba(16,48,58,.09)!important;
+  }
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button:nth-child(1){grid-column:4!important}
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button:nth-child(2){grid-column:5!important}
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button:nth-child(3){grid-column:6!important}
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button:nth-child(4){grid-column:7!important}
+ }
+ 
+
+ @media (orientation:landscape){
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button{
+   display:flex!important;flex-direction:column!important;align-items:center!important;
+   justify-content:center!important;gap:6px!important;
+   font-family:inherit!important;
+   font-weight:400!important;line-height:1.12!important;color:#31414d!important;
+  }
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button .ww-utility-label{
+   display:block!important;font:inherit!important;line-height:1.12!important;
+   white-space:nowrap!important;color:#31414d!important;
+  }
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
+   width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
+   top:0!important;left:0!important;transform:translateY(3px)!important;
+  }
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg,
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg,
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
+   width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
+   top:0!important;left:0!important;transform:translateY(3px)!important;
+  }
+  /* Clock face is 34/48 of its 23px SVG: match the visible circle, not the icon box. */
+  body.ww-home-country-landscape #countrySheet .country-status-grid > button[data-status="visited"] .status-tick{width:23px!important;height:23px!important;min-width:23px!important;min-height:23px!important}
+  body.ww-home-country-landscape #countrySheet .country-status-grid > button[data-status="visited"] .status-tick::before{width:20px!important;height:20px!important;border-width:1.8px!important}
+  body.ww-home-country-landscape #countrySheet .country-status-grid > button[data-status="visited"] > span:last-child{transform:translateY(1px)!important}
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{color:#e2aa16!important}
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg{color:#ef3340!important}
+  body.ww-home-country-landscape #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{color:#31414d!important}
+ }
+ 
+
+ @media (orientation:landscape){
+   body.ww-home-country-landscape #countrySheet .choice-grid > button,
+   body.ww-home-country-landscape #countrySheet .country-status-grid > button,
+   body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button{
+     font-family:inherit!important;
+     font-size:12px!important;
+     font-weight:400!important;
+     line-height:1.12!important;
+     letter-spacing:normal!important;
+     text-transform:none!important;
+   }
+   body.ww-home-country-landscape #countrySheet .ww-country-utility-grid > button .ww-utility-label{
+     display:block!important;
+     font-family:inherit!important;
+     font-size:12px!important;
+     font-weight:400!important;
+     line-height:1.12!important;
+     letter-spacing:normal!important;
+     white-space:nowrap!important;
+     max-width:100%!important;
+     text-align:center!important;
+   }
+ }
+ 
+ `;document.head.appendChild(style);
+ function sync(){
+  const sheet=document.getElementById('countrySheet');
+  const active=!!sheet?.classList.contains('open')&&!document.body.classList.contains('map-view')&&matchMedia('(orientation:landscape)').matches;
+  document.body.classList.toggle('ww-home-country-landscape',active);
+  if(active){
+   for(const property of ['left','right','top','bottom','width','height','max-width','max-height','transform'])sheet.style.removeProperty(property);
+  }
+ }
+ const sheet=document.getElementById('countrySheet');
+ if(sheet)new MutationObserver(sync).observe(sheet,{attributes:true,attributeFilter:['class']});
+ addEventListener('resize',sync,{passive:true});
+ addEventListener('orientationchange',sync,{passive:true});
+ sync();
+})();
