@@ -11691,47 +11691,25 @@ wwOpenQuickInfo=function(row,id){
  const style=document.createElement('style');
  style.id='ww-landscape-country-utility-labels-081026';
  style.textContent=`
- /* Labels exist in the DOM in both orientations; portrait retains icon-only utilities. */
- #countrySheet .ww-country-utility-grid > button .ww-utility-label{display:none!important}
  @media (orientation:landscape){
   body.map-view #countrySheet .ww-country-utility-grid > button{
    display:flex!important;flex-direction:column!important;align-items:center!important;
    justify-content:center!important;gap:7px!important;
-   font-family:inherit!important;font-size:15px!important;
+   font-family:inherit!important;font-size:clamp(11px,3vw,15px)!important;
    font-weight:400!important;line-height:1.12!important;color:#31414d!important;
-  }
-  body.map-view #countrySheet .choice-grid > button,
-  body.map-view #countrySheet .country-status-grid > button{
-   font-family:inherit!important;font-size:15px!important;font-weight:400!important;
-   line-height:1.12!important;gap:7px!important;
-  }
-  body.map-view #countrySheet .choice-grid .status-icon,
-  body.map-view #countrySheet .country-status-grid .status-icon{
-   width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;
-  }
-  body.map-view #countrySheet .choice-grid .status-tick,
-  body.map-view #countrySheet .country-status-grid .status-tick{
-   width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;
-   font-size:18px!important;line-height:25px!important;
-  }
-  body.map-view #countrySheet .choice-grid .status-clock svg,
-  body.map-view #countrySheet .choice-grid .status-bucket svg,
-  body.map-view #countrySheet .country-status-grid .status-clock svg,
-  body.map-view #countrySheet .country-status-grid .status-bucket svg{
-   width:29px!important;height:29px!important;max-width:29px!important;max-height:29px!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid > button .ww-utility-label{
    display:block!important;font:inherit!important;line-height:1.12!important;
    white-space:nowrap!important;color:#31414d!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
-   width:29px!important;height:29px!important;max-width:29px!important;max-height:29px!important;
+   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
    top:0!important;left:0!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
-   width:29px!important;height:29px!important;max-width:29px!important;max-height:29px!important;
+   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
    top:0!important;left:0!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{color:#e2aa16!important}
@@ -11750,4 +11728,27 @@ wwOpenQuickInfo=function(row,id){
  const previousRender=renderSheet;
  renderSheet=function(){const result=previousRender.apply(this,arguments);apply();return result};
  apply();
+})();
+
+/* Landscape country action label parity — use the rendered native labels as source of truth. */
+(()=>{
+  if(window.__wwLandscapeLabelParity081026)return;
+  window.__wwLandscapeLabelParity081026=true;
+  const sync=()=>{
+    if(!document.body.classList.contains('map-view')||!matchMedia('(orientation:landscape)').matches)return;
+    const sheet=document.getElementById('countrySheet');
+    if(!sheet)return;
+    const native=sheet.querySelector('.choice-grid button[data-status="bucket"] span, .country-status-grid button[data-status="bucket"] span') ||
+      [...sheet.querySelectorAll('.choice-grid > button span, .country-status-grid > button span')].find(el=>el.textContent.trim()==='Bucket list');
+    if(!native)return;
+    const computed=getComputedStyle(native);
+    const properties=['font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-transform','text-decoration','text-align'];
+    sheet.querySelectorAll('.ww-country-utility-grid .ww-utility-label').forEach(label=>{
+      for(const property of properties)label.style.setProperty(property,computed.getPropertyValue(property),'important');
+    });
+  };
+  const previousRender=renderSheet;
+  renderSheet=function(){const result=previousRender.apply(this,arguments);requestAnimationFrame(sync);return result};
+  window.addEventListener('resize',()=>requestAnimationFrame(sync),{passive:true});
+  requestAnimationFrame(sync);
 })();
