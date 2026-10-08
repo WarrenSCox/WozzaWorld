@@ -11730,27 +11730,36 @@ wwOpenQuickInfo=function(row,id){
  apply();
 })();
 
-/* Country utility labels: portrait remains a compact 2x2 icon grid.
-   Landscape uses the same typography as the three native status buttons.
-   No runtime style copying: this avoids portrait leakage and resize races. */
+/* Country action typography: one landscape rule for all seven buttons.
+   The four utility buttons previously inherited a larger font from their icon
+   rules; set identical text metrics on native buttons and utility labels. */
 (()=>{
-  const style=document.createElement('style');
-  style.id='ww-country-utility-label-parity-final-081026';
-  style.textContent=`
-    #countrySheet .ww-country-utility-grid .ww-utility-label{display:none!important}
-    @media (orientation:landscape){
-      body.map-view #countrySheet .ww-country-utility-grid > button{
-        font-size:inherit!important;font-weight:400!important;
-        line-height:normal!important;min-width:0!important;
-      }
-      body.map-view #countrySheet .ww-country-utility-grid .ww-utility-label{
-        display:block!important;font-family:inherit!important;
-        font-size:clamp(11px,1.35vw,15px)!important;
-        font-weight:400!important;line-height:1.2!important;
-        letter-spacing:normal!important;white-space:nowrap!important;
-        max-width:100%!important;text-align:center!important;
-      }
-    }
-  `;
-  document.head.appendChild(style);
+ const style=document.createElement('style');
+ style.id='ww-country-seven-unified-labels-081026';
+ style.textContent=`
+ @media (orientation:landscape){
+   body.map-view #countrySheet .choice-grid > button,
+   body.map-view #countrySheet .country-status-grid > button,
+   body.map-view #countrySheet .ww-country-utility-grid > button{
+     font-family:inherit!important;
+     font-size:13px!important;
+     font-weight:400!important;
+     line-height:1.12!important;
+     letter-spacing:normal!important;
+     text-transform:none!important;
+   }
+   body.map-view #countrySheet .ww-country-utility-grid > button .ww-utility-label{
+     display:block!important;
+     font-family:inherit!important;
+     font-size:13px!important;
+     font-weight:400!important;
+     line-height:1.12!important;
+     letter-spacing:normal!important;
+     white-space:nowrap!important;
+     max-width:100%!important;
+     text-align:center!important;
+   }
+ }
+ `;
+ document.head.appendChild(style);
 })();
