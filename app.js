@@ -11233,10 +11233,10 @@ wwOpenQuickInfo=function(row,id){
          This is the reliable coordinate system; shifting #countrySheet alone
          was being neutralised by the full-screen top-layer dialog. */
       body.map-view #wwCountryTopDialog.ww-country-popup{
-        left:var(--worldview-rail-width,clamp(82px,10vw,112px))!important;
+        left:var(--ww-landscape-nav-width,var(--worldview-rail-width,clamp(82px,10vw,112px)))!important;
         right:0!important;
         top:0!important;
-        width:calc(100vw - var(--worldview-rail-width,clamp(82px,10vw,112px)))!important;
+        width:calc(100vw - var(--ww-landscape-nav-width,var(--worldview-rail-width,clamp(82px,10vw,112px))))!important;
         max-width:none!important;
         height:100dvh!important;
         margin:0!important;
@@ -11708,8 +11708,6 @@ wwOpenQuickInfo=function(row,id){
     if(!document.body.classList.contains('map-view')||!matchMedia('(orientation:landscape)').matches)return;
     const sheet=document.querySelector('#wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open');
     if(!sheet)return;
-    const rail=document.querySelector('.topbar')?.getBoundingClientRect().width||0;
-    const usableRail=rail<innerWidth*.35?rail:0;
     sheet.style.setProperty('left','50%','important');
     sheet.style.setProperty('transform','translate(-50%,-50%)','important');
   }
