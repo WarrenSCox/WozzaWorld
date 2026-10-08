@@ -513,12 +513,10 @@ function factListContent(items,googleSearch=false){
  return `<ul class="country-facts-accordion-list">${items.map(x=>{const text=String(x);return googleSearch?`<li><button type="button" class="country-google-search-item" data-google-search="${esc(text)}">${esc(text)}</button></li>`:`<li>${esc(text)}</li>`}).join('')}</ul>`;
 }
 function countryInfoAccordion(title,content){
- return `<section class="country-facts-accordion">
-   <button type="button" class="country-facts-accordion-toggle" aria-expanded="false">
-    <span>${esc(title)}</span><span class="country-facts-accordion-icon" aria-hidden="true">+</span>
-   </button>
-   <div class="country-facts-accordion-panel" hidden>${content||'<p class="country-facts-empty-inline">No information available yet.</p>'}</div>
-  </section>`;
+ return `<details class="country-facts-accordion ww-roadmap-item">
+   <summary>${esc(title)}</summary>
+   <div class="country-facts-accordion-panel ww-roadmap-item-body">${content||'<p class="country-facts-empty-inline">No information available yet.</p>'}</div>
+  </details>`;
 }
 
 function weatherBlock(weather,countryName=''){
@@ -551,6 +549,8 @@ async function openCountryInfo(){
  ensureCountryGuidePhotoStyle();
  const dialog=$('#countryInfoDialog'),body=$('#countryInfoBody');
  if(!dialog||!body)return;
+ // Country Info uses the same one-at-a-time native details behaviour as the Roadmap.
+ // Bind after the country-specific sections have been rendered (below).
  const name=countryGuideName(currentCountry);
  $('#countryInfoTitle').textContent=currentCountry;
  const u=flagUrl(currentCountry);
@@ -723,16 +723,18 @@ const mapFilterBtn=$('#mapFilterBtn'),mapFilterDialog=$('#mapFilterDialog'),mapF
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;
+$('#countryInfoBody')?.addEventListener('toggle',e=>{
+ const item=e.target;
+ if(!item.matches?.('details.country-facts-accordion')||!item.open)return;
+ item.parentElement.querySelectorAll('details.country-facts-accordion').forEach(other=>{if(other!==item)other.open=false});
+},true);
 $('#countryInfoBody')?.addEventListener('click',e=>{
  const searchItem=e.target.closest('[data-google-search]');
  if(searchItem){window.open(`https://www.google.com/search?q=${encodeURIComponent(searchItem.dataset.googleSearch||'')}`,'_blank','noopener');return}
  const weatherItem=e.target.closest('[data-google-weather]');
  if(weatherItem){window.open(`https://www.google.com/search?q=${encodeURIComponent((weatherItem.dataset.googleWeather||currentCountry)+' weather')}`,'_blank','noopener');return}
- const btn=e.target.closest('.country-facts-accordion-toggle'); if(!btn)return;
- const panel=btn.nextElementSibling,open=btn.getAttribute('aria-expanded')==='true';
- btn.setAttribute('aria-expanded',String(!open));
- btn.querySelector('.country-facts-accordion-icon').textContent=open?'+':'−';
- panel.hidden=open;
+ // Country sections use the existing native Roadmap <details> accordion.
+ // No custom toggle handler is needed; existing search actions above remain intact.
 });
 countryInfoDialog?.addEventListener('click',e=>{if(e.target===countryInfoDialog)closeCountryInfo()});
 $('#sheetBackdrop').onclick=closeSheet;
@@ -9874,16 +9876,12 @@ wwOpenQuickInfo=function(row,id){
       #countryInfoDialog #countryInfoClose{font-size:24.75px!important}
       #countryInfoDialog #countryInfoGoogleSearch svg{width:16.5px!important;height:16.5px!important}
       #countryInfoDialog #countryInfoGoogleSearch{right:60.3px!important}
-      #countryInfoDialog .country-facts-accordion-icon{
-        flex-basis:41.6px!important;width:41.6px!important;height:41.6px!important;font-size:24.8px!important;
-      }
       @media(orientation:landscape) and (max-height:650px){
         #countryInfoDialog #countryInfoClose,
         #countryInfoDialog #countryInfoGoogleSearch{width:28.05px!important;height:28.05px!important;min-width:28.05px!important;min-height:28.05px!important}
         #countryInfoDialog #countryInfoClose{font-size:19.8px!important}
         #countryInfoDialog #countryInfoGoogleSearch svg{width:13.2px!important;height:13.2px!important}
         #countryInfoDialog #countryInfoGoogleSearch{right:52.05px!important}
-        #countryInfoDialog .country-facts-accordion-icon{flex-basis:28.8px!important;width:28.8px!important;height:28.8px!important;font-size:18.4px!important}
       }
     `;
     document.head.appendChild(style);
@@ -11973,14 +11971,18 @@ wwOpenQuickInfo=function(row,id){
     .ww-logo-placeholder .ww-logo-placeholder-top{background:linear-gradient(120deg,#086579,#0aa3a6);color:#fff;padding:24px 26px;border-radius:24px 24px 0 0}
     .ww-logo-placeholder h2{margin:0;font-size:24px}.ww-logo-placeholder .ww-logo-placeholder-body{padding:20px 26px 22px;min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain}.ww-logo-placeholder p{padding:0;margin:0 0 14px;font-size:15px;line-height:1.55}
     .ww-logo-placeholder .ww-roadmap-accordion{display:grid;gap:9px;margin:10px 0 18px}
-    .ww-logo-placeholder .ww-roadmap-item{border:1px solid #c4e0e2;border-radius:14px;background:#fff;overflow:hidden}
-    .ww-logo-placeholder .ww-roadmap-item summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;padding:15px 16px;color:#14505a;font-size:15px;font-weight:750;user-select:none}
-    .ww-logo-placeholder .ww-roadmap-item summary::-webkit-details-marker{display:none}
-    .ww-logo-placeholder .ww-roadmap-item summary::after{content:'';display:block;flex:none;width:9px;height:9px;border-right:2px solid #137784;border-bottom:2px solid #137784;transform:rotate(45deg);transition:transform .15s ease;margin-right:4px;margin-top:-5px}
-    .ww-logo-placeholder .ww-roadmap-item[open] summary::after{transform:rotate(225deg);margin-top:5px}
-    .ww-logo-placeholder .ww-roadmap-item[open] summary{border-bottom:1px solid #e0eeee;background:#edf8f8}
-    .ww-logo-placeholder .ww-roadmap-item-body{padding:13px 16px 4px}
+    .ww-logo-placeholder .ww-roadmap-item,#countryInfoDialog .ww-roadmap-item{border:1px solid #c4e0e2;border-radius:14px;background:#fff;overflow:hidden}
+    .ww-logo-placeholder .ww-roadmap-item summary,#countryInfoDialog .ww-roadmap-item summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;padding:15px 16px;color:#14505a;font-size:15px;font-weight:750;user-select:none}
+    .ww-logo-placeholder .ww-roadmap-item summary::-webkit-details-marker,#countryInfoDialog .ww-roadmap-item summary::-webkit-details-marker{display:none}
+    .ww-logo-placeholder .ww-roadmap-item summary::after,#countryInfoDialog .ww-roadmap-item summary::after{content:'';display:block;flex:none;width:9px;height:9px;border-right:2px solid #137784;border-bottom:2px solid #137784;transform:rotate(45deg);transition:transform .15s ease;margin-right:4px;margin-top:-5px}
+    .ww-logo-placeholder .ww-roadmap-item[open] summary::after,#countryInfoDialog .ww-roadmap-item[open] summary::after{transform:rotate(225deg);margin-top:5px}
+    .ww-logo-placeholder .ww-roadmap-item[open] summary,#countryInfoDialog .ww-roadmap-item[open] summary{border-bottom:1px solid #e0eeee;background:#edf8f8}
+    .ww-logo-placeholder .ww-roadmap-item-body,#countryInfoDialog .ww-roadmap-item-body{padding:13px 16px 4px}
     .ww-logo-placeholder .ww-roadmap-item-body p{margin-bottom:12px}
+    #countryInfoDialog .country-facts-accordion.ww-roadmap-item{display:block!important;margin:0 0 10px!important;padding:0!important;box-shadow:none!important;min-height:0!important}
+    #countryInfoDialog .country-facts-accordion.ww-roadmap-item>summary{display:flex!important;align-items:center!important;justify-content:space-between!important;text-transform:none!important;letter-spacing:normal!important;min-height:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+    #countryInfoDialog .country-facts-accordion.ww-roadmap-item[open]>summary{background:#edf8f8!important;border-bottom:1px solid #e0eeee!important}
+    #countryInfoDialog .country-facts-accordion.ww-roadmap-item>.ww-roadmap-item-body{display:block!important;max-height:none!important;overflow:visible!important;background:#fff!important;border:0!important}
     .ww-logo-placeholder .ww-roadmap-divider{border:0;border-top:1px solid #c5dfe1;margin:16px 0 20px}
     .ww-logo-placeholder .ww-logo-placeholder-close{display:block;flex:0 0 auto;margin:12px 26px 22px auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
   `;
@@ -12020,12 +12022,12 @@ wwOpenQuickInfo=function(row,id){
       <details class="ww-roadmap-item"><summary>Friend Connect</summary><div class="ww-roadmap-item-body"><p><strong>Because adventures are better shared!</strong></p><p>An ambition to bring travellers together! Connect with friends, collaborate on trip planning, share recommendations, compare travel stats and celebrate achievements.</p></div></details>
     </div>
     <hr class="ww-roadmap-divider">
-    <p><strong>💛 Help WozzaWorld Grow</strong></p>
+    <p><strong>Help WozzaWorld Grow</strong></p>
     <p>WozzaWorld is currently free, and everything you see has been developed independently.</p>
     <p>I'd love to introduce these features, but further development takes time, resources and funding. What comes next will depend on the support the app receives and what's realistically achievable.</p>
     <p>If you enjoy using WozzaWorld and find it useful, please consider making a small voluntary donation to help support its future.</p>
     <p>There's absolutely no obligation. Every little bit of support would mean a lot, and simply using and enjoying the app is appreciated too!</p>
-    <p><strong>Thank you for being part of the adventure. 🌍</strong></p>
+    <p><strong>Thank you for being part of the adventure.</strong></p>
     <p><em>Note: The roadmap is a collection of ideas and ambitions, not a promise of future features or release dates.</em></p>`;
   function placeholder(title){
     const id=title==='Privacy'?'wwLogoPrivacyDialog':'wwLogoRoadmapDialog';
