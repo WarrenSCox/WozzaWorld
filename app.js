@@ -11904,3 +11904,62 @@ wwOpenQuickInfo=function(row,id){
  addEventListener('orientationchange',sync,{passive:true});
  sync();
 })();
+
+/* === WozzaWorld logo menu — audited existing launcher reuse 08 Oct 2026 === */
+(()=>{
+  if(window.__wwLogoMenu081026)return;
+  window.__wwLogoMenu081026=true;
+  const logo=document.getElementById('homeLogo');
+  if(!logo)return;
+  const css=document.createElement('style');
+  css.id='ww-logo-menu-styles';
+  css.textContent=`
+    #wwLogoMenu{position:fixed;z-index:2147483000;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));width:min(310px,calc(100vw - 24px));padding:18px;border:1px solid rgba(255,255,255,.35);border-radius:25px;background:linear-gradient(145deg,#075c73 0%,#078d9a 58%,#075a70 100%);box-shadow:0 18px 48px rgba(0,27,41,.36);color:#fff;box-sizing:border-box}
+    #wwLogoMenu[hidden]{display:none!important}
+    #wwLogoMenu .ww-logo-menu-heading{font-size:17px;font-weight:800;letter-spacing:.025em;margin:0 30px 12px 7px}
+    #wwLogoMenu .ww-logo-menu-close{position:absolute;top:11px;right:12px;border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;width:32px;height:32px;font-size:23px;line-height:1;cursor:pointer}
+    #wwLogoMenu .ww-logo-menu-item{width:100%;display:flex;align-items:center;gap:15px;padding:8px 9px;border:0;border-radius:15px;background:transparent;color:#fff;text-align:left;font:600 16px/1.3 inherit;cursor:pointer}
+    #wwLogoMenu .ww-logo-menu-item:hover,#wwLogoMenu .ww-logo-menu-item:focus-visible{background:rgba(255,255,255,.14)}
+    #wwLogoMenu .ww-logo-menu-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,51,66,.18)}
+    #wwLogoMenu .ww-logo-menu-icon svg{width:25px;height:25px;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
+    .ww-logo-placeholder{border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
+    .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+    .ww-logo-placeholder .ww-logo-placeholder-top{background:linear-gradient(120deg,#086579,#0aa3a6);color:#fff;padding:24px 26px;border-radius:24px 24px 0 0}
+    .ww-logo-placeholder h2{margin:0;font-size:24px}.ww-logo-placeholder p{padding:22px 26px;margin:0;font-size:15px;line-height:1.5}
+    .ww-logo-placeholder .ww-logo-placeholder-close{display:block;margin:0 26px 22px auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
+  `;
+  document.head.appendChild(css);
+  const icons={
+    profile:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.3 3-7 7.5-7s7.5 2.7 7.5 7"/>',
+    backup:'<path d="M4 17v3h16v-3M12 16V3m-5 5 5-5 5 5"/>',
+    bin:'<path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/>',
+    privacy:'<path d="M12 2 4 6v6c0 5 3.3 8.5 8 10 4.7-1.5 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/>',
+    roadmap:'<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/>'
+  };
+  const menu=document.createElement('div');menu.id='wwLogoMenu';menu.hidden=true;menu.setAttribute('role','menu');menu.setAttribute('aria-label','WozzaWorld menu');
+  menu.innerHTML='<div class="ww-logo-menu-heading">WozzaWorld</div><button class="ww-logo-menu-close" type="button" aria-label="Close menu">×</button>'+[
+    ['profile','Profile'],['backup','Backup'],['bin','Recycle Bin'],['privacy','Privacy'],['roadmap','App Roadmap']
+  ].map(([key,label])=>`<button type="button" class="ww-logo-menu-item" role="menuitem" data-ww-action="${key}"><span class="ww-logo-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true">${icons[key]}</svg></span><span>${label}</span></button>`).join('');
+  document.body.appendChild(menu);
+  logo.title='Open WozzaWorld menu';logo.setAttribute('aria-label','Open WozzaWorld menu');logo.setAttribute('aria-haspopup','menu');logo.setAttribute('aria-expanded','false');
+  function setOpen(open){menu.hidden=!open;logo.setAttribute('aria-expanded',String(open))}
+  // The previous logo onclick reloads the page; replace only that interaction.
+  logo.onclick=e=>{e.preventDefault();e.stopPropagation();setOpen(menu.hidden)};
+  menu.querySelector('.ww-logo-menu-close').onclick=()=>setOpen(false);
+  function placeholder(title){
+    const id=title==='Privacy'?'wwLogoPrivacyDialog':'wwLogoRoadmapDialog';
+    let d=document.getElementById(id);
+    if(!d){d=document.createElement('dialog');d.id=id;d.className='ww-logo-placeholder';d.innerHTML=`<div class="ww-logo-placeholder-top"><h2>${title}</h2></div><p>This section is coming soon.</p><button type="button" class="ww-logo-placeholder-close">Close</button>`;document.body.appendChild(d);d.querySelector('button').onclick=()=>d.close()}
+    if(!d.open)d.showModal();
+  }
+  menu.addEventListener('click',e=>{
+    const item=e.target.closest('[data-ww-action]');if(!item)return;
+    const action=item.dataset.wwAction;setOpen(false);
+    if(action==='privacy')return placeholder('Privacy');
+    if(action==='roadmap')return placeholder('App Roadmap');
+    const selector={profile:'#wwPassportProfileButton',backup:'#openBackupRestore',bin:'#openRecycleBin'}[action];
+    document.querySelector(selector)?.click();
+  });
+  document.addEventListener('click',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!logo.contains(e.target))setOpen(false)});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)setOpen(false)});
+})();
