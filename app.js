@@ -11685,3 +11685,47 @@ wwOpenQuickInfo=function(row,id){
  `;
  document.head.appendChild(style);
 })();
+
+/* Landscape country utility labels and icon parity — 08 Oct 2026 */
+(()=>{
+ const style=document.createElement('style');
+ style.id='ww-landscape-country-utility-labels-081026';
+ style.textContent=`
+ @media (orientation:landscape){
+  body.map-view #countrySheet .ww-country-utility-grid > button{
+   display:flex!important;flex-direction:column!important;align-items:center!important;
+   justify-content:center!important;gap:7px!important;
+   font-family:inherit!important;font-size:clamp(11px,3vw,15px)!important;
+   font-weight:400!important;line-height:1.12!important;color:#31414d!important;
+  }
+  body.map-view #countrySheet .ww-country-utility-grid > button .ww-utility-label{
+   display:block!important;font:inherit!important;line-height:1.12!important;
+   white-space:nowrap!important;color:#31414d!important;
+  }
+  body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
+   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
+   top:0!important;left:0!important;
+  }
+  body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg,
+  body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg,
+  body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
+   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
+   top:0!important;left:0!important;
+  }
+  body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{color:#e2aa16!important}
+  body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg{color:#ef3340!important}
+  body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{color:#31414d!important}
+ }
+ `;
+ document.head.appendChild(style);
+ const labels=[['.ww-country-mini-info','Info'],['.ww-country-mini-add','Add trip'],['.ww-country-mini-pin','Map'],['.ww-country-mini-search','Research']];
+ function apply(){
+  const box=document.querySelector('#countrySheet .ww-country-utility-grid');if(!box)return;
+  for(const [selector,label] of labels){const button=box.querySelector(selector);if(!button||button.querySelector('.ww-utility-label'))continue;
+   const span=document.createElement('span');span.className='ww-utility-label';span.textContent=label;button.appendChild(span);
+  }
+ }
+ const previousRender=renderSheet;
+ renderSheet=function(){const result=previousRender.apply(this,arguments);apply();return result};
+ apply();
+})();
