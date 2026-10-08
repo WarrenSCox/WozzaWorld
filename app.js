@@ -11694,7 +11694,7 @@ wwOpenQuickInfo=function(row,id){
  @media (orientation:landscape){
   body.map-view #countrySheet .ww-country-utility-grid > button{
    display:flex!important;flex-direction:column!important;align-items:center!important;
-   justify-content:center!important;gap:7px!important;
+   justify-content:center!important;gap:5px!important;
    font-family:inherit!important;
    font-weight:400!important;line-height:1.12!important;color:#31414d!important;
   }
@@ -11703,13 +11703,13 @@ wwOpenQuickInfo=function(row,id){
    white-space:nowrap!important;color:#31414d!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
-   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
+   width:32px!important;height:32px!important;max-width:32px!important;max-height:32px!important;
    top:0!important;left:0!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
-   width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;
+   width:32px!important;height:32px!important;max-width:32px!important;max-height:32px!important;
    top:0!important;left:0!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg{color:#e2aa16!important}
