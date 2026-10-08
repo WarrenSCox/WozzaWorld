@@ -11780,3 +11780,31 @@ wwOpenQuickInfo=function(row,id){
  `;
  document.head.appendChild(style);
 })();
+
+
+/* Audited seven-button typography parity — landscape only.
+   Match the actual rendered label on the existing Visited button, rather
+   than assigning another guessed pixel size to the four utility labels. */
+(()=>{
+ const sync=()=>{
+   if(!matchMedia('(orientation:landscape)').matches || !document.body.classList.contains('map-view'))return;
+   const sheet=document.getElementById('countrySheet');
+   if(!sheet)return;
+   const native=sheet.querySelector('.choice-grid > button, .country-status-grid > button');
+   const utility=sheet.querySelectorAll('.ww-country-utility-grid > button .ww-utility-label');
+   if(!native || !utility.length)return;
+   const label=[...native.querySelectorAll('span')].find(x=>/^(Visited|Visiting|Bucket list)$/i.test(x.textContent.trim()));
+   const source=label||native;
+   const style=getComputedStyle(source);
+   for(const item of utility){
+     for(const key of ['font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-transform']){
+       item.style.setProperty(key,style.getPropertyValue(key),'important');
+     }
+   }
+ };
+ const prior=renderSheet;
+ renderSheet=function(){const value=prior.apply(this,arguments);requestAnimationFrame(sync);return value};
+ window.addEventListener('resize',sync,{passive:true});
+ window.addEventListener('orientationchange',sync,{passive:true});
+ requestAnimationFrame(sync);
+})();
