@@ -11719,3 +11719,36 @@ wwOpenQuickInfo=function(row,id){
   addEventListener('orientationchange',()=>setTimeout(align,100),{passive:true});
   requestAnimationFrame(align);
 })();
+
+/* Landscape-only seven equal country action buttons — preserve portrait grid */
+(()=>{
+ const style=document.createElement('style');
+ style.id='ww-country-seven-landscape-actions-081026';
+ style.textContent=`
+ @media (orientation:landscape){
+  body.map-view #countrySheet .choice-grid,
+  body.map-view #countrySheet .country-status-grid{
+   display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;
+   grid-template-rows:minmax(0,1fr)!important;gap:8px!important;align-items:stretch!important;
+  }
+  body.map-view #countrySheet .choice-grid > button,
+  body.map-view #countrySheet .country-status-grid > button{
+   grid-row:1!important;min-width:0!important;width:100%!important;height:100%!important;
+  }
+  body.map-view #countrySheet .ww-country-utility-grid{
+   display:contents!important;aspect-ratio:auto!important;padding:0!important;border:0!important;
+   background:none!important;box-shadow:none!important;
+  }
+  body.map-view #countrySheet .ww-country-utility-grid > button{
+   grid-row:1!important;min-width:0!important;min-height:0!important;
+   height:100%!important;width:100%!important;border-radius:14px!important;
+   box-shadow:0 3px 8px rgba(16,48,58,.09)!important;
+  }
+  body.map-view #countrySheet .ww-country-utility-grid > button:nth-child(1){grid-column:4!important}
+  body.map-view #countrySheet .ww-country-utility-grid > button:nth-child(2){grid-column:5!important}
+  body.map-view #countrySheet .ww-country-utility-grid > button:nth-child(3){grid-column:6!important}
+  body.map-view #countrySheet .ww-country-utility-grid > button:nth-child(4){grid-column:7!important}
+ }
+ `;
+ document.head.appendChild(style);
+})();
