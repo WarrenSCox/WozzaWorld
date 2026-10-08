@@ -11704,13 +11704,13 @@ wwOpenQuickInfo=function(row,id){
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-info img{
    width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
-   top:0!important;left:0!important;
+   top:0!important;left:0!important;transform:translateY(3px)!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-add .ww-country-plus-svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-pin svg,
   body.map-view #countrySheet .ww-country-utility-grid .ww-country-mini-search svg{
    width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
-   top:0!important;left:0!important;
+   top:0!important;left:0!important;transform:translateY(3px)!important;
   }
   /* Clock face is 34/48 of its 23px SVG: match the visible circle, not the icon box. */
   body.map-view #countrySheet .country-status-grid > button[data-status="visited"] .status-tick{width:23px!important;height:23px!important;min-width:23px!important;min-height:23px!important}
