@@ -11298,9 +11298,9 @@ wwOpenQuickInfo=function(row,id){
     const rail=railWidth();
     /* countrySheet is ultimately positioned against the full viewport. Shift its
        centre by half the left rail width so it is centred in the remaining map workspace. */
-    sheet.style.setProperty('left',`calc(50% + ${rail/2}px)`,'important');
+    sheet.style.setProperty('left','50%','important');
     sheet.style.setProperty('right','auto','important');
-    sheet.style.setProperty('transform','translate(-50%,-50%) scale(.49)','important');
+    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
     if(back?.classList.contains('open')){
       back.style.setProperty('background','transparent','important');
       back.style.setProperty('backdrop-filter','none','important');
@@ -11368,7 +11368,7 @@ wwOpenQuickInfo=function(row,id){
 
     @media (orientation:landscape){
       body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-        transform:translate(-50%,-50%) scale(.70)!important;
+        transform:translate(-50%,-50%)!important;
         transform-origin:center center!important;
       }
       body.map-view #wwCountryTopDialog.ww-country-popup::backdrop{
@@ -11449,7 +11449,7 @@ wwOpenQuickInfo=function(row,id){
 
     @media (orientation:landscape){
       body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-        transform:translate(-50%,-50%) scale(.49)!important;
+        transform:translate(-50%,-50%)!important;
         transform-origin:center center!important;
       }
     }
@@ -11670,7 +11670,7 @@ wwOpenQuickInfo=function(row,id){
     @media(max-width:620px){#wwCountryMapDialog .ww-map-title{font-size:22px!important}}
     @media (orientation:landscape){
       body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-        transform:translate(-50%,-50%) scale(.49)!important;
+        transform:translate(-50%,-50%)!important;
         transform-origin:center center!important;
       }
       body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet .country-hero-minimal{
@@ -11710,7 +11710,7 @@ wwOpenQuickInfo=function(row,id){
     if(!sheet)return;
     const rail=document.querySelector('.topbar')?.getBoundingClientRect().width||0;
     const usableRail=rail<innerWidth*.35?rail:0;
-    sheet.style.setProperty('left',`calc(50% + ${usableRail/2}px)`,'important');
+    sheet.style.setProperty('left','50%','important');
     sheet.style.setProperty('transform','translate(-50%,-50%)','important');
   }
   const observer=new MutationObserver(()=>{if(document.querySelector('#wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open'))requestAnimationFrame(align)});
