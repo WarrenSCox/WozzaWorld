@@ -11227,36 +11227,7 @@ wwOpenQuickInfo=function(row,id){
       }
     }
 
-    @media (orientation:landscape){
-      /* Country UI is mounted inside a full-screen native <dialog>. Centre the
-         dialog itself in the usable map workspace to the RIGHT of the nav rail.
-         This is the reliable coordinate system; shifting #countrySheet alone
-         was being neutralised by the full-screen top-layer dialog. */
-      body.map-view #wwCountryTopDialog.ww-country-popup{
-        left:var(--ww-landscape-nav-width,var(--worldview-rail-width,clamp(82px,10vw,112px)))!important;
-        right:0!important;
-        top:0!important;
-        width:calc(100vw - var(--ww-landscape-nav-width,var(--worldview-rail-width,clamp(82px,10vw,112px))))!important;
-        max-width:none!important;
-        height:100dvh!important;
-        margin:0!important;
-      }
-      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-        left:50%!important;
-        right:auto!important;
-        transform:translate(-50%,-50%)!important;
-        max-width:calc(100% - 24px)!important;
-      }
-      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
-        background:transparent!important;
-        backdrop-filter:none!important;
-        -webkit-backdrop-filter:none!important;
-        pointer-events:none!important;
-      }
-      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{
-        pointer-events:auto!important;
-      }
-    }
+
   `;
   document.head.appendChild(st);
 })();
@@ -11271,58 +11242,9 @@ wwOpenQuickInfo=function(row,id){
   st.textContent=`
     body.map-view::after{transition:opacity .55s ease!important}
     body.map-view.ww-rotate-tip-hidden::after{opacity:0!important;pointer-events:none!important}
-    @media (orientation:landscape){
-      body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
-        background:transparent!important;
-        backdrop-filter:none!important;
-        -webkit-backdrop-filter:none!important;
-        pointer-events:none!important;
-      }
-      body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet{pointer-events:auto!important}
-    }
+
   `;
   document.head.appendChild(st);
-
-  function railWidth(){
-    const bar=document.querySelector('.topbar');
-    if(!bar)return 0;
-    const r=bar.getBoundingClientRect();
-    return (r.width>0 && r.width<innerWidth*.35)?r.width:0;
-  }
-
-  function alignOpenMapCountry(){
-    if(!document.body.classList.contains('map-view') || !matchMedia('(orientation:landscape)').matches)return;
-    const sheet=document.getElementById('countrySheet');
-    const back=document.getElementById('sheetBackdrop');
-    if(!sheet?.classList.contains('open'))return;
-    const rail=railWidth();
-    /* countrySheet is ultimately positioned against the full viewport. Shift its
-       centre by half the left rail width so it is centred in the remaining map workspace. */
-    sheet.style.setProperty('left','50%','important');
-    sheet.style.setProperty('right','auto','important');
-    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
-    if(back?.classList.contains('open')){
-      back.style.setProperty('background','transparent','important');
-      back.style.setProperty('backdrop-filter','none','important');
-      back.style.setProperty('-webkit-backdrop-filter','none','important');
-      back.style.setProperty('pointer-events','none','important');
-    }
-  }
-
-  const priorOpen=openCountry;
-  openCountry=function(c,origin=null){
-    const fromMap=(origin?.type==='map') || document.body.classList.contains('map-view');
-    const out=priorOpen.apply(this,arguments);
-    if(fromMap){
-      alignOpenMapCountry();
-      requestAnimationFrame(alignOpenMapCountry);
-      setTimeout(alignOpenMapCountry,80);
-      setTimeout(alignOpenMapCountry,220);
-    }
-    return out;
-  };
-  addEventListener('resize',()=>requestAnimationFrame(alignOpenMapCountry),{passive:true});
-  addEventListener('orientationchange',()=>setTimeout(alignOpenMapCountry,180),{passive:true});
 
   let onMapLast=false,tipTimer=0;
   function syncRotateTip(){
@@ -11681,41 +11603,54 @@ wwOpenQuickInfo=function(row,id){
   document.head.appendChild(st);
 })();
 
-/* Landscape country card: match the Google map dialog footprint without scaling contents */
+/* Landscape country modal: same viewport-centred footprint and backdrop as Country Info.
+   The native host occupies the whole viewport; no sidebar-relative coordinates. */
 (()=>{
-  const style=document.createElement('style');
-  style.id='ww-landscape-country-match-map-081026';
-  style.textContent=`
-  @media (orientation:landscape){
-    body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
-      width:min(66.24vw,900px,calc(100vw - var(--ww-landscape-nav-width,0px) - 24px))!important;
-      max-width:none!important;
-      height:calc(100dvh - 40px)!important;
-      max-height:calc(100dvh - 40px)!important;
-      box-sizing:border-box!important;
-      transform:translate(-50%,-50%)!important;
-      transform-origin:center center!important;
-      overflow-y:auto!important;
-    }
-    body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet .country-hero-minimal{
-      min-height:0!important;
-      height:clamp(100px,32dvh,230px)!important;
-      max-height:32dvh!important;
-    }
-  }`;
-  document.head.appendChild(style);
-  function align(){
-    if(!document.body.classList.contains('map-view')||!matchMedia('(orientation:landscape)').matches)return;
-    const sheet=document.querySelector('#wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open');
-    if(!sheet)return;
-    sheet.style.setProperty('left','50%','important');
-    sheet.style.setProperty('transform','translate(-50%,-50%)','important');
-  }
-  const observer=new MutationObserver(()=>{if(document.querySelector('#wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open'))requestAnimationFrame(align)});
-  observer.observe(document.getElementById('wwCountryTopDialog')||document.body,{attributes:true,attributeFilter:['class'],subtree:true});
-  addEventListener('resize',align,{passive:true});
-  addEventListener('orientationchange',()=>setTimeout(align,100),{passive:true});
-  requestAnimationFrame(align);
+ const style=document.createElement('style');
+ style.id='ww-landscape-country-info-parity-081026';
+ style.textContent=`
+ @media (orientation:landscape){
+   body.map-view #wwCountryTopDialog.ww-country-popup{
+     position:fixed!important;inset:0!important;left:0!important;right:0!important;
+     top:0!important;bottom:0!important;width:100vw!important;height:100dvh!important;
+     max-width:none!important;max-height:none!important;margin:0!important;
+     padding:0!important;background:transparent!important;overflow:visible!important;
+   }
+   body.map-view #wwCountryTopDialog.ww-country-popup::backdrop{
+     background:rgba(8,27,39,.58)!important;
+     backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important;
+   }
+   body.map-view #wwCountryTopDialog.ww-country-popup #sheetBackdrop.open{
+     position:fixed!important;inset:0!important;
+     background:rgba(8,27,39,.58)!important;
+     backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important;
+     pointer-events:auto!important;
+   }
+   body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet.sheet{
+     position:fixed!important;left:50%!important;top:50%!important;
+     right:auto!important;bottom:auto!important;
+     transform:translate(-50%,-50%)!important;transform-origin:center center!important;
+     width:min(760px,84vw)!important;max-width:min(760px,84vw)!important;
+     height:auto!important;max-height:90dvh!important;
+     overflow-y:auto!important;box-sizing:border-box!important;
+     border-radius:28px!important;
+   }
+   body.map-view #wwCountryTopDialog.ww-country-popup #countrySheet .country-hero-minimal{
+     min-height:0!important;height:clamp(85px,23dvh,150px)!important;
+     max-height:23dvh!important;
+   }
+ }`;
+ document.head.appendChild(style);
+ function clearLegacyInline(){
+   if(!document.body.classList.contains('map-view')||!matchMedia('(orientation:landscape)').matches)return;
+   const sheet=document.querySelector('#wwCountryTopDialog.ww-country-popup #countrySheet.sheet.open');
+   if(!sheet)return;
+   for(const property of ['left','right','top','bottom','width','height','max-width','max-height','transform'])sheet.style.removeProperty(property);
+   const back=document.getElementById('sheetBackdrop');
+   if(back)for(const property of ['background','backdrop-filter','-webkit-backdrop-filter','pointer-events'])back.style.removeProperty(property);
+ }
+ const previousOpen=openCountry;
+ openCountry=function(){const result=previousOpen.apply(this,arguments);requestAnimationFrame(clearLegacyInline);return result};
 })();
 
 /* Landscape-only seven equal country action buttons — preserve portrait grid */
