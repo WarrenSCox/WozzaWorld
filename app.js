@@ -11695,7 +11695,7 @@ wwOpenQuickInfo=function(row,id){
   body.map-view #countrySheet .ww-country-utility-grid > button{
    display:flex!important;flex-direction:column!important;align-items:center!important;
    justify-content:center!important;gap:7px!important;
-   font-family:inherit!important;font-size:clamp(11px,3vw,15px)!important;
+   font-family:inherit!important;
    font-weight:400!important;line-height:1.12!important;color:#31414d!important;
   }
   body.map-view #countrySheet .ww-country-utility-grid > button .ww-utility-label{
@@ -11730,25 +11730,27 @@ wwOpenQuickInfo=function(row,id){
  apply();
 })();
 
-/* Landscape country action label parity — use the rendered native labels as source of truth. */
+/* Country utility labels: portrait remains a compact 2x2 icon grid.
+   Landscape uses the same typography as the three native status buttons.
+   No runtime style copying: this avoids portrait leakage and resize races. */
 (()=>{
-  if(window.__wwLandscapeLabelParity081026)return;
-  window.__wwLandscapeLabelParity081026=true;
-  const sync=()=>{
-    if(!document.body.classList.contains('map-view')||!matchMedia('(orientation:landscape)').matches)return;
-    const sheet=document.getElementById('countrySheet');
-    if(!sheet)return;
-    const native=sheet.querySelector('.choice-grid button[data-status="bucket"] span, .country-status-grid button[data-status="bucket"] span') ||
-      [...sheet.querySelectorAll('.choice-grid > button span, .country-status-grid > button span')].find(el=>el.textContent.trim()==='Bucket list');
-    if(!native)return;
-    const computed=getComputedStyle(native);
-    const properties=['font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-transform','text-decoration','text-align'];
-    sheet.querySelectorAll('.ww-country-utility-grid .ww-utility-label').forEach(label=>{
-      for(const property of properties)label.style.setProperty(property,computed.getPropertyValue(property),'important');
-    });
-  };
-  const previousRender=renderSheet;
-  renderSheet=function(){const result=previousRender.apply(this,arguments);requestAnimationFrame(sync);return result};
-  window.addEventListener('resize',()=>requestAnimationFrame(sync),{passive:true});
-  requestAnimationFrame(sync);
+  const style=document.createElement('style');
+  style.id='ww-country-utility-label-parity-final-081026';
+  style.textContent=`
+    #countrySheet .ww-country-utility-grid .ww-utility-label{display:none!important}
+    @media (orientation:landscape){
+      body.map-view #countrySheet .ww-country-utility-grid > button{
+        font-size:inherit!important;font-weight:400!important;
+        line-height:normal!important;min-width:0!important;
+      }
+      body.map-view #countrySheet .ww-country-utility-grid .ww-utility-label{
+        display:block!important;font-family:inherit!important;
+        font-size:clamp(11px,1.35vw,15px)!important;
+        font-weight:400!important;line-height:1.2!important;
+        letter-spacing:normal!important;white-space:nowrap!important;
+        max-width:100%!important;text-align:center!important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 })();
