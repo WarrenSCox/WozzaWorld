@@ -11975,14 +11975,17 @@ wwOpenQuickInfo=function(row,id){
     #wwLogoMenu .ww-logo-menu-icon svg{width:25px;height:25px;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
     #wwLogoMenu .ww-menu-copyright{margin:12px 7px 0;padding:14px 4px 0;border-top:1px solid rgba(255,255,255,.25);text-align:left;color:rgba(255,255,255,.82);font-size:11px;line-height:1.6}
     #wwLogoMenu .ww-menu-copyright strong{display:block;color:#fff;font-size:12px;font-weight:650}
-    /* Country removal confirmations: refreshed WozzaWorld styling, unchanged actions. */
-    #removeDialog{box-sizing:border-box!important;width:min(420px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;border:1px solid rgba(255,255,255,.35)!important;border-radius:26px!important;background:linear-gradient(145deg,#075c73 0%,#078d9a 58%,#075a70 100%)!important;color:#fff!important;box-shadow:0 20px 55px rgba(0,27,41,.36)!important;padding:26px 24px 22px!important}
-    #removeDialog::backdrop{background:rgba(0,27,41,.55)!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important}
-    #removeDialog #removeDialogTitle{color:#fff!important;font-weight:800!important}
-    #removeDialog p{color:rgba(255,255,255,.90)!important}
-    #removeDialog button{border-radius:999px!important}
-    #removeDialog #confirmRemove{background:#f55849!important;color:#fff!important;border-color:transparent!important}
-    #removeDialog button:not(#confirmRemove){background:#f5c400!important;color:#102a34!important;border-color:transparent!important}
+    /* Country removal confirmations — two-tone Recycle Bin visual language.
+       Existing dialog markup, text updates, and button handlers are untouched. */
+    #removeDialog{box-sizing:border-box!important;width:min(420px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;border:0!important;border-radius:26px!important;background:#f4fbfb!important;color:#193d4a!important;box-shadow:0 20px 55px rgba(0,27,41,.36)!important;padding:0!important;overflow:hidden!important}
+    #removeDialog::backdrop{background:rgba(5,34,51,.32)!important;backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important}
+    #removeDialog form{margin:0!important;padding:0 0 22px!important;background:#f4fbfb!important;color:#193d4a!important;overflow:hidden!important;border-radius:26px!important}
+    #removeDialog #removeDialogTitle{box-sizing:border-box!important;display:block!important;width:100%!important;margin:0 0 20px!important;padding:26px 26px!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;font-size:24px!important;font-weight:800!important;line-height:1.3!important;text-align:left!important}
+    #removeDialog p{margin:0 26px 22px!important;padding:0!important;color:#193d4a!important;text-align:left!important;line-height:1.5!important}
+    #removeDialog .dialog-actions,#removeDialog menu,#removeDialog .actions{padding:0 26px!important;margin:0!important;background:transparent!important}
+    #removeDialog button{border-radius:999px!important;font-family:inherit!important;font-weight:750!important;box-shadow:none!important}
+    #removeDialog #confirmRemove{background:#f55849!important;color:#fff!important;border-color:transparent!important;font-weight:750!important}
+    #removeDialog button:not(#confirmRemove){background:#e9bd2a!important;color:#193d4a!important;border-color:transparent!important;font-weight:750!important}
     .ww-logo-placeholder:not([open]){display:none!important}
     .ww-logo-placeholder[open]{display:flex;flex-direction:column;max-height:min(85dvh,760px);overflow:hidden;border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
     .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
