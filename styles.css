@@ -4967,15 +4967,17 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 #stopItineraryDialog .itin-todo-add{margin:12px 0 0!important;padding:9px 2px!important;border:0!important;background:transparent!important;color:#087c96!important;font:inherit!important;font-size:13px!important;font-weight:850!important;text-align:left!important}
 
 /* Audited structural repair: two-tone dialogs use full-bleed header and a scrolling body. */
-#peopleDialog.ww-two-tone-dialog,#passportStatDialog.ww-two-tone-dialog{box-sizing:border-box;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:min(85dvh,760px);padding:0;border:0;border-radius:24px;background:#f4fbfb;color:#193d4a;overflow:hidden;box-shadow:0 20px 70px rgba(0,20,30,.35)}
+/* Two-tone travel detail dialogs: single header paint, no nested gradient/padding. */
+#peopleDialog.ww-two-tone-dialog,#passportStatDialog.ww-two-tone-dialog{box-sizing:border-box;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:min(85dvh,760px);padding:0;border:0;border-radius:24px;background:#f4fbfb;color:#193d4a;overflow:hidden;box-shadow:0 20px 70px rgba(0,20,30,.35);background-clip:padding-box}
 #peopleDialog.ww-two-tone-dialog::backdrop,#passportStatDialog.ww-two-tone-dialog::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-#peopleDialog.ww-two-tone-dialog form,#passportStatDialog.ww-two-tone-dialog form{box-sizing:border-box;position:relative;display:flex;flex-direction:column;width:100%;min-width:0;max-width:none;max-height:min(85dvh,760px);margin:0;padding:0;overflow:hidden;background:#f4fbfb}
-#peopleDialog .ww-two-tone-head,#passportStatDialog .ww-two-tone-head{flex:none;width:100%;box-sizing:border-box;padding:24px 26px;background:linear-gradient(120deg,#086579,#0aa3a6);color:white}
-#peopleDialog .ww-two-tone-head h3,#passportStatDialog .ww-two-tone-head h3{margin:0;color:#fff;font-size:clamp(18px,5.2vw,24px);line-height:1.25;font-weight:800}
-#peopleDialog .ww-two-tone-content,#passportStatDialog .ww-two-tone-content{box-sizing:border-box;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px 26px;margin:0;scrollbar-width:none;-ms-overflow-style:none}
+#peopleDialog.ww-two-tone-dialog>form,#passportStatDialog.ww-two-tone-dialog>form{box-sizing:border-box;position:relative;display:flex;flex-direction:column;width:100%;min-width:0;max-width:100%;max-height:min(85dvh,760px);margin:0;padding:0;overflow:hidden;background:#f4fbfb;border-radius:inherit}
+#peopleDialog .ww-two-tone-head,#passportStatDialog .ww-two-tone-head{flex:none;box-sizing:border-box;width:100%;margin:0;padding:24px 26px;background:linear-gradient(120deg,#086579,#0aa3a6);border-radius:24px 24px 0 0;color:#fff;overflow:hidden}
+#peopleDialog .ww-two-tone-head h3,#passportStatDialog .ww-two-tone-head h3{display:block;margin:0;padding:0;border:0;border-radius:0;background:none!important;background-image:none!important;box-shadow:none!important;color:#fff;font-size:clamp(18px,5.2vw,24px);line-height:1.25;font-weight:800;text-align:left}
+#peopleDialog .ww-two-tone-content,#passportStatDialog .ww-two-tone-content{box-sizing:border-box;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px 26px;margin:0;background:#f4fbfb;scrollbar-width:none;-ms-overflow-style:none}
 #peopleDialog .ww-two-tone-content::-webkit-scrollbar,#passportStatDialog .ww-two-tone-content::-webkit-scrollbar{display:none}
 #peopleDialog .dialog-actions,#passportStatDialog .dialog-actions{box-sizing:border-box;flex:none;margin:0;padding:12px 26px 22px;display:flex;justify-content:flex-end;background:#f4fbfb}
 #peopleDialog .dialog-actions button,#passportStatDialog .dialog-actions button{background:#e9bd2a;color:#193d4a;border:0;border-radius:999px;font-weight:750;padding:10px 25px}
 #peopleDialog .people-dialog-list span{display:block;padding:11px 13px;border-radius:12px;background:#f4f2f1;color:#17263c;font-weight:700}
 #peopleDialog .people-dialog-list .you-chip{background:#d8f4f3;color:#086579}
 #passportStatDialog .passport-stat-list{display:flex;flex-direction:column}
+
