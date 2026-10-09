@@ -1628,6 +1628,45 @@ window.__wozzaWarmVisibleCountryHeroes=()=>{clearTimeout(settleTimer);settleTime
    display:grid!important;place-items:center!important;transform:none!important;
  }
  #tripForm #tripVibeSection .trip-vibe-head{grid-template-columns:minmax(0,1fr) 44px!important}
+
+ /* Trip editor presentation only: preserve original toggle elements, handlers, state and summaries. */
+ #tripForm .trip-companions-section,
+ #tripForm .trip-todo-section,
+ #tripForm .trip-notes-section{
+   border-bottom:1px solid rgba(229,248,247,.32)!important;
+   padding-bottom:17px!important;
+ }
+ #tripForm .section-collapse-toggle,
+ #tripForm #tripVibeSection .section-collapse-toggle{
+   background:transparent!important;
+   background-image:none!important;
+   border:0!important;
+   border-radius:0!important;
+   box-shadow:none!important;
+   color:transparent!important;
+   font-size:0!important;
+   text-shadow:none!important;
+   position:relative!important;
+ }
+ #tripForm .section-collapse-toggle::after,
+ #tripForm #tripVibeSection .section-collapse-toggle::after{
+   content:""!important;
+   display:block!important;
+   position:absolute!important;
+   left:50%!important;
+   top:47%!important;
+   width:13px!important;
+   height:13px!important;
+   border-right:3px solid #fff!important;
+   border-bottom:3px solid #fff!important;
+   transform:translate(-50%,-65%) rotate(45deg)!important;
+   transition:transform .18s ease!important;
+   pointer-events:none!important;
+ }
+ #tripForm .section-collapse-toggle[aria-expanded="true"]::after{
+   transform:translate(-50%,-25%) rotate(225deg)!important;
+ }
+
  /* A normal swipe on a stop scrolls the dialog. JS only suppresses it after the long-press drag has actually begun. */
  #tripDestinationStops .trip-destination-stop{touch-action:pan-y!important}
  #tripDestinationStops .trip-destination-stop.trip-stop-mobile-live{touch-action:none!important}
