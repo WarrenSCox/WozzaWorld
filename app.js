@@ -12125,3 +12125,47 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(style);
 })();
+
+/* WozzaWorld — Recycle Bin and Backup: Roadmap-style footer Close controls.
+   Presentation and button placement only; preserve original dialog close handlers,
+   recycle rendering, selection, restore/delete and tumbleweed animation. */
+(()=>{
+  const recycle=document.getElementById('recycleDialog');
+  const backup=document.getElementById('backupRestoreDialog');
+  if(!recycle||!backup||document.getElementById('ww-dialog-footer-close-091026'))return;
+  const style=document.createElement('style');
+  style.id='ww-dialog-footer-close-091026';
+  style.textContent=`
+    #recycleDialog #closeRecycleDialog{display:none!important}
+    #recycleDialog .dialog-actions{display:flex!important;justify-content:flex-end!important;
+      padding:0 26px 22px!important;margin:0!important;background:#f4fbfb!important;
+      border:0!important;box-shadow:none!important}
+    #recycleDialog .dialog-actions button,
+    #backupRestoreDialog .ww-backup-footer-close{
+      display:block!important;position:static!important;inset:auto!important;
+      width:auto!important;height:auto!important;min-width:0!important;
+      margin:0!important;padding:10px 25px!important;
+      border:0!important;border-radius:25px!important;
+      background:#e9bd2a!important;color:#193d4a!important;
+      font-family:inherit!important;font-size:inherit!important;font-weight:750!important;
+      line-height:normal!important;box-shadow:none!important;cursor:pointer!important;
+      transform:none!important
+    }
+    #backupRestoreDialog .ww-backup-footer-actions{
+      display:flex;justify-content:flex-end;flex:0 0 auto;
+      margin:12px 0 0;padding:0;background:transparent
+    }
+  `;
+  document.head.appendChild(style);
+  const backupClose=document.getElementById('closeBackupRestoreDialog');
+  const form=backup.querySelector('form');
+  if(backupClose&&form){
+    backupClose.classList.remove('dialog-close-x');
+    backupClose.classList.add('ww-backup-footer-close');
+    backupClose.textContent='Close';
+    const footer=document.createElement('div');
+    footer.className='ww-backup-footer-actions';
+    footer.appendChild(backupClose); // Keep the original button and its existing click handler.
+    form.appendChild(footer);
+  }
+})();
