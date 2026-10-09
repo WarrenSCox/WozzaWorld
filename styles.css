@@ -287,7 +287,7 @@ body.map-view::after{content:"Rotate your phone to view map in landscape";positi
 .memory-notes{width:100%;min-height:145px;resize:vertical;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;color:var(--navy);font:500 14px/1.45 Inter,sans-serif}
 .autosave-note{font-size:11px;color:var(--muted);margin-top:5px}
 .recycle-card{margin-top:18px;padding:18px}.recycle-head h3{margin:0 0 3px;font-family:"Archivo Black",Inter,sans-serif;color:var(--navy);font-size:18px}.recycle-head span{color:var(--muted);font-size:12px}.recycle-list{margin-top:12px}.recycle-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.recycle-row:first-child{border-top:0}.recycle-row strong{flex:1}.recycle-row button{border:0;border-radius:10px;padding:8px 10px;font-weight:700}.restore-btn{background:#fff;color:var(--navy)}.delete-btn{background:#fee9e5;color:#b33722}
-.action-dialog{border:0;border-radius:22px;padding:0;max-width:min(92vw,420px);box-shadow:0 24px 70px rgba(0,0,0,.25)}.action-dialog::backdrop{background:rgba(23,33,61,.36)}.action-dialog form{padding:22px}.action-dialog h3{margin:0 0 8px;font-family:"Archivo Black",Inter,sans-serif;color:var(--navy)}.action-dialog p{color:var(--muted);font-size:14px}.danger{background:#f55849!important;color:white!important}.people-dialog-list{display:grid;gap:8px;margin:14px 0}.people-dialog-list span{padding:9px 11px;border-radius:12px;background:#f4f5f3;color:var(--navy);font-weight:700}
+.action-dialog{border:0;border-radius:22px;padding:0;max-width:min(92vw,420px);box-shadow:0 24px 70px rgba(0,0,0,.25)}.action-dialog::backdrop{background:rgba(23,33,61,.36)}.action-dialog form{padding:22px}.action-dialog h3{margin:0 0 8px;font-family:"Archivo Black",Inter,sans-serif;color:var(--navy)}.action-dialog p{color:var(--muted);font-size:14px}.danger{background:#f55849!important;color:white!important}.people-dialog-list span{padding:9px 11px;border-radius:12px;background:#f4f5f3;color:var(--navy);font-weight:700}
 @media(max-width:560px){.topbar{min-height:82px!important;gap:4px!important;padding-left:8px!important;padding-right:8px!important}.brand-main-logo{width:112px!important;height:70px!important;max-width:27vw}.header-nav{grid-template-columns:repeat(3,34px)!important;gap:1px!important;padding:3px!important}.header-nav-item{width:34px!important;height:36px!important;padding:5px!important}.header-nav-item svg{width:23px!important;height:23px!important}.header-slogan{font-size:11.7px!important;min-width:91px!important;max-width:98px!important;line-height:.84!important}.list-add{width:36px;height:36px;font-size:24px}}
 @media(max-width:390px){.brand-main-logo{width:98px!important;height:64px!important}.header-nav{grid-template-columns:repeat(3,31px)!important}.header-nav-item{width:31px!important;height:34px!important}.header-slogan{font-size:10px!important;min-width:76px!important;max-width:82px!important}}
 
@@ -1174,7 +1174,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#app::-webkit-scrollbar,main::-w
 .companion-stats-card,.recycle-card{margin-top:0!important}
 
 /* Passport detail pop-up lists. */
-.passport-stat-dialog form{position:relative;min-width:min(88vw,430px);max-height:min(78dvh,650px);overflow:auto}.passport-stat-list{display:flex;flex-direction:column;margin-top:10px}.passport-stat-row{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(22,48,58,.10)}.passport-stat-row:last-child{border-bottom:0}.passport-stat-row .flag-img{width:40px;height:28px;object-fit:cover;border-radius:5px}.passport-stat-row span{min-width:0}.passport-stat-row strong{display:block;color:var(--ink)}.passport-stat-row small{display:block;margin-top:3px;color:var(--soft-ink);font-size:11px}.passport-stat-row .stat-plane{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:rgba(7,94,120,.09);font-size:20px;color:var(--brand-deep)}
+.passport-stat-list{display:flex;flex-direction:column;margin-top:10px}.passport-stat-row{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(22,48,58,.10)}.passport-stat-row:last-child{border-bottom:0}.passport-stat-row .flag-img{width:40px;height:28px;object-fit:cover;border-radius:5px}.passport-stat-row span{min-width:0}.passport-stat-row strong{display:block;color:var(--ink)}.passport-stat-row small{display:block;margin-top:3px;color:var(--soft-ink);font-size:11px}.passport-stat-row .stat-plane{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:rgba(7,94,120,.09);font-size:20px;color:var(--brand-deep)}
 
 /* Companion chart must remain legible even with legacy country-level companion data. */
 .companion-stats{margin-top:12px}.companion-stat-row{display:grid;grid-template-columns:minmax(90px,auto) minmax(70px,1fr) auto;align-items:center;gap:10px;padding:9px 0}.companion-stat-row>span{font-weight:800;color:var(--ink);overflow:hidden;text-overflow:ellipsis}.companion-stat-row>div{height:8px;background:rgba(7,94,120,.10);border-radius:999px;overflow:hidden}.companion-stat-row>div i{display:block;height:100%;border-radius:inherit;background:var(--brand-deep)}.companion-stat-row>strong{font-size:11px;color:var(--soft-ink);white-space:nowrap}
@@ -4966,18 +4966,83 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 #stopItineraryDialog .trip-todo-remove{grid-column:3!important}
 #stopItineraryDialog .itin-todo-add{margin:12px 0 0!important;padding:9px 2px!important;border:0!important;background:transparent!important;color:#087c96!important;font:inherit!important;font-size:13px!important;font-weight:850!important;text-align:left!important}
 
-/* Audited structural repair: two-tone dialogs use full-bleed header and a scrolling body. */
-/* Two-tone travel detail dialogs: single header paint, no nested gradient/padding. */
-#peopleDialog.ww-two-tone-dialog,#passportStatDialog.ww-two-tone-dialog{box-sizing:border-box;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:min(85dvh,760px);padding:0;border:0;border-radius:24px;background:#f4fbfb;color:#193d4a;overflow:hidden;box-shadow:0 20px 70px rgba(0,20,30,.35);background-clip:padding-box}
-#peopleDialog.ww-two-tone-dialog::backdrop,#passportStatDialog.ww-two-tone-dialog::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-#peopleDialog.ww-two-tone-dialog>form,#passportStatDialog.ww-two-tone-dialog>form{box-sizing:border-box;position:relative;display:flex;flex-direction:column;width:100%;min-width:0;max-width:100%;max-height:min(85dvh,760px);margin:0;padding:0;overflow:hidden;background:#f4fbfb;border-radius:inherit}
-#peopleDialog .ww-two-tone-head,#passportStatDialog .ww-two-tone-head{flex:none;box-sizing:border-box;width:100%;margin:0;padding:24px 26px;background:linear-gradient(120deg,#086579,#0aa3a6);border-radius:24px 24px 0 0;color:#fff;overflow:hidden}
-#peopleDialog .ww-two-tone-head h3,#passportStatDialog .ww-two-tone-head h3{display:block;margin:0;padding:0;border:0;border-radius:0;background:none!important;background-image:none!important;box-shadow:none!important;color:#fff;font-size:clamp(18px,5.2vw,24px);line-height:1.25;font-weight:800;text-align:left}
-#peopleDialog .ww-two-tone-content,#passportStatDialog .ww-two-tone-content{box-sizing:border-box;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px 26px;margin:0;background:#f4fbfb;scrollbar-width:none;-ms-overflow-style:none}
-#peopleDialog .ww-two-tone-content::-webkit-scrollbar,#passportStatDialog .ww-two-tone-content::-webkit-scrollbar{display:none}
-#peopleDialog .dialog-actions,#passportStatDialog .dialog-actions{box-sizing:border-box;flex:none;margin:0;padding:12px 26px 22px;display:flex;justify-content:flex-end;background:#f4fbfb}
-#peopleDialog .dialog-actions button,#passportStatDialog .dialog-actions button{background:#e9bd2a;color:#193d4a;border:0;border-radius:999px;font-weight:750;padding:10px 25px}
-#peopleDialog .people-dialog-list span{display:block;padding:11px 13px;border-radius:12px;background:#f4f2f1;color:#17263c;font-weight:700}
-#peopleDialog .people-dialog-list .you-chip{background:#d8f4f3;color:#086579}
-#passportStatDialog .passport-stat-list{display:flex;flex-direction:column}
 
+/* Passport statistics and country travellers dialogs — single-surface header.
+   The form is the layout surface: no nested gradient or padded header shell. */
+#passportStatDialog, #peopleDialog {
+  width:min(92vw, 430px);
+  max-width:min(92vw, 430px);
+  max-height: min(85dvh, 740px);
+  padding:0;
+  border:0;
+  border-radius:28px;
+  overflow:hidden;
+  background:#f1faf9;
+  color:#193440;
+  box-shadow:0 24px 70px rgba(0,25,40,.32);
+}
+#passportStatDialog > form, #peopleDialog > form {
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-height:min(85dvh, 740px);
+  padding:0;
+  margin:0;
+  overflow:hidden;
+  background:#f1faf9;
+}
+#passportStatDialog h3, #peopleDialog h3 {
+  display:flex;
+  align-items:center;
+  flex:0 0 auto;
+  box-sizing:border-box;
+  width:100%;
+  min-height:145px;
+  margin:0;
+  padding:28px 30px;
+  border:0;
+  border-radius:0;
+  background:linear-gradient(110deg,#086a80 0%,#0c9f9f 100%);
+  color:white;
+  font-family:"Archivo Black",Inter,sans-serif;
+  font-size:clamp(20px,5.1vw,27px);
+  line-height:1.18;
+  font-weight:900;
+  letter-spacing:0;
+}
+#passportStatDialog .passport-stat-list, #peopleDialog .people-dialog-list {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  margin:0;
+  padding:18px 30px 4px;
+  scrollbar-width:none;
+}
+#passportStatDialog .passport-stat-list::-webkit-scrollbar,
+#peopleDialog .people-dialog-list::-webkit-scrollbar {display:none;}
+#peopleDialog .people-dialog-list {display:grid;align-content:start;gap:8px;padding-top:20px;padding-bottom:8px;}
+#peopleDialog .people-dialog-list span {display:block;padding:14px 16px;border-radius:14px;background:#f4f1f1;color:#192a3a;font-weight:800;}
+#peopleDialog .people-dialog-list .you-chip {background:#d7f5f3;color:#096478;}
+#passportStatDialog .passport-stat-row {padding:13px 2px;}
+#passportStatDialog .dialog-actions, #peopleDialog .dialog-actions {
+  flex:0 0 auto;
+  display:flex;
+  justify-content:flex-end;
+  margin:0;
+  padding:18px 30px 24px;
+  background:#f1faf9;
+}
+#passportStatDialog .dialog-actions button, #peopleDialog .dialog-actions button {
+  border:0;
+  border-radius:999px;
+  min-width:110px;
+  padding:12px 25px;
+  background:#e9bf2e;
+  color:#173a43;
+  font-size:16px;
+  font-weight:900;
+}
+#passportStatDialog .dialog-close-x {display:none;}
