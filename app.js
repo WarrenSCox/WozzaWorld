@@ -11980,12 +11980,25 @@ wwOpenQuickInfo=function(row,id){
     #removeDialog{box-sizing:border-box!important;width:min(420px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;border:0!important;border-radius:26px!important;background:#f4fbfb!important;color:#193d4a!important;box-shadow:0 20px 55px rgba(0,27,41,.36)!important;padding:0!important;overflow:hidden!important}
     #removeDialog::backdrop{background:rgba(5,34,51,.32)!important;backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important}
     #removeDialog form{margin:0!important;padding:0 0 22px!important;background:#f4fbfb!important;color:#193d4a!important;overflow:hidden!important;border-radius:26px!important}
-    #removeDialog #removeDialogTitle{box-sizing:border-box!important;display:block!important;width:100%!important;margin:0 0 20px!important;padding:26px 26px!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;font-size:24px!important;font-weight:800!important;line-height:1.3!important;text-align:left!important}
+    #removeDialog:has(#removeDialogTitle) #removeDialogTitle{box-sizing:border-box!important;display:block!important;width:100%!important;margin:0 0 20px!important;padding:26px 26px!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;font-size:clamp(15px,3.8vw,24px)!important;font-weight:800!important;line-height:1.3!important;text-align:left!important;white-space:nowrap!important;letter-spacing:-.025em!important}
     #removeDialog p{margin:0 26px 22px!important;padding:0!important;color:#193d4a!important;text-align:left!important;line-height:1.5!important}
     #removeDialog .dialog-actions,#removeDialog menu,#removeDialog .actions{padding:0 26px!important;margin:0!important;background:transparent!important}
     #removeDialog button{border-radius:999px!important;font-family:inherit!important;font-weight:750!important;box-shadow:none!important}
     #removeDialog #confirmRemove{background:#f55849!important;color:#fff!important;border-color:transparent!important;font-weight:750!important}
     #removeDialog button:not(#confirmRemove){background:#e9bd2a!important;color:#193d4a!important;border-color:transparent!important;font-weight:750!important}
+    /* Shared two-tone styling for the traveller and passport-stat dialogs. */
+    #peopleDialog,#passportStatDialog{box-sizing:border-box!important;width:min(420px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;max-height:min(85dvh,760px)!important;border:0!important;border-radius:26px!important;background:#f4fbfb!important;color:#193d4a!important;box-shadow:0 20px 55px rgba(0,27,41,.36)!important;padding:0!important;overflow:hidden!important}
+    #peopleDialog::backdrop,#passportStatDialog::backdrop{background:rgba(5,34,51,.34)!important;backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important}
+    #peopleDialog #peopleDialogTitle,#passportStatDialog #passportStatTitle{box-sizing:border-box!important;display:block!important;width:100%!important;margin:0!important;padding:25px 26px!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;font-size:clamp(18px,5vw,24px)!important;font-weight:800!important;line-height:1.3!important;text-align:left!important}
+    #peopleDialog #peopleDialogList{padding:20px 26px 12px!important;margin:0!important;color:#193d4a!important}
+    #peopleDialog button{font-family:inherit!important;font-weight:750!important;border-radius:999px!important}
+    #peopleDialog button:not(.you-chip){background:#e9bd2a!important;color:#193d4a!important;border-color:transparent!important}
+    #passportStatDialog{display:none!important;flex-direction:column!important}
+    #passportStatDialog[open]{display:flex!important}
+    #passportStatDialog #passportStatTitle{flex:none!important;padding-right:70px!important}
+    #passportStatDialog #passportStatList{min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;flex:1 1 auto!important;padding:10px 26px 22px!important;background:#f4fbfb!important}
+    #passportStatDialog .passport-stat-row{color:#193d4a!important}
+    #passportStatDialog #closePassportStat{position:absolute!important;top:14px!important;right:16px!important;z-index:2!important;width:38px!important;height:38px!important;border-radius:50%!important;background:#fff!important;color:#15263c!important;border:0!important;box-shadow:0 3px 14px rgba(0,30,40,.12)!important}
     .ww-logo-placeholder:not([open]){display:none!important}
     .ww-logo-placeholder[open]{display:flex;flex-direction:column;max-height:min(85dvh,760px);overflow:hidden;border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
     .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
