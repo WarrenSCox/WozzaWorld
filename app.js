@@ -11973,8 +11973,16 @@ wwOpenQuickInfo=function(row,id){
     #wwLogoMenu .ww-logo-menu-item:hover,#wwLogoMenu .ww-logo-menu-item:focus-visible{background:rgba(255,255,255,.14)}
     #wwLogoMenu .ww-logo-menu-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,51,66,.18)}
     #wwLogoMenu .ww-logo-menu-icon svg{width:25px;height:25px;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
-    #wwLogoMenu .ww-menu-copyright{margin:12px 7px 0;padding:14px 4px 0;border-top:1px solid rgba(255,255,255,.25);text-align:center;color:rgba(255,255,255,.82);font-size:11px;line-height:1.6}
+    #wwLogoMenu .ww-menu-copyright{margin:12px 7px 0;padding:14px 4px 0;border-top:1px solid rgba(255,255,255,.25);text-align:left;color:rgba(255,255,255,.82);font-size:11px;line-height:1.6}
     #wwLogoMenu .ww-menu-copyright strong{display:block;color:#fff;font-size:12px;font-weight:650}
+    /* Country removal confirmations: refreshed WozzaWorld styling, unchanged actions. */
+    #removeDialog{box-sizing:border-box!important;width:min(420px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;border:1px solid rgba(255,255,255,.35)!important;border-radius:26px!important;background:linear-gradient(145deg,#075c73 0%,#078d9a 58%,#075a70 100%)!important;color:#fff!important;box-shadow:0 20px 55px rgba(0,27,41,.36)!important;padding:26px 24px 22px!important}
+    #removeDialog::backdrop{background:rgba(0,27,41,.55)!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important}
+    #removeDialog #removeDialogTitle{color:#fff!important;font-weight:800!important}
+    #removeDialog p{color:rgba(255,255,255,.90)!important}
+    #removeDialog button{border-radius:999px!important}
+    #removeDialog #confirmRemove{background:#f55849!important;color:#fff!important;border-color:transparent!important}
+    #removeDialog button:not(#confirmRemove){background:#f5c400!important;color:#102a34!important;border-color:transparent!important}
     .ww-logo-placeholder:not([open]){display:none!important}
     .ww-logo-placeholder[open]{display:flex;flex-direction:column;max-height:min(85dvh,760px);overflow:hidden;border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
     .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
