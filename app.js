@@ -11997,7 +11997,7 @@ wwOpenQuickInfo=function(row,id){
     #passportStatDialog{display:none!important;flex-direction:column!important}
     #passportStatDialog[open]{display:flex!important}
     #passportStatDialog .ww-stat-head{flex:0 0 auto!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;padding:24px 26px!important;margin:0!important}
-    #passportStatDialog .ww-stat-head #passportStatTitle{padding:0!important;margin:0!important;background:transparent!important;color:#fff!important;font-size:24px!important;line-height:1.3!important;font-weight:800!important}
+    #passportStatDialog .ww-stat-head #passportStatTitle{padding:0!important;margin:0!important;background:transparent!important;color:#fff!important;font-family:inherit!important;font-size:24px!important;line-height:1.3!important;font-weight:800!important;min-height:0!important;max-height:none!important;height:auto!important;flex:0 0 auto!important;letter-spacing:normal!important}
     #passportStatDialog #passportStatList{min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;flex:1 1 auto!important;padding:14px 26px 14px!important;background:#f4fbfb!important;scrollbar-width:none!important;-ms-overflow-style:none!important}
     #passportStatDialog #passportStatList::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
     #passportStatDialog .passport-stat-row{color:#193d4a!important}
