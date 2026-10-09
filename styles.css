@@ -4999,9 +4999,10 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   flex:0 0 auto;
   box-sizing:border-box;
   width:100%;
-  min-height:78px;
+  min-height:0;
+  height:56px;
   margin:0;
-  padding:18px 30px;
+  padding:8px 30px;
   border:0;
   border-radius:0;
   background:linear-gradient(110deg,#086a80 0%,#0c9f9f 100%);
