@@ -11967,6 +11967,8 @@ wwOpenQuickInfo=function(row,id){
     #wwLogoMenu .ww-logo-menu-item:hover,#wwLogoMenu .ww-logo-menu-item:focus-visible{background:rgba(255,255,255,.14)}
     #wwLogoMenu .ww-logo-menu-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,51,66,.18)}
     #wwLogoMenu .ww-logo-menu-icon svg{width:25px;height:25px;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
+    #wwLogoMenu .ww-menu-copyright{margin:12px 7px 0;padding:14px 4px 0;border-top:1px solid rgba(255,255,255,.25);text-align:center;color:rgba(255,255,255,.82);font-size:11px;line-height:1.6}
+    #wwLogoMenu .ww-menu-copyright strong{display:block;color:#fff;font-size:12px;font-weight:650}
     .ww-logo-placeholder:not([open]){display:none!important}
     .ww-logo-placeholder[open]{display:flex;flex-direction:column;max-height:min(85dvh,760px);overflow:hidden;border:0;border-radius:24px;padding:0;width:min(420px,calc(100vw - 32px));max-width:calc(100vw - 32px);background:#f4fbfb;color:#193d4a;box-shadow:0 20px 70px rgba(0,20,30,.35)}
     .ww-logo-placeholder::backdrop{background:rgba(0,24,35,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
@@ -12009,7 +12011,7 @@ wwOpenQuickInfo=function(row,id){
   const menu=document.createElement('div');menu.id='wwLogoMenu';menu.hidden=true;menu.setAttribute('role','menu');menu.setAttribute('aria-label','WozzaWorld menu');
   menu.innerHTML='<div class="ww-logo-menu-heading">Menu</div><button class="ww-logo-menu-close" type="button" aria-label="Close menu">×</button>'+[
     ['profile','Profile'],['backup','Backup'],['bin','Recycle Bin'],['privacy','Privacy'],['roadmap','App Roadmap']
-  ].map(([key,label])=>`<button type="button" class="ww-logo-menu-item" role="menuitem" data-ww-action="${key}"><span class="ww-logo-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true">${icons[key]}</svg></span><span>${label}</span></button>`).join('');
+  ].map(([key,label])=>`<button type="button" class="ww-logo-menu-item" role="menuitem" data-ww-action="${key}"><span class="ww-logo-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true">${icons[key]}</svg></span><span>${label}</span></button>`).join('')+'<div class="ww-menu-copyright"><strong>WozzaWorld™</strong>© 2026 Warren Cox. All rights reserved.</div>';
   document.body.appendChild(menu);
   logo.title='Open WozzaWorld menu';logo.setAttribute('aria-label','Open WozzaWorld menu');logo.setAttribute('aria-haspopup','menu');logo.setAttribute('aria-expanded','false');
   function setOpen(open){menu.hidden=!open;logo.setAttribute('aria-expanded',String(open))}
