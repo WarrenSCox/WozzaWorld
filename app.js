@@ -1332,7 +1332,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
   body:not(.map-view) .screen[data-screen="home"] > .map-card .ocean{fill:#f0fafc!important}
   body:not(.map-view) .ww-home-overview-visual{
     display:grid;grid-template-columns:minmax(0,25fr) minmax(0,75fr);
-    align-items:center;width:100%;padding:0 9px;box-sizing:border-box;
+    align-items:center;width:100%;padding:0 9px;box-sizing:border-box;overflow:hidden;
   }
   body:not(.map-view) .ww-home-overview-visual > .map-stage{
     width:100%!important;min-width:0!important;min-height:0!important;
@@ -1343,7 +1343,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
     --ww-progress:0; width:90%;max-width:185px;aspect-ratio:1;
     justify-self:center;display:grid;place-items:center;border-radius:50%;
     background:conic-gradient(#0aa989 calc(var(--ww-progress)*1%),#d8f0f2 0);
-    position:relative;
+    position:relative;z-index:2;transform:translateX(3px);
   }
   body:not(.map-view) .ww-home-explore-ring::before{
     content:"";position:absolute;inset:9%;border-radius:50%;background:#f0fafc;
@@ -1358,7 +1358,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
   body:not(.map-view) .ww-home-explore-ring-inner span{
     font-size:clamp(7px,1.55vw,11px);font-weight:800;letter-spacing:.12em;line-height:1.4;
   }
-  body.map-view .ww-home-overview-visual{display:contents!important}
+  body.map-view .ww-home-overview-visual{display:contents!important;overflow:visible!important}
   body.map-view .ww-home-overview-visual > .map-stage{transform:none!important}
   body.map-view .ww-home-explore-ring{display:none!important}
   @media(max-width:420px){
@@ -2264,7 +2264,18 @@ window.__wozzaWarmVisibleCountryHeroes=()=>{clearTimeout(settleTimer);settleTime
   const css=document.createElement('style');css.id='wozza-passport-insights-v2-style';css.textContent=`
     .passport-insights{background:rgba(255,255,255,.94)!important;border:1px solid rgba(255,255,255,.48)!important;color:#17213D!important}
     .passport-insights-title{color:#17213D!important}
-    .passport-insights-tab{color:#17213D!important}
+    .passport-insights-tab{color:#17213D!important;
+      background:rgba(247,253,253,.78)!important;
+      border:1px solid rgba(15,116,128,.13)!important;
+      border-radius:16px!important;
+      box-shadow:none!important;
+      transition:background-color .22s ease,border-color .22s ease,box-shadow .22s ease!important;
+    }
+    .passport-insights-tab.is-active{
+      background:#fff!important;
+      border-color:rgba(12,142,151,.26)!important;
+      box-shadow:0 5px 16px rgba(6,64,78,.14)!important;
+    }
     .passport-insights-tab .insights-brand-icon{display:block;height:50px;object-fit:contain;opacity:.82;transition:transform .22s ease,opacity .22s ease;pointer-events:none;position:absolute;bottom:22px;left:50%;transform:translateX(-50%)}
     .passport-insights-tab[data-insights-tab="score"] .insights-brand-icon{width:58px;bottom:16px}
     .passport-insights-tab[data-insights-tab="stats"] .insights-brand-icon{width:51px}
