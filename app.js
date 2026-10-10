@@ -1328,13 +1328,16 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
     display:block;color:#648da6;font-family:inherit;font-weight:500;font-size:.53em;
     letter-spacing:.28em;margin-top:5px;
   }
+  body:not(.map-view) .screen[data-screen="home"] > .map-card{background:#f0fafc!important}
+  body:not(.map-view) .screen[data-screen="home"] > .map-card .ocean{fill:#f0fafc!important}
   body:not(.map-view) .ww-home-overview-visual{
-    display:grid;grid-template-columns:minmax(0,27fr) minmax(0,73fr);
+    display:grid;grid-template-columns:minmax(0,25fr) minmax(0,75fr);
     align-items:center;width:100%;padding:0 9px;box-sizing:border-box;
   }
   body:not(.map-view) .ww-home-overview-visual > .map-stage{
     width:100%!important;min-width:0!important;min-height:0!important;
     padding:0!important;background:transparent!important;
+    transform:scale(1.06);transform-origin:50% 50%;
   }
   body:not(.map-view) .ww-home-explore-ring{
     --ww-progress:0; width:90%;max-width:185px;aspect-ratio:1;
@@ -1343,7 +1346,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
     position:relative;
   }
   body:not(.map-view) .ww-home-explore-ring::before{
-    content:"";position:absolute;inset:9%;border-radius:50%;background:#f1fbfc;
+    content:"";position:absolute;inset:9%;border-radius:50%;background:#f0fafc;
   }
   body:not(.map-view) .ww-home-explore-ring-inner{
     position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
@@ -1356,12 +1359,13 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
     font-size:clamp(7px,1.55vw,11px);font-weight:800;letter-spacing:.12em;line-height:1.4;
   }
   body.map-view .ww-home-overview-visual{display:contents!important}
+  body.map-view .ww-home-overview-visual > .map-stage{transform:none!important}
   body.map-view .ww-home-explore-ring{display:none!important}
   @media(max-width:420px){
     body:not(.map-view) .screen[data-screen="home"] > .map-card .home-world-overview-title{
       font-size:clamp(17px,5.1vw,23px)!important;padding:13px 13px 6px!important;
     }
-    body:not(.map-view) .ww-home-overview-visual{grid-template-columns:minmax(0,28fr) minmax(0,72fr);padding:0 4px}
+    body:not(.map-view) .ww-home-overview-visual{grid-template-columns:minmax(0,26fr) minmax(0,74fr);padding:0 4px}
     body:not(.map-view) .ww-home-explore-ring::before{inset:10%}
   }`;
   document.head.appendChild(style);
