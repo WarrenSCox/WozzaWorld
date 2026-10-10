@@ -1313,7 +1313,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
   ring.id='wwHomeExploreRing';
   ring.className='ww-home-explore-ring';
   ring.setAttribute('aria-label','Percentage of the world explored');
-  ring.innerHTML='<div class="ww-home-explore-ring-inner"><strong id="wwHomeExplorePercent">0%</strong><span>OF THE WORLD<br>EXPLORED</span></div>';
+  ring.innerHTML='<div class="ww-home-explore-ring-inner"><strong id="wwHomeExplorePercent">0%</strong><span>EXPLORED</span></div>';
   stage.before(visual);
   visual.append(ring,stage); // Move existing SVG map and plane layer together, preserving their coordinate system.
   const style=document.createElement('style');
@@ -1337,7 +1337,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
   body:not(.map-view) .ww-home-overview-visual > .map-stage{
     width:100%!important;min-width:0!important;min-height:0!important;
     padding:0!important;background:transparent!important;
-    transform:scale(1.06);transform-origin:50% 50%;
+    transform:scale(1.22);transform-origin:50% 50%;
   }
   body:not(.map-view) .ww-home-explore-ring{
     --ww-progress:0; width:90%;max-width:185px;aspect-ratio:1;
