@@ -1329,14 +1329,15 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
     letter-spacing:.28em;margin-top:5px;
   }
   body:not(.map-view) .screen[data-screen="home"] > .map-card{background:#f0fafc!important}
-  body:not(.map-view) .screen[data-screen="home"] > .map-card .ocean{fill:#f0fafc!important}
+  body:not(.map-view) .screen[data-screen="home"] > .map-card .ocean{fill:transparent!important}
   body:not(.map-view) .ww-home-overview-visual{
     display:grid;grid-template-columns:minmax(0,25fr) minmax(0,75fr);
-    align-items:center;width:100%;padding:0 9px;box-sizing:border-box;overflow:hidden;
+    align-items:center;width:100%;padding:0 9px;box-sizing:border-box;overflow:visible;
   }
   body:not(.map-view) .ww-home-overview-visual > .map-stage{
     width:100%!important;min-width:0!important;min-height:0!important;
-    padding:0!important;background:transparent!important;
+    padding:0!important;background:transparent!important;overflow:visible!important;
+    position:relative;z-index:3;
     transform:scale(1.22);transform-origin:50% 50%;
   }
   body:not(.map-view) .ww-home-explore-ring{
