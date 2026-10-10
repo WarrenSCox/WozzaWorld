@@ -1330,6 +1330,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
   }
   body:not(.map-view) .screen[data-screen="home"] > .map-card{background:#f0fafc!important}
   body:not(.map-view) .screen[data-screen="home"] > .map-card .ocean{fill:transparent!important}
+  body:not(.map-view) .screen[data-screen="home"] > .map-card #countries .country[data-country="Antarctica"]{display:none!important}
   body:not(.map-view) .ww-home-overview-visual{
     display:grid;grid-template-columns:minmax(0,25fr) minmax(0,75fr);
     align-items:center;width:100%;padding:0 9px;box-sizing:border-box;overflow:visible;
@@ -1338,7 +1339,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
     width:100%!important;min-width:0!important;min-height:0!important;
     padding:0!important;background:transparent!important;overflow:visible!important;
     position:relative;z-index:3;
-    transform:translateX(-8px) scale(1.342);transform-origin:50% 50%;
+    transform:translate(-8px,10px) scale(1.342);transform-origin:50% 50%;
   }
   body:not(.map-view) .ww-home-explore-ring{
     --ww-progress:0; width:90%;max-width:185px;aspect-ratio:1;
