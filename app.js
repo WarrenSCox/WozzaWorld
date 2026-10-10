@@ -12355,7 +12355,9 @@ wwOpenQuickInfo=function(row,id){
   const style=document.createElement('style');
   style.id='ww-passport-icon-label-spacing-101026';
   style.textContent=`
-    .passport-insights-tab .insights-tab-label{bottom:18px!important;z-index:5!important;}
+    .passport-insights-tab .insights-tab-label{bottom:26px!important;z-index:5!important;}
+    .passport-insights-tab .insights-home-sag{bottom:3px!important;}
+    .passport-insights-panel[data-insights-panel="score"] .travel-health-gauge{margin-bottom:10px!important;}
     .passport-insights-tab .meter-v6{bottom:45px!important;}
     .passport-insights-tab .chart-v6{bottom:45px!important;}
     .passport-insights-tab[data-insights-tab="stats"]>.insights-brand-icon{bottom:48px!important;}
