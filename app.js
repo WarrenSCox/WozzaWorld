@@ -12323,3 +12323,23 @@ wwOpenQuickInfo=function(row,id){
     form.appendChild(footer);
   }
 })();
+
+
+/* 10 Oct — scoped visual-only polish: square Passport tabs and remove
+   only the rightmost overview country-map spill. No event handlers touched. */
+(()=>{
+  if(document.getElementById('ww-overview-edge-passport-squares-101026'))return;
+  const style=document.createElement('style');
+  style.id='ww-overview-edge-passport-squares-101026';
+  style.textContent=`
+    /* Square buttons; keep the original icon, underline and active-state transitions. */
+    .passport-insights-tabs{border-bottom:0!important;padding-bottom:0!important;}
+    .passport-insights-tab{aspect-ratio:1 / 1!important;min-height:0!important;height:auto!important;min-width:0!important;box-sizing:border-box!important;}
+    /* Clip just the geography at its far-right boundary, not the SVG plane layer,
+       card, or map stage. The main Map screen is unaffected. */
+    body:not(.map-view) .screen[data-screen="home"] > .map-card .ww-home-overview-visual #countries{
+      clip-path:inset(-100% 3% -100% -100%);
+    }
+  `;
+  document.head.appendChild(style);
+})();
