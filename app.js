@@ -307,7 +307,7 @@ function milestoneContinents(visited){const continentMap={Europe:['United Kingdo
 function milestoneAwards(){const visited=countryRows('visited'),continents=milestoneContinents(visited),completed=state.trips.filter(t=>!tripIsOnHorizon(t)).length;return [{name:'First Stamp',desc:'Visit your first country.',img:'milestone-first-stamp.png',unlocked:visited.length>=1},{name:'Continental Drift',desc:'Visit 2 different continents.',img:'milestone-continental-drift.png',unlocked:continents>=2},{name:'Frequent Flyer',desc:'Complete 10 trips.',img:'milestone-frequent-flyer.png',unlocked:completed>=10},{name:'Quarter of the World',desc:"Visit 25% of the world’s countries.",img:'milestone-quarter-world.png',unlocked:visited.length>=Math.ceil(195*.25)},{name:'Seven Continents',desc:'Set foot on all 7 continents.',img:'milestone-seven-continents.png',unlocked:continents>=7}]}
 function openMilestoneDialog(a){const d=$('#milestoneDialog');if(!d)return;$('#milestoneDialogArt').innerHTML=`<img src="${a.img}" alt="${esc(a.name)} milestone stamp">`;$('#milestoneDialogTitle').textContent=a.name;$('#milestoneDialogDesc').textContent=a.desc;$('#milestoneDialogStatus').textContent=a.unlocked?'Milestone unlocked':'Locked — keep exploring';d.showModal()}
 function renderMilestones(){const grid=$('#milestonesGrid');if(!grid)return;const awards=milestoneAwards();const lock=`<span class="milestone-strap" aria-hidden="true"><i></i></span><span class="milestone-tag" aria-hidden="true"><b>lock</b></span>`;const tile=(a,i)=>`<button type="button" class="milestone-tile ${a.unlocked?'is-unlocked':'is-locked'}" data-milestone="${i}" aria-label="${esc(a.name)} — ${a.unlocked?'unlocked':'locked'}"><div class="milestone-stamp-wrap"><img src="${a.img}" alt="" class="milestone-stamp">${a.unlocked?'':lock}</div></button>`;const blanks=Array.from({length:15},()=>`<div class="milestone-tile milestone-blank is-locked" aria-label="Future milestone locked"><div class="milestone-stamp-wrap"><span class="blank-stamp-art" aria-hidden="true">⌁</span>${lock}</div></div>`).join('');grid.innerHTML=awards.map(tile).join('')+blanks;grid.querySelectorAll('[data-milestone]').forEach(b=>b.onclick=()=>openMilestoneDialog(awards[Number(b.dataset.milestone)]))}
-function render(){ applyWorldViewName(); const passportName=$('#passportName');if(passportName&&document.activeElement!==passportName)passportName.value=(localStorage.getItem('wozzaworld-first-name')||'');$$('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');['visited','going'].forEach(s=>{if(mapFilterPrefs[s]&&countryHasStatus(p.dataset.country,s))p.classList.add(s)});if(mapFilterPrefs.bucket&&countryHasStatus(p.dataset.country,'bucket'))p.classList.add('map-filter-bucket')});const vals=allStatusCountries(),visited=new Set(allStatusCountries().filter(c=>countryHasStatus(c,'visited')));$('#visitedCount').textContent=visited.size;const vh=$('#visitedCountriesHeading'),wp=$('#worldExploredPercent');if(vh)vh.textContent='VISITED';if(wp)wp.textContent=`${Math.round(visited.size/195*100)}% OF THE WORLD EXPLORED`;$('#goingCount').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#wishCount').textContent=vals.filter(c=>countryHasStatus(c,'bucket')).length;const meVisited=$('#meVisited');if(meVisited){const current=meVisited.querySelector('.visited-current');if(current)current.textContent=visited.size;else meVisited.textContent=visited.size;}$('#meCities').textContent=[...visited].reduce((n,c)=>n+uniqueCities(c),0);$('#meGoing').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#meTrips').textContent=state.trips.length;renderCompanionStats();renderMilestones();renderPassportCarouselStats();setPassportStatsSlide(passportStatsSlide);renderExtraStats();$('#tripList').innerHTML=renderMyTrips();setupTripTitleScroll();renderCountryLists();renderRecycleBin();renderDepartureBoard();attachTripRatingEvents();attachTripCardEvents();if(currentCountry)renderSheet()}
+function render(){ applyWorldViewName(); const passportName=$('#passportName');if(passportName&&document.activeElement!==passportName)passportName.value=(localStorage.getItem('wozzaworld-first-name')||'');$$('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');['visited','going'].forEach(s=>{if(mapFilterPrefs[s]&&countryHasStatus(p.dataset.country,s))p.classList.add(s)});if(mapFilterPrefs.bucket&&countryHasStatus(p.dataset.country,'bucket'))p.classList.add('map-filter-bucket')});const vals=allStatusCountries(),visited=new Set(allStatusCountries().filter(c=>countryHasStatus(c,'visited')));$('#visitedCount').textContent=visited.size;const vh=$('#visitedCountriesHeading'),wp=$('#worldExploredPercent');if(vh)vh.textContent='VISITED';if(wp)wp.textContent=`${Math.round(visited.size/195*100)}% OF THE WORLD EXPLORED`;const homeRing=$('#wwHomeExploreRing'),homePct=$('#wwHomeExplorePercent');if(homeRing)homeRing.style.setProperty('--ww-progress',String(visited.size/195*100));if(homePct)homePct.textContent=Math.round(visited.size/195*100)+'%';$('#goingCount').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#wishCount').textContent=vals.filter(c=>countryHasStatus(c,'bucket')).length;const meVisited=$('#meVisited');if(meVisited){const current=meVisited.querySelector('.visited-current');if(current)current.textContent=visited.size;else meVisited.textContent=visited.size;}$('#meCities').textContent=[...visited].reduce((n,c)=>n+uniqueCities(c),0);$('#meGoing').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#meTrips').textContent=state.trips.length;renderCompanionStats();renderMilestones();renderPassportCarouselStats();setPassportStatsSlide(passportStatsSlide);renderExtraStats();$('#tripList').innerHTML=renderMyTrips();setupTripTitleScroll();renderCountryLists();renderRecycleBin();renderDepartureBoard();attachTripRatingEvents();attachTripCardEvents();if(currentCountry)renderSheet()}
 function showPeople(c){const p=countryCompanions(c);$('#peopleDialogTitle').textContent=`${c} — ${p.length+1} travellers`;$('#peopleDialogList').innerHTML=`<span class="you-chip">You</span>`+(p.length?p.map(n=>`<span>${esc(n)}</span>`).join(''):'');$('#peopleDialog').showModal()}function countryCityDisplay(c){const map=new Map();for(const x of state.cities[c]||[])map.set(String(x.name).trim().toLowerCase(),{name:x.name,type:x.type||'City',visits:[...(x.visits||[])]});for(const t of countryTrips(c)){for(const d of t.destinations||[]){if(!sameCountry(d.country||tripCountries(t)[0],c))continue;const k=String(d.name||'').trim().toLowerCase();if(!k)continue;const rec=map.get(k)||{name:d.name,type:d.type||'Other',visits:[]};const m=d.start?d.start.slice(0,7):(t.start?t.start.slice(0,7):'');if(m&&!rec.visits.includes(m))rec.visits.push(m);map.set(k,rec)}for(const [country,cities] of Object.entries(t.cities||{})){if(!sameCountry(country,c))continue;for(const name of cities||[]){const k=String(name).trim().toLowerCase();if(!k)continue;const rec=map.get(k)||{name,type:'City',visits:[]};const m=t.start?t.start.slice(0,7):'';if(m&&!rec.visits.includes(m))rec.visits.push(m);map.set(k,rec)}}}return [...map.values()]}
 function openRemoveDialog(c,status=null){pendingRemoveCountry=c;pendingRemoveStatus=status||state.statuses[c];status=pendingRemoveStatus;const label=status==='visited'?'Visited':status==='going'?'Visiting':'Bucket List',bodyLabel=status==='visited'?'visited countries':status==='going'?'visiting countries':'Bucket List';$('#removeDialogTitle').textContent=`Remove from ${label}?`;const dialog=$('#removeDialog'),copy=dialog?.querySelector('p'),confirm=$('#confirmRemove');if(copy)copy.textContent=`Do you want to remove ${c} from your ${bodyLabel}? You can always add it back later.`;if(confirm)confirm.textContent='Remove';dialog.showModal()}function removeCountry(c,status=pendingRemoveStatus||state.statuses[c]){if(!status||!countryHasStatus(c,status))return;const item={country:c,status,removedAt:Date.now()};state.recycleBin=state.recycleBin.filter(x=>!(x.country===c&&x.status===status));state.recycleBin.unshift(item);setCountryStatus(c,status,false);lastRemoved=item;save();toast(`${c} removed — tap to undo`,undoLastRemove)}function undoLastRemove(){if(!lastRemoved)return;setCountryStatus(lastRemoved.country,lastRemoved.status,true);state.recycleBin=state.recycleBin.filter(i=>!(i.country===lastRemoved.country&&i.status===lastRemoved.status));lastRemoved=null;save();toast('Country restored')}
 function permanentlyDeleteCountryAt(i){const x=state.recycleBin[i];if(!x)return;delete state.companions[x.country];delete state.memories[x.country];delete state.places[x.country];delete state.cities[x.country];state.trips=state.trips.map(t=>({...t,countries:tripCountries(t).filter(c=>!sameCountry(c,x.country))})).filter(t=>t.countries.length);state.recycleBin.splice(i,1)}
@@ -1291,8 +1291,8 @@ function applyWorldViewName(){
   const title=ensureHomeWorldOverviewTitle();
   if(title){
     const displayName=(n||'YOUR').toUpperCase();
-    title.textContent=displayName+"'S WORLD OVERVIEW";
-    fitHomeWorldOverviewTitle();
+    title.innerHTML='<span class="ww-overview-name">'+esc(displayName)+"'S WORLD"+'</span><span class="ww-overview-subtitle">OVERVIEW</span>';
+    // The redesigned two-line title sizes responsively in CSS, not the legacy single-line fitter.
   }
 }
 function requestWorldViewName(){
@@ -1302,6 +1302,70 @@ function requestWorldViewName(){
 window.addEventListener('load',requestWorldViewName,{once:true});
 window.matchMedia('(display-mode: standalone)').addEventListener?.('change',applyWorldViewName);
 window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewName();if(document.body.classList.contains('map-view')&&mapZoomBehavior){const portrait=window.matchMedia('(orientation: portrait)').matches;mapZoomBehavior.scaleExtent([portrait?1.15:1,56]);if(portrait){const svg=d3.select('#worldMap'),k=1.52,t=d3.zoomIdentity.translate((1000-1000*k)/2,(520-520*k)/2).scale(k);svg.call(mapZoomBehavior.transform,t)}else{const svg=d3.select('#worldMap');svg.call(mapZoomBehavior.transform,d3.zoomIdentity)}}window.dispatchEvent(new Event('resize'))},180));
+(function setupHomeOverviewPresentation(){
+  const card=document.querySelector('.screen[data-screen="home"] > .map-card');
+  const stage=card?.querySelector('#mapStage');
+  if(!card||!stage||document.getElementById('wwHomeOverviewVisual'))return;
+  const visual=document.createElement('div');
+  visual.id='wwHomeOverviewVisual';
+  visual.className='ww-home-overview-visual';
+  const ring=document.createElement('div');
+  ring.id='wwHomeExploreRing';
+  ring.className='ww-home-explore-ring';
+  ring.setAttribute('aria-label','Percentage of the world explored');
+  ring.innerHTML='<div class="ww-home-explore-ring-inner"><strong id="wwHomeExplorePercent">0%</strong><span>OF THE WORLD<br>EXPLORED</span></div>';
+  stage.before(visual);
+  visual.append(ring,stage); // Move existing SVG map and plane layer together, preserving their coordinate system.
+  const style=document.createElement('style');
+  style.id='wwHomeOverviewLayoutStyle';
+  style.textContent=`
+  body:not(.map-view) .screen[data-screen="home"] > .map-card .home-world-overview-title{
+    text-align:left!important;white-space:normal!important;overflow:visible!important;
+    padding:17px 20px 4px!important;line-height:1.02!important;font-size:clamp(21px,5vw,35px)!important;
+  }
+  body:not(.map-view) .home-world-overview-title .ww-overview-name{display:block;white-space:nowrap;letter-spacing:-.025em}
+  body:not(.map-view) .home-world-overview-title .ww-overview-subtitle{
+    display:block;color:#648da6;font-family:inherit;font-weight:500;font-size:.53em;
+    letter-spacing:.28em;margin-top:5px;
+  }
+  body:not(.map-view) .ww-home-overview-visual{
+    display:grid;grid-template-columns:minmax(0,27fr) minmax(0,73fr);
+    align-items:center;width:100%;padding:0 9px;box-sizing:border-box;
+  }
+  body:not(.map-view) .ww-home-overview-visual > .map-stage{
+    width:100%!important;min-width:0!important;min-height:0!important;
+    padding:0!important;background:transparent!important;
+  }
+  body:not(.map-view) .ww-home-explore-ring{
+    --ww-progress:0; width:90%;max-width:185px;aspect-ratio:1;
+    justify-self:center;display:grid;place-items:center;border-radius:50%;
+    background:conic-gradient(#0aa989 calc(var(--ww-progress)*1%),#d8f0f2 0);
+    position:relative;
+  }
+  body:not(.map-view) .ww-home-explore-ring::before{
+    content:"";position:absolute;inset:9%;border-radius:50%;background:#f1fbfc;
+  }
+  body:not(.map-view) .ww-home-explore-ring-inner{
+    position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;color:#0d1737;
+  }
+  body:not(.map-view) .ww-home-explore-ring-inner strong{
+    font-family:"Archivo Black",Impact,sans-serif;font-size:clamp(19px,4.5vw,36px);line-height:1.15;
+  }
+  body:not(.map-view) .ww-home-explore-ring-inner span{
+    font-size:clamp(7px,1.55vw,11px);font-weight:800;letter-spacing:.12em;line-height:1.4;
+  }
+  body.map-view .ww-home-overview-visual{display:contents!important}
+  body.map-view .ww-home-explore-ring{display:none!important}
+  @media(max-width:420px){
+    body:not(.map-view) .screen[data-screen="home"] > .map-card .home-world-overview-title{
+      font-size:clamp(17px,5.1vw,23px)!important;padding:13px 13px 6px!important;
+    }
+    body:not(.map-view) .ww-home-overview-visual{grid-template-columns:minmax(0,28fr) minmax(0,72fr);padding:0 4px}
+    body:not(.map-view) .ww-home-explore-ring::before{inset:10%}
+  }`;
+  document.head.appendChild(style);
+})();
 applyWorldViewName();
 
 (function(){if(document.getElementById('wozza-hotfix-048-style'))return;const st=document.createElement('style');st.id='wozza-hotfix-048-style';st.textContent=`
