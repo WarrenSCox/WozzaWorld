@@ -1338,7 +1338,7 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{applyWorldViewNa
     width:100%!important;min-width:0!important;min-height:0!important;
     padding:0!important;background:transparent!important;overflow:visible!important;
     position:relative;z-index:3;
-    transform:scale(1.22);transform-origin:50% 50%;
+    transform:translateX(-8px) scale(1.342);transform-origin:50% 50%;
   }
   body:not(.map-view) .ww-home-explore-ring{
     --ww-progress:0; width:90%;max-width:185px;aspect-ratio:1;
