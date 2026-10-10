@@ -12347,3 +12347,23 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(style);
 })();
+
+/* 10 Oct — Passport tab icon/label separation. Pure CSS; preserve original
+   animation elements, transitions, state and tab handlers. */
+(()=>{
+  if(document.getElementById('ww-passport-icon-label-spacing-101026'))return;
+  const style=document.createElement('style');
+  style.id='ww-passport-icon-label-spacing-101026';
+  style.textContent=`
+    .passport-insights-tab .insights-tab-label{bottom:18px!important;z-index:5!important;}
+    .passport-insights-tab .meter-v6{bottom:45px!important;}
+    .passport-insights-tab .chart-v6{bottom:45px!important;}
+    .passport-insights-tab[data-insights-tab="stats"]>.insights-brand-icon{bottom:48px!important;}
+    @media(max-width:380px){
+      .passport-insights-tab .meter-v6{bottom:42px!important;}
+      .passport-insights-tab .chart-v6{bottom:42px!important;}
+      .passport-insights-tab[data-insights-tab="stats"]>.insights-brand-icon{bottom:45px!important;}
+    }
+  `;
+  document.head.appendChild(style);
+})();
