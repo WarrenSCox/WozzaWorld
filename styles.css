@@ -5412,3 +5412,102 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   fill:#087f91!important;
   stroke:#087f91!important;
 }
+
+/* 11 Oct 2026 — Activity Type and Link Type picker dialog visual parity with Privacy.
+   CSS only: no selection handlers, icon data, scroll geometry or saved state touched.
+   Higher specificity than the legacy JavaScript-injected beige picker styles. */
+:is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker{
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  width:min(92vw,430px)!important;
+  max-width:min(92vw,430px)!important;
+  max-height:88dvh!important;
+  overflow:visible!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker .ww-type-picker-shell{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-height:88dvh!important;
+  padding:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  scrollbar-width:none!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  border-radius:28px!important;
+  background:#effafa!important;
+  color:#183641!important;
+  box-shadow:0 18px 55px rgba(0,45,57,.28)!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-shell::-webkit-scrollbar{
+  display:none!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker .ww-type-picker-head{
+  box-sizing:border-box!important;
+  position:sticky!important;
+  z-index:3!important;
+  top:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+  width:100%!important;
+  min-height:118px!important;
+  margin:0!important;
+  padding:26px 24px!important;
+  border-radius:0!important;
+  background:linear-gradient(120deg,#086579 0%,#0aa3a6 100%)!important;
+  color:#fff!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-head small{
+  display:block!important;
+  margin:0 0 5px!important;
+  color:rgba(255,255,255,.85)!important;
+  font:800 11px/1.2 Inter,ui-sans-serif,system-ui,sans-serif!important;
+  letter-spacing:.075em!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-head h3{
+  margin:0!important;
+  color:#fff!important;
+  font:800 25px/1.12 Inter,ui-sans-serif,system-ui,sans-serif!important;
+  letter-spacing:-.025em!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-head .ww-type-picker-close{
+  box-sizing:border-box!important;
+  width:46px!important;
+  height:46px!important;
+  flex:0 0 46px!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  color:#62737b!important;
+  font:400 31px/1 Inter,ui-sans-serif,system-ui,sans-serif!important;
+  cursor:pointer!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-grid{
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin:0!important;
+  padding:23px 20px 25px!important;
+  background:#effafa!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-option{
+  background:#fff!important;
+  border-color:rgba(255,255,255,.98)!important;
+}
+:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-option.selected{
+  background:#e7f6f7!important;
+  border-color:#07899d!important;
+}
+@media(max-width:390px){
+  :is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-grid{
+    gap:8px!important;
+    padding:19px 15px 21px!important;
+  }
+  :is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker .ww-type-picker-head{
+    padding:23px 21px!important;
+  }
+}
