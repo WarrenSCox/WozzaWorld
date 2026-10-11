@@ -5383,3 +5383,32 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   color:#193d4a!important;
   font:750 15px/1.2 Inter,ui-sans-serif,sans-serif!important;
 }
+
+
+/* 11 Oct 2026 · Activity view-only star matches Activity Details.
+   Read-only quick-info header only; existing bookmark click/persistence unchanged. */
+#itineraryQuickInfoDialog .itinerary-quick-info-shell header .ww-activity-bookmark-preview{
+  box-sizing:border-box!important;
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 42px!important;
+  width:42px!important;
+  height:42px!important;
+  padding:8px!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  color:#087f91!important;
+  transform:none!important;
+}
+#itineraryQuickInfoDialog .itinerary-quick-info-shell header .ww-activity-bookmark-preview svg{
+  display:block!important;
+  width:26px!important;
+  height:26px!important;
+  fill:transparent!important;
+  stroke:#087f91!important;
+}
+#itineraryQuickInfoDialog .itinerary-quick-info-shell header .ww-activity-bookmark-preview.is-bookmarked svg{
+  fill:#087f91!important;
+  stroke:#087f91!important;
+}
