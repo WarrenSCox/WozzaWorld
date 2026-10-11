@@ -5552,3 +5552,66 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
     padding:7px 21px 19px!important;
   }
 }
+
+
+/* Base 8 — Passport: final six milestones (replaces old stamp/blank-slot design) */
+.screen[data-screen="me"] #milestonesCard{
+  margin:12px 0 16px!important;padding:17px 13px 16px!important;
+  border-radius:25px!important;background:#e4f5f6!important;
+  color:#173c4a!important;border:1px solid rgba(255,255,255,.75)!important;
+  box-shadow:0 9px 24px rgba(0,51,63,.13)!important;overflow:hidden!important;
+}
+#milestonesCard .milestones-head{margin:0 5px 13px!important;display:block!important;}
+#milestonesCard .milestones-head h2{
+  margin:0!important;color:#173c4a!important;font-family:"Archivo Black",Impact,sans-serif!important;
+  font-weight:900!important;font-size:clamp(18px,5.1vw,25px)!important;letter-spacing:.015em!important;
+  line-height:1.2!important;text-transform:uppercase!important;
+}
+#milestonesCard .milestones-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;}
+#milestonesCard .milestone-tile{
+  appearance:none;display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;
+  width:100%;min-width:0;min-height:0;padding:8px 5px 10px;
+  background:#fff!important;border:1px solid #d8eaed!important;border-radius:18px!important;
+  color:#122b43!important;cursor:pointer;box-shadow:0 4px 11px rgba(10,77,96,.06)!important;
+  -webkit-tap-highlight-color:transparent;transition:transform .18s ease,box-shadow .18s ease;
+}
+#milestonesCard .milestone-tile:focus-visible{outline:3px solid #e9b928;outline-offset:2px;}
+#milestonesCard .milestone-tile:active{transform:scale(.97);}
+#milestonesCard .milestone-stamp-wrap{
+  display:flex!important;align-items:center;justify-content:center;position:relative;
+  width:100%;aspect-ratio:1/1;overflow:visible!important;background:transparent!important;
+  border-radius:0!important;box-shadow:none!important;margin:0 auto 5px;
+}
+#milestonesCard .milestone-stamp{width:100%!important;height:100%!important;display:block;object-fit:contain!important;border-radius:0!important;}
+#milestonesCard .milestone-tile.is-unlocked .milestone-stamp-wrap:after{display:none!important;animation:none!important;}
+#milestonesCard .milestone-tile.is-locked .milestone-stamp{filter:grayscale(1) brightness(.95)!important;opacity:.42!important;}
+#milestonesCard .milestone-tile>strong{
+  display:block!important;color:#172443!important;font-family:Inter,Arial,sans-serif!important;
+  font-size:clamp(9px,2.35vw,12px)!important;line-height:1.16!important;
+  font-weight:900!important;text-transform:uppercase!important;letter-spacing:-.02em!important;
+  text-align:center!important;overflow-wrap:normal;hyphens:none;margin:2px 0 4px!important;
+}
+#milestonesCard .milestone-tile>small{
+  display:block!important;color:#648997!important;font-family:Inter,Arial,sans-serif!important;
+  font-weight:750!important;font-size:clamp(8px,2.1vw,11px)!important;
+  line-height:1.2!important;text-transform:uppercase;text-align:center!important;margin:0!important;
+}
+#milestoneDialog{border:0!important;border-radius:26px!important;padding:0!important;background:#edf9f9!important;
+  color:#153c49!important;box-shadow:0 25px 65px rgba(0,25,35,.34)!important;overflow:hidden!important;
+  width:min(420px,calc(100vw - 32px))!important;max-height:min(84vh,720px)!important;}
+#milestoneDialog::backdrop{background:rgba(0,43,59,.55);backdrop-filter:blur(7px);}
+#milestoneDialog form{display:block;text-align:center;padding:0!important;background:#edf9f9!important;max-height:min(84vh,720px);overflow:auto;}
+#milestoneDialog .milestone-dialog-head{padding:22px 22px!important;background:linear-gradient(115deg,#087388,#08a6a8)!important;text-align:left;}
+#milestoneDialog .milestone-dialog-head h3{margin:0!important;color:#fff!important;font-family:"Archivo Black",Impact,sans-serif!important;font-size:clamp(20px,6vw,27px)!important;line-height:1.2;}
+#milestoneDialog .milestone-dialog-body{padding:17px 24px 22px!important;}
+#milestoneDialog .milestone-dialog-art{width:min(255px,70vw)!important;margin:0 auto 8px!important;}
+#milestoneDialog .milestone-dialog-art img{width:100%!important;height:auto!important;object-fit:contain;border-radius:0!important;}
+#milestoneDialog .milestone-dialog-art img.is-locked{filter:grayscale(1);opacity:.5;}
+#milestoneDialog .milestone-dialog-status{margin:3px auto 12px!important;padding:6px 12px;border-radius:30px;
+  background:rgba(7,119,130,.1);color:#08778a;font-size:11px;font-weight:900;letter-spacing:.08em;}
+#milestoneDialog .milestone-dialog-desc{font-size:15px!important;line-height:1.55!important;color:#25444b!important;margin:0 0 20px!important;}
+#milestoneDialog .dialog-actions{display:flex!important;justify-content:flex-end!important;margin:0!important;}
+#milestoneDialog .dialog-actions button{border:0!important;border-radius:999px!important;background:#ebc02a!important;
+  color:#163f47!important;font-size:15px!important;font-weight:900!important;padding:12px 29px!important;min-width:110px;}
+@media(max-width:380px){#milestonesCard .milestones-grid{gap:6px!important}#milestonesCard .milestone-tile{padding:6px 3px 8px;border-radius:14px!important}}
+@media(prefers-reduced-motion:reduce){#milestonesCard .milestone-tile{transition:none!important}}
