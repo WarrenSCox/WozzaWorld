@@ -4967,7 +4967,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 #stopItineraryDialog .itin-todo-add{margin:12px 0 0!important;padding:9px 2px!important;border:0!important;background:transparent!important;color:#087c96!important;font:inherit!important;font-size:13px!important;font-weight:850!important;text-align:left!important}
 
 /* Stop/trip removal confirmations only — align with established teal dialog treatment. */
-.wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-alert-card{padding:0!important;overflow:hidden;background:#effafa!important;border:1px solid rgba(7,94,120,.12)!important;border-radius:26px!important;max-width:420px!important}
+.wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-alert-card{padding:0!important;overflow:hidden;background:#effafa!important;border:0!important;border-radius:26px!important;max-width:420px!important}
 .wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-alert-card>strong{display:block!important;background:linear-gradient(110deg,#08738a 0%,#00bdb6 100%)!important;color:white!important;font-size:22px!important;font-weight:900!important;padding:26px 24px!important;margin:0!important}
 .wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-alert-card>p{padding:23px 24px 0!important;margin:0 0 24px!important;color:#233e47!important;font-size:16px!important;line-height:1.5!important}
 .wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-confirm-actions{padding:0 24px 24px!important;display:flex!important;justify-content:flex-end!important;gap:10px!important;flex-wrap:wrap!important}
