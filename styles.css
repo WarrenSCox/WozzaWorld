@@ -5033,36 +5033,6 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 }
 /* Preserve existing notes/tasks cards, dimensions and read-only presentation. */
 
-/* Export dialog: two-tone styling, retaining existing SVG arrow/tray animation. */
-#wwExportReadyDialog .ww-export-ready-card{
-  background:#effafa!important;padding:0 0 24px!important;overflow:hidden!important;
-}
-#wwExportReadyDialog .ww-export-ready-tick{
-  box-sizing:content-box!important;width:58px!important;height:58px!important;
-  margin:0 auto 0!important;padding:26px calc((min(88vw,430px) - 58px)/2) 14px!important;
-  border-radius:0!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;
-}
-#wwExportReadyDialog h2{
-  background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;
-  padding:0 16px 24px!important;margin:0 0 22px!important;
-}
-#wwExportReadyDialog p{padding:0 24px!important;color:#233e47!important}
-#wwExportReadyDialog button{
-  width:calc(100% - 48px)!important;margin:0 24px!important;
-  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
-}
-/* Gentle five-second gleam for the filled teal itinerary bookmark star. */
-@keyframes wwItineraryStarGleam{
-  0%,65%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}
-  77%{filter:brightness(1.48) drop-shadow(0 0 3px rgba(255,255,255,.9))}
-  90%{filter:brightness(1) drop-shadow(0 0 0 transparent)}
-}
-#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-itinerary-bookmark svg{
-  animation:wwItineraryStarGleam 5s ease-in-out infinite!important;
-}
-@media(prefers-reduced-motion:reduce){
-  #masterItineraryDialog .ww-itinerary-bookmark svg{animation:none!important}
-}
 /* Lower and inset main itinerary's three header controls together. */
 #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-trip-flag,
 #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-capture,
@@ -5108,31 +5078,68 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   color:#fff!important;
 }
 
-/* Export modal corrective hotfix — one continuous gradient surface behind
-   icon and title; do not modify the SVG or its existing animation. */
-#wwExportReadyDialog .ww-export-ready-card{
-  position:relative!important;
-  overflow:hidden!important;
-  background-color:#effafa!important;
-  background-image:linear-gradient(120deg,#086579,#0aa3a6)!important;
-  background-repeat:no-repeat!important;
-  background-size:100% 170px!important;
-  padding:0 0 24px!important;
+
+/* 11 Oct — targeted finishing polish. Existing export SVG animation and actions untouched. */
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head small{
+  font-size:25px!important;font-weight:900!important;letter-spacing:.015em!important;
+  text-align:left!important;line-height:1.2!important;margin:0!important;
 }
-#wwExportReadyDialog .ww-export-ready-card .ww-export-ready-tick{
-  box-sizing:content-box!important;
-  display:grid!important;
-  place-items:center!important;
-  width:58px!important;height:58px!important;
-  padding:24px 0 12px!important;
-  margin:0 auto!important;
-  border-radius:0!important;
-  background:transparent!important;
+/* Export dialog: Privacy-style banner, then original animated icon in body. */
+#wwExportReadyDialog .ww-export-ready-card{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  padding:0 0 22px!important;background:#effafa!important;
+  background-image:none!important;overflow:hidden!important;text-align:left!important;
 }
 #wwExportReadyDialog .ww-export-ready-card h2{
-  box-sizing:border-box!important;
-  background:transparent!important;
-  color:#fff!important;
-  margin:0 0 22px!important;
-  padding:0 16px 24px!important;
+  order:0!important;box-sizing:border-box!important;
+  margin:0!important;padding:25px 26px!important;
+  min-height:91px!important;display:flex!important;align-items:center!important;
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  color:#fff!important;font-size:25px!important;line-height:1.2!important;
+  text-align:left!important;
+}
+#wwExportReadyDialog .ww-export-ready-card .ww-export-ready-tick{
+  order:1!important;box-sizing:border-box!important;
+  width:58px!important;height:58px!important;
+  margin:19px auto 8px!important;padding:0!important;
+  display:grid!important;place-items:center!important;
+  border-radius:0!important;background:none!important;color:#172f3a!important;
+}
+#wwExportReadyDialog .ww-export-ready-card .ww-export-ready-tick svg{
+  stroke:#172f3a!important;fill:none!important;
+}
+#wwExportReadyDialog .ww-export-ready-card p{
+  order:2!important;margin:0 24px 24px!important;padding:0!important;
+  text-align:center!important;color:#233e47!important;
+}
+#wwExportReadyDialog .ww-export-ready-card button{
+  order:3!important;align-self:flex-end!important;
+  box-sizing:border-box!important;width:auto!important;min-width:110px!important;
+  min-height:44px!important;margin:0 24px 0 0!important;
+  padding:11px 25px!important;border-radius:999px!important;
+  background:#eac32f!important;color:#17323c!important;
+  font-size:16px!important;font-weight:800!important;letter-spacing:0!important;
+  text-transform:none!important;
+}
+/* Only the read-only activity detail star: selected = solid white. */
+#itineraryQuickInfoDialog .ww-activity-bookmark-preview.is-bookmarked svg,
+.itinerary-quick-info-dialog .ww-activity-bookmark-preview.is-bookmarked svg{
+  fill:#fff!important;stroke:#fff!important;
+}
+#itineraryQuickInfoDialog .ww-activity-bookmark-preview:not(.is-bookmarked) svg,
+.itinerary-quick-info-dialog .ww-activity-bookmark-preview:not(.is-bookmarked) svg{
+  fill:transparent!important;stroke:#fff!important;
+}
+/* Static teal-gradient itinerary stars. CSS mask mirrors the existing SVG path;
+   original SVG is retained for semantics, but hidden visually to avoid flat fill. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-itinerary-bookmark{
+  background:linear-gradient(125deg,#086579 5%,#0aa3a6 95%)!important;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2.2l2.9 5.88 6.49.94-4.7 4.58 1.11 6.46L12 17.01l-5.8 3.05 1.11-6.46-4.7-4.58 6.49-.94L12 2.2z'/%3E%3C/svg%3E")!important;
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2.2l2.9 5.88 6.49.94-4.7 4.58 1.11 6.46L12 17.01l-5.8 3.05 1.11-6.46-4.7-4.58 6.49-.94L12 2.2z'/%3E%3C/svg%3E")!important;
+  -webkit-mask-size:100% 100%!important;mask-size:100% 100%!important;
+  -webkit-mask-repeat:no-repeat!important;mask-repeat:no-repeat!important;
+  animation:none!important;filter:none!important;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-itinerary-bookmark svg{
+  visibility:hidden!important;animation:none!important;filter:none!important;
 }
