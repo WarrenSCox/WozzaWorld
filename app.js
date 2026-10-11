@@ -1914,7 +1914,12 @@ window.__wozzaWarmVisibleCountryHeroes=()=>{clearTimeout(settleTimer);settleTime
     });
     const ranked=Object.keys(FACTORS).map(k=>({key:k,label:FACTORS[k].label,value:components[k]})).sort((a,b)=>b.value-a.value);
     const strength=ranked[0],weakest=ranked[ranked.length-1];
-    const strengthText={world:'Strong geographical breadth across your travel story.',variety:'A varied mix of trip styles and ways to travel.',depth:'You tend to explore destinations in real depth.',momentum:'You have built a strong, sustained travel history.',discovery:'You keep expanding your travel footprint.'}[strength.key];
+    // Do not present an arbitrary zero-score tie as a genuine strength.
+    // Visited countries alone are valid travel evidence, even without recorded trips.
+    const hasTravelEvidence=e.trips.length>0 || e.countries.size>0;
+    const strengthText=(!hasTravelEvidence || strength.value<=0)
+      ? 'Your travel story is waiting to begin. Add your first trip to start discovering your travel strengths.'
+      : {world:'Strong geographical breadth across your travel story.',variety:'A varied mix of trip styles and ways to travel.',depth:'You tend to explore destinations in real depth.',momentum:'You have built a strong, sustained travel history.',discovery:'You keep expanding your travel footprint.'}[strength.key];
     // Recommendations interpret the travel pattern rather than simply repeating the weakest statistic.
     // Keep this rules-based and deterministic so the same travel history always gets a sensible explanation.
     function recommendationFor(){
