@@ -4464,8 +4464,9 @@ wwOpenQuickInfo=function(row,id){
     p.id='wwActivityTypePicker';
     p.className='ww-activity-type-picker';
     p.innerHTML=`<div class="ww-type-picker-shell">
-      <div class="ww-type-picker-head"><div><small>ACTIVITY TYPE</small><h3>Choose an icon</h3></div><button type="button" class="ww-type-picker-close" aria-label="Close">×</button></div>
+      <div class="ww-type-picker-head"><div><small>ACTIVITY TYPE</small><h3>Choose an icon</h3></div></div>
       <div class="ww-type-picker-grid">${WW_PICKER_TYPES.map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""><span>${esc(name)}</span></button>`).join('')}</div>
+      <div class="ww-type-picker-footer"><button type="button" class="ww-type-picker-close" aria-label="Close">Close</button></div>
     </div>`;
     document.body.appendChild(p);
     p.querySelector('.ww-type-picker-close').onclick=()=>p.close();
@@ -10145,8 +10146,9 @@ wwOpenQuickInfo=function(row,id){
     p=document.createElement('dialog');
     p.id='wwLinkTypePicker'; p.className='ww-activity-type-picker ww-link-type-picker';
     p.innerHTML=`<div class="ww-type-picker-shell">
-      <div class="ww-type-picker-head"><div><small>LINK TYPE</small><h3>Choose a link</h3></div><button type="button" class="ww-type-picker-close" aria-label="Close">×</button></div>
+      <div class="ww-type-picker-head"><div><small>LINK TYPE</small><h3>Choose a link</h3></div></div>
       <div class="ww-type-picker-grid">${Object.entries(TYPES).map(([key,x])=>`<button type="button" class="ww-type-picker-option" data-link-type="${key}"><span class="ww-link-picker-icon">${iconSvg(x.icon)}</span><span>${x.label}</span></button>`).join('')}</div>
+      <div class="ww-type-picker-footer"><button type="button" class="ww-type-picker-close" aria-label="Close">Close</button></div>
     </div>`;
     document.body.appendChild(p);
     p.querySelector('.ww-type-picker-close').onclick=()=>p.close();
