@@ -5002,3 +5002,15 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   border-bottom:0;
 }
 /* Activity rows retain their existing mustard fill and all existing interactions. */
+
+/* Main itinerary finishing touches: presentation only; Daily Plan excluded.
+   Match the existing header gradient on the quick-add controls and
+   lower the three header actions as a single aligned group. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-day-quick-add{
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-trip-flag,
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-capture,
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-close{
+  top:15px!important;
+}
