@@ -5014,3 +5014,58 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-close{
   top:15px!important;
 }
+
+/* 11 Oct — Daily Plan visual parity with main itinerary; read-only flow unchanged. */
+#masterItineraryDialog.ww-daily-plan-v2,
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell{background:#e2f1f2!important;color:#172f3a!important}
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head{
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  color:#fff!important;
+  margin:-22px -22px 22px!important;
+  padding:24px 22px 23px!important;
+}
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head h2,
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head small,
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-head .master-itinerary-date-range{color:#fff!important}
+#masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-dayhead>b,
+#masterItineraryDialog.ww-daily-plan-v2 .ww-daily-plan-add{
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;
+}
+/* Preserve existing notes/tasks cards, dimensions and read-only presentation. */
+
+/* Export dialog: two-tone styling, retaining existing SVG arrow/tray animation. */
+#wwExportReadyDialog .ww-export-ready-card{
+  background:#effafa!important;padding:0 0 24px!important;overflow:hidden!important;
+}
+#wwExportReadyDialog .ww-export-ready-tick{
+  box-sizing:content-box!important;width:58px!important;height:58px!important;
+  margin:0 auto 0!important;padding:26px calc((min(88vw,430px) - 58px)/2) 14px!important;
+  border-radius:0!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+}
+#wwExportReadyDialog h2{
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;
+  padding:0 16px 24px!important;margin:0 0 22px!important;
+}
+#wwExportReadyDialog p{padding:0 24px!important;color:#233e47!important}
+#wwExportReadyDialog button{
+  width:calc(100% - 48px)!important;margin:0 24px!important;
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+}
+/* Gentle five-second gleam for the filled teal itinerary bookmark star. */
+@keyframes wwItineraryStarGleam{
+  0%,65%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}
+  77%{filter:brightness(1.48) drop-shadow(0 0 3px rgba(255,255,255,.9))}
+  90%{filter:brightness(1) drop-shadow(0 0 0 transparent)}
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-itinerary-bookmark svg{
+  animation:wwItineraryStarGleam 5s ease-in-out infinite!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #masterItineraryDialog .ww-itinerary-bookmark svg{animation:none!important}
+}
+/* Lower and inset main itinerary's three header controls together. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-trip-flag,
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-capture,
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-close{
+  top:25px!important;transform:translateX(-12px)!important;
+}
