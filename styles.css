@@ -5092,7 +5092,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   text-align:left!important;
   line-height:normal!important;
   margin:0!important;
-  transform:translate(-26px,10px)!important;
+  transform:translate(-36px,10px)!important;
   white-space:nowrap!important;
 }
 #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head small::before{
@@ -5162,4 +5162,224 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 }
 #masterItineraryDialog:not(.ww-daily-plan-v2) .ww-itinerary-bookmark svg{
   visibility:hidden!important;animation:none!important;filter:none!important;
+}
+
+
+/* 11 Oct 2026 · Base 7 surgical visual refresh.
+   Only the Activity Details editor and the future trip Import / Export dialog
+   are styled here; no calendar, itinerary, activity or trip logic is changed. */
+#stopItineraryDialog.stop-itinerary-dialog{
+  background:#e4f4f5!important;
+  color:#183a47!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+}
+#stopItineraryDialog .stop-itinerary-form{
+  box-sizing:border-box!important;
+  width:100%!important;
+  padding:0 22px 24px!important;
+  max-height:88dvh!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  scrollbar-width:none;
+  background:transparent!important;
+}
+#stopItineraryDialog .stop-itinerary-form::-webkit-scrollbar{display:none}
+#stopItineraryDialog .stop-itinerary-head{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:9px!important;
+  min-height:99px!important;
+  margin:0 -22px 20px!important;
+  padding:23px 22px!important;
+  background:linear-gradient(120deg,#086579 0%,#078a99 56%,#0aa3a6 100%)!important;
+  color:#fff!important;
+}
+#stopItineraryDialog .stop-itinerary-head>div:first-child{flex:1 1 auto!important;min-width:0!important}
+#stopItineraryDialog .stop-itinerary-head h2{
+  margin:0!important;
+  color:#fff!important;
+  font-family:"Archivo Black",Inter,ui-sans-serif,sans-serif!important;
+  font-size:clamp(19px,5.3vw,24px)!important;
+  line-height:1.2!important;
+  letter-spacing:-.025em!important;
+  text-transform:none!important;
+  overflow-wrap:normal!important;
+}
+#stopItineraryDialog .stop-itinerary-head .stop-itinerary-close{
+  flex:0 0 42px!important;
+  width:42px!important;height:42px!important;
+  background:#fff!important;color:#173448!important;
+  border-radius:50%!important;
+  font-size:28px!important;
+}
+/* Reuse the existing interactive bookmark; only its visual treatment changes. */
+#stopItineraryDialog .stop-itinerary-head .ww-activity-bookmark-edit{
+  flex:0 0 42px!important;
+  width:42px!important;height:42px!important;
+  padding:8px!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  color:#087f91!important;
+}
+#stopItineraryDialog .stop-itinerary-head .ww-activity-bookmark-edit svg{
+  width:26px!important;height:26px!important;
+}
+#stopItineraryDialog .stop-itinerary-form label:not(.itin-link-check),
+#stopItineraryDialog .stop-itinerary-form .itin-links-title,
+#stopItineraryDialog .stop-itinerary-form .itin-todo-title,
+#stopItineraryDialog .stop-itinerary-form .itin-category-field legend{
+  color:#4b6871!important;
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;
+  font-size:11px!important;
+  font-weight:850!important;
+  letter-spacing:.085em!important;
+  text-transform:uppercase!important;
+}
+/* Never transform user-entered text or replace custom input components. */
+#stopItineraryDialog .stop-itinerary-form input,
+#stopItineraryDialog .stop-itinerary-form textarea,
+#stopItineraryDialog .stop-itinerary-form select{
+  color:#183a47!important;
+  background:#fff!important;
+  border:1px solid rgba(15,87,104,.13)!important;
+  border-radius:17px!important;
+  letter-spacing:normal!important;
+  text-transform:none!important;
+  box-shadow:0 2px 6px rgba(12,73,88,.025)!important;
+}
+#stopItineraryDialog .stop-itinerary-form input::placeholder,
+#stopItineraryDialog .stop-itinerary-form textarea::placeholder{
+  color:#7c898c!important;
+  text-transform:none!important;
+  letter-spacing:normal!important;
+}
+#stopItineraryDialog .stop-itinerary-form .ww-activity-type-choose,
+#stopItineraryDialog .stop-itinerary-form .ww-currency-choose{
+  background:#fff!important;
+  border:1px solid rgba(15,87,104,.13)!important;
+  border-radius:17px!important;
+  box-shadow:0 2px 6px rgba(12,73,88,.025)!important;
+}
+#stopItineraryDialog .stop-itinerary-form .itin-todo-section .trip-todo-list{
+  background:#f1f9f9!important;
+}
+#stopItineraryDialog .stop-itinerary-actions{
+  padding:10px 0 2px!important;
+  margin-top:18px!important;
+}
+#stopItineraryDialog .stop-itinerary-actions .primary{
+  background:#e9bd2a!important;
+  color:#193d4a!important;
+  border:0!important;
+  border-radius:999px!important;
+  font-weight:800!important;
+}
+#stopItineraryDialog .stop-itinerary-actions .itin-cancel{
+  background:#fff!important;
+  color:#193d4a!important;
+  border:0!important;
+  border-radius:999px!important;
+}
+#stopItineraryDialog .stop-itinerary-actions #itinDelete{
+  background:#d95552!important;
+  color:#fff!important;
+  border:0!important;
+  border-radius:50%!important;
+}
+#stopItineraryDialog .stop-itinerary-actions #itinDelete svg{
+  stroke:#fff!important;
+}
+#stopItineraryDialog .stop-itinerary-actions #itinDelete[hidden]{display:none!important}
+
+/* Trip-only Import / Export placeholder — Backup and Restore design family. */
+#wwTripTransferDialog.ww-trip-transfer-dialog{
+  box-sizing:border-box!important;
+  width:min(440px,calc(100vw - 32px))!important;
+  max-width:calc(100vw - 32px)!important;
+  max-height:85dvh!important;
+  margin:auto!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:24px!important;
+  background:#f4fbfb!important;
+  color:#193d4a!important;
+  box-shadow:0 20px 70px rgba(0,20,30,.35)!important;
+  overflow:hidden!important;
+}
+#wwTripTransferDialog::backdrop{
+  background:rgba(0,24,35,.55)!important;
+  backdrop-filter:blur(5px)!important;
+  -webkit-backdrop-filter:blur(5px)!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-form{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  max-height:85dvh!important;
+  padding:0 26px 24px!important;
+  overflow:auto!important;
+  background:#f4fbfb!important;
+  scrollbar-width:none!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-form::-webkit-scrollbar{display:none}
+#wwTripTransferDialog .ww-trip-transfer-head{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  min-height:97px!important;
+  margin:0 -26px 22px!important;
+  padding:25px 26px!important;
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  color:#fff!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-head h3{
+  margin:0!important;
+  font-family:"Archivo Black",Inter,sans-serif!important;
+  font-size:24px!important;
+  font-weight:800!important;
+  line-height:1.25!important;
+  color:#fff!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-intro{
+  margin:0 0 22px!important;
+  font-size:15px!important;
+  line-height:1.55!important;
+  color:#193d4a!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-actions{
+  display:grid!important;
+  gap:11px!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-actions button{
+  width:100%!important;
+  padding:14px 12px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:#e9bd2a!important;
+  color:#193d4a!important;
+  font:800 16px/1.2 Inter,ui-sans-serif,sans-serif!important;
+  box-shadow:0 5px 16px rgba(16,33,63,.08)!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-note{
+  margin:17px 3px 20px!important;
+  font-size:12px!important;
+  line-height:1.55!important;
+  color:#506872!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-footer{
+  display:flex!important;
+  justify-content:flex-end!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-footer button{
+  min-width:104px!important;
+  padding:11px 26px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:#e9bd2a!important;
+  color:#193d4a!important;
+  font:750 15px/1.2 Inter,ui-sans-serif,sans-serif!important;
 }

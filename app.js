@@ -12400,3 +12400,51 @@ wwOpenQuickInfo=function(row,id){
   `;
   document.head.appendChild(style);
 })();
+
+
+/* 11 Oct 2026 · Base 7 — Trip Import / Export dialog (UI only).
+   Existing trip export control is a placeholder. Keep the Trip autosave/dirty-state,
+   action placement and existing activity/navigation handlers untouched. */
+(()=>{
+  function ensureTripTransferDialog(){
+    let dialog=document.getElementById('wwTripTransferDialog');
+    if(dialog)return dialog;
+    dialog=document.createElement('dialog');
+    dialog.id='wwTripTransferDialog';
+    dialog.className='ww-trip-transfer-dialog';
+    dialog.setAttribute('aria-labelledby','wwTripTransferHeading');
+    dialog.innerHTML=`<form method="dialog" class="ww-trip-transfer-form">
+      <header class="ww-trip-transfer-head"><h3 id="wwTripTransferHeading">Import / Export</h3></header>
+      <p class="ww-trip-transfer-intro">Keep a copy of an individual trip, or bring one into WozzaWorld, without affecting your other travels.</p>
+      <div class="ww-trip-transfer-actions">
+        <button type="button" aria-label="Export your trip (coming soon)">Export your trip</button>
+        <button type="button" aria-label="Import your trip (coming soon)">Import your trip</button>
+      </div>
+      <p class="ww-trip-transfer-note">Export will let you save this trip as a file. Import will let you add a trip from a file. Both options are coming soon and do not make any changes yet.</p>
+      <footer class="ww-trip-transfer-footer"><button type="submit" value="cancel">Close</button></footer>
+    </form>`;
+    document.body.appendChild(dialog);
+    return dialog;
+  }
+  /* The original editor restores its Export label on each opening. Preserve its
+     existing styling and placement, then set only the new display label. */
+  if(typeof wwPolishTripActionRow==='function'){
+    const previous=wwPolishTripActionRow;
+    wwPolishTripActionRow=function(){
+      const result=previous.apply(this,arguments);
+      const button=document.getElementById('wwTripExportPlaceholder');
+      if(button){
+        button.textContent='Import / Export';
+        button.setAttribute('aria-label','Import or export this trip');
+      }
+      return result;
+    };
+  }
+  /* Capture before the legacy placeholder's intentional no-op click handler. */
+  document.addEventListener('click',event=>{
+    const button=event.target?.closest?.('#tripDialog #wwTripExportPlaceholder');
+    if(!button)return;
+    event.preventDefault();
+    ensureTripTransferDialog().showModal();
+  },true);
+})();
