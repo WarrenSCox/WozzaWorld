@@ -5722,3 +5722,33 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
     height:15px!important;
   }
 }
+
+
+/* Passport Milestones — one-row swipe carousel, using the preferred wrapping labels.
+   Preserve original card dimensions, badge sheen masks and tap-to-enlarge behaviour. */
+#milestonesCard .milestones-grid{
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:stretch!important;
+  grid-template-columns:none!important;
+  gap:9px!important;
+  width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+  scroll-padding-left:0;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(7,94,120,.3) transparent;
+  padding:1px 1px 6px!important;
+}
+#milestonesCard .milestones-grid::-webkit-scrollbar{height:3px;}
+#milestonesCard .milestones-grid::-webkit-scrollbar-thumb{background:rgba(7,94,120,.3);border-radius:999px;}
+#milestonesCard .milestone-tile{
+  flex:0 0 calc((100% - 18px)/3)!important;
+  width:calc((100% - 18px)/3)!important;
+  scroll-snap-align:start;
+  scroll-snap-stop:normal;
+}
+@media(max-width:380px){#milestonesCard .milestones-grid{gap:6px!important}#milestonesCard .milestone-tile{flex-basis:calc((100% - 12px)/3)!important;width:calc((100% - 12px)/3)!important}}

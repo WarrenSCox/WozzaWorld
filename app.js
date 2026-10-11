@@ -361,10 +361,56 @@ function openMilestoneDialog(a){
   $('#milestoneDialogStatus').textContent=a.unlocked?'Achievement unlocked':'Not yet unlocked';
   d.showModal();
 }
+// Achievement order is persisted separately from travel data so the most recently
+// earned (not simply the highest tier) stays first after reopening WozzaWorld.
+// Existing achievements cannot be historically dated; on first use they are
+// seeded in milestone tier order. Subsequent unlocks are recorded accurately.
+const WW_MILESTONE_ORDER_KEY='wozzaworld-milestone-earned-order-v1';
+let wwMilestoneOrderMemory=null;
+function wwMilestoneSortedAwards(awards){
+  let history=wwMilestoneOrderMemory;
+  if(!history){
+    try{history=JSON.parse(localStorage.getItem(WW_MILESTONE_ORDER_KEY)||'null')}catch(e){}
+  }
+  if(!history||typeof history!=='object'||!history.records||typeof history.records!=='object'){
+    history={last:0,records:{}};
+  }
+  const records=history.records;
+  let last=Number.isSafeInteger(history.last)&&history.last>=0?history.last:0;
+  let changed=false;
+  // Seed already-earned awards in natural achievement order, without inventing dates.
+  // If multiple achievements unlock in one change, the higher tier gets precedence.
+  awards.forEach(a=>{
+    const old=records[a.name];
+    if(a.unlocked){
+      if(!old||!old.unlocked){
+        records[a.name]={unlocked:true,order:++last};
+        changed=true;
+      }
+    }else if(old?.unlocked){
+      records[a.name]={unlocked:false,order:old.order};
+      changed=true;
+    }
+  });
+  history.last=last;
+  wwMilestoneOrderMemory=history;
+  if(changed){try{localStorage.setItem(WW_MILESTONE_ORDER_KEY,JSON.stringify(history))}catch(e){}}
+  return awards.map((award,index)=>({...award,index,earnedOrder:records[award.name]?.order||0}))
+    .sort((a,b)=>Number(b.unlocked)-Number(a.unlocked)||
+      (a.unlocked?b.earnedOrder-a.earnedOrder:a.index-b.index)||a.index-b.index);
+}
 function renderMilestones(){
   const grid=$('#milestonesGrid');if(!grid)return;
   const awards=milestoneAwards();
-  grid.innerHTML=awards.map((a,i)=>`<button type="button" class="milestone-tile ${a.unlocked?'is-unlocked':'is-locked'}" data-milestone="${i}" aria-label="${esc(a.name)}: ${esc(a.requirement)}. ${a.unlocked?'Unlocked':'Locked'}"><span class="milestone-stamp-wrap"><img src="${a.img}" alt="" class="milestone-stamp" loading="lazy"></span><strong>${esc(a.name)}</strong><small>${esc(a.requirement)}</small></button>`).join('');
+  const ordered=wwMilestoneSortedAwards(awards);
+  const signature=ordered.map(a=>a.index).join(',');
+  const previous=grid.dataset.milestoneOrder;
+  const previousScroll=grid.scrollLeft;
+  grid.setAttribute('aria-label','Travel achievements. Swipe horizontally to view all six milestones.');
+  // Keep original milestone indexes for the existing art-masked shine CSS.
+  grid.innerHTML=ordered.map(a=>`<button type="button" class="milestone-tile ${a.unlocked?'is-unlocked':'is-locked'}" data-milestone="${a.index}" aria-label="${esc(a.name)}: ${esc(a.requirement)}. ${a.unlocked?'Unlocked':'Locked'}"><span class="milestone-stamp-wrap"><img src="${a.img}" alt="" class="milestone-stamp" loading="lazy"></span><strong>${esc(a.name)}</strong><small>${esc(a.requirement)}</small></button>`).join('');
+  grid.dataset.milestoneOrder=signature;
+  grid.scrollLeft=previous===signature?previousScroll:0;
   grid.querySelectorAll('[data-milestone]').forEach(b=>b.addEventListener('click',()=>openMilestoneDialog(awards[Number(b.dataset.milestone)])));
 }
 function render(){ applyWorldViewName(); const passportName=$('#passportName');if(passportName&&document.activeElement!==passportName)passportName.value=(localStorage.getItem('wozzaworld-first-name')||'');$$('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');['visited','going'].forEach(s=>{if(mapFilterPrefs[s]&&countryHasStatus(p.dataset.country,s))p.classList.add(s)});if(mapFilterPrefs.bucket&&countryHasStatus(p.dataset.country,'bucket'))p.classList.add('map-filter-bucket')});const vals=allStatusCountries(),visited=new Set(allStatusCountries().filter(c=>countryHasStatus(c,'visited')));$('#visitedCount').textContent=visited.size;const vh=$('#visitedCountriesHeading'),wp=$('#worldExploredPercent');if(vh)vh.textContent='VISITED';if(wp)wp.textContent='CORNERS OF THE WORLD EXPLORED';const homeRing=$('#wwHomeExploreRing'),homePct=$('#wwHomeExplorePercent');if(homeRing)homeRing.style.setProperty('--ww-progress',String(visited.size/195*100));if(homePct)homePct.textContent=Math.round(visited.size/195*100)+'%';$('#goingCount').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#wishCount').textContent=vals.filter(c=>countryHasStatus(c,'bucket')).length;const meVisited=$('#meVisited');if(meVisited){const current=meVisited.querySelector('.visited-current');if(current)current.textContent=visited.size;else meVisited.textContent=visited.size;}$('#meCities').textContent=[...visited].reduce((n,c)=>n+uniqueCities(c),0);$('#meGoing').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#meTrips').textContent=state.trips.length;renderCompanionStats();renderMilestones();renderPassportCarouselStats();setPassportStatsSlide(passportStatsSlide);renderExtraStats();$('#tripList').innerHTML=renderMyTrips();setupTripTitleScroll();renderCountryLists();renderRecycleBin();renderDepartureBoard();attachTripRatingEvents();attachTripCardEvents();if(currentCountry)renderSheet()}
