@@ -5069,3 +5069,70 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-close{
   top:25px!important;transform:translateX(-12px)!important;
 }
+
+/* 11 Oct corrective hotfix — Daily Plan full-bleed header.
+   Specificity deliberately exceeds the legacy JS-injected header rules. */
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head{
+  position:relative!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  width:calc(100% + 44px)!important;
+  min-height:88px!important;
+  margin:-22px -22px 22px!important;
+  padding:20px 118px 20px 22px!important;
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  color:#fff!important;
+}
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head>div:first-child{
+  position:static!important;
+  transform:none!important;
+  display:block!important;
+  width:auto!important;
+  margin:0!important;
+  padding:0!important;
+}
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head small{
+  color:#fff!important;
+  line-height:1.2!important;
+}
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head .master-itinerary-trip-flag{
+  right:72px!important;top:50%!important;transform:translateY(-50%)!important;
+}
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head .master-itinerary-close{
+  right:22px!important;top:50%!important;transform:translateY(-50%)!important;
+}
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .ww-daily-plan-dayhead>b,
+#masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .ww-daily-plan-add{
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  color:#fff!important;
+}
+
+/* Export modal corrective hotfix — one continuous gradient surface behind
+   icon and title; do not modify the SVG or its existing animation. */
+#wwExportReadyDialog .ww-export-ready-card{
+  position:relative!important;
+  overflow:hidden!important;
+  background-color:#effafa!important;
+  background-image:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 170px!important;
+  padding:0 0 24px!important;
+}
+#wwExportReadyDialog .ww-export-ready-card .ww-export-ready-tick{
+  box-sizing:content-box!important;
+  display:grid!important;
+  place-items:center!important;
+  width:58px!important;height:58px!important;
+  padding:24px 0 12px!important;
+  margin:0 auto!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+#wwExportReadyDialog .ww-export-ready-card h2{
+  box-sizing:border-box!important;
+  background:transparent!important;
+  color:#fff!important;
+  margin:0 0 22px!important;
+  padding:0 16px 24px!important;
+}
