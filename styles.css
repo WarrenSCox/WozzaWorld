@@ -4974,3 +4974,31 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 .wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-confirm-actions button{border:0!important;border-radius:999px!important;font-size:15px!important;font-weight:900!important;padding:12px 19px!important}
 .wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-confirm-actions .secondary{background:#eabd2b!important;color:#18343b!important}
 .wozza-alert-overlay.ww-trip-stop-remove-confirm .wozza-confirm-actions .danger{background:#f5584f!important;color:white!important}
+
+/* WozzaWorld itinerary visual alignment — main itinerary only.
+   Reuses the Privacy/Calendar teal gradient and existing pale-blue dialog tone.
+   No markup, handlers, dimensions of controls or itinerary data are changed. */
+#masterItineraryDialog:not(.ww-daily-plan-v2){background:#e2f1f2;color:#172f3a}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-shell{background:#e2f1f2}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head{
+  box-sizing:border-box;
+  background:linear-gradient(120deg,#086579,#0aa3a6);
+  color:#fff;
+  margin:-22px -22px 22px;
+  padding:24px 157px 23px 22px!important;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head h2,
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head small,
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-date-range,
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-head .master-itinerary-companions{
+  color:#fff!important;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead>b{
+  background:linear-gradient(120deg,#086579,#0aa3a6);
+  color:#fff;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead{
+  border:1px solid rgba(8,101,121,.12);
+  border-bottom:0;
+}
+/* Activity rows retain their existing mustard fill and all existing interactions. */
