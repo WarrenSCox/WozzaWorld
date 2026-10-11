@@ -4825,6 +4825,21 @@ wwOpenQuickInfo=function(row,id){
       if(list){list.innerHTML=renderMyTrips();setupTripTitleScroll();attachTripRatingEvents();attachTripCardEvents()}
       /* Keep other trip-derived summaries in step without touching the open editor. */
       try{renderDepartureBoard()}catch(_e){}
+      /* Passport statistics must follow autosaved trip edits immediately. Do not
+         call render(): that rebuilds unrelated surfaces and can disturb the editor,
+         map planes and score-gauge animation. Reuse the existing stat renderers. */
+      try{
+        const visited=countryRows('visited');
+        const visitedEl=document.getElementById('meVisited');
+        if(visitedEl){const count=visitedEl.querySelector('.visited-current');if(count)count.textContent=visited.length;else visitedEl.textContent=visited.length}
+        const citiesEl=document.getElementById('meCities');if(citiesEl)citiesEl.textContent=visited.reduce((n,c)=>n+uniqueCities(c),0);
+        const goingEl=document.getElementById('meGoing');if(goingEl)goingEl.textContent=allStatusCountries().filter(c=>countryHasStatus(c,'going')).length;
+        const tripsEl=document.getElementById('meTrips');if(tripsEl)tripsEl.textContent=state.trips.length;
+        renderExtraStats();
+        renderPassportCarouselStats();
+        renderCompanionStats();
+        renderMilestones();
+      }catch(err){console.warn('WozzaWorld: passport statistics refresh',err)}
       /* Country card is another trip-derived surface: refresh it from the same saved state. */
       if(currentCountry){
         try{renderSheet()}catch(_e){}
