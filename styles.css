@@ -5092,7 +5092,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   text-align:left!important;
   line-height:normal!important;
   margin:0!important;
-  transform:translate(-14px,10px)!important;
+  transform:translate(-26px,10px)!important;
   white-space:nowrap!important;
 }
 #masterItineraryDialog.ww-daily-plan-v2 .master-itinerary-shell .master-itinerary-head small::before{
