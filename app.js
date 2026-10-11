@@ -12415,12 +12415,12 @@ wwOpenQuickInfo=function(row,id){
     dialog.setAttribute('aria-labelledby','wwTripTransferHeading');
     dialog.innerHTML=`<form method="dialog" class="ww-trip-transfer-form">
       <header class="ww-trip-transfer-head"><h3 id="wwTripTransferHeading">Import / Export</h3></header>
-      <p class="ww-trip-transfer-intro">Keep a copy of an individual trip, or bring one into WozzaWorld, without affecting your other travels.</p>
+      <p class="ww-trip-transfer-intro">Share a copy of your trip with friends, or save one as a backup. They can import it into their own WozzaWorld, complete with your itinerary.</p>
       <div class="ww-trip-transfer-actions">
         <button type="button" aria-label="Export your trip (coming soon)">Export your trip</button>
         <button type="button" aria-label="Import your trip (coming soon)">Import your trip</button>
       </div>
-      <p class="ww-trip-transfer-note">Export will let you save this trip as a file. Import will let you add a trip from a file. Both options are coming soon and do not make any changes yet.</p>
+      <p class="ww-trip-transfer-note">Each trip is an independent copy. Changes you make won't affect theirs, and changes they make won't affect yours. Import and export are coming soon.</p>
       <footer class="ww-trip-transfer-footer"><button type="submit" value="cancel">Close</button></footer>
     </form>`;
     document.body.appendChild(dialog);
