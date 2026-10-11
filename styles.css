@@ -5722,3 +5722,29 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
     height:15px!important;
   }
 }
+
+
+/* 11 Oct 2026 — Milestone names: single line at all common mobile widths.
+   CSS-only: visual typography adjustment, no layout, artwork or unlock changes. */
+#milestonesCard .milestone-tile > strong{
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+  width:max-content;
+  max-width:none;
+  font-size:clamp(8px,2.2vw,11px)!important;
+  line-height:1.16!important;
+  letter-spacing:-.035em!important;
+}
+/* Longest names get a slightly tighter treatment without widening tiles. */
+#milestonesCard .milestone-tile[data-milestone="1"] > strong,
+#milestonesCard .milestone-tile[data-milestone="4"] > strong{
+  letter-spacing:-.05em!important;
+  transform-origin:center center;
+}
+#milestonesCard .milestone-tile[data-milestone="1"] > strong{transform:scaleX(.88);}
+#milestonesCard .milestone-tile[data-milestone="4"] > strong{transform:scaleX(.78);}
+@media(max-width:350px){
+  #milestonesCard .milestone-tile[data-milestone="1"] > strong{transform:scaleX(.80);}
+  #milestonesCard .milestone-tile[data-milestone="4"] > strong{transform:scaleX(.68);}
+}
