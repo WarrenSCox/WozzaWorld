@@ -5615,3 +5615,70 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   color:#163f47!important;font-size:15px!important;font-weight:900!important;padding:12px 29px!important;min-width:110px;}
 @media(max-width:380px){#milestonesCard .milestones-grid{gap:6px!important}#milestonesCard .milestone-tile{padding:6px 3px 8px;border-radius:14px!important}}
 @media(prefers-reduced-motion:reduce){#milestonesCard .milestone-tile{transition:none!important}}
+
+
+/* Base 8 milestone refinement: compact cards, matched headings, unlocked-only sheen.
+   Purely visual. Screen-reader requirements and existing click handlers remain intact. */
+#milestonesCard .milestone-tile > small{display:none!important;}
+#milestonesCard .milestone-tile > strong{margin:2px 0 0!important;}
+#milestonesCard .milestones-head h2{color:#17213D!important;}
+.screen[data-screen="me"] .passport-insights-title{
+  font-size:clamp(18px,5.1vw,25px)!important;
+}
+#milestonesCard .milestone-tile.is-unlocked .milestone-stamp-wrap{isolation:isolate;}
+#milestonesCard .milestone-tile.is-unlocked .milestone-stamp-wrap::after{
+  content:""!important;
+  display:block!important;
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.05) 44%,rgba(255,255,255,.62) 50%,rgba(255,255,255,.05) 56%,transparent 62%);
+  background-size:240% 100%;
+  background-position:110% 0;
+  -webkit-mask-position:center;
+  mask-position:center;
+  -webkit-mask-size:contain;
+  mask-size:contain;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  mix-blend-mode:screen;
+  opacity:0;
+  animation:wwUnlockedMilestoneSheen 6.5s ease-in-out infinite!important;
+}
+#milestonesCard .milestone-tile[data-milestone="0"].is-unlocked .milestone-stamp-wrap::after{
+  -webkit-mask-image:url("milestone-trailblazer.png");
+  mask-image:url("milestone-trailblazer.png");
+}
+#milestonesCard .milestone-tile[data-milestone="1"].is-unlocked .milestone-stamp-wrap::after{
+  -webkit-mask-image:url("milestone-continental-drifter.png");
+  mask-image:url("milestone-continental-drifter.png");
+}
+#milestonesCard .milestone-tile[data-milestone="2"].is-unlocked .milestone-stamp-wrap::after{
+  -webkit-mask-image:url("milestone-frequent-flyer.png");
+  mask-image:url("milestone-frequent-flyer.png");
+}
+#milestonesCard .milestone-tile[data-milestone="3"].is-unlocked .milestone-stamp-wrap::after{
+  -webkit-mask-image:url("milestone-globetrotter.png");
+  mask-image:url("milestone-globetrotter.png");
+}
+#milestonesCard .milestone-tile[data-milestone="4"].is-unlocked .milestone-stamp-wrap::after{
+  -webkit-mask-image:url("milestone-continental-conqueror.png");
+  mask-image:url("milestone-continental-conqueror.png");
+}
+#milestonesCard .milestone-tile[data-milestone="5"].is-unlocked .milestone-stamp-wrap::after{
+  -webkit-mask-image:url("milestone-elite-traveller.png");
+  mask-image:url("milestone-elite-traveller.png");
+}
+@keyframes wwUnlockedMilestoneSheen{
+  0%,10%{background-position:110% 0;opacity:0}
+  14%{opacity:.75}
+  32%{background-position:-110% 0;opacity:.75}
+  36%,100%{background-position:-110% 0;opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+  #milestonesCard .milestone-tile.is-unlocked .milestone-stamp-wrap::after{
+    display:none!important;
+    animation:none!important;
+  }
+}
