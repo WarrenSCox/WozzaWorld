@@ -3157,7 +3157,7 @@ async function wwCaptureFullItinerary(){
 .master-itinerary-activity{grid-template-columns:minmax(86px,auto) 42px minmax(0,1fr)!important;padding-right:22px!important}
 .master-itinerary-activity-main small,.master-itinerary-activity-actions{display:none!important}
 .master-itinerary-activity-main{padding-right:0!important}
-.itinerary-quick-info-edit{width:100%!important;margin-top:16px!important;border:0!important;border-radius:18px!important;background:#07849a!important;color:#fff!important;padding:14px 18px!important;font:inherit!important;font-weight:900!important;letter-spacing:.06em!important;cursor:pointer!important}
+.itinerary-quick-info-edit{width:100%!important;margin-top:16px!important;border:0!important;border-radius:18px!important;background:#e9bd2a!important;color:#193d4a!important;padding:14px 18px!important;font:inherit!important;font-weight:900!important;letter-spacing:.06em!important;cursor:pointer!important}
 `;document.head.appendChild(st)})();
 
 /* === WozzaWorld hotfix — itinerary space + itinerary shortcuts === */
@@ -4766,6 +4766,7 @@ wwOpenQuickInfo=function(row,id){
     /* Bookmark controls: outline off, teal fill on. */
     .stop-itinerary-head{position:relative!important}
     .ww-activity-bookmark-edit,.ww-activity-bookmark-preview{border:0!important;background:transparent!important;padding:6px!important;width:38px!important;height:42px!important;display:grid!important;place-items:center!important;color:#07899d!important;flex:0 0 38px!important}
+    #itineraryQuickInfoDialog .ww-activity-bookmark-preview:not(.is-bookmarked){color:#fff!important}
     .ww-activity-bookmark-edit svg,.ww-activity-bookmark-preview svg{width:24px!important;height:24px!important;fill:transparent!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linejoin:round!important;overflow:visible!important}
     .ww-activity-bookmark-edit.is-bookmarked svg,.ww-activity-bookmark-preview.is-bookmarked svg{fill:#07899d!important;stroke:#07899d!important}
     .itinerary-quick-info-shell header{display:flex!important;align-items:flex-start!important}
