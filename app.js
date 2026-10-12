@@ -12694,6 +12694,7 @@ wwOpenQuickInfo=function(row,id){
     document.body.appendChild(dialog);
     return dialog;
   }
+  window.wwEnsureTripTransferDialog=ensureTripTransferDialog;
   /* The original editor restores its Export label on each opening. Preserve its
      existing styling and placement, then set only the new display label. */
   if(typeof wwPolishTripActionRow==='function'){
@@ -12715,4 +12716,257 @@ wwOpenQuickInfo=function(row,id){
     event.preventDefault();
     ensureTripTransferDialog().showModal();
   },true);
+})();
+
+
+/* 12 October 2026 — portable, independent per-trip sharing.
+   Retain the canonical trip model; export one complete trip object, including
+   its nested stops/itineraries and task reference graph. Never merge an import. */
+(()=>{
+  const FORMAT='wozzaworld-trip';
+  const VERSION=1;
+  const MAX_BYTES=12*1024*1024;
+  const isObj=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
+  const copy=x=>JSON.parse(JSON.stringify(x));
+  const newId=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():`ww-${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+  const selectedTrip=()=>state.trips.find(t=>String(t.id)===String(editingTripId))||null;
+  const fileSafeName=name=>String(name||'trip').normalize('NFKC').replace(/[^\p{L}\p{N}._-]+/gu,'-').replace(/^-+|-+$/g,'').slice(0,78)||'trip';
+
+  /* Read the live editor when exporting, so keystrokes pending the existing
+     debounce and nested itineraries are captured without saving/closing it. */
+  function tripForExport(t){
+    const out=copy(t);
+    if(!document.getElementById('tripDialog')?.open||String(t.id)!==String(editingTripId))return out;
+    const root=document.getElementById('tripForm');
+    if(!root)return out;
+    out.name=root.querySelector('#tripName')?.value.trim()||out.name;
+    out.notes=root.querySelector('#tripNotes')?.value||'';
+    out.rating=Number(root.querySelector('#tripRating')?.value)||0;
+    out.companions=[...new Set([...root.querySelectorAll('#tripCompanionBank .companion-tag.selected')].map(b=>b.dataset.companion).filter(Boolean))];
+    out.vibes=[...new Set([...root.querySelectorAll('#tripVibeBank .vibe-tag.selected')].map(b=>b.dataset.vibe).filter(Boolean))];
+    out.todos=copy(collectTripTodos());
+    const rows=[...root.querySelectorAll('#tripDestinationStops .trip-destination-stop')];
+    const saved=Array.isArray(out.destinations)?out.destinations:[];
+    out.destinations=rows.map((row,i)=>{
+      const old=saved.find(s=>String(s.id||'')===String(row.dataset.stopId||''))||saved[i]||{};
+      const stop={...old};
+      stop.id=row.dataset.stopId||old.id||newId();
+      stop.country=row.querySelector('.trip-stop-country')?.value||old.country||'';
+      stop.name=row.querySelector('.trip-destination-name')?.value.trim()||'';
+      stop.type=row.querySelector('.trip-destination-type')?.value||old.type||'Other';
+      stop.start=row.querySelector('.trip-destination-from')?.value||'';
+      stop.end=row.querySelector('.trip-destination-to')?.value||'';
+      stop.travelMode=row.querySelector('.trip-travel-mode')?.value||'';
+      stop.itinerary=copy(itineraryItemsForRow(row));
+      return stop;
+    }).filter(s=>s.country);
+    out.countries=[...new Set(out.destinations.map(s=>s.country).filter(Boolean))];
+    if(out.destinations.length){
+      out.start=out.destinations[0].start||'';
+      out.end=out.destinations[out.destinations.length-1].end||'';
+    }
+    return out;
+  }
+  function packageTrip(t){
+    if(!isObj(t)||typeof t.name!=='string'||!t.name.trim())throw Error('Select a saved trip to export.');
+    return {format:FORMAT,version:VERSION,exportedAt:new Date().toISOString(),trip:copy(t)};
+  }
+  function validatePackage(payload){
+    if(!isObj(payload)||payload.format!==FORMAT||payload.version!==VERSION)throw Error('This is not a supported WozzaWorld trip file.');
+    const t=payload.trip;
+    if(!isObj(t)||typeof t.name!=='string'||!t.name.trim()||t.name.length>300)throw Error('The trip file has no valid trip name.');
+    if(t.destinations!==undefined&&!Array.isArray(t.destinations))throw Error('The trip stops are invalid.');
+    if(t.todos!==undefined&&!Array.isArray(t.todos))throw Error('The trip tasks are invalid.');
+    if(t.countries!==undefined&&!Array.isArray(t.countries))throw Error('The trip countries are invalid.');
+    if(t.companions!==undefined&&!Array.isArray(t.companions))throw Error('The trip companions are invalid.');
+    if(t.vibes!==undefined&&!Array.isArray(t.vibes))throw Error('The trip vibes are invalid.');
+    if((t.destinations||[]).length>1000||(t.todos||[]).length>25000)throw Error('The trip file contains too many entries.');
+    const stops=t.destinations||[];
+    for(const s of stops){
+      if(!isObj(s)||typeof s.country!=='string'||!s.country.trim())throw Error('The trip contains an invalid stop.');
+      if(s.itinerary!==undefined&&!Array.isArray(s.itinerary))throw Error('A stop has an invalid itinerary.');
+      if((s.itinerary||[]).length>10000)throw Error('The itinerary is too large.');
+      for(const a of (s.itinerary||[])){
+        if(!isObj(a)||typeof a.name!=='string')throw Error('The trip contains an invalid activity.');
+        if(a.todoIds!==undefined&&!Array.isArray(a.todoIds))throw Error('An activity contains invalid tasks.');
+      }
+    }
+    for(const item of (t.todos||[]))if(typeof item!=='string'&&(!isObj(item)||typeof item.text!=='string'))throw Error('A trip task is invalid.');
+    // Treat shared files as untrusted; avoid prototype keys and executable URLs
+    // entering the same rendering paths used for locally-created trip links.
+    let nodes=0;
+    function inspect(v,key='',depth=0){
+      if(depth>55||++nodes>150000)throw Error('The trip file is too complex.');
+      if(typeof v==='string'&&/(url|href|link)$/i.test(key)&&/^\s*(?:javascript|vbscript|data):/i.test(v))throw Error('The trip contains an unsafe link.');
+      if(Array.isArray(v)){for(const x of v)inspect(x,key,depth+1);return}
+      if(isObj(v))for(const [k,x] of Object.entries(v)){
+        if(k==='__proto__'||k==='constructor'||k==='prototype')throw Error('The trip contains an unsupported field.');
+        inspect(x,k,depth+1);
+      }
+    }
+    inspect(t);
+    return t;
+  }
+  function independentCopy(t){
+    const next=copy(t);
+    const remap=new Map();
+    const seenIds=new Set();
+    // Map all persisted object identities first, including nested extensions.
+    function gather(v){
+      if(Array.isArray(v)){v.forEach(gather);return}
+      if(!isObj(v))return;
+      if(v.id!=null&&String(v.id)!==''){
+        const old=String(v.id);
+        if(seenIds.has(old))throw Error('The trip file contains duplicate internal IDs.');
+        seenIds.add(old);remap.set(old,newId());
+      }
+      Object.values(v).forEach(gather);
+    }
+    gather(next);
+    // A few legacy trips have no trip ID; always give the imported copy one.
+    function rewrite(v){
+      if(Array.isArray(v)){v.forEach(rewrite);return}
+      if(!isObj(v))return;
+      for(const [k,val] of Object.entries(v)){
+        if(k==='id')v[k]=remap.get(String(val))||newId();
+        else if(/Ids$/i.test(k)&&Array.isArray(val))v[k]=val.map(x=>remap.get(String(x))||x);
+        else if(/Id$/i.test(k)&&val!=null&&typeof val!=='object')v[k]=remap.get(String(val))||val;
+        else rewrite(val);
+      }
+    }
+    rewrite(next);
+    next.id=remap.get(String(t.id||''))||newId();
+    // Legacy string tasks are still supported; normalise without dropping text.
+    if(Array.isArray(next.todos))next.todos=next.todos.map(x=>typeof x==='string'?{id:newId(),activityId:'',text:x,done:false}:x);
+    const countries=[...(Array.isArray(next.countries)?next.countries:[]),...(next.destinations||[]).map(s=>s.country)].filter(x=>typeof x==='string'&&x.trim());
+    if(countries.length)next.countries=[...new Set(countries)];
+    next.destinations??=[];next.todos??=[];next.companions??=[];next.vibes??=[];next.cities??={};
+    return next;
+  }
+  function summary(t){
+    const stops=Array.isArray(t.destinations)?t.destinations:[];
+    const activities=stops.reduce((sum,s)=>sum+(s.itinerary||[]).length,0);
+    const countries=[...new Set([...(t.countries||[]),...stops.map(s=>s.country)].filter(Boolean))];
+    return {name:t.name,stops:stops.length,activities,tasks:(t.todos||[]).length,countries};
+  }
+
+  let pending=null;
+  let busy=false;
+  function clearPreview(d){
+    pending=null;
+    const host=d?.querySelector('.ww-trip-transfer-preview');
+    if(host){host.hidden=true;host.replaceChildren()}
+    const input=d?.querySelector('.ww-trip-transfer-file');
+    if(input)input.value='';
+  }
+  function message(d,content,type=''){const el=d?.querySelector('.ww-trip-transfer-message');if(el){el.textContent=content||'';el.dataset.type=type}}
+  function ensureControls(d){
+    if(!d||d.dataset.transferWired==='1')return d;
+    d.dataset.transferWired='1';
+    const actions=d.querySelector('.ww-trip-transfer-actions');
+    const exportButton=actions?.querySelector('button:first-child');
+    const importButton=actions?.querySelector('button:nth-child(2)');
+    if(!actions||!exportButton||!importButton)return d;
+    exportButton.removeAttribute('aria-label');importButton.removeAttribute('aria-label');
+    const input=document.createElement('input');
+    input.type='file';input.accept='.json,.wozzatrip,application/json';
+    input.className='ww-trip-transfer-file';input.hidden=true;
+    actions.insertAdjacentElement('afterend',input);
+    const info=document.createElement('div');info.className='ww-trip-transfer-preview';info.hidden=true;
+    input.insertAdjacentElement('afterend',info);
+    const notification=document.createElement('p');notification.className='ww-trip-transfer-message';notification.setAttribute('role','status');
+    info.insertAdjacentElement('afterend',notification);
+    const privacy=document.createElement('p');privacy.className='ww-trip-transfer-privacy';privacy.textContent='Trip files may include booking references and contact details. Please review before sharing.';
+    d.querySelector('.ww-trip-transfer-note')?.insertAdjacentElement('afterend',privacy);
+    d.addEventListener('close',()=>{clearPreview(d);message(d,'')});
+
+    exportButton.addEventListener('click',()=>{
+      if(busy)return;
+      try{
+        const t=selectedTrip();
+        if(!t){message(d,'Open a saved trip to export it. You can import files here without opening a trip.','error');return}
+        const obj=packageTrip(tripForExport(t));
+        const data=JSON.stringify(obj,null,2);
+        if(new Blob([data]).size>MAX_BYTES)throw Error('This trip exceeds the supported export size.');
+        const blob=new Blob([data],{type:'application/json'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');a.href=url;
+        a.download=`WozzaWorld-${fileSafeName(obj.trip.name)}.wozzatrip.json`;
+        document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),60000);
+        message(d,'Trip file downloaded. You can keep it or share it with a companion.','success');
+      }catch(e){message(d,e.message||'Unable to export this trip.','error')}
+    });
+    importButton.addEventListener('click',()=>{if(!busy){clearPreview(d);message(d,'');input.click()}});
+    input.addEventListener('change',async()=>{
+      const file=input.files?.[0];if(!file)return;
+      pending=null;info.hidden=true;message(d,'Checking trip file…');
+      try{
+        if(file.size>MAX_BYTES)throw Error('This trip file is too large (maximum 12 MB).');
+        const text=await file.text();
+        if(text.length>MAX_BYTES)throw Error('This trip file is too large.');
+        const data=validatePackage(JSON.parse(text));
+        const cloned=independentCopy(data);
+        pending=cloned;
+        const s=summary(cloned);
+        info.replaceChildren();
+        const title=document.createElement('strong');title.textContent=s.name;
+        const description=document.createElement('p');
+        description.textContent=`${s.countries.join(' · ')||'Country not set'} · ${s.stops} stop${s.stops===1?'':'s'} · ${s.activities} activit${s.activities===1?'y':'ies'} · ${s.tasks} task${s.tasks===1?'':'s'}`;
+        const warning=document.createElement('p');warning.textContent='This adds an independent copy. Your existing trips will not be replaced, even if a name matches.';
+        const buttons=document.createElement('div');buttons.className='ww-trip-transfer-preview-actions';
+        const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.addEventListener('click',()=>{clearPreview(d);message(d,'')});
+        const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Import copy';confirm.className='ww-transfer-import-confirm';confirm.addEventListener('click',()=>{
+          if(busy||!pending)return;
+          busy=true;
+          try{
+            const next=copy(state);
+            next.trips??=[];next.trips.push(pending);
+            next.companionBank??=[];next.vibeBank??=[];next.customDestinations??=[];
+            for(const name of pending.companions||[])if(typeof name==='string'&&!next.companionBank.some(x=>String(x).toLowerCase()===name.toLowerCase()))next.companionBank.push(name);
+            for(const name of pending.vibes||[])if(typeof name==='string'&&!next.vibeBank.some(x=>String(x).toLowerCase()===name.toLowerCase()))next.vibeBank.push(name);
+            for(const s of pending.destinations||[])if(s.custom&&s.name&&!next.customDestinations.some(x=>String(x.name).toLowerCase()===String(s.name).toLowerCase()&&String(x.country).toLowerCase()===String(s.country).toLowerCase()))next.customDestinations.push({id:newId(),name:s.name,type:s.type||'Other',country:s.country});
+            const oldState=state;
+            try{
+              state=next;
+              const countries=tripCountries(pending);
+              countries.forEach(c=>{if(!state.countryAddedAt[c])state.countryAddedAt[c]=new Date().toISOString()});
+              reconcileTripCountryStatuses(countries);
+              localStorage.setItem('wozzaworld-state',JSON.stringify(state));
+            }catch(err){state=oldState;throw err}
+            const importedName=pending.name;
+            clearPreview(d);d.close();
+            render();
+            toast?.(`${importedName} imported as a new trip ✓`);
+          }catch(err){message(d,err.name==='QuotaExceededError'?'Not enough local storage. Please back up your app and free space.':(err.message||'Could not import this trip.'),'error')}
+          finally{busy=false}
+        });
+        buttons.append(cancel,confirm);
+        info.append(title,description,warning,buttons);
+        info.hidden=false;message(d,'File checked. Review this trip before importing.','success');
+      }catch(e){clearPreview(d);message(d,e instanceof SyntaxError?'This is not a valid JSON trip file.':(e.message||'Unable to read this trip file.'),'error')}
+    });
+    return d;
+  }
+  function dialog(){return ensureControls(window.wwEnsureTripTransferDialog?.()||document.getElementById('wwTripTransferDialog'))}
+  // The original trip-level launcher remains unchanged, and opens this dialog.
+  document.addEventListener('click',e=>{
+    if(e.target?.closest?.('#tripDialog #wwTripExportPlaceholder'))requestAnimationFrame(()=>{dialog();message(dialog(),'')});
+  },true);
+  // Receiving a trip must also work when an app has no trips at all.
+  function addTripsImportLauncher(){
+    const newTrip=document.getElementById('newTripBtn');
+    const group=newTrip?.closest('.trips-actions');
+    if(!group||document.getElementById('wwTripsImportLauncher'))return;
+    const b=document.createElement('button');b.type='button';b.id='wwTripsImportLauncher';b.className='ww-trips-import-launcher';
+    b.textContent='Import trip';b.setAttribute('aria-label','Import a trip from a file');
+    group.insertBefore(b,newTrip);
+    b.addEventListener('click',()=>{
+      const d=dialog();if(!d)return;
+      clearPreview(d);message(d,'');
+      if(!d.open)d.showModal();
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addTripsImportLauncher,{once:true});
+  else addTripsImportLauncher();
 })();

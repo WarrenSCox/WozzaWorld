@@ -6294,3 +6294,49 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   92%{opacity:1;}
   100%{transform:translate3d(var(--ww-confetti-land-x),var(--ww-confetti-land-y),0) rotate(var(--ww-confetti-spin));opacity:0;}
 }
+
+/* 12 Oct 2026 — consistent mustard on + New trip, without changing its behaviour. */
+body.trips-view #newTripBtn{
+  background:#e9bd2a!important;
+  color:#193d4a!important;
+}
+/* A small receiving entry point: friends can import even with zero existing trips. */
+body.trips-view .trips-actions:has(#wwTripsImportLauncher){
+  margin-bottom:12px!important;
+  gap:9px!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+}
+body.trips-view #wwTripsImportLauncher{
+  border:1px solid rgba(255,255,255,.55)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.13)!important;
+  color:#fff!important;
+  font:750 12px/1.25 Inter,ui-sans-serif,sans-serif!important;
+  padding:9px 12px!important;
+  min-height:35px!important;
+  cursor:pointer!important;
+}
+body.trips-view #wwTripsImportLauncher:focus-visible{outline:2px solid #fff!important;outline-offset:3px!important}
+/* Import preview inside the established modal; preserve the existing buttons. */
+#wwTripTransferDialog .ww-trip-transfer-file[hidden],
+#wwTripTransferDialog .ww-trip-transfer-preview[hidden]{display:none!important}
+#wwTripTransferDialog .ww-trip-transfer-preview{
+  margin:15px 0 0!important;padding:16px!important;
+  background:#fff!important;border:1px solid #d8e7e8!important;
+  border-radius:16px!important;color:#193d4a!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-preview strong{display:block;font-size:17px;overflow-wrap:anywhere}
+#wwTripTransferDialog .ww-trip-transfer-preview p{font-size:13px;line-height:1.45;margin:8px 0!important;color:#567078}
+#wwTripTransferDialog .ww-trip-transfer-preview-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:15px}
+#wwTripTransferDialog .ww-trip-transfer-preview-actions button{
+  appearance:none;border:0;border-radius:999px;padding:11px 15px;
+  color:#193d4a;background:#e8f0f0;font-weight:800;cursor:pointer;
+}
+#wwTripTransferDialog .ww-trip-transfer-preview-actions .ww-transfer-import-confirm{background:#25b14b;color:#fff}
+#wwTripTransferDialog .ww-trip-transfer-message{margin:11px 1px!important;font-size:13px!important;color:#506872!important;line-height:1.4!important;min-height:0!important}
+#wwTripTransferDialog .ww-trip-transfer-message:empty{display:none!important}
+#wwTripTransferDialog .ww-trip-transfer-message[data-type="error"]{color:#ad3030!important;font-weight:700!important}
+#wwTripTransferDialog .ww-trip-transfer-message[data-type="success"]{color:#087b61!important}
+#wwTripTransferDialog .ww-trip-transfer-privacy{font-size:12px!important;line-height:1.45!important;color:#6a7c81!important;margin:0 3px 18px!important}
+@media(max-width:370px){body.trips-view #wwTripsImportLauncher{padding:8px 9px!important;font-size:11px!important}}
