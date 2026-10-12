@@ -6018,3 +6018,50 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   justify-self:center!important;
   align-self:center!important;
 }
+
+/* 12 Oct 2026 — task control visual parity across Trip, Activity and Itinerary.
+   Blank task drafts already have a completion button in the DOM. Display its
+   empty outline, but keep it non-interactive until the user enters text.
+   No changes to task creation, IDs, synchronisation or handlers. */
+#tripForm .trip-todo-section .trip-todo-row:not(.has-text) .trip-todo-check,
+#stopItineraryDialog .stop-itinerary-form .itin-todo-section .trip-todo-row:not(.has-text) .trip-todo-check{
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:none!important;
+}
+
+/* Match the *visible* coral delete circle to the 27–28px completion ring,
+   retaining the existing 34px button hit area and grid geometry. */
+#tripForm .trip-todo-section .trip-todo-remove,
+#stopItineraryDialog .stop-itinerary-form .itin-todo-section .trip-todo-remove,
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-remove{
+  position:relative!important;
+  isolation:isolate!important;
+  box-sizing:border-box!important;
+  width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#b43831!important;
+  font-size:18px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  display:grid!important;
+  place-items:center!important;
+  justify-self:center!important;
+  align-self:center!important;
+}
+#tripForm .trip-todo-section .trip-todo-remove::before,
+#stopItineraryDialog .stop-itinerary-form .itin-todo-section .trip-todo-remove::before,
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-remove::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  z-index:-1;
+  border-radius:50%;
+  background:#fff2ef;
+  box-shadow:0 2px 7px rgba(9,38,47,.06);
+  pointer-events:none;
+}
