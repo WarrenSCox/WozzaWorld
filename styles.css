@@ -6320,3 +6320,22 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 .ww-restore-title{padding:28px 26px;background:linear-gradient(110deg,#086d7f,#0aa5a6);color:white;font-size:24px;font-weight:800}
 .ww-restore-body{padding:24px 26px 0;font-size:16px;line-height:1.5}.ww-restore-body p{margin:0 0 15px}
 .ww-restore-actions{display:flex;gap:10px;padding:15px 26px 27px}.ww-restore-actions button{flex:1;min-width:0;border:0;border-radius:999px;padding:13px 7px;font-weight:800;font-size:15px;color:#203e48;background:#e9bf2e}.ww-restore-actions .ww-restore-cancel{background:#e25550;color:white}
+
+/* 12 Oct: scoped surgical dialog visual parity. No event handlers altered. */
+#wwTripTransferDialog .ww-trip-transfer-preview-actions{display:flex!important;gap:10px!important;align-items:center!important;justify-content:flex-end!important;margin:18px 0 0!important}
+#wwTripTransferDialog .ww-trip-transfer-preview-actions button{appearance:none!important;-webkit-appearance:none!important;flex:1 1 0!important;min-width:0!important;min-height:46px!important;margin:0!important;padding:12px 14px!important;border:0!important;border-radius:999px!important;font:800 15px/1.2 inherit!important;box-shadow:none!important;cursor:pointer!important}
+#wwTripTransferDialog .ww-trip-transfer-preview-actions button:first-child{background:#e9bf2e!important;color:#193d4a!important}
+#wwTripTransferDialog .ww-trip-transfer-preview-actions .ww-transfer-import-confirm{background:#20b455!important;color:#fff!important}
+.ww-restore-popup .ww-restore-actions:has(.ww-restore-confirm){display:grid!important;grid-template-columns:minmax(0,0.65fr) minmax(0,1.7fr)!important;gap:10px!important}
+.ww-restore-popup .ww-restore-actions .ww-restore-cancel{width:100%!important;min-width:0!important}
+.ww-restore-popup .ww-restore-actions .ww-restore-confirm{width:100%!important;min-width:0!important;white-space:nowrap!important;font-size:clamp(11px,3vw,15px)!important;padding-left:5px!important;padding-right:5px!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-alert-card{padding:0!important;overflow:hidden!important;background:#effafa!important;border:0!important;border-radius:26px!important;max-width:420px!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-alert-card>strong{display:block!important;background:linear-gradient(110deg,#08738a 0%,#00bdb6 100%)!important;color:#fff!important;font-size:22px!important;font-weight:900!important;padding:26px 24px!important;margin:0!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-alert-card>p{padding:23px 24px 0!important;margin:0 0 24px!important;color:#233e47!important;font-size:16px!important;line-height:1.5!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions{padding:0 24px 24px!important;display:flex!important;gap:10px!important;justify-content:flex-end!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions button{border:0!important;border-radius:999px!important;font-size:clamp(12px,3vw,15px)!important;font-weight:900!important;padding:12px 12px!important;min-width:0!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions .secondary{background:#eabd2b!important;color:#18343b!important;flex:0 0 auto!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions .danger{background:#f5584f!important;color:#fff!important;flex:1 1 auto!important}
+#backupRestoreDialog .backup-restore-actions button:first-child{background:#e9bf2e!important;color:#193d4a!important}
+#backupRestoreDialog .backup-restore-actions button:nth-child(2){background:#20b455!important;color:#fff!important}
+#backupRestoreDialog .ww-backup-footer-close{background:#e25550!important;color:#fff!important}
