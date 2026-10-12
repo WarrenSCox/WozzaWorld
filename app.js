@@ -448,6 +448,7 @@ function wwShowNextMilestoneCelebration(){
     if(!award?.unlocked)continue; // Nothing to celebrate if the status was reversed.
     openMilestoneDialog(award); // Reuse the existing approved artwork and wording.
     wwPlayMilestoneConfetti(dialog);
+    try { const audio=window.wwMilestoneFanfare||(window.wwMilestoneFanfare=new Audio('627976__solo654__fantasy-magic-button.mp3')); audio.pause();audio.currentTime=0;audio.play().catch(()=>{}); } catch (_) {}
     break;
   }
 }
@@ -6493,6 +6494,7 @@ wwOpenQuickInfo=function(row,id){
   const showPreparing=name=>{
     let d=document.getElementById('wwExportReadyDialog');if(!d){d=document.createElement('dialog');d.id='wwExportReadyDialog';d.className='ww-export-ready';d.innerHTML='<div class="ww-export-ready-card"><div class="ww-export-ready-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><g class="ww-prep-arrow"><path d="M12 3v10"></path><path d="M8 10l4 4 4-4"></path></g><path class="ww-prep-tray" d="M5 17v3h14v-3"></path></svg></div><h2>Preparing your file</h2><p></p><button type="button">CLOSE</button></div>';document.body.appendChild(d);d.querySelector('button').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target===d)d.close()})}d.querySelector('p').textContent=`Your ${name||'trip'} itinerary is being prepared. Please check your downloads.`;if(!d.open)d.showModal();
   };
+  window.wwShowTripExportPreparing=()=>{showPreparing('trip');const el=document.querySelector('#wwExportReadyDialog p');if(el)el.textContent='Your trip is currently being exported. Please check your downloads.';};
   if(!document.getElementById('ww-export-ready-style')){const s=document.createElement('style');s.id='ww-export-ready-style';s.textContent=`
     @keyframes wwDownloadPulse{0%{transform:scale(1)}35%{transform:scale(.88) translateY(3px)}68%{transform:scale(1.08) translateY(-2px)}100%{transform:scale(1)}}.master-itinerary-capture.ww-download-pulse{animation:wwDownloadPulse .38s ease!important;pointer-events:none!important}.master-itinerary-capture.ww-download-pressed{transform:scale(.92) translateY(2px)!important;transition:transform .08s ease!important}.master-itinerary-capture.ww-download-pressed svg{transform:translateY(3px)!important}
     .ww-export-ready{border:0!important;padding:0!important;background:transparent!important;max-width:min(88vw,430px)!important;width:100%!important}.ww-export-ready::backdrop{background:rgba(0,76,88,.62)!important;backdrop-filter:blur(8px)!important}.ww-export-ready-card{background:#fff0c7!important;border-radius:30px!important;padding:30px 26px 24px!important;text-align:center!important;color:#17323c!important}.ww-export-ready-tick{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#078fa3;color:#fff}.ww-export-ready-tick svg{width:31px;height:31px;fill:none;stroke:#fff;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round}@keyframes wwPrepArrowDrop{0%{transform:translateY(-5px);opacity:0}18%{opacity:1}68%{transform:translateY(2px);opacity:1}82%{transform:translateY(5px);opacity:0}100%{transform:translateY(-5px);opacity:0}}.ww-export-ready-tick .ww-prep-arrow{transform-box:fill-box;transform-origin:center;animation:wwPrepArrowDrop 1.05s cubic-bezier(.4,0,.2,1) infinite}.ww-export-ready-tick .ww-prep-tray{opacity:1}.ww-export-ready h2{margin:0 0 9px!important;font:900 25px/1.08 Arial,sans-serif!important}.ww-export-ready p{margin:0 0 22px!important;font:600 15px/1.4 Arial,sans-serif!important}.ww-export-ready button{width:100%!important;min-height:54px!important;border:0!important;border-radius:20px!important;background:#078fa3!important;color:#fff!important;font:900 16px/1 Arial,sans-serif!important;letter-spacing:.06em!important}`;document.head.appendChild(s)}
@@ -12876,11 +12878,15 @@ wwOpenQuickInfo=function(row,id){
     input.insertAdjacentElement('afterend',info);
     const notification=document.createElement('p');notification.className='ww-trip-transfer-message';notification.setAttribute('role','status');
     info.insertAdjacentElement('afterend',notification);
-    const privacy=document.createElement('p');privacy.className='ww-trip-transfer-privacy';privacy.textContent='Trip files may include booking references and contact details. Please review before sharing.';
-    d.querySelector('.ww-trip-transfer-note')?.insertAdjacentElement('afterend',privacy);
+
     d.addEventListener('close',()=>{clearPreview(d);message(d,'')});
 
-    exportButton.addEventListener('click',()=>{
+    exportButton.addEventListener('click',async()=>{
+      const approved=await new Promise(resolve=>{
+        const warn=document.createElement('dialog');warn.className='ww-transfer-warning';warn.innerHTML=`<div class="ww-transfer-warning-head">Before you export</div><div class="ww-transfer-warning-body"><p>Your exported trip will include all information you have entered, including itineraries, activities, dates, companions, tasks, booking references, contact details and costs. Anyone you share the file with will be able to view this information.</p><div class="ww-transfer-warning-actions"><button type="button" class="ww-transfer-cancel">Cancel</button><button type="button" class="ww-transfer-proceed">Export trip</button></div></div>`;document.body.appendChild(warn);
+        const done=v=>{warn.close();warn.remove();resolve(v)};warn.querySelector('.ww-transfer-cancel').onclick=()=>done(false);warn.querySelector('.ww-transfer-proceed').onclick=()=>done(true);warn.addEventListener('cancel',e=>{e.preventDefault();done(false)});warn.showModal();
+      });
+      if(!approved)return;
       if(busy)return;
       try{
         const t=selectedTrip();
@@ -12894,7 +12900,7 @@ wwOpenQuickInfo=function(row,id){
         a.download=`WozzaWorld-${fileSafeName(obj.trip.name)}.wozzatrip.json`;
         document.body.appendChild(a);a.click();a.remove();
         setTimeout(()=>URL.revokeObjectURL(url),60000);
-        message(d,'Trip file downloaded. You can keep it or share it with a companion.','success');
+        message(d,'');d.close();window.wwShowTripExportPreparing?.();
       }catch(e){message(d,e.message||'Unable to export this trip.','error')}
     });
     importButton.addEventListener('click',()=>{if(!busy){clearPreview(d);message(d,'');input.click()}});
@@ -12910,15 +12916,16 @@ wwOpenQuickInfo=function(row,id){
         pending=cloned;
         const s=summary(cloned);
         info.replaceChildren();
-        const title=document.createElement('strong');title.textContent=s.name;
+        const title=document.createElement('label');title.textContent='Trip name';title.className='ww-transfer-name-label';const nameInput=document.createElement('input');nameInput.className='ww-transfer-name-input';nameInput.type='text';nameInput.maxLength=300;nameInput.value=s.name;nameInput.setAttribute('aria-label','Name for imported trip');
         const description=document.createElement('p');
         description.textContent=`${s.countries.join(' · ')||'Country not set'} · ${s.stops} stop${s.stops===1?'':'s'} · ${s.activities} activit${s.activities===1?'y':'ies'} · ${s.tasks} task${s.tasks===1?'':'s'}`;
-        const warning=document.createElement('p');warning.textContent='This adds an independent copy. Your existing trips will not be replaced, even if a name matches.';
+        const warning=document.createElement('p');warning.textContent='This will add an independent copy. No existing trips or data will be overwritten.';
         const buttons=document.createElement('div');buttons.className='ww-trip-transfer-preview-actions';
         const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.addEventListener('click',()=>{clearPreview(d);message(d,'')});
         const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Import copy';confirm.className='ww-transfer-import-confirm';confirm.addEventListener('click',()=>{
           if(busy||!pending)return;
-          busy=true;
+          const chosenName=nameInput.value.trim();if(!chosenName){message(d,'Enter a trip name before importing.','error');nameInput.focus();return;}
+          pending.name=chosenName;busy=true;
           try{
             const next=copy(state);
             next.trips??=[];next.trips.push(pending);
@@ -12942,8 +12949,8 @@ wwOpenQuickInfo=function(row,id){
           finally{busy=false}
         });
         buttons.append(cancel,confirm);
-        info.append(title,description,warning,buttons);
-        info.hidden=false;message(d,'File checked. Review this trip before importing.','success');
+        info.append(title,nameInput,description,warning,buttons);
+        info.hidden=false;message(d,'');
       }catch(e){clearPreview(d);message(d,e instanceof SyntaxError?'This is not a valid JSON trip file.':(e.message||'Unable to read this trip file.'),'error')}
     });
     return d;
@@ -12967,6 +12974,5 @@ wwOpenQuickInfo=function(row,id){
       if(!d.open)d.showModal();
     });
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addTripsImportLauncher,{once:true});
-  else addTripsImportLauncher();
+
 })();
