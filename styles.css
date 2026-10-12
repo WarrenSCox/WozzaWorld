@@ -5980,3 +5980,17 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
     height:clamp(13.86px,calc(4.788vw - 2.52px),17.64px)!important;
   }
 }
+
+/* 12 Oct 2026 — task editor visual-only cleanup (Trip / Activity / Itinerary).
+   Keep DOM containers, rows, task controls, completion marks and listeners intact.
+   Reclaim the container's horizontal inset for wider white task input pills. */
+#tripForm .trip-todo-section #tripTodoBody,
+#stopItineraryDialog .stop-itinerary-form .itin-todo-section .trip-todo-list,
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-list{
+  background:transparent!important;
+  background-color:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
