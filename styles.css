@@ -6314,3 +6314,9 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 .ww-transfer-warning .ww-transfer-warning-actions button{box-sizing:border-box!important;width:100%!important;min-width:0!important;min-height:49px!important;padding:11px 8px!important;border:0!important;border-radius:999px!important;font-size:15px!important;font-weight:800!important;line-height:1.2!important;box-shadow:none!important}
 .ww-transfer-warning .ww-transfer-cancel{background:#e25550!important;color:#fff!important}
 .ww-transfer-warning .ww-transfer-proceed{background:#e9bf2e!important;color:#193d4a!important}
+
+.ww-restore-popup{width:min(460px,calc(100vw - 32px));max-height:85dvh;padding:0;border:0;border-radius:24px;overflow:auto;background:#effafa;color:#203e48;box-shadow:0 20px 70px #002d3d70}
+.ww-restore-popup::backdrop{background:#002d3d90;backdrop-filter:blur(6px)}
+.ww-restore-title{padding:28px 26px;background:linear-gradient(110deg,#086d7f,#0aa5a6);color:white;font-size:24px;font-weight:800}
+.ww-restore-body{padding:24px 26px 0;font-size:16px;line-height:1.5}.ww-restore-body p{margin:0 0 15px}
+.ww-restore-actions{display:flex;gap:10px;padding:15px 26px 27px}.ww-restore-actions button{flex:1;min-width:0;border:0;border-radius:999px;padding:13px 7px;font-weight:800;font-size:15px;color:#203e48;background:#e9bf2e}.ww-restore-actions .ww-restore-cancel{background:#e25550;color:white}

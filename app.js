@@ -13000,3 +13000,50 @@ wwOpenQuickInfo=function(row,id){
 
 /* Match trip-export arrow motion to the existing itinerary-export preparing animation. */
 (()=>{const st=document.createElement("style");st.id="ww-trip-export-animation-parity";st.textContent="#wwExportReadyDialog.ww-trip-export-preparing .ww-prep-arrow{animation-duration:1.4s!important;animation-timing-function:cubic-bezier(.4,0,.2,1)!important}";document.head.appendChild(st)})();
+
+/* Full personal-data backup and restore; isolated from single-trip import/export. */
+(()=>{
+ if(window.__wwBackupRestoreV3)return;window.__wwBackupRestoreV3=true;
+ const dialog=document.getElementById('backupRestoreDialog');if(!dialog)return;
+ const buttons=[...dialog.querySelectorAll('.backup-restore-actions button')];if(buttons.length<2)return;
+ const validKey=k=>/^(wozzaworld-|wozza|myworld-)/i.test(k)&&!/^wozzaworld-(last-backup|backup-|restore-)/i.test(k);
+ const main='wozzaworld-state';
+ const label=dialog.querySelector('.backup-last-date');
+ function updateLabel(){const v=localStorage.getItem('wozzaworld-last-backup');if(label)label.textContent=v&&!isNaN(Date.parse(v))?'Last backup: '+new Date(v).toLocaleString('en-GB'):'You have not made a backup yet.'}
+ updateLabel();
+ document.getElementById('openBackupRestore')?.addEventListener('click',updateLabel);
+ function collect(){const storage={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(validKey(k))storage[k]=localStorage.getItem(k)}
+  const state=JSON.parse(storage[main]||'null');if(!state||!Array.isArray(state.trips)||!state.statuses||typeof state.statuses!=='object')throw Error('Your main app data is missing or invalid.');
+  return {format:'WozzaWorld Backup',backupVersion:2,createdAt:new Date().toISOString(),storage};}
+ function download(payload,filename){const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+ const stamp=()=>new Date().toISOString().replace(/[:.]/g,'-');
+ const popup=document.createElement('dialog');popup.className='ww-restore-popup';popup.innerHTML='<div class="ww-restore-title"></div><div class="ww-restore-body"></div><div class="ww-restore-actions"><button type="button" class="ww-restore-cancel">Cancel</button><button type="button" class="ww-restore-confirm">Continue</button></div>';document.body.appendChild(popup);
+ const title=popup.querySelector('.ww-restore-title'),body=popup.querySelector('.ww-restore-body'),ok=popup.querySelector('.ww-restore-confirm');let action=null;
+ function close(){popup.close();action=null}popup.querySelector('.ww-restore-cancel').onclick=close;popup.addEventListener('cancel',e=>{e.preventDefault();close()});ok.onclick=()=>{const fn=action;close();fn?.()};
+ function show(head,lines,button,fn){title.textContent=head;body.replaceChildren();lines.forEach(line=>{const p=document.createElement('p');p.textContent=line;body.appendChild(p)});ok.textContent=button;action=fn;popup.showModal()}
+ function error(message){show('Unable to continue',[message],'OK',()=>{})}
+ const file=document.createElement('input');file.type='file';file.accept='.json,application/json';file.hidden=true;dialog.appendChild(file);
+ document.addEventListener('click',e=>{const b=e.target.closest?.('#backupRestoreDialog .backup-restore-actions button');if(!b)return;
+  if(b===buttons[0]){e.preventDefault();e.stopImmediatePropagation();try{const payload=collect();download(payload,'WozzaWorld-Backup-'+stamp()+'.json');localStorage.setItem('wozzaworld-last-backup',payload.createdAt);updateLabel()}catch(ex){error(ex.message)}}
+  else if(b===buttons[1]){e.preventDefault();e.stopImmediatePropagation();file.value='';file.click()}
+ },true);
+ function validate(data){if(!data||data.format!=='WozzaWorld Backup'||![1,2].includes(data.backupVersion)||!data.storage||typeof data.storage!=='object'||Array.isArray(data.storage))throw Error('Not a supported WozzaWorld backup.');
+  const entries=Object.entries(data.storage);if(!entries.length||entries.length>200)throw Error('Invalid number of saved data entries.');
+  for(const [k,v] of entries)if(!validKey(k)||typeof v!=='string'||v.length>20000000)throw Error('Unsupported saved data entry.');
+  let state;try{state=JSON.parse(data.storage[main])}catch{throw Error('The backup contains invalid app data.');}
+  if(!state||!Array.isArray(state.trips)||!state.statuses||typeof state.statuses!=='object'||Array.isArray(state.statuses))throw Error('Backup is missing required app data.');
+  return {entries,state};}
+ file.addEventListener('change',async()=>{const f=file.files?.[0];if(!f)return;try{
+  if(f.size>30000000)throw Error('File is too large (maximum 30 MB).');const data=JSON.parse(await f.text());const {entries,state}=validate(data);
+  show('Restore your backup?',[`Backup: ${data.createdAt&&!isNaN(Date.parse(data.createdAt))?new Date(data.createdAt).toLocaleString('en-GB'):'Date unavailable'}. ${state.trips.length} trip(s).`,'Restoring replaces all current personal app data, including trips, itinerary, passport, preferences and recycle bin.','A safety copy of your current data must be downloaded before restoration. Admin content is not affected.'],'Download safety copy',()=>{
+   try{download(collect(),'WozzaWorld-Safety-Copy-'+stamp()+'.json')}catch(ex){error('Safety copy could not be created: '+ex.message);return}
+   show('Confirm restore',['Please check that the safety copy was downloaded successfully.','Your current personal app data will now be replaced with the selected backup.'],'Restore backup',()=>{
+    const old={};try{
+     for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(validKey(k))old[k]=localStorage.getItem(k)}
+     const replacement=new Map(entries);for(const k of new Set([...Object.keys(old),...replacement.keys()])){if(replacement.has(k))localStorage.setItem(k,replacement.get(k));else localStorage.removeItem(k)}
+     location.reload();
+    }catch(ex){try{for(const k of Object.keys(data.storage))if(!(k in old))localStorage.removeItem(k);for(const [k,v] of Object.entries(old))localStorage.setItem(k,v)}catch{}error('Restore failed. Attempted to retain the previous data: '+ex.message)}
+   });
+  });
+ }catch(ex){error(ex instanceof SyntaxError?'This file is not valid JSON.':ex.message)}});
+})();
