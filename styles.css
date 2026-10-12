@@ -6099,3 +6099,30 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   stroke-linejoin:round;
   vector-effect:non-scaling-stroke;
 }
+
+
+/* 12 Oct — Itinerary Day 1 breathing room only. Daily Plan excluded.
+   Padding belongs to the day grid, not its day-to-day gap. */
+#masterItineraryDialog:not(.ww-daily-plan-v2):not(.ww-daily-plan-mode):not([data-ww-view="daily"]) #masterItineraryContent{
+  padding-top:9px!important;
+}
+
+/* One-time milestone celebration; overlay is inside the existing modal's top layer. */
+#milestoneDialog .ww-milestone-confetti{
+  position:fixed;inset:0;z-index:12;overflow:hidden;pointer-events:none;
+}
+#milestoneDialog .ww-milestone-confetti i{
+  position:absolute;top:-18px;left:var(--ww-confetti-x);
+  width:8px;height:13px;border-radius:2px;opacity:0;
+  background:var(--ww-confetti-colour);
+  animation:wwMilestoneConfettiFall var(--ww-confetti-duration) var(--ww-confetti-delay) ease-in forwards;
+}
+@keyframes wwMilestoneConfettiFall{
+  0%{transform:translate3d(0,-20px,0) rotate(0deg);opacity:0;}
+  8%{opacity:1;}
+  88%{opacity:1;}
+  100%{transform:translate3d(var(--ww-confetti-drift),110vh,0) rotate(var(--ww-confetti-spin));opacity:0;}
+}
+@media(prefers-reduced-motion:reduce){
+  #milestoneDialog .ww-milestone-confetti{display:none!important;}
+}
