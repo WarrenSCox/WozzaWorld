@@ -6303,3 +6303,14 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 @keyframes wwBadgeShine{0%{transform:translateX(-130%) rotate(-10deg)}100%{transform:translateX(130%) rotate(-10deg)}}
 @keyframes wwBadgeTwinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1.5)}}
 @media(prefers-reduced-motion:reduce){#milestoneDialog .ww-milestone-glimmer{display:none!important}}
+
+/* Export warning: match WozzaWorld's two-tone transfer dialog. */
+dialog.ww-transfer-warning{box-sizing:border-box!important;width:min(440px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;max-height:85dvh!important;margin:auto!important;padding:0!important;border:0!important;border-radius:24px!important;background:#eef9f9!important;color:#193d4a!important;box-shadow:0 20px 70px rgba(0,20,30,.35)!important;overflow:auto!important}
+dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important}
+.ww-transfer-warning .ww-transfer-warning-head{padding:27px 26px!important;background:linear-gradient(120deg,#086579,#0aa3a6)!important;color:#fff!important;font-family:"Archivo Black",Inter,sans-serif!important;font-size:24px!important;font-weight:800!important;line-height:1.25!important}
+.ww-transfer-warning .ww-transfer-warning-body{padding:25px 26px 27px!important;background:#eef9f9!important}
+.ww-transfer-warning .ww-transfer-warning-body p{margin:0!important;color:#294851!important;font-size:16px!important;font-weight:400!important;line-height:1.55!important;overflow-wrap:anywhere}
+.ww-transfer-warning .ww-transfer-warning-actions{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;margin-top:25px!important}
+.ww-transfer-warning .ww-transfer-warning-actions button{box-sizing:border-box!important;width:100%!important;min-width:0!important;min-height:49px!important;padding:11px 8px!important;border:0!important;border-radius:999px!important;font-size:15px!important;font-weight:800!important;line-height:1.2!important;box-shadow:none!important}
+.ww-transfer-warning .ww-transfer-cancel{background:#e25550!important;color:#fff!important}
+.ww-transfer-warning .ww-transfer-proceed{background:#e9bf2e!important;color:#193d4a!important}
