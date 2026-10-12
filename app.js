@@ -412,13 +412,26 @@ function wwPlayMilestoneConfetti(dialog){
   layer.className='ww-milestone-confetti';
   layer.setAttribute('aria-hidden','true');
   const colours=['#f7c93d','#0ab4bd','#f16d5c','#50c8a7','#4287d7','#ee92bf'];
+  // Two low-screen confetti cannons: pieces rise and fan out, then flutter down.
+  // Decorative animation only; never changes the milestone data or dialog flow.
+  const width=Math.max(window.innerWidth||390,280);
+  const height=Math.max(window.innerHeight||760,480);
   for(let i=0;i<72;i++){
     const piece=document.createElement('i');
-    piece.style.setProperty('--ww-confetti-x',`${(Math.random()*100).toFixed(2)}%`);
-    piece.style.setProperty('--ww-confetti-drift',`${Math.round(Math.random()*240-120)}px`);
-    piece.style.setProperty('--ww-confetti-spin',`${Math.round(400+Math.random()*800)}deg`);
-    piece.style.setProperty('--ww-confetti-duration',`${(2.8+Math.random()*1.5).toFixed(2)}s`);
-    piece.style.setProperty('--ww-confetti-delay',`${(Math.random()*.65).toFixed(2)}s`);
+    const fromLeft=i%2===0;
+    const startX=width*(fromLeft?.10:.90)+(Math.random()-.5)*18;
+    const apexX=width*(.16+Math.random()*.68);
+    const travelX=apexX-startX;
+    const apexY=-height*(.45+Math.random()*.40);
+    const landY=-height*(.06+Math.random()*.20);
+    piece.style.setProperty('--ww-confetti-x',`${startX.toFixed(0)}px`);
+    piece.style.setProperty('--ww-confetti-peak-x',`${travelX.toFixed(0)}px`);
+    piece.style.setProperty('--ww-confetti-peak-y',`${apexY.toFixed(0)}px`);
+    piece.style.setProperty('--ww-confetti-land-x',`${(travelX+(Math.random()-.5)*110).toFixed(0)}px`);
+    piece.style.setProperty('--ww-confetti-land-y',`${landY.toFixed(0)}px`);
+    piece.style.setProperty('--ww-confetti-spin',`${Math.round((fromLeft?1:-1)*(460+Math.random()*860))}deg`);
+    piece.style.setProperty('--ww-confetti-duration',`${(3.0+Math.random()*1.4).toFixed(2)}s`);
+    piece.style.setProperty('--ww-confetti-delay',`${(Math.random()*.42).toFixed(2)}s`);
     piece.style.setProperty('--ww-confetti-colour',colours[i%colours.length]);
     layer.appendChild(piece);
   }
@@ -454,16 +467,29 @@ function wwWatchMilestoneUnlocks(awards){
     }
   }
   let changed=false;
+  // Keep a snapshot of CURRENTLY awarded milestones, not a lifetime blacklist.
+  // If a badge is lost, reset its eligibility so the next real re-unlock celebrates.
+  const currentlyUnlocked=new Set(awards.filter(a=>a.unlocked).map(a=>a.name));
+  const previous=wwMilestoneCelebrated.awarded;
+  const stillEarned=previous.filter(name=>currentlyUnlocked.has(name));
+  if(stillEarned.length!==previous.length){
+    wwMilestoneCelebrated.awarded=stillEarned;
+    // Do not play a queued unlock if the criteria were reversed before its popup.
+    for(let i=wwMilestoneCelebrationQueue.length-1;i>=0;i--){
+      if(!currentlyUnlocked.has(wwMilestoneCelebrationQueue[i]))wwMilestoneCelebrationQueue.splice(i,1);
+    }
+    changed=true;
+  }
   awards.forEach(a=>{
     if(!a.unlocked||wwMilestoneCelebrated.awarded.includes(a.name))return;
     wwMilestoneCelebrated.awarded.push(a.name);
-    wwMilestoneCelebrationQueue.push(a.name);
+    if(!wwMilestoneCelebrationQueue.includes(a.name))wwMilestoneCelebrationQueue.push(a.name);
     changed=true;
   });
   if(changed){
     try{localStorage.setItem(WW_MILESTONE_CELEBRATED_KEY,JSON.stringify(wwMilestoneCelebrated))}catch(e){}
-    wwScheduleMilestoneCelebration();
   }
+  if(wwMilestoneCelebrationQueue.length)wwScheduleMilestoneCelebration();
 }
 document.addEventListener('close',e=>{
   if(!e.target?.matches?.('dialog'))return;
@@ -476,8 +502,7 @@ function renderMilestones(){
   const awards=milestoneAwards();
   const ordered=wwMilestoneSortedAwards(awards);
   wwWatchMilestoneUnlocks(awards);
-  // Six miniature awards beside the title always reflect the same current unlock rules.
-  // Keep these in the named achievement order, independent of recent-first carousel order.
+  // Miniature awards mirror the main carousel's exact recent-first ordering.
   const preview=document.getElementById('wwMilestoneMiniPreview') || (()=>{
     const head=document.querySelector('#milestonesCard .milestones-head');
     if(!head)return null;
@@ -487,7 +512,7 @@ function renderMilestones(){
     head.appendChild(el);return el;
   })();
   if(preview){
-    preview.innerHTML=awards.map(a=>`<span class="ww-mini-milestone-ring" title="${esc(a.name)} — ${a.unlocked?'Unlocked':'Locked'}"><img src="${a.img}" alt="${esc(a.name)}: ${a.unlocked?'unlocked':'locked'}" class="ww-mini-milestone${a.unlocked?' is-unlocked':' is-locked'}" loading="eager"></span>`).join('');
+    preview.innerHTML=ordered.map(a=>`<span class="ww-mini-milestone-ring" title="${esc(a.name)} — ${a.unlocked?'Unlocked':'Locked'}"><img src="${a.img}" alt="${esc(a.name)}: ${a.unlocked?'unlocked':'locked'}" class="ww-mini-milestone${a.unlocked?' is-unlocked':' is-locked'}" loading="eager"></span>`).join('');
   }
   const signature=ordered.map(a=>a.index).join(',');
   const previous=grid.dataset.milestoneOrder;
@@ -6682,7 +6707,7 @@ wwOpenQuickInfo=function(row,id){
     p=document.createElement('dialog');
     p.id='wwActivityUnsavedDialog';
     p.className='action-dialog trip-unsaved-dialog';
-    p.innerHTML=`<div class="trip-unsaved-card"><button type="button" class="ww-unsaved-close" id="wwActivityUnsavedX" aria-label="Close">×</button><h3>Save your changes?</h3><p>Do you want to save your changes before closing this activity?</p><div class="trip-unsaved-actions"><button type="button" id="wwActivityUnsavedSaveContinue">Save &amp; continue editing</button><button type="button" id="wwActivityUnsavedSaveClose">Save &amp; close</button><button type="button" id="wwActivityUnsavedLeave">Close without saving</button></div></div>`;
+    p.innerHTML=`<div class="trip-unsaved-card"><div class="trip-unsaved-head"><h3>Save your changes?</h3><button type="button" class="ww-unsaved-close" id="wwActivityUnsavedX" aria-label="Close">×</button></div><p>Do you want to save your changes before closing this activity?</p><div class="trip-unsaved-actions"><button type="button" id="wwActivityUnsavedSaveContinue">Save &amp; continue editing</button><button type="button" id="wwActivityUnsavedSaveClose">Save &amp; close</button><button type="button" id="wwActivityUnsavedLeave">Close without saving</button></div></div>`;
     document.body.appendChild(p);
 
     p.addEventListener('cancel',e=>{e.preventDefault();p.close()});
@@ -10400,7 +10425,7 @@ wwOpenQuickInfo=function(row,id){
     let p=document.getElementById('wwOtherLinkTitleDialog');
     if(!p){
       p=document.createElement('dialog');p.id='wwOtherLinkTitleDialog';p.className='ww-other-link-title-dialog';
-      p.innerHTML=`<div class="ww-other-link-title-shell"><div class="ww-other-link-title-head"><div><small>LINK TITLE</small><h3>Name this link</h3></div><button type="button" class="ww-other-link-title-close" aria-label="Close">×</button></div><input class="ww-other-link-title-input" type="text" maxlength="50" placeholder="e.g. Restaurant menu"><button type="button" class="ww-other-link-title-save">SAVE</button></div>`;
+      p.innerHTML=`<div class="ww-other-link-title-shell"><div class="ww-other-link-title-head"><h3>Link Title</h3><button type="button" class="ww-other-link-title-close" aria-label="Close">×</button></div><input class="ww-other-link-title-input" type="text" maxlength="50" placeholder="e.g. Restaurant menu"><button type="button" class="ww-other-link-title-save">SAVE</button></div>`;
       document.body.appendChild(p);
       p.querySelector('.ww-other-link-title-close').onclick=()=>p.close();
       p.addEventListener('click',e=>{if(e.target===p)p.close()});

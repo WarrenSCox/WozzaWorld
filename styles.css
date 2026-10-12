@@ -6126,3 +6126,171 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 @media(prefers-reduced-motion:reduce){
   #milestoneDialog .ww-milestone-confetti{display:none!important;}
 }
+
+
+/* 12 Oct 2026 — Seven-item dialog and milestone polish. Visual changes scoped to
+   the existing dialogs; do not replace link/save button handlers. */
+#wwOtherLinkTitleDialog.ww-other-link-title-dialog{
+  box-sizing:border-box!important;
+  width:min(440px,calc(100vw - 32px))!important;
+  max-width:calc(100vw - 32px)!important;
+  border:0!important;
+  border-radius:26px!important;
+  padding:0!important;
+  background:#f0fafa!important;
+  overflow:hidden!important;
+  box-shadow:0 20px 65px rgba(4,45,56,.32)!important;
+}
+#wwOtherLinkTitleDialog .ww-other-link-title-shell{
+  box-sizing:border-box!important;
+  border-radius:26px!important;
+  overflow:hidden!important;
+  background:#f0fafa!important;
+  padding:0 0 24px!important;
+}
+#wwOtherLinkTitleDialog .ww-other-link-title-head{
+  box-sizing:border-box!important;
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  margin:0 0 22px!important;
+  min-height:96px!important;
+  padding:22px 24px!important;
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  gap:12px!important;
+}
+#wwOtherLinkTitleDialog .ww-other-link-title-head h3{
+  margin:0!important;
+  color:#fff!important;
+  font-family:"Archivo Black",Inter,sans-serif!important;
+  font-size:24px!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+}
+#wwOtherLinkTitleDialog .ww-other-link-title-close{
+  flex:0 0 40px!important;
+  width:40px!important;height:40px!important;
+  border-radius:50%!important;
+  background:#fff!important;color:#637880!important;
+  font-size:28px!important;
+  display:grid!important;place-items:center!important;
+}
+#wwOtherLinkTitleDialog .ww-other-link-title-input{
+  box-sizing:border-box!important;
+  width:calc(100% - 48px)!important;
+  height:52px!important;
+  margin:0 24px 15px!important;
+  border:1px solid rgba(19,76,90,.15)!important;
+  border-radius:18px!important;
+  background:#fff!important;
+  color:#193d4a!important;
+  box-shadow:none!important;
+}
+#wwOtherLinkTitleDialog .ww-other-link-title-save{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:calc(100% - 48px)!important;
+  margin:0 24px!important;
+  height:48px!important;
+  border-radius:999px!important;
+  background:#e9bd2a!important;
+  color:#193d4a!important;
+  font:800 16px/1.2 Inter,ui-sans-serif,sans-serif!important;
+  letter-spacing:0!important;
+}
+
+/* Trip transfer: Export mustard, Import positive green, Close coral. */
+#wwTripTransferDialog .ww-trip-transfer-actions button:nth-child(2){
+  background:#25b14b!important;color:#fff!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-footer button{
+  background:#e25550!important;color:#fff!important;
+}
+
+/* Both trip and activity Save Changes confirmations use existing dialog
+   content/buttons with the standard teal header and pale-blue body. */
+#tripUnsavedDialog .trip-unsaved-card,
+#wwActivityUnsavedDialog .trip-unsaved-card.trip-unsaved-card{
+  box-sizing:border-box!important;
+  background:#f0fafa!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  padding:0 22px 22px!important;
+  color:#193d4a!important;
+}
+#tripUnsavedDialog .trip-unsaved-head,
+#wwActivityUnsavedDialog .trip-unsaved-card .trip-unsaved-head{
+  box-sizing:border-box!important;
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;
+  min-height:94px!important;
+  gap:8px!important;
+  margin:0 -22px 20px!important;
+  padding:20px 20px 20px 22px!important;
+  background:linear-gradient(120deg,#086579,#0aa3a6)!important;
+  color:#fff!important;
+}
+#tripUnsavedDialog .trip-unsaved-head h3,
+#wwActivityUnsavedDialog .trip-unsaved-card .trip-unsaved-head h3{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  white-space:normal!important;
+  font-family:"Archivo Black",Inter,sans-serif!important;
+  font-size:clamp(17px,4.6vw,23px)!important;
+  line-height:1.18!important;
+  color:#fff!important;
+}
+#tripUnsavedDialog .trip-unsaved-head .trip-unsaved-close,
+#wwActivityUnsavedDialog .trip-unsaved-head .ww-unsaved-close{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  flex:0 0 40px!important;
+  width:40px!important;height:40px!important;
+  min-width:40px!important;min-height:40px!important;
+  border:0!important;border-radius:50%!important;
+  padding:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:#fff!important;color:#64777c!important;
+  font-size:27px!important;
+  line-height:1!important;
+}
+#tripUnsavedDialog .trip-unsaved-card p,
+#wwActivityUnsavedDialog .trip-unsaved-card p{
+  margin:0 0 19px!important;
+  color:#425e66!important;
+  line-height:1.5!important;
+}
+/* Preserve actions, but align trip's existing button colours to the same
+   mustard / green / coral meanings used in the activity confirmation. */
+#tripUnsavedDialog #tripUnsavedSaveContinue{background:#e9bf2e!important;color:#172f3a!important;}
+#tripUnsavedDialog #tripUnsavedSave{background:#25b14b!important;color:#fff!important;}
+#tripUnsavedDialog #tripUnsavedLeave{background:#e25550!important;color:#fff!important;}
+
+/* Selected and blank Activity Type button content should always align left. */
+#stopItineraryDialog .stop-itinerary-form #wwActivityTypeChoose.ww-activity-type-choose{
+  display:flex!important;align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:left!important;
+  gap:9px!important;
+  padding-left:15px!important;
+}
+
+/* Celebrate with two upward confetti cannons instead of falling from above.
+   The existing popup/queue and reduced-motion preference are unchanged. */
+#milestoneDialog .ww-milestone-confetti i{
+  top:auto!important;
+  bottom:-18px!important;
+  left:var(--ww-confetti-x)!important;
+  animation:wwMilestoneConfettiCannon var(--ww-confetti-duration) var(--ww-confetti-delay) cubic-bezier(.16,.35,.32,1) forwards!important;
+}
+@keyframes wwMilestoneConfettiCannon{
+  0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0;}
+  8%{opacity:1;}
+  45%{transform:translate3d(var(--ww-confetti-peak-x),var(--ww-confetti-peak-y),0) rotate(calc(var(--ww-confetti-spin) * .52));opacity:1;}
+  67%{transform:translate3d(calc(var(--ww-confetti-peak-x) * 1.06),calc(var(--ww-confetti-peak-y) * .75),0) rotate(calc(var(--ww-confetti-spin) * .73));opacity:1;}
+  92%{opacity:1;}
+  100%{transform:translate3d(var(--ww-confetti-land-x),var(--ww-confetti-land-y),0) rotate(var(--ww-confetti-spin));opacity:0;}
+}
