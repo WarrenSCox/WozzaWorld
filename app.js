@@ -405,6 +405,7 @@ const WW_MILESTONE_CELEBRATED_KEY='wozzaworld-milestone-celebrated-v1';
 let wwMilestoneCelebrated=null;
 const wwMilestoneCelebrationQueue=[];
 let wwMilestoneCelebrationScheduled=false;
+let wwMilestoneCelebrationRetry=null;
 function wwPlayMilestoneConfetti(dialog){
   dialog.querySelector('.ww-milestone-confetti')?.remove();
   if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
@@ -438,16 +439,31 @@ function wwPlayMilestoneConfetti(dialog){
   dialog.appendChild(layer);
   setTimeout(()=>layer.remove(),5100);
 }
+function wwPlayMilestoneGlimmer(dialog){
+  dialog.querySelector('.ww-milestone-glimmer')?.remove();
+  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+  const art=dialog.querySelector('#milestoneDialogArt');
+  if(!art)return;
+  const shine=document.createElement('span');shine.className='ww-milestone-glimmer';shine.setAttribute('aria-hidden','true');
+  for(let i=0;i<7;i++){const star=document.createElement('i');star.style.setProperty('--star-x',`${12+(i*37)%78}%`);star.style.setProperty('--star-y',`${15+(i*29)%72}%`);star.style.setProperty('--star-delay',`${(i*.23).toFixed(2)}s`);shine.appendChild(star)}
+  art.appendChild(shine);
+  setTimeout(()=>shine.remove(),3100);
+}
 function wwShowNextMilestoneCelebration(){
   wwMilestoneCelebrationScheduled=false;
   const dialog=document.getElementById('milestoneDialog');
-  if(!dialog||dialog.open||document.querySelector('dialog[open]:not(#milestoneDialog)'))return;
+  if(!dialog)return;
+  if(dialog.open||document.querySelector('dialog[open]:not(#milestoneDialog)')){
+    if(!wwMilestoneCelebrationRetry)wwMilestoneCelebrationRetry=setTimeout(()=>{wwMilestoneCelebrationRetry=null;wwScheduleMilestoneCelebration()},300);
+    return;
+  }
   while(wwMilestoneCelebrationQueue.length){
     const next=wwMilestoneCelebrationQueue.shift();
     const award=milestoneAwards().find(a=>a.name===next);
     if(!award?.unlocked)continue; // Nothing to celebrate if the status was reversed.
     openMilestoneDialog(award); // Reuse the existing approved artwork and wording.
     wwPlayMilestoneConfetti(dialog);
+    wwPlayMilestoneGlimmer(dialog);
     try { const audio=window.wwMilestoneFanfare||(window.wwMilestoneFanfare=new Audio('627976__solo654__fantasy-magic-button.mp3')); audio.pause();audio.currentTime=0;audio.play().catch(()=>{}); } catch (_) {}
     break;
   }
@@ -494,7 +510,7 @@ function wwWatchMilestoneUnlocks(awards){
 }
 document.addEventListener('close',e=>{
   if(!e.target?.matches?.('dialog'))return;
-  if(e.target.id==='milestoneDialog')e.target.querySelector('.ww-milestone-confetti')?.remove();
+  if(e.target.id==='milestoneDialog'){e.target.querySelector('.ww-milestone-confetti')?.remove();e.target.querySelector('.ww-milestone-glimmer')?.remove();}
   wwScheduleMilestoneCelebration();
 },true);
 
@@ -12883,7 +12899,7 @@ wwOpenQuickInfo=function(row,id){
 
     exportButton.addEventListener('click',async()=>{
       const approved=await new Promise(resolve=>{
-        const warn=document.createElement('dialog');warn.className='ww-transfer-warning';warn.innerHTML=`<div class="ww-transfer-warning-head">Before you export</div><div class="ww-transfer-warning-body"><p>Your exported trip will include all information you have entered, including itineraries, activities, dates, companions, tasks, booking references, contact details and costs. Anyone you share the file with will be able to view this information.</p><div class="ww-transfer-warning-actions"><button type="button" class="ww-transfer-cancel">Cancel</button><button type="button" class="ww-transfer-proceed">Export trip</button></div></div>`;document.body.appendChild(warn);
+        const warn=document.createElement('dialog');warn.className='ww-transfer-warning';warn.innerHTML=`<div class="ww-transfer-warning-head">Before you export</div><div class="ww-transfer-warning-body"><p>Your export will include all information you have entered for this trip (${esc(selectedTrip()?.name||'Unnamed trip')}), including itineraries, activities, dates, companions, tasks, notes, booking references, contact details and costs. Anyone you share the file with will be able to view this information.</p><div class="ww-transfer-warning-actions"><button type="button" class="ww-transfer-cancel">Cancel</button><button type="button" class="ww-transfer-proceed">Export trip</button></div></div>`;document.body.appendChild(warn);
         const done=v=>{warn.close();warn.remove();resolve(v)};warn.querySelector('.ww-transfer-cancel').onclick=()=>done(false);warn.querySelector('.ww-transfer-proceed').onclick=()=>done(true);warn.addEventListener('cancel',e=>{e.preventDefault();done(false)});warn.showModal();
       });
       if(!approved)return;

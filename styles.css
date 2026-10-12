@@ -6295,52 +6295,11 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   100%{transform:translate3d(var(--ww-confetti-land-x),var(--ww-confetti-land-y),0) rotate(var(--ww-confetti-spin));opacity:0;}
 }
 
-/* 12 Oct 2026 — consistent mustard on + New trip, without changing its behaviour. */
-body.trips-view #newTripBtn{
-  background:#e9bd2a!important;
-  color:#193d4a!important;
-}
-/* A small receiving entry point: friends can import even with zero existing trips. */
-body.trips-view .trips-actions:has(#wwTripsImportLauncher){
-  margin-bottom:12px!important;
-  gap:9px!important;
-  align-items:center!important;
-  flex-wrap:wrap!important;
-}
-body.trips-view #wwTripsImportLauncher{
-  border:1px solid rgba(255,255,255,.55)!important;
-  border-radius:999px!important;
-  background:rgba(255,255,255,.13)!important;
-  color:#fff!important;
-  font:750 12px/1.25 Inter,ui-sans-serif,sans-serif!important;
-  padding:9px 12px!important;
-  min-height:35px!important;
-  cursor:pointer!important;
-}
-body.trips-view #wwTripsImportLauncher:focus-visible{outline:2px solid #fff!important;outline-offset:3px!important}
-/* Import preview inside the established modal; preserve the existing buttons. */
-#wwTripTransferDialog .ww-trip-transfer-file[hidden],
-#wwTripTransferDialog .ww-trip-transfer-preview[hidden]{display:none!important}
-#wwTripTransferDialog .ww-trip-transfer-preview{
-  margin:15px 0 0!important;padding:16px!important;
-  background:#fff!important;border:1px solid #d8e7e8!important;
-  border-radius:16px!important;color:#193d4a!important;
-}
-#wwTripTransferDialog .ww-trip-transfer-preview strong{display:block;font-size:17px;overflow-wrap:anywhere}
-#wwTripTransferDialog .ww-trip-transfer-preview p{font-size:13px;line-height:1.45;margin:8px 0!important;color:#567078}
-#wwTripTransferDialog .ww-trip-transfer-preview-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:15px}
-#wwTripTransferDialog .ww-trip-transfer-preview-actions button{
-  appearance:none;border:0;border-radius:999px;padding:11px 15px;
-  color:#193d4a;background:#e8f0f0;font-weight:800;cursor:pointer;
-}
-#wwTripTransferDialog .ww-trip-transfer-preview-actions .ww-transfer-import-confirm{background:#25b14b;color:#fff}
-#wwTripTransferDialog .ww-trip-transfer-message{margin:11px 1px!important;font-size:13px!important;color:#506872!important;line-height:1.4!important;min-height:0!important}
-#wwTripTransferDialog .ww-trip-transfer-message:empty{display:none!important}
-#wwTripTransferDialog .ww-trip-transfer-message[data-type="error"]{color:#ad3030!important;font-weight:700!important}
-#wwTripTransferDialog .ww-trip-transfer-message[data-type="success"]{color:#087b61!important}
-#wwTripTransferDialog .ww-trip-transfer-privacy{font-size:12px!important;line-height:1.45!important;color:#6a7c81!important;margin:0 3px 18px!important}
-@media(max-width:370px){body.trips-view #wwTripsImportLauncher{padding:8px 9px!important;font-size:11px!important}}
-
-/* Base9 transfer refinements */
-#wwTripTransferDialog .ww-transfer-name-label{display:block;font-weight:800;color:#183a45;margin:0 0 7px}#wwTripTransferDialog .ww-transfer-name-input{display:block;box-sizing:border-box;width:100%;padding:12px 14px;border:1px solid #cbdfe1;border-radius:14px;background:white;color:#17333d;font:700 17px Arial,sans-serif;margin-bottom:12px}
-.ww-transfer-warning{border:0;padding:0;width:min(90vw,430px);max-width:430px;border-radius:27px;overflow:hidden;background:#effafa;color:#193c46}.ww-transfer-warning::backdrop{background:rgba(0,45,58,.65);backdrop-filter:blur(7px)}.ww-transfer-warning-head{background:linear-gradient(115deg,#06758b,#0ca8a5);color:white;padding:25px 25px;font-size:24px;font-weight:900}.ww-transfer-warning-body{padding:23px 25px 25px;font-size:16px;line-height:1.5}.ww-transfer-warning-body p{margin:0 0 24px}.ww-transfer-warning-actions{display:flex;gap:10px}.ww-transfer-warning-actions button{flex:1;min-height:48px;border:0;border-radius:100px;font-weight:800;font-size:15px}.ww-transfer-cancel{background:#e25550;color:white}.ww-transfer-proceed{background:#e9bd2a;color:#183b45}
+/* Achievement artwork glimmer — only during an earned celebration. */
+#milestoneDialog #milestoneDialogArt{position:relative;isolation:isolate;overflow:hidden}
+#milestoneDialog .ww-milestone-glimmer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+#milestoneDialog .ww-milestone-glimmer::before{content:"";position:absolute;inset:-35%;background:linear-gradient(105deg,transparent 39%,rgba(255,255,255,.03) 44%,rgba(255,255,255,.82) 50%,rgba(255,255,255,.12) 55%,transparent 62%);transform:translateX(-130%) rotate(-10deg);animation:wwBadgeShine 2.5s ease-in-out forwards}
+#milestoneDialog .ww-milestone-glimmer i{position:absolute;left:var(--star-x);top:var(--star-y);width:9px;height:9px;background:#fff;clip-path:polygon(50% 0,60% 39%,100% 50%,60% 61%,50% 100%,40% 61%,0 50%,40% 39%);filter:drop-shadow(0 0 4px #fff);opacity:0;animation:wwBadgeTwinkle 1.1s var(--star-delay) ease-in-out 2}
+@keyframes wwBadgeShine{0%{transform:translateX(-130%) rotate(-10deg)}100%{transform:translateX(130%) rotate(-10deg)}}
+@keyframes wwBadgeTwinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1.5)}}
+@media(prefers-reduced-motion:reduce){#milestoneDialog .ww-milestone-glimmer{display:none!important}}
