@@ -5933,3 +5933,50 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 #wozzaAiModal .wozza-ai-body .wozza-ai-steps li{
   padding-left:3px;margin:0 0 6px!important;
 }
+
+
+/* 12 Oct 2026 — Base 9: seven audited follow-up refinements */
+/* Completed + upcoming flags: almost edge-to-edge round flag, hairline border. */
+#passportStatDialog .ww-stat-trip-flag{
+  box-sizing:border-box!important;
+  width:38px!important;height:38px!important;
+  background:transparent!important;
+  border:1px solid rgba(24,49,61,.13)!important;
+}
+#passportStatDialog .ww-stat-trip-flag-slot,
+#passportStatDialog .ww-stat-trip-flag-img{
+  width:36px!important;height:36px!important;
+}
+/* Continents use a teal Earth icon, retaining the same pale-blue badge. */
+#passportStatDialog .stat-plane.ww-stat-earth svg{
+  width:22px;height:22px;display:block;flex:none;
+}
+/* Charts frame and its animated bars use Stats' dark ink; sag remains blue. */
+#passportInsights .passport-insights-tab[data-insights-tab="charts"] .chart-v6 .bar-v10{
+  background:#192e36!important;
+}
+#passportInsights .passport-insights-tab[data-insights-tab="charts"] .insights-sag-path{
+  stroke:#16BFD1!important;
+}
+/* Move only the speedometer artwork slightly down, leaving label/sag in place. */
+#passportInsights .passport-insights-tab[data-insights-tab="score"] .meter-v6{
+  margin-top:0!important;
+  translate:0 3px!important;
+}
+/* Larger miniature badges: 1.20× artwork, 1.05× circle-to-art ratio. */
+#milestonesCard .ww-mini-milestone-ring{
+  width:clamp(16.38px,calc(5.166vw - 2.52px),27.72px)!important;
+  height:clamp(16.38px,calc(5.166vw - 2.52px),27.72px)!important;
+  flex:0 1 auto!important;
+}
+#milestonesCard .ww-mini-milestone{
+  width:calc((100% + 2px) * .952381)!important;
+  height:calc((100% + 2px) * .952381)!important;
+  max-width:none!important;
+}
+@media(max-width:350px){
+  #milestonesCard .ww-mini-milestone-ring{
+    width:clamp(13.86px,calc(4.788vw - 2.52px),17.64px)!important;
+    height:clamp(13.86px,calc(4.788vw - 2.52px),17.64px)!important;
+  }
+}
