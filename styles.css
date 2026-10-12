@@ -5994,3 +5994,27 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   box-shadow:none!important;
   padding:0!important;
 }
+
+/* 12 Oct 2026 — Trip Tasks only: contrast and control-size visual polish.
+   No DOM/JS changes; Activity Details and Itinerary Tasks remain untouched. */
+#tripForm .trip-todo-section .trip-add-todo{
+  color:#fff!important;
+  opacity:1!important;
+  font-weight:850!important;
+}
+#tripForm .trip-todo-section .trip-todo-check::before{
+  border-width:2px!important;
+  border-color:#aac1c7!important;
+}
+#tripForm .trip-todo-section .trip-todo-check.selected::before{
+  border-color:rgba(220,247,236,.58)!important;
+}
+#tripForm .trip-todo-section .trip-todo-remove{
+  width:34px!important;
+  height:34px!important;
+  font-size:19px!important;
+  line-height:1!important;
+  padding:0!important;
+  justify-self:center!important;
+  align-self:center!important;
+}
