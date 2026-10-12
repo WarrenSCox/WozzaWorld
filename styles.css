@@ -5873,3 +5873,63 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   #wozzaAiModal .wozza-ai-actions{gap:7px;}
   #wozzaAiModal .wozza-ai-actions button{padding:10px 13px!important;}
 }
+
+
+/* 12 October 2026 — Base (9), five focused follow-up tweaks */
+/* Stats > Trips completed: one round flag at a time, with Trips-page flap keyframes. */
+#passportStatDialog .ww-stat-trip-flag{
+  display:grid;place-items:center;width:38px;height:38px;flex:none;
+  border-radius:50%;background:rgba(7,94,120,.09);overflow:hidden;
+  perspective:240px;
+}
+#passportStatDialog .ww-stat-trip-flag-slot{
+  display:grid;place-items:center;width:34px;height:34px;
+  border-radius:50%;overflow:hidden;backface-visibility:hidden;transform-origin:50% 50%;
+}
+#passportStatDialog .ww-stat-trip-flag-img{
+  display:block;width:34px;height:34px;object-fit:cover;border-radius:50%;
+}
+#passportStatDialog .ww-stat-trip-flag-slot.flap-out{animation:wozzaAdaptiveFlapOut .16s ease-in forwards;}
+#passportStatDialog .ww-stat-trip-flag-slot.flap-in{animation:wozzaAdaptiveFlapIn .20s ease-out forwards;}
+@media(prefers-reduced-motion:reduce){
+  #passportStatDialog .ww-stat-trip-flag-slot.flap-out,
+  #passportStatDialog .ww-stat-trip-flag-slot.flap-in{animation:none!important;}
+}
+/* All Passport Stats detail modals: visible sticky-at-bottom footer button.
+   The app reuses/moves the existing Close control rather than creating duplicates. */
+#passportStatDialog .ww-stat-footer{display:flex!important;justify-content:flex-end!important;flex:0 0 auto!important;}
+#passportStatDialog .ww-stat-footer #closePassportStat{
+  display:inline-flex!important;justify-content:center!important;align-items:center!important;
+  background:#e9bd2a!important;color:#193d4a!important;
+  border:0!important;border-radius:999px!important;font-weight:750!important;
+  padding:10px 22px!important;min-height:44px!important;
+}
+/* Mini badges: 10% larger, each on white with a delicate neutral outline. */
+#milestonesCard .ww-milestone-mini-preview{gap:2px;flex-wrap:nowrap;}
+#milestonesCard .ww-mini-milestone-ring{
+  box-sizing:border-box;display:grid;place-items:center;flex:0 1 auto;
+  width:clamp(15px,4.1vw,24px);height:clamp(15px,4.1vw,24px);
+  min-width:0;aspect-ratio:1/1;background:#fff;border-radius:50%;
+  border:1px solid rgba(24,49,61,.20);overflow:hidden;
+}
+#milestonesCard .ww-mini-milestone{
+  display:block!important;width:100%!important;height:100%!important;
+  min-width:0!important;max-width:100%!important;object-fit:contain!important;
+  border:0!important;background:transparent!important;
+}
+@media(max-width:350px){
+  #milestonesCard .ww-milestone-mini-preview{gap:1px;}
+  #milestonesCard .ww-mini-milestone-ring{width:clamp(13px,3.8vw,16px);height:clamp(13px,3.8vw,16px);}
+}
+/* Charts' coloured animated sag is now an exact match to Stats. */
+#passportInsights .passport-insights-tab[data-insights-tab="charts"] .insights-sag-path{
+  stroke:#16B98F!important;
+}
+/* AI: four-step guidance matches existing paragraph typography. */
+#wozzaAiModal .wozza-ai-body .wozza-ai-steps{
+  margin:0 0 19px!important;padding-left:24px!important;
+  color:#193d4a!important;font-size:15px!important;line-height:1.5!important;
+}
+#wozzaAiModal .wozza-ai-body .wozza-ai-steps li{
+  padding-left:3px;margin:0 0 6px!important;
+}
