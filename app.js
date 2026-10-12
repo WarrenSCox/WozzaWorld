@@ -6494,7 +6494,7 @@ wwOpenQuickInfo=function(row,id){
   const showPreparing=name=>{
     let d=document.getElementById('wwExportReadyDialog');if(!d){d=document.createElement('dialog');d.id='wwExportReadyDialog';d.className='ww-export-ready';d.innerHTML='<div class="ww-export-ready-card"><div class="ww-export-ready-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><g class="ww-prep-arrow"><path d="M12 3v10"></path><path d="M8 10l4 4 4-4"></path></g><path class="ww-prep-tray" d="M5 17v3h14v-3"></path></svg></div><h2>Preparing your file</h2><p></p><button type="button">CLOSE</button></div>';document.body.appendChild(d);d.querySelector('button').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target===d)d.close()})}d.querySelector('p').textContent=`Your ${name||'trip'} itinerary is being prepared. Please check your downloads.`;if(!d.open)d.showModal();
   };
-  window.wwShowTripExportPreparing=()=>{showPreparing('trip');const el=document.querySelector('#wwExportReadyDialog p');if(el)el.textContent='Your trip is currently being exported. Please check your downloads.';};
+  window.wwShowTripExportPreparing=()=>{showPreparing('trip');const dlg=document.getElementById('wwExportReadyDialog');if(dlg)dlg.classList.add('ww-trip-export-preparing');const el=document.querySelector('#wwExportReadyDialog p');if(el)el.textContent='Your trip is currently being exported. Please check your downloads.';};
   if(!document.getElementById('ww-export-ready-style')){const s=document.createElement('style');s.id='ww-export-ready-style';s.textContent=`
     @keyframes wwDownloadPulse{0%{transform:scale(1)}35%{transform:scale(.88) translateY(3px)}68%{transform:scale(1.08) translateY(-2px)}100%{transform:scale(1)}}.master-itinerary-capture.ww-download-pulse{animation:wwDownloadPulse .38s ease!important;pointer-events:none!important}.master-itinerary-capture.ww-download-pressed{transform:scale(.92) translateY(2px)!important;transition:transform .08s ease!important}.master-itinerary-capture.ww-download-pressed svg{transform:translateY(3px)!important}
     .ww-export-ready{border:0!important;padding:0!important;background:transparent!important;max-width:min(88vw,430px)!important;width:100%!important}.ww-export-ready::backdrop{background:rgba(0,76,88,.62)!important;backdrop-filter:blur(8px)!important}.ww-export-ready-card{background:#fff0c7!important;border-radius:30px!important;padding:30px 26px 24px!important;text-align:center!important;color:#17323c!important}.ww-export-ready-tick{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#078fa3;color:#fff}.ww-export-ready-tick svg{width:31px;height:31px;fill:none;stroke:#fff;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round}@keyframes wwPrepArrowDrop{0%{transform:translateY(-5px);opacity:0}18%{opacity:1}68%{transform:translateY(2px);opacity:1}82%{transform:translateY(5px);opacity:0}100%{transform:translateY(-5px);opacity:0}}.ww-export-ready-tick .ww-prep-arrow{transform-box:fill-box;transform-origin:center;animation:wwPrepArrowDrop 1.05s cubic-bezier(.4,0,.2,1) infinite}.ww-export-ready-tick .ww-prep-tray{opacity:1}.ww-export-ready h2{margin:0 0 9px!important;font:900 25px/1.08 Arial,sans-serif!important}.ww-export-ready p{margin:0 0 22px!important;font:600 15px/1.4 Arial,sans-serif!important}.ww-export-ready button{width:100%!important;min-height:54px!important;border:0!important;border-radius:20px!important;background:#078fa3!important;color:#fff!important;font:900 16px/1 Arial,sans-serif!important;letter-spacing:.06em!important}`;document.head.appendChild(s)}
@@ -12942,8 +12942,13 @@ wwOpenQuickInfo=function(row,id){
               localStorage.setItem('wozzaworld-state',JSON.stringify(state));
             }catch(err){state=oldState;throw err}
             const importedName=pending.name;
+            const importedId=pending.id;
             clearPreview(d);d.close();
+            // Import creates a new independent trip. Navigate to that exact new record.
+            document.getElementById('tripDialog')?.close?.();
             render();
+            const importedTrip=state.trips.find(t=>String(t.id)===String(importedId));
+            if(importedTrip)openTripEditor(importedTrip);
             toast?.(`${importedName} imported as a new trip ✓`);
           }catch(err){message(d,err.name==='QuotaExceededError'?'Not enough local storage. Please back up your app and free space.':(err.message||'Could not import this trip.'),'error')}
           finally{busy=false}
@@ -12976,3 +12981,6 @@ wwOpenQuickInfo=function(row,id){
   }
 
 })();
+
+/* Match trip-export arrow motion to the existing itinerary-export preparing animation. */
+(()=>{const st=document.createElement("style");st.id="ww-trip-export-animation-parity";st.textContent="#wwExportReadyDialog.ww-trip-export-preparing .ww-prep-arrow{animation-duration:1.4s!important;animation-timing-function:cubic-bezier(.4,0,.2,1)!important}";document.head.appendChild(st)})();
