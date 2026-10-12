@@ -5438,12 +5438,26 @@ wwOpenQuickInfo=function(row,id){
    }
    return section;
  }
+ /* Reuse the Trip editor's per-line scribble path and text measurement solely as
+    a decorative overlay. Itinerary edits still forward to the canonical task rows. */
+ const itineraryScribble=(row,input)=>{
+   const svg=row.querySelector('.ww-itinerary-todo-scribble');if(!svg)return;
+   const lines=tripTodoWrappedLines(input);if(!lines.length){svg.innerHTML='';return}
+   const cs=getComputedStyle(input),lh=parseFloat(cs.lineHeight)||22;
+   const padTop=parseFloat(cs.paddingTop)||0,padLeft=parseFloat(cs.paddingLeft)||0,padRight=parseFloat(cs.paddingRight)||0;
+   const widths=lines.map(line=>Math.min(input.clientWidth-padLeft-padRight,Math.max(28,line.width+10)));
+   const w=Math.max(...widths)+4,h=Math.max(input.clientHeight,Math.ceil(padTop*2+lh*lines.length));
+   const variant=Math.abs(Number(row.dataset.scribble)||0)%5;
+   svg.style.left=`${padLeft-4}px`;svg.style.top='0';svg.style.width=`${w}px`;svg.style.height=`${h}px`;
+   svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+   svg.innerHTML=widths.map((width,n)=>`<path d="${scribblePath(width,variant,n)}" transform="translate(0 ${padTop+n*lh})"></path>`).join('');
+ };
  function render(){
    const section=ensure();if(!section)return;const list=section.querySelector('.ww-itinerary-todo-list'),vals=values();
-   list.innerHTML=vals.map((v,i)=>`<div class="ww-itinerary-todo-row${v.done?' is-done':''}" data-id="${esc(v.id)}"><textarea rows="1" placeholder="Type here...">${esc(v.text)}</textarea><button type="button" class="ww-itinerary-todo-check${v.done?' selected':''}" aria-label="${v.done?'Mark incomplete':'Mark complete'}">${v.done?'✓':''}</button><button type="button" class="ww-itinerary-todo-remove" aria-label="Remove">×</button></div>`).join('');
+   list.innerHTML=vals.map((v,i)=>`<div class="ww-itinerary-todo-row${v.done?' is-done':''}" data-id="${esc(v.id)}" data-scribble="${v.scribble}"><textarea rows="1" placeholder="Type here...">${esc(v.text)}</textarea>${v.done&&v.text.trim()?'<svg class="ww-itinerary-todo-scribble" aria-hidden="true"></svg>':''}<button type="button" class="ww-itinerary-todo-check${v.done?' selected':''}" aria-label="${v.done?'Mark incomplete':'Mark complete'}">${v.done?'✓':''}</button><button type="button" class="ww-itinerary-todo-remove" aria-label="Remove">×</button></div>`).join('');
    [...list.children].forEach(row=>{
      const id=row.dataset.id,input=row.querySelector('textarea'),check=row.querySelector('.ww-itinerary-todo-check'),remove=row.querySelector('.ww-itinerary-todo-remove');
-     const size=()=>{input.style.height='0px';const h=Math.max(38,input.scrollHeight+2);input.style.height=h+'px';row.style.minHeight=h+'px'};requestAnimationFrame(size);
+     const size=()=>{input.style.height='0px';const h=Math.max(38,input.scrollHeight+2);input.style.height=h+'px';row.style.minHeight=h+'px';itineraryScribble(row,input)};requestAnimationFrame(size);
      input.oninput=()=>{const r=canonicalRow(id);if(!r)return;const target=r.querySelector('.trip-todo-input');target.value=input.value;target.dispatchEvent(new Event('input',{bubbles:true}));size()};
      input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!input.value.trim())return;addTripTodoRow();render();requestAnimationFrame(()=>list.lastElementChild?.querySelector('textarea')?.focus())}};
      check.onclick=()=>canonicalRow(id)?.querySelector('.trip-todo-check')?.click();

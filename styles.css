@@ -6065,3 +6065,37 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   box-shadow:0 2px 7px rgba(9,38,47,.06);
   pointer-events:none;
 }
+
+
+/* 12 Oct 2026 — Itinerary task-only polish. Keep canonical Trip and Activity
+   task controls, sync and autosave untouched. */
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-check{
+  align-self:center!important;
+}
+/* The Trip editor draws a measured, irregular SVG on each completed text line.
+   Override only the Itinerary's older CSS wavy text decoration. */
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-row.is-done textarea{
+  text-decoration:none!important;
+  text-decoration-line:none!important;
+}
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-row{
+  position:relative!important;
+}
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-scribble{
+  position:absolute!important;
+  top:0;
+  left:8px;
+  height:26px;
+  right:auto;
+  pointer-events:none!important;
+  z-index:4;
+  overflow:visible;
+}
+#masterItineraryDialog .ww-itinerary-trip-todos .ww-itinerary-todo-scribble path{
+  fill:none;
+  stroke:#687178;
+  stroke-width:2.15;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+}
