@@ -6434,3 +6434,13 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 
 /* Match backup alert bell to the darker coral status and progress bar. */
 .ww-backup-risk-alert-title .ww-backup-alert-bell{color:#c63e3a!important}
+
+/* Map country labels: suppress browser SVG text focus rings after tap.
+   Keep keyboard activation, map gestures, and country selection intact. */
+#worldMap .map-country-label:focus,
+#worldMap .map-country-label:focus-visible,
+#worldMap .map-country-label:active {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
