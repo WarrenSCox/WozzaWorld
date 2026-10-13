@@ -238,7 +238,9 @@
       "scope": "193 UN member states",
       "contentType": "static travel reference",
       "safetyNote": "Culture notes are general guidance, not universal rules. Time zones and official designations can change."
-    }
+    },
+    "heroImage": "assets/country-heroes/ago.jpg",
+    "heroCaption": "Pic needs replacing"
   },
   {
     "country": "Antigua and Barbuda",
@@ -427,8 +429,7 @@
     "wellKnownCuisine": [
       "meat pie",
       "lamington",
-      "barbecue",
-      "BBQ"
+      "barbecue"
     ],
     "interestingFacts": [
       "Australia is both a country and the smallest inhabited continent.",
