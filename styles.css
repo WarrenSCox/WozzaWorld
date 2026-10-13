@@ -6339,3 +6339,48 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 #backupRestoreDialog .backup-restore-actions button:first-child{background:#e9bf2e!important;color:#193d4a!important}
 #backupRestoreDialog .backup-restore-actions button:nth-child(2){background:#20b455!important;color:#fff!important}
 #backupRestoreDialog .ww-backup-footer-close{background:#e25550!important;color:#fff!important}
+
+/* Trip import preview only: contain details and use two final actions.
+   Initial Import / Export screen remains unchanged. */
+#wwTripTransferDialog .ww-trip-transfer-preview:not([hidden]) .ww-trip-transfer-detail-panel{
+  box-sizing:border-box!important;
+  background:#e8eff0!important;
+  border-radius:18px!important;
+  padding:17px 16px 18px!important;
+  margin:18px 0 0!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-detail-panel .ww-transfer-name-input{
+  box-sizing:border-box!important;
+  border:1px solid #cbd6d9!important;
+  outline:none!important;
+  box-shadow:none!important;
+  border-radius:14px!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-detail-panel .ww-transfer-name-input:focus{
+  border-color:#7aaeb4!important;
+  outline:none!important;
+  box-shadow:0 0 0 2px rgba(10,163,166,.13)!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-preview:not([hidden]) .ww-trip-transfer-preview-actions{
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+  margin:20px 0 0!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-preview:not([hidden]) .ww-trip-transfer-preview-actions button{
+  flex:0 1 auto!important;
+  min-width:0!important;
+  padding:12px 20px!important;
+  font-family:Inter,ui-sans-serif,sans-serif!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  line-height:1.2!important;
+  white-space:nowrap!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-preview-actions .ww-transfer-import-cancel{
+  background:#e25550!important;
+  color:#fff!important;
+}
+#wwTripTransferDialog .ww-trip-transfer-form:has(.ww-trip-transfer-preview:not([hidden])) .ww-trip-transfer-footer{
+  display:none!important;
+}

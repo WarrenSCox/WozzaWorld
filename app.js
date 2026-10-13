@@ -12935,8 +12935,9 @@ wwOpenQuickInfo=function(row,id){
         const description=document.createElement('p');
         description.textContent=`${s.countries.join(' · ')||'Country not set'} · ${s.stops} stop${s.stops===1?'':'s'} · ${s.activities} activit${s.activities===1?'y':'ies'} · ${s.tasks} task${s.tasks===1?'':'s'}`;
         const warning=document.createElement('p');warning.textContent='This imports a separate copy of the trip. Changes to this copy will not update the original trip or the exported source file. Your existing trips and data will not be overwritten.';
+        const detailPanel=document.createElement('div');detailPanel.className='ww-trip-transfer-detail-panel';
         const buttons=document.createElement('div');buttons.className='ww-trip-transfer-preview-actions';
-        const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.addEventListener('click',()=>{clearPreview(d);message(d,'')});
+        const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.className='ww-transfer-import-cancel';cancel.addEventListener('click',()=>{clearPreview(d);message(d,'');d.close()});
         const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Import copy';confirm.className='ww-transfer-import-confirm';confirm.addEventListener('click',()=>{
           if(busy||!pending)return;
           const chosenName=nameInput.value.trim();if(!chosenName){message(d,'Enter a trip name before importing.','error');nameInput.focus();return;}
@@ -12969,7 +12970,8 @@ wwOpenQuickInfo=function(row,id){
           finally{busy=false}
         });
         buttons.append(cancel,confirm);
-        info.append(title,nameInput,description,warning,buttons);
+        detailPanel.append(title,nameInput,description,warning);
+        info.append(detailPanel,buttons);
         info.hidden=false;message(d,'');
       }catch(e){clearPreview(d);message(d,e instanceof SyntaxError?'This is not a valid JSON trip file.':(e.message||'Unable to read this trip file.'),'error')}
     });
