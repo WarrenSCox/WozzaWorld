@@ -6402,3 +6402,13 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 
 /* Companion removal: compact actions aligned to the right. */
 .wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions{justify-content:flex-end!important}
+
+/* Mobile trip actions: Import + Share as separate buttons. */
+#tripForm .dialog-actions{grid-template-columns:auto minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)!important;gap:6px!important}
+#tripForm .dialog-actions>#wwTripExportPlaceholder{grid-column:2!important}
+#tripForm .dialog-actions>#wwTripShareButton{grid-column:3!important}
+#tripForm .dialog-actions>#cancelTrip{grid-column:4!important}
+#tripForm .dialog-actions>#wwTripShareButton{min-width:0!important;width:100%!important;min-height:40px!important;height:100%!important;padding:8px 5px!important;border-radius:999px!important;background:#fff!important;color:#172f3a!important;font:inherit!important;white-space:nowrap!important}
+#tripForm .dialog-actions>.primary{grid-column:5!important}
+/* The import dialog keeps the original import-preview layout; export is handled by Share. */
+#wwTripTransferDialog .ww-trip-transfer-actions button:first-child{display:none!important}
