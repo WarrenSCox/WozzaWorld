@@ -8555,5 +8555,54 @@
       "notForecast": true,
       "temperatureUnit": "C"
     }
+  },
+  {
+    "country": "Falkland Islands",
+    "typicalWeather": [
+      {
+        "months": "December–February",
+        "season": "Summer",
+        "typicalTemperatureC": {
+          "low": 5,
+          "high": 15
+        },
+        "summary": "Cool to mild, with long daylight hours, brisk winds and changeable showers; popular for wildlife viewing."
+      },
+      {
+        "months": "March–May",
+        "season": "Autumn",
+        "typicalTemperatureC": {
+          "low": 2,
+          "high": 12
+        },
+        "summary": "Cooling temperatures, frequent winds and mixed sunshine and rain."
+      },
+      {
+        "months": "June–August",
+        "season": "Winter",
+        "typicalTemperatureC": {
+          "low": -1,
+          "high": 7
+        },
+        "summary": "Cold, windy conditions with frost and occasional snow or sleet."
+      },
+      {
+        "months": "September–November",
+        "season": "Spring",
+        "typicalTemperatureC": {
+          "low": 1,
+          "high": 11
+        },
+        "summary": "Gradually warming, with variable weather and strong winds."
+      }
+    ],
+    "regionalVariation": "Maritime South Atlantic climate: weather changes rapidly, and exposed coastal areas can feel colder in strong winds.",
+    "_meta": {
+      "datasetVersion": "1.0.0",
+      "reviewed": "2026-10",
+      "type": "typical climate guidance",
+      "notForecast": true,
+      "temperatureUnit": "C"
+    }
   }
 ]
