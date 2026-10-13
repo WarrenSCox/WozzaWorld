@@ -6423,3 +6423,11 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 .ww-backup-logo-bell{position:absolute;right:-5px;top:-8px;z-index:12;background:#e35551;border:2px solid white;border-radius:50%;font-size:14px;line-height:1;padding:5px;box-shadow:0 2px 7px #0004;pointer-events:none}
 #wwLogoMenu [data-ww-action="backup"]{position:relative}
 .ww-backup-menu-bell{margin-left:auto;background:#e35551;border-radius:50%;font-size:13px;line-height:1;padding:6px;pointer-events:none}
+
+/* Shared tiny flat coral bell: no gradient, emoji, badge disc or shadow. */
+.ww-backup-bell{display:inline-flex!important;align-items:center;justify-content:center;color:#f5584f!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;font-size:0!important;width:13px!important;height:13px!important;line-height:1!important;vertical-align:middle;flex:0 0 13px!important;pointer-events:none}
+.ww-backup-bell svg{display:block;width:100%;height:100%}
+#homeLogo .ww-backup-logo-bell{position:absolute!important;top:-3px!important;right:4px!important;z-index:12!important;width:12px!important;height:12px!important;flex-basis:12px!important}
+#wwLogoMenu [data-ww-action="backup"] .ww-backup-menu-bell{position:static!important;margin-left:7px!important;width:13px!important;height:13px!important;flex-basis:13px!important}
+.ww-backup-risk-alert-title{display:flex;align-items:center;gap:6px}
+.ww-backup-risk-alert-title .ww-backup-alert-bell{width:13px!important;height:13px!important;flex-basis:13px!important}
