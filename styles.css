@@ -6402,3 +6402,24 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 
 /* Companion removal: compact actions aligned to the right. */
 .wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions{justify-content:flex-end!important}
+
+/* Smart Backup Protection: additive styling, no changes to existing buttons/handlers. */
+.ww-backup-risk{margin:18px 0 12px;padding:16px;border-radius:16px;background:#e5eff0;color:#23424a;text-align:left}
+.ww-backup-risk-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:15px}
+.ww-backup-risk-state{font-size:12px;font-weight:700;color:#16825c;text-align:right}
+.ww-backup-risk-track{height:11px;background:#cbdcde;border-radius:99px;overflow:hidden;margin:12px 0 9px}
+.ww-backup-risk-fill{height:100%;width:0;background:#20b455;border-radius:inherit;transition:width .35s ease}
+.ww-backup-risk[data-level="1"] .ww-backup-risk-fill{background:#eac329}
+.ww-backup-risk[data-level="2"] .ww-backup-risk-fill{background:#e35551}
+.ww-backup-risk[data-level="1"] .ww-backup-risk-state{color:#a87710}
+.ww-backup-risk[data-level="2"] .ww-backup-risk-state{color:#c63e3a}
+.ww-backup-risk-detail{font-size:13px;line-height:1.5;margin:0!important;color:#49666b}
+.ww-backup-risk-alert{border-top:1px solid #c5d7d9;margin-top:14px;padding-top:12px}
+.ww-backup-risk-alert[hidden],.ww-backup-bell[hidden]{display:none!important}
+.ww-backup-risk-alert-title{font-size:15px;font-weight:800;color:#a63734}
+.ww-backup-risk-alert-copy{font-size:13px;line-height:1.5;margin:8px 0!important}
+.ww-backup-risk-clear{border:1px solid #bdcdd0!important;border-radius:99px!important;background:white!important;color:#29434a!important;font-weight:700!important;font-size:13px!important;padding:8px 14px!important;width:auto!important;height:auto!important}
+#homeLogo{position:relative!important;overflow:visible!important}
+.ww-backup-logo-bell{position:absolute;right:-5px;top:-8px;z-index:12;background:#e35551;border:2px solid white;border-radius:50%;font-size:14px;line-height:1;padding:5px;box-shadow:0 2px 7px #0004;pointer-events:none}
+#wwLogoMenu [data-ww-action="backup"]{position:relative}
+.ww-backup-menu-bell{margin-left:auto;background:#e35551;border-radius:50%;font-size:13px;line-height:1;padding:6px;pointer-events:none}

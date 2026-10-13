@@ -13064,3 +13064,59 @@ wwOpenQuickInfo=function(row,id){
   });
  }catch(ex){error(ex instanceof SyntaxError?'This file is not valid JSON.':ex.message)}});
 })();
+
+/* WozzaWorld Smart Backup Protection — passive, snapshot-based, no save-handler overrides. */
+(()=>{
+ 'use strict';
+ const KEY='wozzaworld-backup-risk-v1', SNAP='wozzaworld-backup-risk-snapshot-v1', PENDING='wozzaworld-backup-risk-restore-pending';
+ const dialog=document.getElementById('backupRestoreDialog');if(!dialog)return;
+ const read=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}};
+ const serialize=v=>JSON.stringify(v,(_,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value).sort(([a],[b])=>a.localeCompare(b))):value);
+ const hash=v=>{const s=serialize(v);let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);return(h>>>0).toString(36)};
+ const size=v=>Math.min(120,Math.ceil(serialize(v).length/400));
+ const tripWeight=t=>{const stops=t.stops||t.destinations||[];const it=t.itinerary||t.activities||[];const depth=size(t);return Math.min(180,12+(Array.isArray(stops)?stops.length*8:0)+(Array.isArray(it)?it.length*6:0)+depth)};
+ function current(){const s=read('wozzaworld-state');if(!s)return null;const map={};const add=(id,obj,w)=>{map[id]={h:hash(obj),w:Math.max(1,Math.round(w))}};
+  (s.trips||[]).forEach((t,i)=>add('trip:'+String(t.id??t.tripId??i),t,tripWeight(t)));
+  // Recoverable items count toward risk until permanently deleted.
+  ['tripRecycleBin','recycleBin','companionRecycleBin','vibeRecycleBin'].forEach(k=>(s[k]||[]).forEach((v,i)=>add('bin:'+k+':'+String(v.id??v.trip?.id??v.country??v.name??i),v,k==='tripRecycleBin'?tripWeight(v.trip||v):Math.max(2,size(v)))));
+  ['statuses','extraStatuses','cities','places','memories','companions','companionBank','vibeBank','visitHistory','customDestinations','bucketOrder'].forEach(k=>{const v=s[k];if(!v)return;if(Array.isArray(v)){v.forEach((x,i)=>add('field:'+k+':'+String(x?.id??x?.name??i),x,k==='cities'?4:2))}else if(typeof v==='object'){Object.entries(v).forEach(([id,x])=>add('field:'+k+':'+id,x,k==='memories'?Math.max(2,size(x)):3))}});
+  return map;
+ }
+ const root=document.createElement('section');root.className='ww-backup-risk';root.innerHTML='<div class="ww-backup-risk-heading"><strong>Backup protection</strong><span class="ww-backup-risk-state">Up to date</span></div><div class="ww-backup-risk-track" role="progressbar" aria-label="Changes since last backup" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="ww-backup-risk-fill"></div></div><p class="ww-backup-risk-detail">Your recent travel changes will appear here.</p><div class="ww-backup-risk-alert" hidden><div class="ww-backup-risk-alert-title">🔔 Backup recommended</div><p class="ww-backup-risk-alert-copy"></p><button type="button" class="ww-backup-risk-clear">Clear notification</button></div>';
+ const note=dialog.querySelector('.backup-safe-note');note?.before(root);
+ const bar=root.querySelector('.ww-backup-risk-track'),fill=root.querySelector('.ww-backup-risk-fill'),status=root.querySelector('.ww-backup-risk-state'),detail=root.querySelector('.ww-backup-risk-detail'),alert=root.querySelector('.ww-backup-risk-alert'),copy=root.querySelector('.ww-backup-risk-alert-copy');
+ const logo=document.getElementById('homeLogo');const menu=document.querySelector('#wwLogoMenu [data-ww-action="backup"]');
+ function bell(parent,cls){if(!parent)return;const b=document.createElement('span');b.className='ww-backup-bell '+cls;b.textContent='🔔';b.setAttribute('aria-label','Backup notification');b.hidden=true;parent.appendChild(b)}
+ bell(logo,'ww-backup-logo-bell');bell(menu,'ww-backup-menu-bell');
+ const bells=()=>document.querySelectorAll('.ww-backup-bell');
+ const lastBackup=()=>localStorage.getItem('wozzaworld-last-backup')||'';
+ let record=read(KEY)||{};
+ function baseline(){const now=current();if(!now)return null;let snap=read(SNAP);
+  if(localStorage.getItem(PENDING)){localStorage.removeItem(PENDING);snap={data:now,backup:lastBackup()};localStorage.setItem(SNAP,JSON.stringify(snap));record={};localStorage.setItem(KEY,JSON.stringify(record))}
+  if(!snap){snap={data:lastBackup()?now:{},backup:lastBackup()};localStorage.setItem(SNAP,JSON.stringify(snap))}
+  return snap;
+ }
+ function refresh(){const now=current(),snap=baseline();if(!now||!snap)return;
+  const old=snap.data||{};let points=0,adds=0,edits=0,deletes=0;
+  for(const [id,v] of Object.entries(now)){const prev=old[id];if(!prev){points+=v.w;adds++}else if(prev.h!==v.h){points+=Math.max(2,Math.min(v.w,Math.round(v.w*.6)));edits++}}
+  for(const [id,v] of Object.entries(old))if(!now[id]){points+=Math.max(1,Math.min(12,Math.round(v.w*.15)));deletes++}
+  const pct=Math.min(100,Math.round(points/100*100)),level=pct>=100?2:pct>=70?1:0;
+  // Clearing a notification silences it until the risk grows materially or changes severity.
+  const muted=record.muted&&level<=record.mutedLevel&&points<(record.mutedPoints||0)+25;
+  const visible=level>0&&!muted;
+  bar.setAttribute('aria-valuenow',String(pct));fill.style.width=pct+'%';root.dataset.level=String(level);
+  status.textContent=level===2?'Backup strongly recommended':level===1?'Backup recommended':'Low risk';
+  detail.textContent=points===0?'No meaningful changes since your last backup.':`${adds} new, ${edits} updated and ${deletes} removed items since your last backup. The bar reflects work not captured by your last backup.`;
+  alert.hidden=!visible;copy.textContent=level===2?'You have a substantial amount of travel work that is not included in your last backup. Download a new ZIP backup to protect it.':'You have added or changed enough travel information to make another backup worthwhile.';
+  bells().forEach(b=>b.hidden=!visible);
+  if(level===0&&record.muted){record={};localStorage.setItem(KEY,JSON.stringify(record))}
+  root.dataset.points=String(points);
+ }
+ root.querySelector('.ww-backup-risk-clear').addEventListener('click',()=>{record={muted:true,mutedLevel:Number(root.dataset.level),mutedPoints:Number(root.dataset.points)};localStorage.setItem(KEY,JSON.stringify(record));refresh()});
+ // A backup is counted only after the existing ZIP download routine updates its timestamp.
+ let previous=lastBackup();function check(){const next=lastBackup();if(next&&next!==previous){previous=next;const now=current();if(now){localStorage.setItem(SNAP,JSON.stringify({data:now,backup:next}));record={};localStorage.setItem(KEY,JSON.stringify(record))}}refresh()}
+ dialog.addEventListener('close',check);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+ // Check periodically, outside of all existing autosave and close handlers.
+ setInterval(check,3500);
+ refresh();
+})();
