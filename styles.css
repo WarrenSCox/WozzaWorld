@@ -6410,13 +6410,13 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 .ww-backup-risk-track{height:11px;background:#cbdcde;border-radius:99px;overflow:hidden;margin:12px 0 9px}
 .ww-backup-risk-fill{height:100%;width:0;background:#20b455;border-radius:inherit;transition:width .35s ease}
 .ww-backup-risk[data-level="1"] .ww-backup-risk-fill{background:#eac329}
-.ww-backup-risk[data-level="2"] .ww-backup-risk-fill{background:#e35551}
+.ww-backup-risk[data-level="2"] .ww-backup-risk-fill{background:#c63e3a}
 .ww-backup-risk[data-level="1"] .ww-backup-risk-state{color:#a87710}
 .ww-backup-risk[data-level="2"] .ww-backup-risk-state{color:#c63e3a}
 .ww-backup-risk-detail{font-size:13px;line-height:1.5;margin:0!important;color:#49666b}
 .ww-backup-risk-alert{border-top:1px solid #c5d7d9;margin-top:14px;padding-top:12px}
 .ww-backup-risk-alert[hidden],.ww-backup-bell[hidden]{display:none!important}
-.ww-backup-risk-alert-title{font-size:15px;font-weight:800;color:#f5584f}
+.ww-backup-risk-alert-title{font-size:15px;font-weight:800;color:#c63e3a}
 .ww-backup-risk-alert-copy{font-size:13px;line-height:1.5;margin:8px 0!important}
 .ww-backup-risk-clear{border:1px solid #bdcdd0!important;border-radius:99px!important;background:white!important;color:#29434a!important;font-weight:700!important;font-size:13px!important;padding:8px 14px!important;width:auto!important;height:auto!important}
 #homeLogo{position:relative!important;overflow:visible!important}
@@ -6427,7 +6427,10 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 /* Shared tiny flat coral bell: no gradient, emoji, badge disc or shadow. */
 .ww-backup-bell{display:inline-flex!important;align-items:center;justify-content:center;color:#f5584f!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;font-size:0!important;width:13px!important;height:13px!important;line-height:1!important;vertical-align:middle;flex:0 0 13px!important;pointer-events:none}
 .ww-backup-bell svg{display:block;width:100%;height:100%}
-#homeLogo .ww-backup-logo-bell{position:absolute!important;top:4px!important;right:27px!important;z-index:12!important;width:12px!important;height:12px!important;flex-basis:12px!important}
-#wwLogoMenu [data-ww-action="backup"] .ww-backup-menu-bell{position:relative!important;top:-4px!important;left:-13px!important;margin-left:7px!important;width:13px!important;height:13px!important;flex-basis:13px!important}
+#homeLogo .ww-backup-logo-bell{position:absolute!important;top:4px!important;right:31px!important;z-index:12!important;width:12px!important;height:12px!important;flex-basis:12px!important}
+#wwLogoMenu [data-ww-action="backup"] .ww-backup-menu-bell{position:relative!important;top:-4px!important;left:-18px!important;margin-left:7px!important;width:13px!important;height:13px!important;flex-basis:13px!important}
 .ww-backup-risk-alert-title{display:flex;align-items:center;gap:6px}
 .ww-backup-risk-alert-title .ww-backup-alert-bell{width:13px!important;height:13px!important;flex-basis:13px!important}
+
+/* Match backup alert bell to the darker coral status and progress bar. */
+.ww-backup-risk-alert-title .ww-backup-alert-bell{color:#c63e3a!important}
