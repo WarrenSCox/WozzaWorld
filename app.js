@@ -12706,7 +12706,6 @@ wwOpenQuickInfo=function(row,id){
         <button type="button" aria-label="Export your trip (coming soon)">Export your trip</button>
         <button type="button" aria-label="Import your trip (coming soon)">Import your trip</button>
       </div>
-      <p class="ww-trip-transfer-note">Note: each trip is an independent copy. Changes you make won't affect theirs, and changes they make won't affect yours.</p>
       <footer class="ww-trip-transfer-footer"><button type="submit" value="cancel">Close</button></footer>
     </form>`;
     document.body.appendChild(dialog);
@@ -12935,7 +12934,7 @@ wwOpenQuickInfo=function(row,id){
         const title=document.createElement('label');title.textContent='Trip name';title.className='ww-transfer-name-label';const nameInput=document.createElement('input');nameInput.className='ww-transfer-name-input';nameInput.type='text';nameInput.maxLength=300;nameInput.value=s.name;nameInput.setAttribute('aria-label','Name for imported trip');
         const description=document.createElement('p');
         description.textContent=`${s.countries.join(' · ')||'Country not set'} · ${s.stops} stop${s.stops===1?'':'s'} · ${s.activities} activit${s.activities===1?'y':'ies'} · ${s.tasks} task${s.tasks===1?'':'s'}`;
-        const warning=document.createElement('p');warning.textContent='This will add an independent copy. No existing trips or data will be overwritten.';
+        const warning=document.createElement('p');warning.textContent='This imports a separate copy of the trip. Changes to this copy will not update the original trip or the exported source file. Your existing trips and data will not be overwritten.';
         const buttons=document.createElement('div');buttons.className='ww-trip-transfer-preview-actions';
         const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.addEventListener('click',()=>{clearPreview(d);message(d,'')});
         const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Import copy';confirm.className='ww-transfer-import-confirm';confirm.addEventListener('click',()=>{
