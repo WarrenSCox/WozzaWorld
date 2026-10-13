@@ -6392,3 +6392,10 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 .wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions .danger{background:#f5584f!important;color:#fff!important}
 /* Imported-trip preview only: red Cancel; initial Import/Export dialog unchanged. */
 #wwTripTransferDialog .ww-trip-transfer-preview:not([hidden]) .ww-trip-transfer-preview-actions .ww-transfer-import-cancel{background:#e25550!important;color:#fff!important}
+
+/* Companion confirmation: compact buttons grouped at the left, no stretched Remove. */
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions{justify-content:flex-start!important;flex-wrap:nowrap!important}
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions .danger{flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:max-content!important;white-space:nowrap!important}
+
+/* Recycle bin: companion emoji occupies the same icon column as trip flags. */
+.recycle-row>.recycle-companion-icon{grid-column:1!important;grid-row:1!important;display:flex!important;align-items:center!important;justify-content:center!important;width:36px!important;height:25px!important;font-size:26px!important;line-height:1!important}
