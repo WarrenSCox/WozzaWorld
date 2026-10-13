@@ -9824,5 +9824,55 @@
       "contentType": "static travel reference",
       "safetyNote": "Culture notes are general guidance, not universal rules. Time zones and official designations can change."
     }
+  },
+  {
+    "country": "Falkland Islands",
+    "iso2": "FK",
+    "iso3": "FLK",
+    "capital": "Stanley",
+    "officialLanguages": [
+      "English"
+    ],
+    "currency": [
+      {
+        "code": "FKP",
+        "name": "Falkland Islands pound"
+      },
+      {
+        "code": "GBP",
+        "name": "Pound sterling"
+      }
+    ],
+    "plugSocketTypes": [
+      "G"
+    ],
+    "drivingSide": "left",
+    "standardTimeZones": [
+      "UTC−03:00"
+    ],
+    "notableLandmarks": [
+      "Stanley",
+      "Volunteer Point",
+      "Gypsy Cove"
+    ],
+    "wellKnownCuisine": [
+      "Fresh local seafood",
+      "Lamb dishes",
+      "Traditional British-style baking"
+    ],
+    "interestingFacts": [
+      "The Falkland Islands are a self-governing British Overseas Territory in the South Atlantic Ocean.",
+      "The archipelago comprises two main islands and hundreds of smaller islands.",
+      "The islands are especially known for their penguins, seabirds and marine wildlife."
+    ],
+    "cultureEtiquette": [
+      "Respect wildlife and keep a safe distance from penguins and other animals.",
+      "Weather changes quickly; bring warm, windproof layers.",
+      "The austral summer, from November to March, is popular for wildlife viewing."
+    ],
+    "_meta": {
+      "contentType": "static travel reference",
+      "scope": "Falkland Islands territory supplement"
+    }
   }
 ]
