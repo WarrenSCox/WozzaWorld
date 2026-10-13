@@ -6399,3 +6399,6 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
 
 /* Recycle bin: companion emoji occupies the same icon column as trip flags. */
 .recycle-row>.recycle-companion-icon{grid-column:1!important;grid-row:1!important;display:flex!important;align-items:center!important;justify-content:center!important;width:36px!important;height:25px!important;font-size:26px!important;line-height:1!important}
+
+/* Companion removal: compact actions aligned to the right. */
+.wozza-alert-overlay.ww-companion-remove-confirm .wozza-confirm-actions{justify-content:flex-end!important}
