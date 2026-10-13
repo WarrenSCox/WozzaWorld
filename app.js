@@ -12702,7 +12702,7 @@ wwOpenQuickInfo=function(row,id){
     dialog.setAttribute('aria-labelledby','wwTripTransferHeading');
     dialog.innerHTML=`<form method="dialog" class="ww-trip-transfer-form">
       <header class="ww-trip-transfer-head"><h3 id="wwTripTransferHeading">Import / Export</h3></header>
-      <p class="ww-trip-transfer-intro">Import a trip shared with you, including its associated itinerary. Your existing trips will not be overwritten.</p>
+      <p class="ww-trip-transfer-intro">Share copies of trips between travel companions. Send a friend an export or import one of theirs, complete with any associated itineraries!</p>
       <div class="ww-trip-transfer-actions">
         <button type="button" aria-label="Export your trip (coming soon)">Export your trip</button>
         <button type="button" aria-label="Import your trip (coming soon)">Import your trip</button>
@@ -12721,11 +12721,8 @@ wwOpenQuickInfo=function(row,id){
       const result=previous.apply(this,arguments);
       const button=document.getElementById('wwTripExportPlaceholder');
       if(button){
-        button.textContent='Import';
-        button.setAttribute('aria-label','Import a trip');
-        let share=document.getElementById('wwTripShareButton');
-        if(!share){share=document.createElement('button');share.type='button';share.id='wwTripShareButton';share.className=button.className;button.insertAdjacentElement('afterend',share);share.addEventListener('click',()=>window.wwShareCurrentTrip?.())}
-        share.textContent='Share';share.setAttribute('aria-label','Share this trip');
+        button.textContent='Import / Export';
+        button.setAttribute('aria-label','Import or export this trip');
       }
       return result;
     };
@@ -12735,7 +12732,7 @@ wwOpenQuickInfo=function(row,id){
     const button=event.target?.closest?.('#tripDialog #wwTripExportPlaceholder');
     if(!button)return;
     event.preventDefault();
-    const d=ensureTripTransferDialog();d.querySelector('#wwTripTransferHeading').textContent='Import Trip';d.showModal();
+    ensureTripTransferDialog().showModal();
   },true);
 })();
 
@@ -12871,45 +12868,21 @@ wwOpenQuickInfo=function(row,id){
     return {name:t.name,stops:stops.length,activities,tasks:(t.todos||[]).length,countries};
   }
 
-  async function tripZip(payload){
+  async function wwTripZip(payload){
     if(!window.JSZip)throw Error('ZIP support is unavailable. Please reload WozzaWorld.');
     const zip=new JSZip();zip.file('trip.json',JSON.stringify(payload,null,2));
     return zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
   }
-  async function readTripFile(file){
+  async function wwReadTripFile(file){
     if(!/\.zip$/i.test(file.name))return file.text();
     if(!window.JSZip)throw Error('ZIP support is unavailable. Please reload WozzaWorld.');
     const zip=await JSZip.loadAsync(file);
-    const entries=Object.values(zip.files).filter(f=>!f.dir);
-    if(entries.length!==1||!/\.json$/i.test(entries[0].name)||entries[0].name.includes('/')||entries[0].name.includes('\\'))throw Error('Select a WozzaWorld trip ZIP containing one JSON file.');
-    const json=await entries[0].async('string');
-    if(new Blob([json]).size>MAX_BYTES)throw Error('The trip inside the ZIP is too large.');
-    return json;
+    const entries=Object.values(zip.files).filter(x=>!x.dir);
+    if(entries.length!==1||entries[0].name!=='trip.json')throw Error('This is not a supported WozzaWorld trip ZIP.');
+    const data=await entries[0].async('string');
+    if(new Blob([data]).size>MAX_BYTES)throw Error('The trip inside the ZIP is too large.');
+    return data;
   }
-  async function deliverTrip(asShare){
-    const t=selectedTrip();if(!t)throw Error('Open a saved trip before sharing it.');
-    const obj=packageTrip(tripForExport(t));
-    if(new Blob([JSON.stringify(obj)]).size>MAX_BYTES)throw Error('This trip exceeds the supported export size.');
-    const blob=await tripZip(obj),filename=`WozzaWorld-${fileSafeName(obj.trip.name)}.wozzatrip.zip`;
-    if(asShare&&navigator.share&&navigator.canShare){
-      const file=new File([blob],filename,{type:'application/zip'});
-      if(navigator.canShare({files:[file]})){
-        try{await navigator.share({files:[file],title:`WozzaWorld: ${obj.trip.name}`});return 'shared'}
-        catch(e){if(e.name==='AbortError')return 'cancelled';if(e.name!=='NotAllowedError'&&e.name!=='TypeError')throw e}
-      }
-    }
-    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;
-    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-    return 'downloaded';
-  }
-  window.wwShareCurrentTrip=async()=>{
-    try{
-      const t=selectedTrip();if(!t)throw Error('Open a saved trip before sharing.');
-      if(!confirm(`Share a copy of ${t.name}? The file includes itinerary, companions, notes, bookings, costs and other trip details. Anyone receiving it can read this information.`))return;
-      const outcome=await deliverTrip(true);
-      if(outcome==='downloaded')window.wwShowTripExportPreparing?.();
-    }catch(e){alert(e.message||'Unable to share this trip.')}
-  };
   let pending=null;
   let busy=false;
   function clearPreview(d){
@@ -12947,7 +12920,17 @@ wwOpenQuickInfo=function(row,id){
       if(!approved)return;
       if(busy)return;
       try{
-        await deliverTrip(false);
+        const t=selectedTrip();
+        if(!t){message(d,'Open a saved trip to export it. You can import files here without opening a trip.','error');return}
+        const obj=packageTrip(tripForExport(t));
+        const data=JSON.stringify(obj,null,2);
+        if(new Blob([data]).size>MAX_BYTES)throw Error('This trip exceeds the supported export size.');
+        const blob=await wwTripZip(obj);
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');a.href=url;
+        a.download=`WozzaWorld-${fileSafeName(obj.trip.name)}.wozzatrip.zip`;
+        document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),60000);
         message(d,'');d.close();window.wwShowTripExportPreparing?.();
       }catch(e){message(d,e.message||'Unable to export this trip.','error')}
     });
@@ -12956,9 +12939,9 @@ wwOpenQuickInfo=function(row,id){
       const file=input.files?.[0];if(!file)return;
       pending=null;info.hidden=true;message(d,'Checking trip file…');
       try{
-        if(file.size>MAX_BYTES*2)throw Error('This trip file is too large (maximum 24 MB).');
-        const text=await readTripFile(file);
-        if(text.length>MAX_BYTES)throw Error('This trip file is too large.');
+        if(file.size>MAX_BYTES)throw Error('This trip file is too large (maximum 12 MB).');
+        const text=await wwReadTripFile(file);
+        if(new Blob([text]).size>MAX_BYTES)throw Error('This trip file is too large.');
         const data=validatePackage(JSON.parse(text));
         const cloned=independentCopy(data);
         pending=cloned;
@@ -13049,7 +13032,7 @@ wwOpenQuickInfo=function(row,id){
  function collect(){const storage={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(validKey(k))storage[k]=localStorage.getItem(k)}
   const state=JSON.parse(storage[main]||'null');if(!state||!Array.isArray(state.trips)||!state.statuses||typeof state.statuses!=='object')throw Error('Your main app data is missing or invalid.');
   return {format:'WozzaWorld Backup',backupVersion:2,createdAt:new Date().toISOString(),storage};}
- async function download(payload,filename){if(!window.JSZip)throw Error('ZIP support is unavailable. Please reload WozzaWorld.');const z=new JSZip();z.file('backup.json',JSON.stringify(payload,null,2));const zip=await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});const url=URL.createObjectURL(zip);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+ async function download(payload,filename){if(!window.JSZip)throw Error('ZIP support is unavailable. Please reload WozzaWorld.');const z=new JSZip();z.file('backup.json',JSON.stringify(payload,null,2));const blob=await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
  const stamp=()=>new Date().toISOString().replace(/[:.]/g,'-');
  const popup=document.createElement('dialog');popup.className='ww-restore-popup';popup.innerHTML='<div class="ww-restore-title"></div><div class="ww-restore-body"></div><div class="ww-restore-actions"><button type="button" class="ww-restore-cancel">Cancel</button><button type="button" class="ww-restore-confirm">Continue</button></div>';document.body.appendChild(popup);
  const title=popup.querySelector('.ww-restore-title'),body=popup.querySelector('.ww-restore-body'),ok=popup.querySelector('.ww-restore-confirm');let action=null;
@@ -13068,7 +13051,7 @@ wwOpenQuickInfo=function(row,id){
   if(!state||!Array.isArray(state.trips)||!state.statuses||typeof state.statuses!=='object'||Array.isArray(state.statuses))throw Error('Backup is missing required app data.');
   return {entries,state};}
  file.addEventListener('change',async()=>{const f=file.files?.[0];if(!f)return;try{
-  if(f.size>30000000)throw Error('File is too large (maximum 30 MB).');const raw=/\.zip$/i.test(f.name)?await (async()=>{if(!window.JSZip)throw Error('ZIP support is unavailable.');const z=await JSZip.loadAsync(f);const entries=Object.values(z.files).filter(x=>!x.dir);if(entries.length!==1||entries[0].name!=='backup.json')throw Error('Invalid WozzaWorld backup ZIP.');const txt=await entries[0].async('string');if(txt.length>30000000)throw Error('Backup inside ZIP is too large.');return txt})():await f.text();const data=JSON.parse(raw);const {entries,state}=validate(data);
+  if(f.size>30000000)throw Error('File is too large (maximum 30 MB).');const raw=/\.zip$/i.test(f.name)?await (async()=>{if(!window.JSZip)throw Error('ZIP support is unavailable.');const z=await JSZip.loadAsync(f);const files=Object.values(z.files).filter(x=>!x.dir);if(files.length!==1||files[0].name!=='backup.json')throw Error('Invalid WozzaWorld backup ZIP.');const txt=await files[0].async('string');if(new Blob([txt]).size>30000000)throw Error('Backup inside ZIP is too large.');return txt})():await f.text();const data=JSON.parse(raw);const {entries,state}=validate(data);
   show('Restore your backup?',[`Backup: ${data.createdAt&&!isNaN(Date.parse(data.createdAt))?new Date(data.createdAt).toLocaleString('en-GB'):'Date unavailable'}. ${state.trips.length} trip(s).`,'Restoring replaces all current personal app data, including trips, itinerary, passport, preferences and recycle bin.','A safety copy of your current data must be downloaded before restoration.'],'Download safety copy',async()=>{
    try{await download(collect(),'WozzaWorld-Safety-Copy-'+stamp()+'.zip')}catch(ex){error('Safety copy could not be created: '+ex.message);return}
    show('Confirm restore',['Please check that the safety copy was downloaded successfully.','Your current personal app data will now be replaced with the selected backup.'],'Restore backup',()=>{
