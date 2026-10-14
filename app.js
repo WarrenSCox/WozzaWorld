@@ -829,6 +829,31 @@ async function openCountryInfo(){
   guidePhotos["Philippines"]={src:"philippines-country-hero.jpg",alt:"Traditional outrigger boats on a peaceful tropical waterway, surrounded by palm trees and lush green hills in the Philippines.",caption:"Traditional outrigger boats on a peaceful tropical waterway, surrounded by palm trees and lush green hills in the Philippines."};
   guidePhotos["Jordan"]={src:"jordan-country-hero.jpg",alt:"Towering sandstone rock formations rising above the red desert sands beneath a dramatic cloudy sky in Wadi Rum, Jordan.",caption:"Towering sandstone rock formations rising above the red desert sands beneath a dramatic cloudy sky in Wadi Rum, Jordan."};
   guidePhotos["Sri Lanka"]={src:"sri-lanka-country-hero.jpg",alt:"Lush green tea plantations overlooking the tranquil waters of Castlereagh Reservoir in Maskeliya, Sri Lanka.",caption:"Lush green tea plantations overlooking the tranquil waters of Castlereagh Reservoir in Maskeliya, Sri Lanka."};
+  // Additional country hero photographs and captions (24-country update).
+  guidePhotos["South Korea"]={src:"south-korea-country-hero.jpg",alt:"Seoul's skyline illuminated at night.",caption:"Seoul's skyline illuminated at night."};
+  guidePhotos["Malaysia"]={src:"malaysia-country-hero.jpg",alt:"The Petronas Twin Towers dominate Kuala Lumpur's skyline.",caption:"The Petronas Twin Towers dominate Kuala Lumpur's skyline."};
+  guidePhotos["Qatar"]={src:"qatar-country-hero.jpg",alt:"Doha's West Bay skyline overlooking the waterfront.",caption:"Doha's West Bay skyline overlooking the waterfront."};
+  guidePhotos["Malta"]={src:"malta-country-hero.jpg",alt:"Traditional fishing boats in Marsaskala harbour, Malta.",caption:"Traditional fishing boats in Marsaskala harbour, Malta."};
+  guidePhotos["Georgia"]={src:"georgia-country-hero.jpg",alt:"Narikala Fortress overlooking the Georgian capital, Tbilisi.",caption:"Narikala Fortress overlooking the Georgian capital, Tbilisi."};
+  guidePhotos["Mauritius"]={src:"mauritius-country-hero.jpg",alt:"The mountains and coastline of western Mauritius.",caption:"The mountains and coastline of western Mauritius."};
+  guidePhotos["Bahrain"]={src:"bahrain-country-hero.jpg",alt:"The Bahrain World Trade Center illuminated at night in Manama, Bahrain.",caption:"The Bahrain World Trade Center illuminated at night in Manama, Bahrain."};
+  guidePhotos["Oman"]={src:"oman-country-hero.jpg",alt:"Sultan Qaboos Grand Mosque in Muscat, Oman, backed by the Al Hajar Mountains.",caption:"Sultan Qaboos Grand Mosque in Muscat, Oman, backed by the Al Hajar Mountains."};
+  guidePhotos["Estonia"]={src:"estonia-country-hero.jpg",alt:"The medieval rooftops and church towers of Tallinn's Old Town, Estonia.",caption:"The medieval rooftops and church towers of Tallinn's Old Town, Estonia."};
+  guidePhotos["Tanzania"]={src:"tanzania-country-hero.jpg",alt:"A herd of elephants crossing the Tanzanian savannah.",caption:"A herd of elephants crossing the Tanzanian savannah."};
+  guidePhotos["Panama"]={src:"panama-country-hero.jpg",alt:"The distinctive F&F Tower in Panama City's financial district.",caption:"The distinctive F&F Tower in Panama City's financial district."};
+  guidePhotos["Monaco"]={src:"monaco-country-hero.jpg",alt:"The Oceanographic Museum overlooking the Mediterranean in Monaco.",caption:"The Oceanographic Museum overlooking the Mediterranean in Monaco."};
+  guidePhotos["Guatemala"]={src:"guatemala-country-hero.jpg",alt:"The volcanic peaks of Guatemala's central highlands.",caption:"The volcanic peaks of Guatemala's central highlands."};
+  guidePhotos["Ecuador"]={src:"ecuador-country-hero.jpg",alt:"Snow-covered Cotopaxi volcano rising above Quito, Ecuador.",caption:"Snow-covered Cotopaxi volcano rising above Quito, Ecuador."};
+  guidePhotos["Fiji"]={src:"fiji-country-hero.jpg",alt:"A palm-lined beach on Fiji's tropical coastline.",caption:"A palm-lined beach on Fiji's tropical coastline."};
+  guidePhotos["Seychelles"]={src:"seychelles-country-hero.jpg",alt:"Turquoise waters and palm-lined beaches in the Seychelles.",caption:"Turquoise waters and palm-lined beaches in the Seychelles."};
+  guidePhotos["Kazakhstan"]={src:"kazakhstan-country-hero.jpg",alt:"Bayterek Tower and the fountains of central Astana, Kazakhstan.",caption:"Bayterek Tower and the fountains of central Astana, Kazakhstan."};
+  guidePhotos["Uzbekistan"]={src:"uzbekistan-country-hero.jpg",alt:"The historic blue-tiled mausoleums of Shah-i-Zinda in Samarkand, Uzbekistan.",caption:"The historic blue-tiled mausoleums of Shah-i-Zinda in Samarkand, Uzbekistan."};
+  guidePhotos["Armenia"]={src:"armenia-country-hero.jpg",alt:"Mount Ararat rising above the Armenian capital, Yerevan.",caption:"Mount Ararat rising above the Armenian capital, Yerevan."};
+  guidePhotos["Azerbaijan"]={src:"azerbaijan-country-hero.jpg",alt:"Baku's modern skyline overlooking the city centre, Azerbaijan.",caption:"Baku's modern skyline overlooking the city centre, Azerbaijan."};
+  guidePhotos["Lithuania"]={src:"lithuania-country-hero.jpg",alt:"Trakai Island Castle on the shores of Lake Galvė, Lithuania.",caption:"Trakai Island Castle on the shores of Lake Galvė, Lithuania."};
+  guidePhotos["Latvia"]={src:"latvia-country-hero.jpg",alt:"Riga's historic Old Town overlooking the Daugava River.",caption:"Riga's historic Old Town overlooking the Daugava River."};
+  guidePhotos["Botswana"]={src:"botswana-country-hero.jpg",alt:"Giraffes roaming the savannah in Botswana.",caption:"Giraffes roaming the savannah in Botswana."};
+  guidePhotos["Namibia"]={src:"namibia-country-hero.jpg",alt:"The red dunes and ancient dead trees of Deadvlei, Namibia.",caption:"The red dunes and ancient dead trees of Deadvlei, Namibia."};
     const guidePhoto=guidePhotos[name];
   const countryPhoto=guidePhoto ? `<figure class="country-guide-photo"${guidePhoto.caption?` data-caption="${esc(guidePhoto.caption)}"`:''}><img src="${guidePhoto.src}" alt="${guidePhoto.alt}"></figure>` : '';
   body.innerHTML=`
