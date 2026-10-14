@@ -9925,5 +9925,57 @@
       "contentType": "static travel reference",
       "safetyNote": "Culture notes are general guidance, not universal rules. Time zones and official designations can change."
     }
+  },
+  {
+    "country": "Taiwan",
+    "iso2": "TW",
+    "iso3": "TWN",
+    "capital": "Taipei",
+    "officialLanguages": [
+      "Mandarin Chinese"
+    ],
+    "currency": [
+      {
+        "code": "TWD",
+        "name": "New Taiwan dollar"
+      }
+    ],
+    "plugSocketTypes": [
+      "A",
+      "B"
+    ],
+    "drivingSide": "right",
+    "standardTimeZones": [
+      "UTC+08:00"
+    ],
+    "notableLandmarks": [
+      "Taipei 101",
+      "Taroko Gorge",
+      "Sun Moon Lake",
+      "Alishan National Scenic Area"
+    ],
+    "wellKnownCuisine": [
+      "Beef noodle soup",
+      "Xiaolongbao",
+      "Bubble tea",
+      "Oyster omelette"
+    ],
+    "interestingFacts": [
+      "Taiwan has a mountainous interior and a densely populated western coastal plain.",
+      "Taipei 101 was once the tallest building in the world.",
+      "Taiwan is known for its night markets and extensive railway network."
+    ],
+    "cultureEtiquette": [
+      "Queueing is customary on public transport and in busy public spaces.",
+      "Remove shoes when asked before entering homes or certain accommodation.",
+      "Respect signs and local guidance at temples and religious sites."
+    ],
+    "_meta": {
+      "datasetVersion": "1.0.0",
+      "reviewed": "2026-10",
+      "scope": "Taiwan supplementary travel reference",
+      "contentType": "static travel reference",
+      "safetyNote": "Culture notes are general guidance, not universal rules."
+    }
   }
 ]

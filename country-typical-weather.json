@@ -8635,5 +8635,54 @@
       "notForecast": true,
       "temperatureUnit": "C"
     }
+  },
+  {
+    "country": "Taiwan",
+    "typicalWeather": [
+      {
+        "months": "March-May",
+        "season": "Spring",
+        "typicalTemperatureC": {
+          "low": 16,
+          "high": 28
+        },
+        "summary": "Generally mild to warm, with frequent rain and increasing humidity."
+      },
+      {
+        "months": "June-September",
+        "season": "Hot / wet summer",
+        "typicalTemperatureC": {
+          "low": 24,
+          "high": 34
+        },
+        "summary": "Hot and humid, with heavy showers and possible typhoons."
+      },
+      {
+        "months": "October-November",
+        "season": "Autumn",
+        "typicalTemperatureC": {
+          "low": 19,
+          "high": 29
+        },
+        "summary": "Often warm and relatively comfortable, with rainfall varying by region."
+      },
+      {
+        "months": "December-February",
+        "season": "Winter",
+        "typicalTemperatureC": {
+          "low": 12,
+          "high": 22
+        },
+        "summary": "Cooler in the north and mountains, while southern lowlands remain relatively mild."
+      }
+    ],
+    "regionalVariation": "Northern Taiwan is generally wetter in winter; the south is warmer, and mountainous areas can be substantially colder than lowlands.",
+    "_meta": {
+      "datasetVersion": "1.0.0",
+      "reviewed": "2026-10",
+      "type": "typical climate guidance",
+      "notForecast": true,
+      "temperatureUnit": "C"
+    }
   }
 ]
