@@ -2205,9 +2205,30 @@ window.__wozzaWarmVisibleCountryHeroes=()=>{clearTimeout(settleTimer);settleTime
     // Do not present an arbitrary zero-score tie as a genuine strength.
     // Visited countries alone are valid travel evidence, even without recorded trips.
     const hasTravelEvidence=e.trips.length>0 || e.countries.size>0;
-    const strengthText=(!hasTravelEvidence || strength.value<=0)
+    // Feedback-only interpretation: never change components, score or awardedPoints.
+    // Rank eligible strengths rather than treating any positive top score as an achievement.
+    const countryCount=e.countries.size, continentCount=e.continents.size, tripCount=e.trips.length;
+    const eligibleStrengths=ranked.filter(({key,value})=>{
+      if(value<=0)return false;
+      if(key==='world')return continentCount>=3 && countryCount>=5;
+      if(key==='variety')return tripCount>=4 && e.vibes.size>=3 && e.modes.size>=2;
+      if(key==='depth')return tripCount>=3 && (e.multiStopTrips>=2 || e.repeatTouches>=3);
+      if(key==='momentum')return tripCount>=6 && value>=55;
+      if(key==='discovery')return countryCount>=6 && value>=50;
+      return false;
+    });
+    const eligibleStrength=eligibleStrengths[0];
+    const strengthText=!hasTravelEvidence
       ? 'Your travel story is waiting to begin. Add your first trip to start discovering your travel strengths.'
-      : {world:'Strong geographical breadth across your travel story.',variety:'A varied mix of trip styles and ways to travel.',depth:'You tend to explore destinations in real depth.',momentum:'You have built a strong, sustained travel history.',discovery:'You keep expanding your travel footprint.'}[strength.key];
+      : eligibleStrength
+        ? {world:'Strong geographical breadth across your travel story.',variety:'A varied mix of trip styles and ways to travel.',depth:'You tend to explore destinations in real depth.',momentum:'You have built a strong, sustained travel history.',discovery:'You keep expanding your travel footprint.'}[eligibleStrength.key]
+        : countryCount===1 && tripCount===0
+          ? 'Your travel journey has begun! One country is the first step in building your travel story.'
+          : continentCount>=2
+            ? 'Your travels are beginning to span different parts of the world.'
+            : countryCount>=2 || tripCount>=2
+              ? 'You’re building your travel experiences, one adventure at a time.'
+              : 'Your travel journey has begun! Every adventure adds to your story.';
     // Recommendations interpret the travel pattern rather than simply repeating the weakest statistic.
     // Keep this rules-based and deterministic so the same travel history always gets a sensible explanation.
     function recommendationFor(){
