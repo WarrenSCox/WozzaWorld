@@ -8604,5 +8604,36 @@
       "notForecast": true,
       "temperatureUnit": "C"
     }
+  },
+  {
+    "country": "Puerto Rico",
+    "typicalWeather": [
+      {
+        "months": "December-April",
+        "season": "Drier season",
+        "typicalTemperatureC": {
+          "low": 21,
+          "high": 30
+        },
+        "summary": "Usually warm with somewhat less rain; showers remain possible."
+      },
+      {
+        "months": "May-November",
+        "season": "Wetter and hotter season",
+        "typicalTemperatureC": {
+          "low": 24,
+          "high": 32
+        },
+        "summary": "Hot and humid with more frequent showers and thunderstorms; Atlantic hurricane season runs June-November."
+      }
+    ],
+    "regionalVariation": "Mountain areas are generally cooler and wetter than the coast; conditions vary by location.",
+    "_meta": {
+      "datasetVersion": "1.0.0",
+      "reviewed": "2026-10",
+      "type": "typical climate guidance",
+      "notForecast": true,
+      "temperatureUnit": "C"
+    }
   }
 ]

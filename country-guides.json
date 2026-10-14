@@ -9875,5 +9875,55 @@
       "contentType": "static travel reference",
       "scope": "Falkland Islands territory supplement"
     }
+  },
+  {
+    "country": "Puerto Rico",
+    "iso2": "PR",
+    "iso3": "PRI",
+    "capital": "San Juan",
+    "officialLanguages": [
+      "Spanish",
+      "English"
+    ],
+    "currency": [
+      {
+        "code": "USD",
+        "name": "US Dollar"
+      }
+    ],
+    "plugSocketTypes": [
+      "A",
+      "B"
+    ],
+    "drivingSide": "right",
+    "standardTimeZones": [
+      "UTC−04:00"
+    ],
+    "notableLandmarks": [
+      "Old San Juan",
+      "Castillo San Felipe del Morro",
+      "El Yunque National Forest"
+    ],
+    "wellKnownCuisine": [
+      "mofongo",
+      "arroz con gandules",
+      "lechón asado"
+    ],
+    "interestingFacts": [
+      "Puerto Rico is a Caribbean territory of the United States.",
+      "Old San Juan is known for its colourful colonial-era streets and historic fortifications.",
+      "El Yunque is a tropical rainforest in northeastern Puerto Rico."
+    ],
+    "cultureEtiquette": [
+      "Spanish is widely spoken, and English is also an official language.",
+      "Greet people politely and respect local communities and historic sites."
+    ],
+    "_meta": {
+      "datasetVersion": "1.0.0",
+      "reviewed": "2026-10",
+      "scope": "Puerto Rico travel reference extension",
+      "contentType": "static travel reference",
+      "safetyNote": "Culture notes are general guidance, not universal rules. Time zones and official designations can change."
+    }
   }
 ]
