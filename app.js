@@ -801,7 +801,7 @@ async function openCountryInfo(){
   const guide=countryGuideData.find(x=>x.country===guideName);
   const weather=countryWeatherData.find(x=>x.country===guideName);
   if(name==='Antarctica'){
-   body.innerHTML=`<figure class="country-guide-photo"><img src="antarctica-country-hero.jpg" alt="Expedition ship in Antarctic waters"></figure>
+   body.innerHTML=`<figure class="country-guide-photo" data-caption="Expedition ship among the icebergs of Antarctica."><img src="antarctica-country-hero.jpg" alt="Expedition ship in Antarctic waters"></figure>
    <section class="country-facts-key">${factRow('Capital','None')}${factRow('Permanent population','None')}${factRow('Governance','Antarctic Treaty System')}${factRow('Visitor season','October to April')}${factRow('Getting there','Primarily expedition ship')}</section>
    ${countryInfoAccordion('LANDSCAPE',factListContent(['Ice sheet, mountains, glaciers and ice shelves']))}
    ${countryInfoAccordion('WILDLIFE',factListContent(['Penguins, seals, whales and seabirds']))}
@@ -809,7 +809,7 @@ async function openCountryInfo(){
    return;
   }
   if(name==='Greenland'){
-   body.innerHTML=`<figure class="country-guide-photo"><img src="greenland-country-hero.jpg" alt="Iceberg and expedition boat in Greenland"></figure>
+   body.innerHTML=`<figure class="country-guide-photo" data-caption="Passing the icebergs off the coast of Greenland."><img src="greenland-country-hero.jpg" alt="Iceberg and expedition boat in Greenland"></figure>
    <section class="country-facts-key">${factRow('Capital','Nuuk')}${factRow('Languages','Greenlandic (official), Danish widely used')}${factRow('Currency','Danish krone (DKK)')}${factRow('Plug sockets','C, E, F and K')}${factRow('Driving side','Right')}</section>
    ${countryInfoAccordion('WEATHER',`<div class="country-google-weather" data-google-weather="${esc(name)}">${factListContent(['Arctic climate with cool summers and very cold winters. Conditions vary considerably by region and season.'])}</div>`)}
    ${countryInfoAccordion('INTERESTING FACTS',factListContent(['Greenland is the world’s largest island that is not a continent.','Almost 80% of Greenland is covered by the ice cap and glaciers.','Greenland is self-governing within the Kingdom of Denmark.'],true))}
