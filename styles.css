@@ -6470,3 +6470,22 @@ body.map-view .ww-map-options-stack .map-filter-btn{
 /* Map options: single audited Filter gradient for all four controls. */
 body.map-view .ww-map-options-stack button.map-filter-btn{background:linear-gradient(120deg,#086579 0%,#0aa3a6 100%)!important;background-image:linear-gradient(120deg,#086579 0%,#0aa3a6 100%)!important;color:#fff!important;}
 .ww-map-options-stack .ww-map-dice-icon{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;}
+
+
+/* Map options colour consistency — audited against the runtime #mapFilterBtn
+   gradient injected by app.js (wozza-recycle-sharp-map-filter-hotfix).
+   Target the actual stack and its buttons, including the original filter ID. */
+body.map-view #wwMapOptionsStack button.map-filter-btn,
+body.map-view #wwMapOptionsStack #mapFilterBtn,
+body.map-view #wwMapOptionsStack #wwMapSearchBtn,
+body.map-view #wwMapOptionsStack #wwMapDiceBtn,
+body.map-view #wwMapOptionsStack #wwMapOptionsBtn {
+  background:linear-gradient(145deg,#087f91 0%,#12b8c7 58%,#18c9d3 100%)!important;
+  background-image:linear-gradient(145deg,#087f91 0%,#12b8c7 58%,#18c9d3 100%)!important;
+  background-color:#0aa4b3!important;
+}
+/* Larger artwork inside unchanged 46.4px dice circle. */
+body.map-view #wwMapOptionsStack #wwMapDiceBtn {padding:8px!important;}
+body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
+  width:100%!important;height:100%!important;object-fit:contain!important;
+}
