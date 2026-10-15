@@ -13370,14 +13370,18 @@ function wwDicePhotoFor(name){
      shape=polys.sort((a,b)=>d3.geoArea(b)-d3.geoArea(a))[0]||feature;
    }
    const projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'});
-   const center=d3.geoPath(projection).centroid(shape);
-   if(!center.every(Number.isFinite))return;
-   const svg=d3.select('#worldMap');const current=d3.zoomTransform(svg.node());
-   const scale=Math.min(4,Math.max(2.15,current.k+0.45));
+   const path=d3.geoPath(projection);
+   const bounds=path.bounds(shape);
+   const width=bounds[1][0]-bounds[0][0],height=bounds[1][1]-bounds[0][1];
+   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)return;
+   // Fit each country's principal landmass into a comfortable portion of the viewport.
+   // Large countries receive a lower zoom; small countries zoom further in.
+   const center=[(bounds[0][0]+bounds[1][0])/2,(bounds[0][1]+bounds[1][1])/2];
+   const scale=Math.max(2.65,Math.min(9,Math.min(720/width,360/height)));
    const transform=d3.zoomIdentity.translate(500-scale*center[0],260-scale*center[1]).scale(scale);
    close();
    mapZoomBehavior.scaleExtent([1,56]);
-   svg.transition().duration(650).ease(d3.easeCubicInOut).call(mapZoomBehavior.transform,transform);
+   svg.transition().duration(1550).ease(d3.easeCubicInOut).call(mapZoomBehavior.transform,transform);
  }
  function refresh(){
    const q=input.value.trim().toLocaleLowerCase();
