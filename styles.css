@@ -6444,3 +6444,32 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
   box-shadow: none !important;
   -webkit-tap-highlight-color: transparent !important;
 }
+
+/* Map options: only the trigger visible until expanded. */
+body.map-view #wwMapOptionsBtn{display:flex!important;z-index:125!important}
+body.map-view #mapFilterBtn.ww-map-option,
+body.map-view .ww-map-option-search,
+body.map-view .ww-map-option-dice{
+ display:flex!important;position:fixed!important;opacity:0!important;
+ visibility:hidden!important;pointer-events:none!important;
+ transform:translateY(10px) scale(.78)!important;
+ transition:opacity .18s ease,transform .22s ease,visibility .18s ease!important;
+ z-index:124!important;
+}
+body.map-view.ww-map-options-open #mapFilterBtn.ww-map-option,
+body.map-view.ww-map-options-open .ww-map-option-search,
+body.map-view.ww-map-options-open .ww-map-option-dice{
+ opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+ transform:translateY(0) scale(1)!important;
+}
+body.map-view #mapFilterBtn.ww-map-option{bottom:144px!important}
+body.map-view .ww-map-option-search{bottom:216px!important}
+body.map-view .ww-map-option-dice{bottom:288px!important}
+@media(orientation:landscape){
+ body.map-view #mapFilterBtn.ww-map-option{bottom:96px!important}
+ body.map-view .ww-map-option-search{bottom:168px!important}
+ body.map-view .ww-map-option-dice{bottom:240px!important}
+}
+body.map-view.ww-map-options-open #wwMapPressHelp,
+body.map-view.ww-map-options-open #wwMapRotateHelp{visibility:hidden!important;pointer-events:none!important}
+@media(prefers-reduced-motion:reduce){body.map-view .ww-map-option{transition:none!important}}
