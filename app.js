@@ -13219,7 +13219,8 @@ wwOpenQuickInfo=function(row,id){
   const svg=(paths)=>`<svg viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
   const make=(id,label,markup)=>{const b=document.createElement('button');b.type='button';b.id=id;b.className='map-filter-btn ww-map-stack-button';b.setAttribute('aria-label',label);b.title=label;b.innerHTML=svg(markup);return b};
   const search=make('wwMapSearchBtn','Search countries','<circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/>');
-  const dice=make('wwMapDiceBtn','Discover random country','<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1" fill="currentColor" stroke="none"/>');
+  const dice=make('wwMapDiceBtn','Discover random country','');
+  dice.innerHTML='<img class="ww-map-dice-icon" src="ww-dice-white.png" alt="" aria-hidden="true">';
   const dots=svg('<circle cx="5" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.8" fill="currentColor" stroke="none"/>');
   const x=svg('<path d="M5 5l14 14M19 5L5 19"/>');
   const toggle=make('wwMapOptionsBtn','Map options',dots.slice(25,-6));
