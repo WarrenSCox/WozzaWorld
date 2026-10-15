@@ -13353,7 +13353,13 @@ function wwDicePhotoFor(name){
  panel.innerHTML='<div class="ww-map-search-field"><input id="wwMapCountrySearchInput" type="search" placeholder="Search a country…" autocomplete="off" aria-label="Search countries" aria-controls="wwMapCountrySearchResults"><button id="wwMapCountrySearchClose" type="button" aria-label="Close search">×</button></div><div id="wwMapCountrySearchResults" role="listbox" aria-label="Matching countries"></div>';
  document.body.appendChild(panel);
  const input=panel.querySelector('input'),results=panel.querySelector('#wwMapCountrySearchResults');
- const entries=()=>countryCatalog().map(name=>({name,key:countryKey(name),aliases:Object.keys(flags).filter(alias=>countryKey(alias)===countryKey(name))}));
+ const entries=()=>{
+   // Only offer countries with a rendered geographic feature on this map.
+   const mapped=new Set(Array.from(document.querySelectorAll('#countries path.country'))
+     .filter(el=>el.__data__?.geometry).map(el=>countryKey(el.dataset.country)));
+   return countryCatalog().map(name=>({name,key:countryKey(name),aliases:Object.keys(flags).filter(alias=>countryKey(alias)===countryKey(name))}))
+     .filter(entry=>mapped.has(entry.key));
+ };
  let shown=[];
  function close(){panel.hidden=true;input.blur()}
  function locate(name){
@@ -13381,7 +13387,7 @@ function wwDicePhotoFor(name){
    const transform=d3.zoomIdentity.translate(500-scale*center[0],260-scale*center[1]).scale(scale);
    close();
    mapZoomBehavior.scaleExtent([1,56]);
-   svg.transition().duration(1550).ease(d3.easeCubicInOut).call(mapZoomBehavior.transform,transform);
+   d3.select('#worldMap').transition().duration(1550).ease(d3.easeCubicInOut).call(mapZoomBehavior.transform,transform);
  }
  function refresh(){
    const q=input.value.trim().toLocaleLowerCase();
