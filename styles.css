@@ -6444,13 +6444,3 @@ dialog.ww-transfer-warning::backdrop{background:rgba(0,24,35,.55)!important;back
   box-shadow: none !important;
   -webkit-tap-highlight-color: transparent !important;
 }
-
-/* World Map expandable options: preserve original filter dialog and handler. */
-body.map-view #wwMapOptionsBtn,body.map-view .ww-map-option{display:flex!important}
-#wwMapOptionsBtn,.ww-map-option{background:linear-gradient(145deg,#087f91 0%,#12b8c7 58%,#18c9d3 100%)!important;background-color:#0aa4b3!important}
-.ww-map-option{opacity:0;pointer-events:none;visibility:hidden;transform:translateY(0) scale(.75);transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .18s,visibility .18s;z-index:117!important}
-body.ww-map-options-open .ww-map-option{opacity:1;pointer-events:auto;visibility:visible;transform:translateY(var(--ww-map-rise)) scale(1)}
-.ww-map-option-filter{--ww-map-rise:-60px}.ww-map-option-search{--ww-map-rise:-120px}.ww-map-option-dice{--ww-map-rise:-180px}
-#wwMapOptionsBtn{z-index:119!important}
-body.ww-map-options-open #wwMapPressHelp,body.ww-map-options-open #wwMapRotateHelp{display:none!important}
-@media(prefers-reduced-motion:reduce){.ww-map-option{transition:none}}
