@@ -13210,30 +13210,34 @@ wwOpenQuickInfo=function(row,id){
  refresh();
 })();
 
-/* World Map expandable options — existing filter action remains untouched. */
+/* World Map options: one anchored stack, preserving the original filter node and handler. */
 (()=>{
-  const init=()=>{
-    const filter=document.getElementById('mapFilterBtn');
-    if(!filter||document.getElementById('wwMapOptionsBtn'))return;
-    const toggle=document.createElement('button');
-    toggle.type='button';toggle.id='wwMapOptionsBtn';toggle.className='map-filter-btn ww-map-options-toggle';
-    toggle.setAttribute('aria-label','Map options');toggle.setAttribute('aria-expanded','false');
-    const dots='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>';
-    const close='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>';
-    toggle.innerHTML=dots;document.body.appendChild(toggle);
-    filter.classList.add('ww-map-option','ww-map-option-filter');filter.setAttribute('aria-label','Filter map');
-    const make=(id,label,svg,cls)=>{const b=document.createElement('button');b.type='button';b.id=id;b.className='map-filter-btn ww-map-option '+cls;b.setAttribute('aria-label',label);b.innerHTML=svg;document.body.appendChild(b);return b};
-    const search=make('wwMapSearchBtn','Search countries','<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/></svg>','ww-map-option-search');
-    const dice=make('wwMapDiceBtn','Discover random country','<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1" fill="currentColor" stroke="none"/></svg>','ww-map-option-dice');
-    const setOpen=open=>{document.body.classList.toggle('ww-map-options-open',open);toggle.setAttribute('aria-expanded',String(open));toggle.innerHTML=open?close:dots};
-    toggle.addEventListener('click',()=>setOpen(!document.body.classList.contains('ww-map-options-open')));
-    filter.addEventListener('click',()=>setOpen(false));
-    search.addEventListener('click',()=>{setOpen(false);if(typeof toast==='function')toast('Country search coming soon');else alert('Country search coming soon')});
-    dice.addEventListener('click',()=>{setOpen(false);if(typeof toast==='function')toast('Random country discovery coming soon');else alert('Random country discovery coming soon')});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false)});
-    document.addEventListener('click',e=>{if(document.body.classList.contains('ww-map-options-open')&&!e.target.closest('#wwMapOptionsBtn,.ww-map-option'))setOpen(false)});
-    new MutationObserver(()=>{if(!document.body.classList.contains('map-view'))setOpen(false)}).observe(document.body,{attributes:true,attributeFilter:['class']});
-    window.dispatchEvent(new Event('resize'));
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+ const init=()=>{
+  const filter=document.getElementById('mapFilterBtn');
+  if(!filter||document.getElementById('wwMapOptionsStack'))return;
+  const stack=document.createElement('div');stack.id='wwMapOptionsStack';stack.className='ww-map-options-stack';
+  const svg=(paths)=>`<svg viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
+  const make=(id,label,markup)=>{const b=document.createElement('button');b.type='button';b.id=id;b.className='map-filter-btn ww-map-stack-button';b.setAttribute('aria-label',label);b.title=label;b.innerHTML=svg(markup);return b};
+  const search=make('wwMapSearchBtn','Search countries','<circle cx="10.8" cy="10.8" r="6.7"/><path d="m16 16 5 5"/>');
+  const dice=make('wwMapDiceBtn','Discover random country','<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1" fill="currentColor" stroke="none"/>');
+  const dots=svg('<circle cx="5" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.8" fill="currentColor" stroke="none"/>');
+  const x=svg('<path d="M5 5l14 14M19 5L5 19"/>');
+  const toggle=make('wwMapOptionsBtn','Map options',dots.slice(25,-6));
+  // Correct SVG markup directly; do not nest an SVG inside another SVG.
+  toggle.innerHTML=dots;
+  toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','wwMapOptionsItems');
+  const items=document.createElement('div');items.id='wwMapOptionsItems';items.className='ww-map-options-items';items.hidden=true;
+  filter.classList.add('ww-map-stack-button');filter.setAttribute('aria-label','Filter map');
+  items.append(filter,search,dice);stack.append(items,toggle);document.body.appendChild(stack);
+  const setOpen=(open)=>{items.hidden=!open;stack.classList.toggle('is-open',open);toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close map options':'Map options');toggle.innerHTML=open?x:dots};
+  toggle.addEventListener('click',e=>{e.stopPropagation();setOpen(items.hidden)});
+  stack.addEventListener('click',e=>e.stopPropagation());
+  filter.addEventListener('click',()=>setOpen(false));
+  search.addEventListener('click',()=>{setOpen(false);if(typeof toast==='function')toast('Country search coming soon');else alert('Country search coming soon')});
+  dice.addEventListener('click',()=>{setOpen(false);if(typeof toast==='function')toast('Random country discovery coming soon');else alert('Random country discovery coming soon')});
+  document.addEventListener('click',e=>{if(!stack.contains(e.target))setOpen(false)});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false)});
+  new MutationObserver(()=>{if(!document.body.classList.contains('map-view'))setOpen(false)}).observe(document.body,{attributes:true,attributeFilter:['class']});
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
