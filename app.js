@@ -13257,7 +13257,7 @@ function wwDicePhotoFor(name){
   toggle.addEventListener('click',e=>{e.stopPropagation();setOpen(items.hidden)});
   stack.addEventListener('click',e=>e.stopPropagation());
   filter.addEventListener('click',()=>setOpen(false));
-  search.addEventListener('click',()=>{setOpen(false);if(typeof toast==='function')toast('Country search coming soon');else alert('Country search coming soon')});
+  search.addEventListener('click',()=>{setOpen(false);window.wwMapCountrySearchOpen?.()});
   dice.addEventListener('click',()=>{setOpen(false);wwDiceOpen();});
   document.addEventListener('click',e=>{if(!stack.contains(e.target))setOpen(false)});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false)});
@@ -13330,4 +13330,72 @@ function wwDicePhotoFor(name){
    returnToDice();
  });
  dialog.addEventListener('click',e=>{if(e.target===dialog)close()});
+})();
+
+
+/* World Map country locator: shares countryCatalog/countryKey and existing D3 map zoom. */
+(()=>{
+ const style=document.createElement('style');style.id='ww-map-country-search-style';style.textContent=`
+ #wwMapCountrySearch{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(88vw,420px);z-index:1300;background:#f4fcfd;border-radius:18px;box-shadow:0 16px 45px #003b4b55;padding:12px;box-sizing:border-box}
+ #wwMapCountrySearch[hidden]{display:none!important}
+ .ww-map-search-field{display:flex;align-items:center;gap:8px}
+ #wwMapCountrySearchInput{min-width:0;flex:1;border:1px solid #b9d8db;background:white;color:#173b43;border-radius:12px;font:inherit;font-size:16px;padding:13px 12px;outline-offset:2px}
+ #wwMapCountrySearchClose{flex:none;width:38px;height:38px;border:0;border-radius:50%;background:#e4f1f2;color:#21444b;font-size:25px;cursor:pointer}
+ #wwMapCountrySearchResults{max-height:min(34vh,270px);overflow:auto;margin-top:7px;overscroll-behavior:contain}
+ #wwMapCountrySearchResults button{display:flex;align-items:center;gap:12px;width:100%;border:0;border-bottom:1px solid #e2eeee;background:transparent;text-align:left;padding:11px 9px;color:#153b42;font:inherit;cursor:pointer}
+ #wwMapCountrySearchResults button:last-child{border-bottom:0}
+ #wwMapCountrySearchResults button:focus-visible{outline:2px solid #0ca8b5;outline-offset:-2px}
+ #wwMapCountrySearchResults img{width:28px;height:22px;object-fit:contain;flex:none}
+ #wwMapCountrySearchResults .ww-map-search-empty{padding:14px 8px;color:#567079}
+ @media(max-height:520px){#wwMapCountrySearch{top:44%}#wwMapCountrySearchResults{max-height:27vh}}
+ `;document.head.appendChild(style);
+ const panel=document.createElement('section');panel.id='wwMapCountrySearch';panel.hidden=true;panel.setAttribute('aria-label','Find a country on the map');
+ panel.innerHTML='<div class="ww-map-search-field"><input id="wwMapCountrySearchInput" type="search" placeholder="Search a country…" autocomplete="off" aria-label="Search countries" aria-controls="wwMapCountrySearchResults"><button id="wwMapCountrySearchClose" type="button" aria-label="Close search">×</button></div><div id="wwMapCountrySearchResults" role="listbox" aria-label="Matching countries"></div>';
+ document.body.appendChild(panel);
+ const input=panel.querySelector('input'),results=panel.querySelector('#wwMapCountrySearchResults');
+ const entries=()=>countryCatalog().map(name=>({name,key:countryKey(name),aliases:Object.keys(flags).filter(alias=>countryKey(alias)===countryKey(name))}));
+ let shown=[];
+ function close(){panel.hidden=true;input.blur()}
+ function locate(name){
+   const key=countryKey(name);
+   const paths=Array.from(document.querySelectorAll('#countries path.country'));
+   const target=paths.find(el=>countryKey(el.dataset.country)===key);
+   if(!target||!mapZoomBehavior){if(typeof toast==='function')toast('Country not available on this map');return}
+   const feature=target.__data__;
+   if(!feature)return;
+   // Use the largest land polygon for countries with far-flung islands/territories.
+   let shape=feature;
+   if(feature.geometry?.type==='MultiPolygon'){
+     const polys=feature.geometry.coordinates.map(coords=>({type:'Feature',geometry:{type:'Polygon',coordinates:coords}}));
+     shape=polys.sort((a,b)=>d3.geoArea(b)-d3.geoArea(a))[0]||feature;
+   }
+   const projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'});
+   const center=d3.geoPath(projection).centroid(shape);
+   if(!center.every(Number.isFinite))return;
+   const svg=d3.select('#worldMap');const current=d3.zoomTransform(svg.node());
+   const scale=Math.min(4,Math.max(2.15,current.k+0.45));
+   const transform=d3.zoomIdentity.translate(500-scale*center[0],260-scale*center[1]).scale(scale);
+   close();
+   mapZoomBehavior.scaleExtent([1,56]);
+   svg.transition().duration(650).ease(d3.easeCubicInOut).call(mapZoomBehavior.transform,transform);
+ }
+ function refresh(){
+   const q=input.value.trim().toLocaleLowerCase();
+   shown=entries().filter(e=>!q||e.aliases.some(a=>a.toLocaleLowerCase().includes(q))||e.name.toLocaleLowerCase().includes(q)).sort((a,b)=>{
+     const aa=a.name.toLowerCase().startsWith(q)?0:1,bb=b.name.toLowerCase().startsWith(q)?0:1;
+     return aa-bb||a.name.localeCompare(b.name)
+   }).slice(0,12);
+   results.replaceChildren();
+   if(!shown.length){const empty=document.createElement('div');empty.className='ww-map-search-empty';empty.textContent='No matching countries';results.append(empty);return}
+   for(const e of shown){const button=document.createElement('button');button.type='button';button.setAttribute('role','option');
+     const url=typeof flagUrl==='function'?flagUrl(e.name):'';
+     if(url){const img=document.createElement('img');img.src=url;img.alt='';button.append(img)}
+     const span=document.createElement('span');span.textContent=e.name;button.append(span);button.onclick=()=>locate(e.name);results.append(button)}
+ }
+ window.wwMapCountrySearchOpen=()=>{if(!document.body.classList.contains('map-view'))return;panel.hidden=false;input.value='';refresh();input.focus()};
+ panel.querySelector('#wwMapCountrySearchClose').onclick=close;
+ input.addEventListener('input',refresh);
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(shown.length)locate(shown[0].name)}else if(e.key==='Escape'){e.preventDefault();close()}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)close()});
+ new MutationObserver(()=>{if(!document.body.classList.contains('map-view')&&!panel.hidden)close()}).observe(document.body,{attributes:true,attributeFilter:['class']});
 })();
