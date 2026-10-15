@@ -675,6 +675,8 @@ async function closeSheet(){
    document.body.classList.toggle('trips-view',!!origin.tripsView);
    $$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen===origin.screen));
    $$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target===origin.screen));
+ } else if(origin?.type==='dice'){
+   window.wwDiceReturn?.();
  } else if(origin?.type==='itinerary'){
    wwOpenTripItinerary();
    requestAnimationFrame(()=>{
@@ -13343,11 +13345,36 @@ return guidePhotos[name]||null;
      figure.append(img,caption);media.appendChild(figure);
    }
  };
- const close=()=>{if(dialog.open)dialog.close()};
- window.wwDiceOpen=()=>{roll();if(!dialog.open)dialog.showModal()};
+ // Keep the current roll intact while a child screen is being viewed.
+ // Only a deliberate Dice close dismisses the discovery journey.
+ let infoReturnPending=false;
+ const close=()=>{infoReturnPending=false;if(dialog.open)dialog.close()};
+ const returnToDice=()=>{
+   if(!document.body.classList.contains('map-view'))return;
+   if(!dialog.open)dialog.showModal(); // Do NOT roll again.
+ };
+ window.wwDiceReturn=returnToDice;
+ window.wwDiceOpen=()=>{roll();returnToDice()};
  dialog.querySelector('#wwDiceClose').onclick=close;
  dialog.querySelector('#wwDiceAgain').onclick=roll;
- dialog.querySelector('#wwDiceCountry').onclick=()=>{const c=current;close();openCountry(c,{type:'map'})};
- dialog.querySelector('#wwDiceInfo').onclick=()=>{const c=current;close();currentCountry=c;openCountryInfo()};
+ dialog.querySelector('#wwDiceCountry').onclick=()=>{
+   const c=current;
+   dialog.close();
+   openCountry(c,{type:'dice'});
+ };
+ dialog.querySelector('#wwDiceInfo').onclick=()=>{
+   const c=current;
+   dialog.close();
+   currentCountry=c;
+   infoReturnPending=true;
+   openCountryInfo();
+ };
+ // Only direct Info visits from Dice return straight to Dice. Info opened
+ // from within a country card keeps its existing country-card navigation.
+ document.getElementById('countryInfoDialog')?.addEventListener('close',()=>{
+   if(!infoReturnPending)return;
+   infoReturnPending=false;
+   returnToDice();
+ });
  dialog.addEventListener('click',e=>{if(e.target===dialog)close()});
 })();
