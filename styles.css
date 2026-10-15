@@ -6457,3 +6457,12 @@ body.map-view .ww-map-options-stack .map-filter-btn{display:flex!important;posit
 @keyframes wwOptionsPop{from{opacity:.25;transform:translateY(8px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(orientation:landscape){.ww-map-options-stack{right:24px;bottom:24px}}
 @media(prefers-reduced-motion:reduce){.ww-map-options-stack.is-open .ww-map-options-items .map-filter-btn{animation:none}}
+
+/* Map options polish: match the original Filter teal gradient on every button,
+   and lower the whole anchored stack without changing its interaction logic. */
+body.map-view .ww-map-options-stack{bottom:44px!important}
+body.map-view .ww-map-options-stack .map-filter-btn{
+  background:linear-gradient(120deg,#086579 0%,#0aa3a6 100%)!important;
+  color:#fff!important;
+}
+@media(orientation:landscape){body.map-view .ww-map-options-stack{bottom:12px!important}}
