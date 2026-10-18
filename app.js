@@ -927,7 +927,7 @@ function closeCountryInfo(){const d=$('#countryInfoDialog');if(d?.open)d.close()
 function renderSheet(){
  ensureCountryGuidePhotoStyle();
  const s=state.statuses[currentCountry],u=flagUrl(currentCountry),trips=countryTrips(currentCountry),cities=countryCityDisplay(currentCountry),companions=countryCompanions(currentCountry),rating=countryRating(currentCountry);
- const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={'Indonesia':'indonesia-country-hero.jpg','Maldives':'maldives-country-hero.jpg','Singapore':'singapore-country-hero.jpg','Philippines':'philippines-country-hero.jpg','Jordan':'jordan-country-hero.jpg','Sri Lanka':'sri-lanka-country-hero.jpg',"Bahamas":"bahamas-country-hero.jpg","Cuba":"cuba-country-hero.jpg","Puerto Rico":"puerto-rico-country-hero.jpg","Bulgaria":"bulgaria-country-hero.jpg","Cyprus":"cyprus-country-hero.jpg","Yemen":"yemen-country-hero.jpg","Nepal":"nepal-country-hero.jpg","Thailand":"thailand-country-hero.jpg","Cambodia":"cambodia-country-hero.jpg","Mongolia":"mongolia-country-hero.jpg","New Zealand":"new-zealand-country-hero.jpg","Algeria":"algeria-country-hero.jpg","Tunisia":"tunisia-country-hero.jpg","Kenya":"kenya-country-hero.jpg",'Peru':'peru-country-hero.jpg','Dominican Republic':'dominican-republic-country-hero.jpg','Costa Rica':'costa-rica-country-hero.jpg','Colombia':'colombia-country-hero.jpg','Paraguay':'paraguay-country-hero.jpg','Uruguay':'uruguay-country-hero.jpg','Argentina':'argentina-country-hero.jpg','Chile':'chile-country-hero.jpg','Falkland Islands':'falkland-islands-country-hero.jpg','Falkland Is.':'falkland-islands-country-hero.jpg','Falkland Islands (Malvinas)':'falkland-islands-country-hero.jpg',Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg',Antarctica:'antarctica-country-hero.jpg',Morocco:'morocco-country-hero.jpg',Portugal:'portugal-country-hero.jpg',Switzerland:'switzerland-country-hero.jpg',Luxembourg:'luxembourg-country-hero.jpg',Greece:'greece-country-hero.jpg',Netherlands:'netherlands-country-hero.jpg',Poland:'poland-country-hero.jpg',Italy:'italy-country-hero.jpg',Germany:'germany-country-hero.jpg',Spain:'spain-country-hero.jpg',Denmark:'denmark-country-hero.jpg',Ireland:'ireland-country-hero.jpg','United Kingdom':'united-kingdom-country-hero.jpg',Norway:'norway-country-hero.jpg',Hungary:'hungary-country-hero.jpg',Austria:'austria-country-hero.jpg',Russia:'russia-country-hero.jpg',China:'china-country-hero.jpg',Japan:'japan-country-hero.jpg','Canada':'canada-country-hero.jpg','Mexico':'mexico-country-hero.jpg','Brazil':'brazil-country-hero.jpg','Jamaica':'jamaica-country-hero.jpg','Venezuela':'venezuela-country-hero.jpg','Greenland':'greenland-country-hero.jpg','Iceland':'iceland-country-hero.jpg','Australia':'australia-country-hero.jpg','Egypt':'egypt-country-hero.jpg','India':'india-country-hero.jpg','Rwanda':'rwanda-country-hero.jpg','Sudan':'sudan-country-hero.jpg','United Arab Emirates':'united-arab-emirates-country-hero.jpg','Saudi Arabia':'saudi-arabia-country-hero.jpg',Turkey:'turkey-country-hero.jpg',Iran:'iran-country-hero.jpg',Iraq:'iraq-country-hero.png','South Africa':'south-africa-country-hero.jpg','Bosnia and Herzegovina':'bosnia-and-herzegovina-country-hero.jpg',Croatia:'croatia-country-hero.jpg',Czechia:'czechia-country-hero.jpg',Slovenia:'slovenia-country-hero.jpg',Slovakia:'slovakia-country-hero.jpg',Romania:'romania-country-hero.jpg',Serbia:'serbia-country-hero.jpg',Montenegro:'montenegro-country-hero.jpg',Sweden:'sweden-country-hero.jpg',Finland:'finland-country-hero.jpg','United States':'united-states-country-hero.jpg',Vietnam:'vietnam-country-hero.jpg',Pakistan:'pakistan-country-hero.jpg','South Korea':'south-korea-country-hero.jpg','Georgia':'georgia-country-hero.jpg','Seychelles':'seychelles-country-hero.jpg','Latvia':'latvia-country-hero.jpg','Kazakhstan':'kazakhstan-country-hero.jpg','Estonia':'estonia-country-hero.jpg','Qatar':'qatar-country-hero.jpg','Monaco':'monaco-country-hero.jpg','Malaysia':'malaysia-country-hero.jpg','Ecuador':'ecuador-country-hero.jpg','Azerbaijan':'azerbaijan-country-hero.jpg','Armenia':'armenia-country-hero.jpg','Guatemala':'guatemala-country-hero.jpg','Uzbekistan':'uzbekistan-country-hero.jpg','Fiji':'fiji-country-hero.jpg','Bahrain':'bahrain-country-hero.jpg','Lithuania':'lithuania-country-hero.jpg','Namibia':'namibia-country-hero.jpg','Mauritius':'mauritius-country-hero.jpg','Oman':'oman-country-hero.jpg','Tanzania':'tanzania-country-hero.jpg','Botswana':'botswana-country-hero.jpg','Malta':'malta-country-hero.jpg','Panama':'panama-country-hero.jpg','Ghana':'ghana-country-hero.jpg','Bangladesh':'bangladesh-country-hero.jpg','North Macedonia':'north-macedonia-country-hero.jpg','El Salvador':'el-salvador-country-hero.jpg','Nicaragua':'nicaragua-country-hero.jpg','Honduras':'honduras-country-hero.jpg','Trinidad and Tobago':'trinidad-and-tobago-country-hero.jpg','Kuwait':'kuwait-country-hero.jpg','Senegal':'senegal-country-hero.jpg',"Albania":"albania-country-hero.jpg","Taiwan":"taiwan-country-hero.jpg","Israel":"israel-country-hero.jpg","Laos":"laos-country-hero.jpg","Myanmar":"myanmar-country-hero.jpg","Lebanon":"lebanon-country-hero.jpg","Barbados":"barbados-country-hero.jpg","Saint Lucia":"saint-lucia-country-hero.jpg","Bolivia":"bolivia-country-hero.jpg","Zimbabwe":"zimbabwe-country-hero.jpg","Zambia":"zambia-country-hero.jpg","Ethiopia":"ethiopia-country-hero.jpg","Madagascar":"madagascar-country-hero.jpg","Uganda":"uganda-country-hero.jpg","Nigeria":"nigeria-country-hero.jpg","Ghana":"ghana-country-hero.jpg","Bangladesh":"bangladesh-country-hero.jpg","North Macedonia":"north-macedonia-country-hero.jpg","El Salvador":"el-salvador-country-hero.jpg","Nicaragua":"nicaragua-country-hero.jpg","Honduras":"honduras-country-hero.jpg","Trinidad and Tobago":"trinidad-and-tobago-country-hero.jpg","Kuwait":"kuwait-country-hero.jpg","Senegal":"senegal-country-hero.jpg"},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%),url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
+ const hero=$('#countrySheet .country-hero-minimal'),heroPhotos={'Indonesia':'indonesia-country-hero.jpg','Maldives':'maldives-country-hero.jpg','Singapore':'singapore-country-hero.jpg','Philippines':'philippines-country-hero.jpg','Jordan':'jordan-country-hero.jpg','Sri Lanka':'sri-lanka-country-hero.jpg',"Bahamas":"bahamas-country-hero.jpg","Cuba":"cuba-country-hero.jpg","Puerto Rico":"puerto-rico-country-hero.jpg","Bulgaria":"bulgaria-country-hero.jpg","Cyprus":"cyprus-country-hero.jpg","Yemen":"yemen-country-hero.jpg","Nepal":"nepal-country-hero.jpg","Thailand":"thailand-country-hero.jpg","Cambodia":"cambodia-country-hero.jpg","Mongolia":"mongolia-country-hero.jpg","New Zealand":"new-zealand-country-hero.jpg","Algeria":"algeria-country-hero.jpg","Tunisia":"tunisia-country-hero.jpg","Kenya":"kenya-country-hero.jpg",'Peru':'peru-country-hero.jpg','Dominican Republic':'dominican-republic-country-hero.jpg','Costa Rica':'costa-rica-country-hero.jpg','Colombia':'colombia-country-hero.jpg','Paraguay':'paraguay-country-hero.jpg','Uruguay':'uruguay-country-hero.jpg','Argentina':'argentina-country-hero.jpg','Chile':'chile-country-hero.jpg','Falkland Islands':'falkland-islands-country-hero.jpg','Falkland Is.':'falkland-islands-country-hero.jpg','Falkland Islands (Malvinas)':'falkland-islands-country-hero.jpg',Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg',Antarctica:'antarctica-country-hero.jpg',Morocco:'morocco-country-hero.jpg',Portugal:'portugal-country-hero.jpg',Switzerland:'switzerland-country-hero.jpg',Luxembourg:'luxembourg-country-hero.jpg',Greece:'greece-country-hero.jpg',Netherlands:'netherlands-country-hero.jpg',Poland:'poland-country-hero.jpg',Italy:'italy-country-hero.jpg',Germany:'germany-country-hero.jpg',Spain:'spain-country-hero.jpg',Denmark:'denmark-country-hero.jpg',Ireland:'ireland-country-hero.jpg','United Kingdom':'united-kingdom-country-hero.jpg',Norway:'norway-country-hero.jpg',Hungary:'hungary-country-hero.jpg',Austria:'austria-country-hero.jpg',Russia:'russia-country-hero.jpg',China:'china-country-hero.jpg',Japan:'japan-country-hero.jpg','Canada':'canada-country-hero.jpg','Mexico':'mexico-country-hero.jpg','Brazil':'brazil-country-hero.jpg','Jamaica':'jamaica-country-hero.jpg','Venezuela':'venezuela-country-hero.jpg','Greenland':'greenland-country-hero.jpg','Iceland':'iceland-country-hero.jpg','Australia':'australia-country-hero.jpg','Egypt':'egypt-country-hero.jpg','India':'india-country-hero.jpg','Rwanda':'rwanda-country-hero.jpg','Sudan':'sudan-country-hero.jpg','United Arab Emirates':'united-arab-emirates-country-hero.jpg','Saudi Arabia':'saudi-arabia-country-hero.jpg',Turkey:'turkey-country-hero.jpg',Iran:'iran-country-hero.jpg',Iraq:'iraq-country-hero.png','South Africa':'south-africa-country-hero.jpg','Bosnia and Herzegovina':'bosnia-and-herzegovina-country-hero.jpg',Croatia:'croatia-country-hero.jpg',Czechia:'czechia-country-hero.jpg',Slovenia:'slovenia-country-hero.jpg',Slovakia:'slovakia-country-hero.jpg',Romania:'romania-country-hero.jpg',Serbia:'serbia-country-hero.jpg',Montenegro:'montenegro-country-hero.jpg',Sweden:'sweden-country-hero.jpg',Finland:'finland-country-hero.jpg','United States':'united-states-country-hero.jpg',Vietnam:'vietnam-country-hero.jpg',Pakistan:'pakistan-country-hero.jpg','South Korea':'south-korea-country-hero.jpg','Georgia':'georgia-country-hero.jpg','Seychelles':'seychelles-country-hero.jpg','Latvia':'latvia-country-hero.jpg','Kazakhstan':'kazakhstan-country-hero.jpg','Estonia':'estonia-country-hero.jpg','Qatar':'qatar-country-hero.jpg','Monaco':'monaco-country-hero.jpg','Malaysia':'malaysia-country-hero.jpg','Ecuador':'ecuador-country-hero.jpg','Azerbaijan':'azerbaijan-country-hero.jpg','Armenia':'armenia-country-hero.jpg','Guatemala':'guatemala-country-hero.jpg','Uzbekistan':'uzbekistan-country-hero.jpg','Fiji':'fiji-country-hero.jpg','Bahrain':'bahrain-country-hero.jpg','Lithuania':'lithuania-country-hero.jpg','Namibia':'namibia-country-hero.jpg','Mauritius':'mauritius-country-hero.jpg','Oman':'oman-country-hero.jpg','Tanzania':'tanzania-country-hero.jpg','Botswana':'botswana-country-hero.jpg','Malta':'malta-country-hero.jpg','Panama':'panama-country-hero.jpg','Ghana':'ghana-country-hero.jpg','Bangladesh':'bangladesh-country-hero.jpg','North Macedonia':'north-macedonia-country-hero.jpg','El Salvador':'el-salvador-country-hero.jpg','Nicaragua':'nicaragua-country-hero.jpg','Honduras':'honduras-country-hero.jpg','Trinidad and Tobago':'trinidad-and-tobago-country-hero.jpg','Kuwait':'kuwait-country-hero.jpg','Senegal':'senegal-country-hero.jpg',"Albania":"albania-country-hero.jpg","Taiwan":"taiwan-country-hero.jpg","Israel":"israel-country-hero.jpg","Laos":"laos-country-hero.jpg","Myanmar":"myanmar-country-hero.jpg","Lebanon":"lebanon-country-hero.jpg","Barbados":"barbados-country-hero.jpg","Saint Lucia":"saint-lucia-country-hero.jpg","Bolivia":"bolivia-country-hero.jpg","Zimbabwe":"zimbabwe-country-hero.jpg","Zambia":"zambia-country-hero.jpg","Ethiopia":"ethiopia-country-hero.jpg","Madagascar":"madagascar-country-hero.jpg","Uganda":"uganda-country-hero.jpg","Nigeria":"nigeria-country-hero.jpg","Ghana":"ghana-country-hero.jpg","Bangladesh":"bangladesh-country-hero.jpg","North Macedonia":"north-macedonia-country-hero.jpg","El Salvador":"el-salvador-country-hero.jpg","Nicaragua":"nicaragua-country-hero.jpg","Honduras":"honduras-country-hero.jpg","Trinidad and Tobago":"trinidad-and-tobago-country-hero.jpg","Kuwait":"kuwait-country-hero.jpg","Senegal":"senegal-country-hero.jpg"},heroPhoto=heroPhotos[countryGuideName(currentCountry)]||wwGetSharedCountryHeroPhotos()[countryGuideName(currentCountry)]?.src||'';if(hero){hero.classList.toggle('has-country-photo',!!heroPhoto);hero.style.backgroundImage=heroPhoto?`linear-gradient(90deg,rgba(0,126,143,.96) 0%,rgba(0,143,157,.88) 42%,rgba(0,116,137,.56) 100%),url("${heroPhoto}")`:'';hero.style.backgroundPosition=countryGuideName(currentCountry)==='France'?'center 54%':'center'}
  const countryFlagEl=$('#countryFlag');countryFlagEl.innerHTML=u?`<img src="${u}" alt="">`:'◉';const countryNameEl=$('#countryName');countryNameEl.textContent=countryGuideName(currentCountry);countryNameEl.setAttribute('role','link');countryNameEl.setAttribute('tabindex','0');countryNameEl.setAttribute('title',`Search Google for ${currentCountry}`);const googleCountry=()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(currentCountry)}`,'_blank','noopener');countryNameEl.onclick=googleCountry;countryNameEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}};if(countryFlagEl){countryFlagEl.setAttribute('role','link');countryFlagEl.setAttribute('tabindex','0');countryFlagEl.setAttribute('title',`Search Google for ${currentCountry}`);countryFlagEl.onclick=googleCountry;countryFlagEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();googleCountry()}}};
  const pills=$('#countrySummaryPills');if(pills){pills.innerHTML='';pills.style.display='none'};
  const cr=$('#countryRatingSummary');if(cr)cr.innerHTML=rating?`<span aria-label="Country rating ${rating.toFixed(1)} out of 5">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5-Math.round(rating))}</span>`:'';const infoBtn=$('#countryInfoButton');if(infoBtn){infoBtn.onclick=e=>{e.preventDefault();openCountryInfo()}}
@@ -13363,7 +13363,7 @@ function wwDicePhotoFor(name){
    const mapped=new Set(Array.from(document.querySelectorAll('#countries path.country'))
      .filter(el=>el.__data__?.geometry).map(el=>countryKey(el.dataset.country)));
    return countryCatalog().map(name=>({name,key:countryKey(name),aliases:Object.keys(flags).filter(alias=>countryKey(alias)===countryKey(name))}))
-     .filter(entry=>mapped.has(entry.key));
+     .filter(entry=>mapped.has(entry.key)||entry.key===countryKey('Saint Pierre and Miquelon'));
  };
  let shown=[];
  function close(){panel.hidden=true;input.blur()}
@@ -13371,6 +13371,24 @@ function wwDicePhotoFor(name){
    const key=countryKey(name);
    const paths=Array.from(document.querySelectorAll('#countries path.country'));
    const target=paths.find(el=>countryKey(el.dataset.country)===key);
+   if(!target && key===countryKey('Saint Pierre and Miquelon') && mapZoomBehavior){
+     const projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'});
+     const pt=projection([-56.27,46.90]);
+     if(!pt)return;
+     close();
+     const scale=28;
+     const transform=d3.zoomIdentity.translate(500-scale*pt[0],260-scale*pt[1]).scale(scale);
+     mapZoomBehavior.scaleExtent([1,56]);
+     const svg=d3.select('#worldMap'),countries=svg.select('#countries');
+     let pin=countries.select('#wwSaintPierreMarker');
+     if(pin.empty()){
+       pin=countries.append('circle').attr('id','wwSaintPierreMarker').attr('cx',pt[0]).attr('cy',pt[1])
+         .attr('r',0.85).attr('fill','#ffcc45').attr('stroke','#075b70').attr('stroke-width',0.2)
+         .style('cursor','pointer').on('click',event=>{event.stopPropagation();openCountry('Saint Pierre and Miquelon',{type:'map'})});
+     }
+     svg.transition().duration(1550).ease(d3.easeCubicInOut).call(mapZoomBehavior.transform,transform);
+     return;
+   }
    if(!target||!mapZoomBehavior){if(typeof toast==='function')toast('Country not available on this map');return}
    const feature=target.__data__;
    if(!feature)return;
@@ -13416,62 +13434,53 @@ function wwDicePhotoFor(name){
 })();
 
 
-/* === WozzaWorld surgical update — today's itinerary card (local date) === */
+
+/* Current itinerary day and past-day folding. Uses the existing day/date/activity markup. */
 (()=>{
-  const dialog=()=>document.getElementById('masterItineraryDialog');
-  const todayIso=()=>{
-    const now=new Date();
-    return [now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+ const dialog=()=>document.getElementById('masterItineraryDialog');
+ const localToday=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const manuallyExpanded=new Set();
+ let tripIdentity='';
+ function isMain(d){return d && !d.classList.contains('ww-daily-plan-v2') && d.dataset.wwView!=='daily' && d.dataset.wwView!=='calendar' && !d.classList.contains('ww-daily-plan-mode')}
+ function decorate(){
+  const d=dialog();if(!isMain(d))return null;
+  const host=d.querySelector('#masterItineraryContent');if(!host)return null;
+  const today=localToday(),items=wwMasterActivities(),byId=new Map(items.map(x=>[String(x.id),x.startDate]));
+  let active=null;
+  host.querySelectorAll('.master-itinerary-day').forEach(day=>{
+   day.classList.remove('ww-itinerary-today','ww-past-day-collapsed');
+   day.querySelectorAll('.ww-itinerary-today-badge,.ww-past-day-toggle').forEach(x=>x.remove());
+   const head=day.querySelector('.master-itinerary-dayhead'),add=head?.querySelector('.ww-day-quick-add[data-date]');
+   const activity=day.querySelector('.master-itinerary-activity[data-id]');
+   const date=add?.dataset.date||byId.get(String(activity?.dataset.id||''))||'';
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!head)return;
+   if(date===today){day.classList.add('ww-itinerary-today');if(!active)active=day}
+   if(date>=today)return;
+   const id=tripIdentity+'|'+date+'|'+Array.from(day.parentElement?.parentElement?.children||[]).indexOf(day.parentElement);
+   const collapsed=!manuallyExpanded.has(id);
+   day.classList.toggle('ww-past-day-collapsed',collapsed);
+   const toggle=document.createElement('button');toggle.type='button';toggle.className='ww-past-day-toggle';
+   toggle.setAttribute('aria-expanded',String(!collapsed));
+   toggle.setAttribute('aria-label',collapsed?'Expand past day':'Collapse past day');
+   toggle.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+   toggle.onclick=e=>{e.stopPropagation();const next=day.classList.toggle('ww-past-day-collapsed');if(next)manuallyExpanded.delete(id);else manuallyExpanded.add(id);toggle.setAttribute('aria-expanded',String(!next));toggle.setAttribute('aria-label',next?'Expand past day':'Collapse past day')};
+   head.appendChild(toggle);
+   head.addEventListener('click',e=>{if(e.target.closest('button,[data-ww-daily-date]'))return;toggle.click()});
+  });
+  return active;
+ }
+ const priorRender=wwRenderTripHierarchy;
+ wwRenderTripHierarchy=function(){const result=priorRender.apply(this,arguments);decorate();return result};
+ wwRenderMasterItinerary=wwRenderTripHierarchy;
+ function wrapOpen(fn){
+  return function(){
+   const identity=String(wwTripStopRows().map(r=>r?.dataset?.id||r?.id||r?.dataset?.stopId||'').join('|'))+'|'+String(document.querySelector('#masterItineraryDialog .master-itinerary-head h2')?.textContent||'');
+   if(identity!==tripIdentity){manuallyExpanded.clear();tripIdentity=identity}
+   const result=fn.apply(this,arguments),active=decorate();
+   if(active)requestAnimationFrame(()=>active.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'}));
+   return result;
   };
-  function highlightToday(){
-    const d=dialog(),host=d?.querySelector('#masterItineraryContent');
-    if(!host || d.dataset.wwView==='daily' || d.classList.contains('ww-daily-plan-v2'))return null;
-    const today=todayIso();
-    let active=null;
-    host.querySelectorAll('.master-itinerary-day').forEach(card=>{
-      card.classList.remove('ww-itinerary-today');
-      card.querySelector('.ww-itinerary-today-badge')?.remove();
-      const add=card.querySelector('.ww-day-quick-add[data-date]');
-      let date=add?.dataset.date||'';
-      if(!date){
-        const activity=card.querySelector('.master-itinerary-activity[data-id]');
-        const id=activity?.dataset.id;
-        if(id)date=wwMasterActivities().find(x=>String(x.id)===String(id))?.startDate||'';
-      }
-      if(date!==today)return;
-      card.classList.add('ww-itinerary-today');
-      const head=card.querySelector('.master-itinerary-dayhead');
-      if(head){
-        const badge=document.createElement('span');
-        badge.className='ww-itinerary-today-badge';
-        badge.textContent='TODAY';
-        badge.setAttribute('aria-label','Today');
-        head.appendChild(badge);
-      }
-      if(!active)active=card;
-    });
-    return active;
-  }
-  const oldRender=wwRenderTripHierarchy;
-  wwRenderTripHierarchy=function(){
-    const result=oldRender.apply(this,arguments);
-    highlightToday();
-    return result;
-  };
-  wwRenderMasterItinerary=wwRenderTripHierarchy;
-  function wrapOpen(fn){
-    return function(){
-      const result=fn.apply(this,arguments);
-      const active=highlightToday();
-      if(active){
-        active.classList.remove('ww-itinerary-today-animate');
-        void active.offsetWidth;
-        active.classList.add('ww-itinerary-today-animate');
-        requestAnimationFrame(()=>active.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'}));
-      }
-      return result;
-    };
-  }
-  wwOpenTripItinerary=wrapOpen(wwOpenTripItinerary);
-  wwOpenMasterItinerary=wrapOpen(wwOpenMasterItinerary);
+ }
+ wwOpenTripItinerary=wrapOpen(wwOpenTripItinerary);
+ wwOpenMasterItinerary=wrapOpen(wwOpenMasterItinerary);
 })();

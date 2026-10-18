@@ -6508,38 +6508,29 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 #wwDiceDialog.ww-dice-no-photo .ww-dice-card{min-height:220px;display:flex;flex-direction:column}
 #wwDiceDialog.ww-dice-no-photo .ww-dice-actions{flex:1;align-content:center}
 
-/* Today's itinerary day: gradient frame, one-time glow and compact header badge. */
+
+/* Current day: a slow, continuously orbiting teal/aqua highlight; no TODAY tag. */
+@property --ww-today-angle{syntax:"<angle>";initial-value:0deg;inherits:false}
 #masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-itinerary-today{
-  position:relative;
-  border:3px solid transparent!important;
-  border-radius:18px!important;
-  background:linear-gradient(#f4c34a,#f4c34a) padding-box,
-             linear-gradient(120deg,#086579,#0aa3a6,#3dd9c4) border-box!important;
-  overflow:hidden;
+ position:relative;border:3px solid transparent!important;border-radius:18px!important;
+ background:linear-gradient(#f4c34a,#f4c34a) padding-box,
+ conic-gradient(from var(--ww-today-angle),#07657a 0%,#087e8e 30%,#47e5d0 50%,#079caa 67%,#07657a 100%) border-box!important;
+ animation:wwTodayGradientOrbit 8s linear infinite;
+ overflow:hidden;
 }
-#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead .ww-itinerary-today-badge{
-  flex:none;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin:0 10px 0 2px;
-  padding:5px 9px;
-  border-radius:999px;
-  background:linear-gradient(120deg,#086579,#0aa3a6);
-  color:#fff;
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.05em;
-  line-height:1;
+@keyframes wwTodayGradientOrbit{to{--ww-today-angle:360deg}}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-past-day-collapsed>.master-itinerary-daybody{display:none!important}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-past-day-collapsed .master-itinerary-dayhead{border-radius:inherit}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead:has(.ww-past-day-toggle){cursor:pointer;padding-right:95px!important}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-past-day-toggle{
+ position:absolute;right:57px;top:50%;transform:translateY(-50%);
+ display:grid;place-items:center;width:29px;height:29px;border:0;border-radius:50%;
+ color:#fff;background:linear-gradient(135deg,#07667a,#0ca5a6);
+ box-shadow:0 2px 5px #004a5626;cursor:pointer;z-index:1;
 }
-#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-itinerary-today-animate{
-  animation:wwTodayCardGlow 2s ease-out 1;
-}
-@keyframes wwTodayCardGlow{
-  0%{box-shadow:0 0 0 0 rgba(10,163,166,.5)}
-  40%{box-shadow:0 0 0 5px rgba(10,163,166,.28),0 0 20px rgba(10,163,166,.3)}
-  100%{box-shadow:0 0 0 0 rgba(10,163,166,0)}
-}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-past-day-toggle svg{transition:transform .2s}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-past-day-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
 @media(prefers-reduced-motion:reduce){
-  #masterItineraryDialog .master-itinerary-day.ww-itinerary-today-animate{animation:none!important}
+ #masterItineraryDialog .master-itinerary-day.ww-itinerary-today{animation:none!important}
+ #masterItineraryDialog .ww-past-day-toggle svg{transition:none!important}
 }
