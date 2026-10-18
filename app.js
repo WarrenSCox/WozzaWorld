@@ -13446,17 +13446,29 @@ function wwDicePhotoFor(name){
   const d=dialog();if(!isMain(d))return null;
   const host=d.querySelector('#masterItineraryContent');if(!host)return null;
   const today=localToday(),items=wwMasterActivities(),byId=new Map(items.map(x=>[String(x.id),x.startDate]));
-  let active=null;
-  host.querySelectorAll('.master-itinerary-day').forEach(day=>{
-   day.classList.remove('ww-itinerary-today','ww-past-day-collapsed');
-   day.querySelectorAll('.ww-itinerary-today-badge,.ww-past-day-toggle').forEach(x=>x.remove());
-   const head=day.querySelector('.master-itinerary-dayhead'),add=head?.querySelector('.ww-day-quick-add[data-date]');
+  const days=Array.from(host.querySelectorAll('.master-itinerary-day'));
+  const dateOf=day=>{
+   const add=day.querySelector('.master-itinerary-dayhead .ww-day-quick-add[data-date]');
    const activity=day.querySelector('.master-itinerary-activity[data-id]');
    const date=add?.dataset.date||byId.get(String(activity?.dataset.id||''))||'';
-   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!head)return;
+   return /^\d{4}-\d{2}-\d{2}$/.test(date)?date:'';
+  };
+  const dates=days.map(dateOf);
+  // Collapse only during an ongoing trip. Completed and future trips retain
+  // the original fully expanded itinerary without any folding controls.
+  const validDates=dates.filter(Boolean);
+  const tripInProgress=validDates.length>0 && validDates.some(date=>date<=today) && validDates.some(date=>date>=today);
+  const lastDate=validDates.length?validDates.reduce((a,b)=>a>b?a:b):'';
+  const canCollapse=tripInProgress && today<=lastDate;
+  let active=null;
+  days.forEach((day,index)=>{
+   day.classList.remove('ww-itinerary-today','ww-past-day-collapsed');
+   day.querySelectorAll('.ww-itinerary-today-badge,.ww-past-day-toggle').forEach(x=>x.remove());
+   const head=day.querySelector('.master-itinerary-dayhead'),date=dates[index];
+   if(!date||!head)return;
    if(date===today){day.classList.add('ww-itinerary-today');if(!active)active=day}
-   if(date>=today)return;
-   const id=tripIdentity+'|'+date+'|'+Array.from(day.parentElement?.parentElement?.children||[]).indexOf(day.parentElement);
+   if(!canCollapse||date>=today)return;
+   const id=tripIdentity+'|'+date+'|'+index;
    const collapsed=!manuallyExpanded.has(id);
    day.classList.toggle('ww-past-day-collapsed',collapsed);
    const toggle=document.createElement('button');toggle.type='button';toggle.className='ww-past-day-toggle';
@@ -13465,7 +13477,7 @@ function wwDicePhotoFor(name){
    toggle.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
    toggle.onclick=e=>{e.stopPropagation();const next=day.classList.toggle('ww-past-day-collapsed');if(next)manuallyExpanded.delete(id);else manuallyExpanded.add(id);toggle.setAttribute('aria-expanded',String(!next));toggle.setAttribute('aria-label',next?'Expand past day':'Collapse past day')};
    head.appendChild(toggle);
-   head.addEventListener('click',e=>{if(e.target.closest('button,[data-ww-daily-date]'))return;toggle.click()});
+   head.onclick=e=>{if(e.target.closest('button,[data-ww-daily-date]'))return;toggle.click()};
   });
   return active;
  }
