@@ -855,6 +855,10 @@ function wwGetSharedCountryHeroPhotos(){
   guidePhotos["Kuwait"]={src:"kuwait-country-hero.jpg",alt:"Kuwait City's skyline reflected across the calm waters of Kuwait Bay at sunset.",caption:"Kuwait City's skyline reflected across the calm waters of Kuwait Bay at sunset."};
   guidePhotos["Senegal"]={src:"senegal-country-hero.jpg",alt:"Colourfully painted traditional fishing boats, known as pirogues, lined up in Senegal.",caption:"Colourfully painted traditional fishing boats, known as pirogues, lined up in Senegal."};
 
+  guidePhotos["Afghanistan"]={src:"afghanistan-country-hero.jpg",alt:"Kabul, Afghanistan’s capital, stretching across a mountain-ringed valley.",caption:"Kabul, Afghanistan’s capital, stretching across a mountain-ringed valley."};
+  guidePhotos["Belize"]={src:"belize-country-hero.jpg",alt:"A palm-lined beach and wooden jetty on Belize’s Caribbean coast.",caption:"A palm-lined beach and wooden jetty on Belize’s Caribbean coast."};
+  guidePhotos["Eswatini"]={src:"eswatini-country-hero.jpg",alt:"Mbabane, Eswatini’s capital, set among the hills of the Ezulwini region.",caption:"Mbabane, Eswatini’s capital, set among the hills of the Ezulwini region."};
+  guidePhotos["Central African Republic"]={src:"central-african-republic-country-hero.jpg",alt:"Dense tropical rainforest, where towering trees and thick vegetation thrive in the humid equatorial climate.",caption:"Dense tropical rainforest, where towering trees and thick vegetation thrive in the humid equatorial climate."};
  wwSharedCountryHeroPhotos=guidePhotos;
  return guidePhotos;
 }
@@ -1881,6 +1885,7 @@ window.addEventListener('hashchange',()=>requestAnimationFrame(ensureWorldViewCl
 const heroByCountry={Belgium:'belgium-country-guide.jpg',France:'france-country-hero.jpg',Antarctica:'antarctica-country-hero.jpg',Morocco:'morocco-country-hero.jpg',Portugal:'portugal-country-hero.jpg',Switzerland:'switzerland-country-hero.jpg',Luxembourg:'luxembourg-country-hero.jpg',Greece:'greece-country-hero.jpg',Netherlands:'netherlands-country-hero.jpg',Poland:'poland-country-hero.jpg',Italy:'italy-country-hero.jpg',Germany:'germany-country-hero.jpg',Spain:'spain-country-hero.jpg',Denmark:'denmark-country-hero.jpg',Ireland:'ireland-country-hero.jpg','United Kingdom':'united-kingdom-country-hero.jpg',Norway:'norway-country-hero.jpg',Hungary:'hungary-country-hero.jpg',Austria:'austria-country-hero.jpg',Russia:'russia-country-hero.jpg',China:'china-country-hero.jpg',Japan:'japan-country-hero.jpg',Canada:'canada-country-hero.jpg',Mexico:'mexico-country-hero.jpg',Brazil:'brazil-country-hero.jpg',Jamaica:'jamaica-country-hero.jpg',Venezuela:'venezuela-country-hero.jpg',Greenland:'greenland-country-hero.jpg',Iceland:'iceland-country-hero.jpg',Australia:'australia-country-hero.jpg',Egypt:'egypt-country-hero.jpg',India:'india-country-hero.jpg',Rwanda:'rwanda-country-hero.jpg',Sudan:'sudan-country-hero.jpg','United Arab Emirates':'united-arab-emirates-country-hero.jpg','Saudi Arabia':'saudi-arabia-country-hero.jpg',Turkey:'turkey-country-hero.jpg',Iran:'iran-country-hero.jpg',Iraq:'iraq-country-hero.png','South Africa':'south-africa-country-hero.jpg','Bosnia and Herzegovina':'bosnia-and-herzegovina-country-hero.jpg',Croatia:'croatia-country-hero.jpg',Czechia:'czechia-country-hero.jpg',Slovenia:'slovenia-country-hero.jpg',Slovakia:'slovakia-country-hero.jpg',Romania:'romania-country-hero.jpg',Serbia:'serbia-country-hero.jpg',Montenegro:'montenegro-country-hero.jpg',Sweden:'sweden-country-hero.jpg',Finland:'finland-country-hero.jpg','United States':'united-states-country-hero.jpg',Vietnam:'vietnam-country-hero.jpg',Pakistan:'pakistan-country-hero.jpg','South Korea':'south-korea-country-hero.jpg','Georgia':'georgia-country-hero.jpg','Seychelles':'seychelles-country-hero.jpg','Latvia':'latvia-country-hero.jpg','Kazakhstan':'kazakhstan-country-hero.jpg','Estonia':'estonia-country-hero.jpg','Qatar':'qatar-country-hero.jpg','Monaco':'monaco-country-hero.jpg','Malaysia':'malaysia-country-hero.jpg','Ecuador':'ecuador-country-hero.jpg','Azerbaijan':'azerbaijan-country-hero.jpg','Armenia':'armenia-country-hero.jpg','Guatemala':'guatemala-country-hero.jpg','Uzbekistan':'uzbekistan-country-hero.jpg','Fiji':'fiji-country-hero.jpg','Bahrain':'bahrain-country-hero.jpg','Lithuania':'lithuania-country-hero.jpg','Namibia':'namibia-country-hero.jpg','Mauritius':'mauritius-country-hero.jpg','Oman':'oman-country-hero.jpg','Tanzania':'tanzania-country-hero.jpg','Botswana':'botswana-country-hero.jpg','Malta':'malta-country-hero.jpg','Panama':'panama-country-hero.jpg','Ghana':'ghana-country-hero.jpg','Bangladesh':'bangladesh-country-hero.jpg','North Macedonia':'north-macedonia-country-hero.jpg','El Salvador':'el-salvador-country-hero.jpg','Nicaragua':'nicaragua-country-hero.jpg','Honduras':'honduras-country-hero.jpg','Trinidad and Tobago':'trinidad-and-tobago-country-hero.jpg','Kuwait':'kuwait-country-hero.jpg','Senegal':'senegal-country-hero.jpg',"Albania":"albania-country-hero.jpg","Taiwan":"taiwan-country-hero.jpg","Israel":"israel-country-hero.jpg","Laos":"laos-country-hero.jpg","Myanmar":"myanmar-country-hero.jpg","Lebanon":"lebanon-country-hero.jpg","Barbados":"barbados-country-hero.jpg","Saint Lucia":"saint-lucia-country-hero.jpg","Bolivia":"bolivia-country-hero.jpg","Zimbabwe":"zimbabwe-country-hero.jpg","Zambia":"zambia-country-hero.jpg","Ethiopia":"ethiopia-country-hero.jpg","Madagascar":"madagascar-country-hero.jpg","Uganda":"uganda-country-hero.jpg","Nigeria":"nigeria-country-hero.jpg","Ghana":"ghana-country-hero.jpg","Bangladesh":"bangladesh-country-hero.jpg","North Macedonia":"north-macedonia-country-hero.jpg","El Salvador":"el-salvador-country-hero.jpg","Nicaragua":"nicaragua-country-hero.jpg","Honduras":"honduras-country-hero.jpg","Trinidad and Tobago":"trinidad-and-tobago-country-hero.jpg","Kuwait":"kuwait-country-hero.jpg","Senegal":"senegal-country-hero.jpg"};
 const warmed=new Set(),queue=[];let running=0,settleTimer=0;
 const pump=()=>{while(running<2&&queue.length){const src=queue.shift();if(warmed.has(src))continue;warmed.add(src);running++;const img=new Image();img.decoding='async';const done=()=>{running--;pump()};img.onload=done;img.onerror=done;img.src=src;if(img.decode)img.decode().catch(()=>{})}};
+Object.assign(heroByCountry,{"Afghanistan": "afghanistan-country-hero.jpg", "Belize": "belize-country-hero.jpg", "Eswatini": "eswatini-country-hero.jpg", "Central African Republic": "central-african-republic-country-hero.jpg"});
 const warmCountries=(names,limit=10)=>{let added=0;for(const raw of names){if(added>=limit)break;const name=raw==='eSwatini'?'Eswatini':raw,src=heroByCountry[name];if(src&&!warmed.has(src)&&!queue.includes(src)){queue.push(src);added++}}pump()};
 const priority=()=>{const names=[];Object.entries(state.statuses||{}).forEach(([c,status])=>{if(status==='going'||status==='visited'||status==='bucket')names.push(c)});return names};
 const idle=()=>warmCountries(priority(),12);if('requestIdleCallback'in window)requestIdleCallback(idle,{timeout:1800});else setTimeout(idle,500);
@@ -13408,4 +13413,65 @@ function wwDicePhotoFor(name){
  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(shown.length)locate(shown[0].name)}else if(e.key==='Escape'){e.preventDefault();close()}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)close()});
  new MutationObserver(()=>{if(!document.body.classList.contains('map-view')&&!panel.hidden)close()}).observe(document.body,{attributes:true,attributeFilter:['class']});
+})();
+
+
+/* === WozzaWorld surgical update — today's itinerary card (local date) === */
+(()=>{
+  const dialog=()=>document.getElementById('masterItineraryDialog');
+  const todayIso=()=>{
+    const now=new Date();
+    return [now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+  };
+  function highlightToday(){
+    const d=dialog(),host=d?.querySelector('#masterItineraryContent');
+    if(!host || d.dataset.wwView==='daily' || d.classList.contains('ww-daily-plan-v2'))return null;
+    const today=todayIso();
+    let active=null;
+    host.querySelectorAll('.master-itinerary-day').forEach(card=>{
+      card.classList.remove('ww-itinerary-today');
+      card.querySelector('.ww-itinerary-today-badge')?.remove();
+      const add=card.querySelector('.ww-day-quick-add[data-date]');
+      let date=add?.dataset.date||'';
+      if(!date){
+        const activity=card.querySelector('.master-itinerary-activity[data-id]');
+        const id=activity?.dataset.id;
+        if(id)date=wwMasterActivities().find(x=>String(x.id)===String(id))?.startDate||'';
+      }
+      if(date!==today)return;
+      card.classList.add('ww-itinerary-today');
+      const head=card.querySelector('.master-itinerary-dayhead');
+      if(head){
+        const badge=document.createElement('span');
+        badge.className='ww-itinerary-today-badge';
+        badge.textContent='TODAY';
+        badge.setAttribute('aria-label','Today');
+        head.appendChild(badge);
+      }
+      if(!active)active=card;
+    });
+    return active;
+  }
+  const oldRender=wwRenderTripHierarchy;
+  wwRenderTripHierarchy=function(){
+    const result=oldRender.apply(this,arguments);
+    highlightToday();
+    return result;
+  };
+  wwRenderMasterItinerary=wwRenderTripHierarchy;
+  function wrapOpen(fn){
+    return function(){
+      const result=fn.apply(this,arguments);
+      const active=highlightToday();
+      if(active){
+        active.classList.remove('ww-itinerary-today-animate');
+        void active.offsetWidth;
+        active.classList.add('ww-itinerary-today-animate');
+        requestAnimationFrame(()=>active.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'}));
+      }
+      return result;
+    };
+  }
+  wwOpenTripItinerary=wrapOpen(wwOpenTripItinerary);
+  wwOpenMasterItinerary=wrapOpen(wwOpenMasterItinerary);
 })();

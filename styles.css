@@ -6507,3 +6507,39 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 #wwDiceDialog #wwDiceFlag,#wwDiceDialog #wwDiceFlag img{display:block;width:100%;height:100%;object-fit:cover}
 #wwDiceDialog.ww-dice-no-photo .ww-dice-card{min-height:220px;display:flex;flex-direction:column}
 #wwDiceDialog.ww-dice-no-photo .ww-dice-actions{flex:1;align-content:center}
+
+/* Today's itinerary day: gradient frame, one-time glow and compact header badge. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-itinerary-today{
+  position:relative;
+  border:3px solid transparent!important;
+  border-radius:18px!important;
+  background:linear-gradient(#f4c34a,#f4c34a) padding-box,
+             linear-gradient(120deg,#086579,#0aa3a6,#3dd9c4) border-box!important;
+  overflow:hidden;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead .ww-itinerary-today-badge{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 10px 0 2px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:linear-gradient(120deg,#086579,#0aa3a6);
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.05em;
+  line-height:1;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-itinerary-today-animate{
+  animation:wwTodayCardGlow 2s ease-out 1;
+}
+@keyframes wwTodayCardGlow{
+  0%{box-shadow:0 0 0 0 rgba(10,163,166,.5)}
+  40%{box-shadow:0 0 0 5px rgba(10,163,166,.28),0 0 20px rgba(10,163,166,.3)}
+  100%{box-shadow:0 0 0 0 rgba(10,163,166,0)}
+}
+@media(prefers-reduced-motion:reduce){
+  #masterItineraryDialog .master-itinerary-day.ww-itinerary-today-animate{animation:none!important}
+}

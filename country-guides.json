@@ -9977,5 +9977,55 @@
       "contentType": "static travel reference",
       "safetyNote": "Culture notes are general guidance, not universal rules."
     }
+  },
+  {
+    "country": "Saint Pierre and Miquelon",
+    "iso2": "PM",
+    "iso3": "SPM",
+    "capital": "Saint-Pierre",
+    "officialLanguages": [
+      "French"
+    ],
+    "currency": [
+      {
+        "code": "EUR",
+        "name": "Euro"
+      }
+    ],
+    "plugSocketTypes": [
+      "C",
+      "E"
+    ],
+    "drivingSide": "right",
+    "standardTimeZones": [
+      "UTC−03:00"
+    ],
+    "notableLandmarks": [
+      "Île aux Marins",
+      "Pointe aux Canons Lighthouse",
+      "Grand Barachois lagoon"
+    ],
+    "wellKnownCuisine": [
+      "seafood",
+      "salt cod dishes",
+      "French pastries"
+    ],
+    "interestingFacts": [
+      "Saint Pierre and Miquelon is a French overseas collectivity just south of Newfoundland, Canada.",
+      "The archipelago consists of Saint-Pierre, Miquelon-Langlade and smaller islands.",
+      "The territory uses the euro despite its location off the coast of North America."
+    ],
+    "cultureEtiquette": [
+      "French is the main language; basic French greetings are appreciated.",
+      "Weather can change quickly, particularly on coastal excursions.",
+      "Respect access restrictions and wildlife habitats, particularly around seabird nesting areas."
+    ],
+    "_meta": {
+      "datasetVersion": "1.0.0",
+      "reviewed": "2026-10",
+      "scope": "French overseas collectivity",
+      "contentType": "static travel reference",
+      "safetyNote": "Culture notes are general guidance, not universal rules. Time zones and official designations can change."
+    }
   }
 ]
