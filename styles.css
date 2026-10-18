@@ -6534,3 +6534,18 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
  #masterItineraryDialog .master-itinerary-day.ww-itinerary-today{animation:none!important}
  #masterItineraryDialog .ww-past-day-toggle svg{transition:none!important}
 }
+
+
+/* 18 Oct: remove inherited white inset strokes from the animated day frame.
+   The animated gradient is the only visible border. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-itinerary-today>.master-itinerary-dayhead{
+ border:0!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+ outline:0!important;
+}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-itinerary-today>.master-itinerary-dayhead>b{
+ border-radius:0!important;
+ box-shadow:none!important;
+ outline:0!important;
+}

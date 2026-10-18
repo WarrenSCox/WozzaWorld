@@ -8684,5 +8684,54 @@
       "notForecast": true,
       "temperatureUnit": "C"
     }
+  },
+  {
+    "country": "Saint Pierre and Miquelon",
+    "typicalWeather": [
+      {
+        "months": "March-May",
+        "season": "Spring",
+        "typicalTemperatureC": {
+          "low": -2,
+          "high": 9
+        },
+        "summary": "Cool, windy and often damp, with frequent fog and occasional late snow."
+      },
+      {
+        "months": "June-August",
+        "season": "Summer",
+        "typicalTemperatureC": {
+          "low": 8,
+          "high": 19
+        },
+        "summary": "Mild rather than hot, with cool sea breezes, frequent fog and changeable showers."
+      },
+      {
+        "months": "September-November",
+        "season": "Autumn",
+        "typicalTemperatureC": {
+          "low": 2,
+          "high": 16
+        },
+        "summary": "Increasingly cool and wet, with strong winds and unsettled Atlantic weather."
+      },
+      {
+        "months": "December-February",
+        "season": "Winter",
+        "typicalTemperatureC": {
+          "low": -7,
+          "high": 3
+        },
+        "summary": "Cold, windy and often snowy or icy, with temperatures moderated by the surrounding ocean."
+      }
+    ],
+    "regionalVariation": "A small North Atlantic archipelago near Newfoundland; exposed coasts are especially windy and foggy. Values are approximate seasonal ranges, not forecasts.",
+    "_meta": {
+      "datasetVersion": "1.0.0",
+      "reviewed": "2026-10",
+      "type": "typical climate guidance",
+      "notForecast": true,
+      "temperatureUnit": "C"
+    }
   }
 ]
