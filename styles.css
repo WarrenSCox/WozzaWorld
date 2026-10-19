@@ -6575,3 +6575,6 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
  #masterItineraryDialog .master-itinerary-day.ww-itinerary-today::after{animation:none!important}
  #masterItineraryDialog .ww-past-day-toggle svg{transition:none!important}
 }
+
+/* 19 Oct: visual alignment only; collapse/expand behaviour unchanged. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .ww-past-day-toggle svg{position:relative;left:-1px;top:1px}

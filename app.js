@@ -7732,7 +7732,7 @@ wwOpenQuickInfo=function(row,id){
           <button type="button" class="ww-daily-plan-add" aria-label="Add activity">+</button>
         </div>
         <div class="master-itinerary-daybody">
-          ${all.length?all.map(wwActivityScheduleRow).join(''):'<div class="master-itinerary-empty ww-daily-plan-empty"><span class="ww-daily-plan-empty-icon" aria-hidden="true"><svg viewBox="0 0 48 48" width="42" height="42" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="7" width="28" height="24" rx="2"/><path d="M24 4v3M24 31v12M17 43h14M17 31l-5 12M31 31l5 12"/><path d="m16 24 6-7 5 4 5-6"/></svg></span><strong>A blank canvas</strong><p>Tap + to add an activity</p></div>'}
+          ${all.length?all.map(wwActivityScheduleRow).join(''):'<div class="master-itinerary-empty ww-daily-plan-empty"><span class="ww-daily-plan-empty-icon" aria-hidden="true"><img src="blank-canvas-icon.png" width="42" height="42" alt="" loading="lazy" style="display:block;width:42px;height:42px;object-fit:contain" /></span><strong>A blank canvas</strong><p>Tap + to add an activity</p></div>'}
         </div>
       </section>`;
     wwWireItineraryActivityActions(host,d);
