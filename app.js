@@ -7732,7 +7732,7 @@ wwOpenQuickInfo=function(row,id){
           <button type="button" class="ww-daily-plan-add" aria-label="Add activity">+</button>
         </div>
         <div class="master-itinerary-daybody">
-          ${all.length?all.map(wwActivityScheduleRow).join(''):'<div class="master-itinerary-empty ww-daily-plan-empty"><span class="ww-daily-plan-empty-icon" aria-hidden="true">✦</span><strong>A blank canvas</strong><p>Tap + to add an activity</p></div>'}
+          ${all.length?all.map(wwActivityScheduleRow).join(''):'<div class="master-itinerary-empty ww-daily-plan-empty"><span class="ww-daily-plan-empty-icon" aria-hidden="true"><svg viewBox="0 0 48 48" width="42" height="42" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="7" width="28" height="24" rx="2"/><path d="M24 4v3M24 31v12M17 43h14M17 31l-5 12M31 31l5 12"/><path d="m16 24 6-7 5 4 5-6"/></svg></span><strong>A blank canvas</strong><p>Tap + to add an activity</p></div>'}
         </div>
       </section>`;
     wwWireItineraryActivityActions(host,d);
@@ -13513,41 +13513,3 @@ function wwDicePhotoFor(name){
 })();
 
 
-/* 19 Oct 2026 — Daily Plan empty-state and consistent day-card curvature.
-   Scoped to itinerary day cards; no changes to stored trip data or exports. */
-(()=>{
-  const st=document.createElement('style');
-  st.id='ww-daily-plan-empty-and-rounded-corners';
-  st.textContent=`
-    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent .master-itinerary-day.ww-daily-plan-schedule,
-    #masterItineraryDialog:not(.ww-daily-plan-v2) #masterItineraryContent .master-itinerary-day{
-      border-radius:28px!important;
-      overflow:hidden!important;
-    }
-    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent .master-itinerary-day.ww-daily-plan-schedule .ww-daily-plan-dayhead,
-    #masterItineraryDialog:not(.ww-daily-plan-v2) #masterItineraryContent .master-itinerary-day>.master-itinerary-dayhead{
-      border-radius:28px 28px 0 0!important;
-      overflow:hidden!important;
-    }
-    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent .master-itinerary-day.ww-daily-plan-schedule .master-itinerary-daybody{
-      border-radius:0 0 28px 28px!important;
-    }
-    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent .ww-daily-plan-empty{
-      display:flex!important;flex-direction:column!important;align-items:center!important;
-      justify-content:center!important;gap:7px!important;
-      background:transparent!important;border:0!important;box-shadow:none!important;
-      border-radius:0!important;margin:0!important;padding:26px 16px 32px!important;
-      text-align:center!important;color:#17363c!important;
-    }
-    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent .ww-daily-plan-empty .ww-daily-plan-empty-icon{
-      font-size:30px!important;line-height:1.2!important;color:#17363c!important;
-    }
-    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent .ww-daily-plan-empty strong{
-      font-size:19px!important;font-weight:800!important;
-    }
-    #masterItineraryDialog.ww-daily-plan-v2 #masterItineraryContent .ww-daily-plan-empty p{
-      font-size:14px!important;color:#365052!important;margin:0!important;
-    }
-  `;
-  document.head.appendChild(st);
-})();
