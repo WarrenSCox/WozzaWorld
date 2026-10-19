@@ -873,6 +873,7 @@ function wwGetSharedCountryHeroPhotos(){
   guidePhotos["Moldova"]={src:"moldova-country-hero.jpg",alt:"A river winding through Moldova’s green countryside, bordered by wooded hills and agricultural fields.",caption:"A river winding through Moldova’s green countryside, bordered by wooded hills and agricultural fields."};
   guidePhotos["Dominica"]={src:"dominica-country-hero.jpg",alt:"A forest-covered headland overlooking the Caribbean Sea, with coastal buildings and green hills on the island of Dominica.",caption:"A forest-covered headland overlooking the Caribbean Sea, with coastal buildings and green hills on the island of Dominica."};
   guidePhotos["Bermuda"]={src:"bermuda-country-hero.jpg",alt:"Boats anchored in the turquoise waters of Bermuda’s sheltered bays, surrounded by small islands and coastal communities.",caption:"Boats anchored in the turquoise waters of Bermuda’s sheltered bays, surrounded by small islands and coastal communities."};
+  guidePhotos["North Korea"]={src:"north-korea-country-hero.jpg",alt:"The Juche Tower and bronze statues in Pyongyang, North Korea.",caption:"The Juche Tower and bronze statues in Pyongyang, North Korea."};
  wwSharedCountryHeroPhotos=guidePhotos;
  return guidePhotos;
 }
@@ -1900,6 +1901,7 @@ const heroByCountry={Belgium:'belgium-country-guide.jpg',France:'france-country-
 const warmed=new Set(),queue=[];let running=0,settleTimer=0;
 const pump=()=>{while(running<2&&queue.length){const src=queue.shift();if(warmed.has(src))continue;warmed.add(src);running++;const img=new Image();img.decoding='async';const done=()=>{running--;pump()};img.onload=done;img.onerror=done;img.src=src;if(img.decode)img.decode().catch(()=>{})}};
 Object.assign(heroByCountry,{"Cameroon": "cameroon-country-hero.jpg", "Tajikistan": "tajikistan-country-hero.jpg", "Ukraine": "ukraine-country-hero.jpg", "Somalia": "somalia-country-hero.jpg", "Liberia": "liberia-country-hero.jpg", "Libya": "libya-country-hero.jpg", "Sierra Leone": "sierra-leone-country-hero.jpg", "Isle of Man": "isle-of-man-country-hero.jpg", "Aruba": "aruba-country-hero.jpg", "Moldova": "moldova-country-hero.jpg", "Dominica": "dominica-country-hero.jpg", "Bermuda": "bermuda-country-hero.jpg"});
+Object.assign(heroByCountry,{"North Korea":"north-korea-country-hero.jpg"});
 Object.assign(heroByCountry,{"Afghanistan": "afghanistan-country-hero.jpg", "Belize": "belize-country-hero.jpg", "Eswatini": "eswatini-country-hero.jpg", "Central African Republic": "central-african-republic-country-hero.jpg"});
 const warmCountries=(names,limit=10)=>{let added=0;for(const raw of names){if(added>=limit)break;const name=raw==='eSwatini'?'Eswatini':raw,src=heroByCountry[name];if(src&&!warmed.has(src)&&!queue.includes(src)){queue.push(src);added++}}pump()};
 const priority=()=>{const names=[];Object.entries(state.statuses||{}).forEach(([c,status])=>{if(status==='going'||status==='visited'||status==='bucket')names.push(c)});return names};
