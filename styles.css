@@ -5416,7 +5416,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 /* 11 Oct 2026 — Activity Type and Link Type picker dialog visual parity with Privacy.
    CSS only: no selection handlers, icon data, scroll geometry or saved state touched.
    Higher specificity than the legacy JavaScript-injected beige picker styles. */
-:is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker).ww-activity-type-picker{
   border:0!important;
   background:transparent!important;
   padding:0!important;
@@ -5425,7 +5425,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   max-height:88dvh!important;
   overflow:visible!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker .ww-type-picker-shell{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker).ww-activity-type-picker .ww-type-picker-shell{
   box-sizing:border-box!important;
   width:100%!important;
   max-height:88dvh!important;
@@ -5440,10 +5440,10 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   color:#183641!important;
   box-shadow:0 18px 55px rgba(0,45,57,.28)!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-shell::-webkit-scrollbar{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-shell::-webkit-scrollbar{
   display:none!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker .ww-type-picker-head{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker).ww-activity-type-picker .ww-type-picker-head{
   box-sizing:border-box!important;
   position:sticky!important;
   z-index:3!important;
@@ -5460,20 +5460,20 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   background:linear-gradient(120deg,#086579 0%,#0aa3a6 100%)!important;
   color:#fff!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-head small{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-head small{
   display:block!important;
   margin:0 0 5px!important;
   color:rgba(255,255,255,.85)!important;
   font:800 11px/1.2 Inter,ui-sans-serif,system-ui,sans-serif!important;
   letter-spacing:.075em!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-head h3{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-head h3{
   margin:0!important;
   color:#fff!important;
   font:800 25px/1.12 Inter,ui-sans-serif,system-ui,sans-serif!important;
   letter-spacing:-.025em!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-head .ww-type-picker-close{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-head .ww-type-picker-close{
   box-sizing:border-box!important;
   width:46px!important;
   height:46px!important;
@@ -5485,7 +5485,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   font:400 31px/1 Inter,ui-sans-serif,system-ui,sans-serif!important;
   cursor:pointer!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-grid{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-grid{
   box-sizing:border-box!important;
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
@@ -5494,20 +5494,20 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   padding:23px 20px 25px!important;
   background:#effafa!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-option{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-option{
   background:#fff!important;
   border-color:rgba(255,255,255,.98)!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-option.selected{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-option.selected{
   background:#e7f6f7!important;
   border-color:#07899d!important;
 }
 @media(max-width:390px){
-  :is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-grid{
+  :is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-grid{
     gap:8px!important;
     padding:19px 15px 21px!important;
   }
-  :is(#wwActivityTypePicker,#wwLinkTypePicker).ww-activity-type-picker .ww-type-picker-head{
+  :is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker).ww-activity-type-picker .ww-type-picker-head{
     padding:23px 21px!important;
   }
 }
@@ -5515,7 +5515,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 
 /* 11 Oct 2026 — Privacy-family mustard Close action for Activity/Link pickers.
    Keep their original Close handlers and four-column selection layouts intact. */
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-footer{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-footer{
   box-sizing:border-box!important;
   position:sticky!important;
   z-index:4!important;
@@ -5528,7 +5528,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   padding:7px 24px 22px!important;
   background:#effafa!important;
 }
-:is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-footer .ww-type-picker-close{
+:is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-footer .ww-type-picker-close{
   box-sizing:border-box!important;
   display:inline-flex!important;
   align-items:center!important;
@@ -5548,7 +5548,7 @@ body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
   cursor:pointer!important;
 }
 @media(max-width:390px){
-  :is(#wwActivityTypePicker,#wwLinkTypePicker) .ww-type-picker-footer{
+  :is(#wwActivityTypePicker,#wwLinkTypePicker,#wwTransportPicker) .ww-type-picker-footer{
     padding:7px 21px 19px!important;
   }
 }
@@ -6578,3 +6578,18 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 
 /* 19 Oct: visual alignment only; collapse/expand behaviour unchanged. */
 #masterItineraryDialog:not(.ww-daily-plan-v2) .ww-past-day-toggle svg{position:relative;left:-1px;top:1px}
+
+/* The add control follows the existing collapsed class, not a separate state. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-past-day-collapsed .ww-day-quick-add{display:none!important}
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-dayhead>b[title="Edit day number"]{cursor:pointer}
+#wwDayNumberEditor .ww-day-label-editor{padding:22px;background:#effafa;display:grid;gap:12px;color:#173640}
+#wwDayNumberEditor .ww-day-label-editor label{font-weight:800;font-size:14px}
+#wwDayNumberEditor .ww-day-label-editor input{border:1px solid #b9d7d8;border-radius:14px;padding:12px;font:800 20px Inter,sans-serif;width:100%;box-sizing:border-box;background:#fff;color:#173640}
+#wwDayNumberEditor .ww-day-label-editor p{margin:0;font-size:13px;line-height:1.45}
+#wwDayNumberEditor .ww-day-label-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+#wwDayNumberEditor .ww-day-label-actions button{border:0;border-radius:999px;padding:11px 13px;background:#d8eaeb;color:#173640;font-weight:800}
+#wwDayNumberEditor #wwDayLabelSave{background:#ebc02b}
+
+#wwDayNumberEditor .ww-type-picker-shell{border-radius:28px!important;overflow:hidden!important;background:#effafa!important;padding:0!important}
+#wwDayNumberEditor .ww-type-picker-head{background:linear-gradient(120deg,#086579,#0aa3a6)!important;padding:25px 24px!important;margin:0!important}
+#wwDayNumberEditor .ww-type-picker-head small,#wwDayNumberEditor .ww-type-picker-head h3{color:#fff!important}
