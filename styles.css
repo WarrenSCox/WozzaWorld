@@ -6600,3 +6600,10 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 
 /* Hungary-only country Info photograph: lower the Parliament in its 16:9 crop. */
 #countryInfoBody .country-guide-photo img[src="hungary-country-hero.jpg"]{object-position:center 30%!important}
+
+/* 21 Oct refinement: keep editable numbered and blank day labels the same width.
+   Flexible / To Be Scheduled headings have no edit title and are untouched. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) #masterItineraryContent .master-itinerary-dayhead > b[title="Edit day number"]{
+  box-sizing:border-box!important;width:60px!important;min-width:60px!important;
+  justify-content:center!important;white-space:nowrap!important;
+}
