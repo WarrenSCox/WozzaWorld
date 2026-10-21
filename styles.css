@@ -6593,3 +6593,10 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 #wwDayNumberEditor .ww-type-picker-shell{border-radius:28px!important;overflow:hidden!important;background:#effafa!important;padding:0!important}
 #wwDayNumberEditor .ww-type-picker-head{background:linear-gradient(120deg,#086579,#0aa3a6)!important;padding:25px 24px!important;margin:0!important}
 #wwDayNumberEditor .ww-type-picker-head small,#wwDayNumberEditor .ww-type-picker-head h3{color:#fff!important}
+
+/* 21 Oct: collapsed itinerary chevron occupies the former quick-add position.
+   Expanded headers keep their existing two-control alignment. */
+#masterItineraryDialog:not(.ww-daily-plan-v2) .master-itinerary-day.ww-past-day-collapsed .ww-past-day-toggle{right:14px!important}
+
+/* Hungary-only country Info photograph: lower the Parliament in its 16:9 crop. */
+#countryInfoBody .country-guide-photo img[src="hungary-country-hero.jpg"]{object-position:center 30%!important}

@@ -4843,7 +4843,8 @@ wwOpenQuickInfo=function(row,id){
     ['Recreation','recreation.png'],
     ['Vineyard','vineyard.png'],
     ['Library','LIBRARY.png'],
-    ['Zoo','zoo.png']
+    ['Zoo','zoo.png'],
+    ['Shopping','shopping.png']
   ];
   const typeNormalise=name=>name==='See & Do'?'Other':name==='Museum / Gallery'?'Gallery':name;
   const typeAsset=name=>WW_PICKER_TYPES.find(x=>x[0]===typeNormalise(name))?.[1]||'';
