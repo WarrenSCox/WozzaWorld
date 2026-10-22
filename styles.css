@@ -6586,7 +6586,7 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 #wwDayNumberEditor .ww-day-label-editor label{font-weight:800;font-size:14px}
 #wwDayNumberEditor .ww-day-label-editor input{border:1px solid #b9d7d8;border-radius:14px;padding:12px;font:800 20px Inter,sans-serif;width:100%;box-sizing:border-box;background:#fff;color:#173640}
 #wwDayNumberEditor .ww-day-label-editor p{margin:0;font-size:13px;line-height:1.45}
-#wwDayNumberEditor .ww-day-label-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+#wwDayNumberEditor .ww-day-label-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center;padding:12px 26px 22px;background:#effafa;box-sizing:border-box}
 #wwDayNumberEditor .ww-day-label-actions button{border:0;border-radius:999px;padding:11px 13px;background:#d8eaeb;color:#173640;font-weight:800}
 #wwDayNumberEditor #wwDayLabelSave{background:#ebc02b}
 
@@ -6616,5 +6616,8 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 #highestRatedStats .ww-rated-drop-marker{background:rgba(7,132,154,.10);border:2px dashed #078fa3;border-radius:12px;box-sizing:border-box}
 
 /* Day-numbering close: match the Privacy dialog action button. */
-#wwDayNumberEditor #wwDayLabelClose{display:block;margin:12px 0 0 auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
+#wwDayNumberEditor #wwDayLabelClose{display:inline-flex;align-items:center;justify-content:center;margin:0;min-width:106px;min-height:44px;background:#e9bd2a;border:0;border-radius:999px;padding:10px 22px;font-family:inherit;font-size:16px;font-weight:750;color:#193d4a;box-shadow:none;cursor:pointer}
 #highestRatedStats.ww-rated-drag-active{touch-action:none}
+
+/* Highest Rated: round only the floating dragged preview, without changing the dashed drop marker. */
+body > .highest-rated-row[data-drag-style]{border-radius:16px;overflow:hidden;box-sizing:border-box}
