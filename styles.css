@@ -6613,11 +6613,11 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 #wwDayNumberEditor .ww-day-exclusion-option input{width:25px;height:25px;flex:none;accent-color:#078fa3;cursor:pointer}
 
 #highestRatedStats .highest-rated-row{user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:grab}
-#highestRatedStats .ww-rated-drop-marker{background:rgba(7,132,154,.10);border:0;border-radius:18px;box-sizing:border-box}
+#highestRatedStats .ww-rated-drop-marker{background:rgba(7,132,154,.10);border:0;border-radius:10px;box-sizing:border-box}
 
 /* Day-numbering close: match the Privacy dialog action button. */
 #wwDayNumberEditor #wwDayLabelClose{display:inline-flex;align-items:center;justify-content:center;margin:0;min-width:106px;min-height:44px;background:#e9bd2a;border:0;border-radius:999px;padding:10px 22px;font-family:inherit;font-size:16px;font-weight:750;color:#193d4a;box-shadow:none;cursor:pointer}
 #highestRatedStats.ww-rated-drag-active{touch-action:none}
 
 /* Highest Rated: round only the floating dragged preview, without changing the dashed drop marker. */
-body > .highest-rated-row[data-drag-style]{border-radius:18px;overflow:hidden;box-sizing:border-box}
+body > .highest-rated-row[data-drag-style]{border-radius:10px;overflow:hidden;box-sizing:border-box}
