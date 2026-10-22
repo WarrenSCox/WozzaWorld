@@ -7762,7 +7762,7 @@ wwOpenQuickInfo=function(row,id){
     host.innerHTML=`
       <section class="master-itinerary-day ww-daily-plan-schedule">
         <div class="ww-daily-plan-dayhead">
-          <b>DAY ${dayNumber(iso)}</b>
+          <b>${window.wwItineraryDisplayDayLabel?.(iso) || `DAY ${dayNumber(iso)}`}</b>
           <span>${esc(wwItineraryDayLabel(iso))}</span>
           <button type="button" class="ww-daily-plan-add" aria-label="Add activity">+</button>
         </div>
@@ -13506,6 +13506,12 @@ function wwDicePhotoFor(name){
    unique.forEach(iso=>{const v=saved[iso];if(v===null){out[iso]='DAY —';return}if(Number.isInteger(v)&&v>0)n=v-1;out[iso]='DAY '+(++n)});
    return out;
  }
+ // Shared display numbering for Daily Plan opened from either Calendar or Itinerary.
+ // Use the same date set and exclusions as the main itinerary decorator.
+ window.wwItineraryDisplayDayLabel=iso=>{
+   const dates=wwMasterActivities().map(x=>x.startDate).filter(Boolean);
+   return labelsFor([...dates,iso])[iso]||'DAY 1';
+ };
  function labelDialog(){
    let p=document.getElementById('wwDayNumberEditor');if(p)return p;
    p=document.createElement('dialog');p.id='wwDayNumberEditor';p.className='ww-activity-type-picker';
