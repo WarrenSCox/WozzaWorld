@@ -6614,3 +6614,7 @@ body.map-view #wwMapOptionsStack #wwMapDiceBtn .ww-map-dice-icon {
 
 #highestRatedStats .highest-rated-row{user-select:none;-webkit-user-select:none;touch-action:pan-y;cursor:grab}
 #highestRatedStats .ww-rated-drop-marker{background:rgba(7,132,154,.10);border:2px dashed #078fa3;border-radius:12px;box-sizing:border-box}
+
+/* Day-numbering close: match the Privacy dialog action button. */
+#wwDayNumberEditor #wwDayLabelClose{display:block;margin:12px 0 0 auto;background:#e9bd2a;border:0;border-radius:25px;padding:10px 25px;font-weight:750;color:#193d4a;cursor:pointer}
+#highestRatedStats.ww-rated-drag-active{touch-action:none}

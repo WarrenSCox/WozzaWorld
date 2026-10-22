@@ -120,7 +120,7 @@ function attachBucketRanking(){
       list.insertBefore(marker,row);
       row.dataset.dragStyle=row.getAttribute('style')||'';row.classList.add('bucket-drag-live');
       Object.assign(row.style,{position:'fixed',left:`${r.left}px`,top:`${r.top}px`,width:`${r.width}px`,height:`${r.height}px`,margin:'0',zIndex:'2147483647',pointerEvents:'none',opacity:'.94',boxShadow:'0 10px 24px rgba(0,35,55,.22)'});
-      document.body.appendChild(row);navigator.vibrate?.(20);
+      document.body.appendChild(row);list.classList.add('ww-rated-drag-active');navigator.vibrate?.(20);
     };
     const moveDrag=(x,y)=>{if(!dragging)return;row.style.top=`${y-grabY}px`;placeMarker(y)};
     const finishDrag=()=>{
@@ -710,7 +710,7 @@ const savedRank=Array.isArray(state.highestRatedOrder)?state.highestRatedOrder:[
 if(savedRank.length)rated.sort((a,b)=>{const ai=savedRank.indexOf(String(a.id)),bi=savedRank.indexOf(String(b.id));return (ai<0?Infinity:ai)-(bi<0?Infinity:bi)});const ratedEl=$('#highestRatedStats');if(ratedEl){if(!rated.length)ratedEl.innerHTML='<p class="muted">Rate a trip to build your chart.</p>';else{ratedEl.innerHTML=rated.slice(0,10).map((t,i)=>`<div data-trip-id="${esc(String(t.id))}" class="passport-mini-row highest-rated-row ${i>=5?'is-stat-hidden':''}"><b>${i+1}</b><span>${esc(t.name||'Untitled trip')}</span><strong>${Number(t.rating)} ★</strong></div>`).join('')+(rated.length>5?'<button type="button" class="stats-show-more list-add" data-expanded="false" aria-label="Show more">＋</button>':'');bindMore(ratedEl);wwBindHighestRatedDrag(ratedEl)}}}
 /* Highest-rated chart ordering: same long-press marker approach as itinerary activities. */
 function wwBindHighestRatedDrag(list){
-  if(!list||list.dataset.wwDragReady==='1')return;list.dataset.wwDragReady='1';
+  if(!list)return; // Rows are replaced on every stats render; bind the new rows each time.
   const persist=()=>{
     const ids=[...list.querySelectorAll('.highest-rated-row')].map(r=>r.dataset.tripId);
     const prior=Array.isArray(state.highestRatedOrder)?state.highestRatedOrder:[];
@@ -729,7 +729,7 @@ function wwBindHighestRatedDrag(list){
       document.body.appendChild(row);navigator.vibrate?.(20);
     };
     const move=y=>{if(!dragging)return;row.style.top=(y-grab)+'px';const rows=[...list.querySelectorAll('.highest-rated-row')];let next=null;for(const r of rows){const box=r.getBoundingClientRect();if(y<box.top+box.height/2){next=r;break}}if(next)list.insertBefore(marker,next);else list.insertBefore(marker,list.querySelector('.stats-show-more'));};
-    const finish=()=>{cancel();if(!dragging){touchId=null;return}dragging=false;marker?.replaceWith(row);marker=null;const style=row.dataset.dragStyle||'';if(style)row.setAttribute('style',style);else row.removeAttribute('style');delete row.dataset.dragStyle;touchId=null;persist();};
+    const finish=()=>{cancel();if(!dragging){touchId=null;return}dragging=false;list.classList.remove('ww-rated-drag-active');marker?.replaceWith(row);marker=null;const style=row.dataset.dragStyle||'';if(style)row.setAttribute('style',style);else row.removeAttribute('style');delete row.dataset.dragStyle;touchId=null;persist();};
     row.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];touchId=t.identifier;startX=t.clientX;startY=t.clientY;cancel();timer=setTimeout(()=>begin(startX,startY),420)},{passive:true});
     document.addEventListener('touchmove',e=>{if(touchId===null)return;const t=[...e.touches].find(t=>t.identifier===touchId);if(!t)return;if(dragging){e.preventDefault();move(t.clientY)}else if(Math.hypot(t.clientX-startX,t.clientY-startY)>10)cancel()},{passive:false});
     document.addEventListener('touchend',e=>{if(touchId!==null&&[...e.changedTouches].some(t=>t.identifier===touchId))finish()},{passive:true});
@@ -806,7 +806,7 @@ function ensureCountryGuidePhotoStyle(){
  style.textContent=`
   .country-guide-photo{margin:0 0 18px;width:100%;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:#eef3f3;box-shadow:0 8px 20px rgba(6,52,66,.10)}
   .country-guide-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
-  #countrySheet .country-hero-minimal.has-country-photo{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;position:relative!important}
+  #countrySheet .country-hero-minimal.has-country-photo{background-size:cover!important;background-position:center;background-repeat:no-repeat!important;position:relative!important}
   #countrySheet .country-hero-minimal.has-country-photo .flag img{box-shadow:0 6px 14px rgba(0,0,0,.18)}
   #countrySheet .sheet-close{position:absolute!important;z-index:999!important}
   #countrySheet .country-hero-minimal{position:relative!important;z-index:1}
@@ -13509,8 +13509,8 @@ function wwDicePhotoFor(name){
  function labelDialog(){
    let p=document.getElementById('wwDayNumberEditor');if(p)return p;
    p=document.createElement('dialog');p.id='wwDayNumberEditor';p.className='ww-activity-type-picker';
-   p.innerHTML='<div class="ww-type-picker-shell"><div class="ww-type-picker-head"><div><small>ITINERARY</small><h3>Day numbering</h3></div></div><div class="ww-day-label-editor"><label class="ww-day-exclusion-option"><input id="wwDayExcludeToggle" type="checkbox"><span id="wwDayExcludeText">Exclude from numbering</span></label></div></div>';
-   document.body.appendChild(p);p.querySelector('#wwDayLabelCancel').onclick=()=>p.close();return p;
+   p.innerHTML='<div class="ww-type-picker-shell"><div class="ww-type-picker-head"><div><small>ITINERARY</small><h3>Day numbering</h3></div></div><div class="ww-day-label-editor"><label class="ww-day-exclusion-option"><input id="wwDayExcludeToggle" type="checkbox"><span id="wwDayExcludeText">Exclude from numbering</span></label></div><div class="ww-day-label-actions"><button type="button" id="wwDayLabelClose">Close</button></div></div>';
+   document.body.appendChild(p);p.querySelector('#wwDayLabelClose').onclick=()=>p.close();return p;
  }
  function editLabel(iso,dates){
    const p=labelDialog(),excluded=overrides()[iso]===null;
