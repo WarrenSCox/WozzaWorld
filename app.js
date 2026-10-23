@@ -8517,8 +8517,20 @@ wwOpenQuickInfo=function(row,id){
     after the restored parent has had two animation frames to paint.
   */
   let veil=null;
+  let veilSafetyTimer=null;
+  function removeVeil(v){
+    if(!v)return;
+    v.remove();
+    if(veil===v){
+      veil=null;
+      clearTimeout(veilSafetyTimer);
+      veilSafetyTimer=null;
+    }
+  }
   function showVeil(){
     if(veil)return;
+    // Defensive cleanup for any orphaned veil left by a prior handover.
+    document.getElementById('wwActivityReturnVeil')?.remove();
     veil=document.createElement('div');
     veil.id='wwActivityReturnVeil';
     veil.setAttribute('aria-hidden','true');
@@ -8528,17 +8540,29 @@ wwOpenQuickInfo=function(row,id){
       'transition:opacity 90ms ease-out'
     ].join(';');
     document.body.appendChild(veil);
+    // The veil is only for a momentary handover. It must never outlive it,
+    // even when another close handler skips the expected parent render.
+    const v=veil;
+    veilSafetyTimer=setTimeout(()=>removeVeil(v),700);
   }
   function hideVeil(){
     const v=veil;
     if(!v)return;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      if(!v.isConnected)return;
       v.style.opacity='0';
-      setTimeout(()=>{v.remove();if(veil===v)veil=null},100);
+      setTimeout(()=>removeVeil(v),100);
     }));
   }
 
   const activityDialog=()=>document.getElementById('stopItineraryDialog');
+  // A native close can lead somewhere other than the expected itinerary parent.
+  // Release the veil on every Activity close, regardless of destination.
+  activityDialog()?.addEventListener('close',()=>hideVeil());
+  // A cancelled close leaves Activity visible; do not obscure it.
+  activityDialog()?.addEventListener('cancel',()=>setTimeout(()=>{
+    if(activityDialog()?.open)hideVeil();
+  },0));
 
   /* Only veil Activity -> itinerary/daily returns. The existing origin code is
      deliberately left untouched and remains responsible for the destination. */
