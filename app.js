@@ -1506,7 +1506,7 @@ $('#visitedFilterBtn')?.addEventListener('click',openVisitedFilters);
 $('#closeVisitedFilters')?.addEventListener('click',()=>$('#visitedFilterDialog')?.close());
 $('#visitedFilterDialog')?.addEventListener('click',e=>{if(e.target===$('#visitedFilterDialog'))$('#visitedFilterDialog').close()});
 $('#visitedFilterDialog')?.addEventListener('submit',e=>{e.preventDefault();state.visitedListPrefs={sort:$('#visitedSort').value,year:$('#visitedYear').value,rating:$('#visitedRating').value};localStorage.setItem('wozzaworld-state',JSON.stringify(state));$('#visitedFilterDialog').close();render();refreshVisitedFilterUI()});
-$('#resetVisitedFilters')?.addEventListener('click',()=>{state.visitedListPrefs={sort:'default',year:'all',rating:'all'};localStorage.setItem('wozzaworld-state',JSON.stringify(state));$('#visitedFilterDialog').close();render();refreshVisitedFilterUI()});
+
 
 
 function savePassportName(){const input=$('#passportName');if(!input)return;const value=input.value.trim().replace(/\s+/g,' ').slice(0,24);if(value)localStorage.setItem('wozzaworld-first-name',value);else localStorage.removeItem('wozzaworld-first-name');applyWorldViewName();requestAnimationFrame(applyWorldViewName);input.value=value;toast(value?'Name updated ✓':'Name cleared')}
@@ -4967,7 +4967,7 @@ wwOpenQuickInfo=function(row,id){
     p.className='ww-activity-type-picker';
     p.innerHTML=`<div class="ww-type-picker-shell">
       <div class="ww-type-picker-head"><div><small>ACTIVITY TYPE</small><h3>Choose an icon</h3></div></div>
-      <div class="ww-type-picker-grid">${wwRankedTypes().map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""${(name==='Music'||name==='Public Event')?' style="transform:scale(0.8)"':''}><span>${esc(name)}</span></button>`).join('')}</div>
+      <div class="ww-type-picker-grid">${wwRankedTypes().map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""${(name==='Music'||name==='Public Event')?' style="transform:scale(0.72)"':(name==='Cinema'||name==='Party')?' style="transform:scale(0.9)"':''}><span>${esc(name)}</span></button>`).join('')}</div>
       <div class="ww-type-picker-footer"><button type="button" class="ww-type-picker-close" aria-label="Close">Close</button></div>
     </div>`;
     document.body.appendChild(p);

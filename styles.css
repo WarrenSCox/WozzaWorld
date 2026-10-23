@@ -6635,3 +6635,17 @@ body > .highest-rated-row[data-drag-style]{border-radius:10px;overflow:hidden;bo
 
 /* Sports Ground: slightly smaller artwork, unchanged tile and label. */
 #wwActivityTypePicker .ww-type-picker-option[data-category="Sports Ground"] img{transform:scale(.85)!important}
+
+/* Filter & Sort: use Privacy/Map Preferences visual language, without altering other dialogs. */
+#visitedFilterDialog.ww-visited-filter{width:min(92vw,430px)!important;padding:0!important;border:0!important;border-radius:28px!important;background:#fff!important;overflow:visible!important;color:#172f3a!important}
+#visitedFilterDialog.ww-visited-filter form{padding:0!important;position:relative!important}
+#visitedFilterDialog .ww-visited-filter-head{background:linear-gradient(120deg,#087c8e,#05b7b8);padding:27px 23px 24px;border-radius:28px 28px 0 0}
+#visitedFilterDialog .ww-visited-filter-head h3{margin:0!important;padding:0!important;font-family:inherit!important;font-size:25px!important;font-weight:900!important;line-height:1.15!important;letter-spacing:0!important;text-transform:none!important;color:#fff!important}
+#visitedFilterDialog .ww-visited-filter-body{padding:20px 23px 22px}
+#visitedFilterDialog .ww-visited-filter-body label{margin:0 0 16px!important;gap:8px!important}
+#visitedFilterDialog .filter-picker-trigger{background:#f6e8c7!important;border:0!important;box-shadow:none!important;border-radius:16px!important}
+#visitedFilterDialog .filter-actions{display:flex!important;justify-content:flex-end!important;margin:22px 0 0!important;padding:0!important}
+#visitedFilterDialog .filter-actions .primary{background:#e9bf2e!important;color:#17213d!important;border:0!important;border-radius:999px!important;min-width:130px!important;min-height:46px!important;padding:10px 28px!important;font-size:16px!important;font-weight:900!important}
+#visitedFilterDialog .filter-picker-menu{z-index:30}
+/* Scale only the four newly introduced itinerary assets to 77% of current artwork. */
+.master-itinerary-icon img.ww-activity-type-asset[src$="music.svg"],.master-itinerary-icon img.ww-activity-type-asset[src$="public-event.svg"],.master-itinerary-icon img.ww-activity-type-asset[src$="party.svg"],.master-itinerary-icon img.ww-activity-type-asset[src$="cinema.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="music.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="public-event.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="party.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="cinema.svg"]{transform:scale(.77)!important;transform-origin:center center!important}
