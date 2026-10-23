@@ -6649,3 +6649,6 @@ body > .highest-rated-row[data-drag-style]{border-radius:10px;overflow:hidden;bo
 #visitedFilterDialog .filter-picker-menu{z-index:30}
 /* Scale only the four newly introduced itinerary assets to 77% of current artwork. */
 .master-itinerary-icon img.ww-activity-type-asset[src$="music.svg"],.master-itinerary-icon img.ww-activity-type-asset[src$="public-event.svg"],.master-itinerary-icon img.ww-activity-type-asset[src$="party.svg"],.master-itinerary-icon img.ww-activity-type-asset[src$="cinema.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="music.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="public-event.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="party.svg"],.stop-itinerary-item img.ww-activity-type-asset[src$="cinema.svg"]{transform:scale(.77)!important;transform-origin:center center!important}
+
+/* Visited Filter & Sort: match the established native-dialog backdrop blur. */
+#visitedFilterDialog.ww-visited-filter::backdrop{background:rgba(7,36,46,.48);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
