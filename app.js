@@ -1124,7 +1124,7 @@ function initTopPullSectionCycle(){
 }
 initTopPullSectionCycle();
 
-function syncMapFilterUI(){document.querySelectorAll('[data-map-filter]').forEach(b=>b.setAttribute('aria-pressed',mapFilterPrefs[b.dataset.mapFilter]?'true':'false'));document.querySelectorAll('[name=wwTerritoryMode]').forEach(r=>r.checked=(r.value===(mapFilterPrefs.includeTerritories?'include':'exclude')))}
+function syncMapFilterUI(){document.querySelectorAll('[data-map-filter]').forEach(b=>b.setAttribute('aria-pressed',mapFilterPrefs[b.dataset.mapFilter]?'true':'false'));}
 const wwAssociatedParents={
   'French Guiana':'France','French Polynesia':'France','New Caledonia':'France','Guadeloupe':'France','Martinique':'France','Mayotte':'France','Réunion':'France','Reunion':'France','Saint Pierre and Miquelon':'France','Saint Martin':'France','Saint Barthélemy':'France','Wallis and Futuna':'France',
   'Greenland':'Denmark','Faroe Islands':'Denmark',
@@ -1142,7 +1142,7 @@ function wwMapStatus(name,status){
   return !!parent&&countryHasStatus(parent,status);
 }
 function applyMapFilters(){document.querySelectorAll('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');if(p.dataset.wwAssociated==='true'&&!mapFilterPrefs.includeTerritories)return;if(mapFilterPrefs.visited&&wwMapStatus(p.dataset.country,'visited'))p.classList.add('visited');if(mapFilterPrefs.going&&wwMapStatus(p.dataset.country,'going'))p.classList.add('going');if(mapFilterPrefs.bucket&&wwMapStatus(p.dataset.country,'bucket'))p.classList.add('map-filter-bucket')});syncMapFilterUI()}
-const mapFilterBtn=$('#mapFilterBtn'),mapFilterDialog=$('#mapFilterDialog'),mapFilterClose=$('#mapFilterClose');if(mapFilterBtn)mapFilterBtn.onclick=()=>{syncMapFilterUI();mapFilterDialog?.showModal()};if(mapFilterClose)mapFilterClose.onclick=()=>mapFilterDialog?.close();document.querySelectorAll('[data-map-filter]').forEach(b=>b.onclick=()=>{const key=b.dataset.mapFilter;mapFilterPrefs[key]=!mapFilterPrefs[key];localStorage.setItem('wozzaworld-map-filters',JSON.stringify(mapFilterPrefs));applyMapFilters()});if(mapFilterDialog)mapFilterDialog.addEventListener('click',e=>{if(e.target===mapFilterDialog)mapFilterDialog.close()});document.querySelectorAll('[name=wwTerritoryMode]').forEach(r=>r.addEventListener('change',()=>{if(!r.checked)return;mapFilterPrefs.includeTerritories=r.value==='include';localStorage.setItem('wozzaworld-map-filters',JSON.stringify(mapFilterPrefs));applyMapFilters()}));syncMapFilterUI();
+const mapFilterBtn=$('#mapFilterBtn'),mapFilterDialog=$('#mapFilterDialog'),mapFilterClose=$('#mapFilterClose');if(mapFilterBtn)mapFilterBtn.onclick=()=>{syncMapFilterUI();mapFilterDialog?.showModal()};if(mapFilterClose)mapFilterClose.onclick=()=>mapFilterDialog?.close();document.querySelectorAll('[data-map-filter]').forEach(b=>b.onclick=()=>{const key=b.dataset.mapFilter;mapFilterPrefs[key]=!mapFilterPrefs[key];localStorage.setItem('wozzaworld-map-filters',JSON.stringify(mapFilterPrefs));applyMapFilters()});if(mapFilterDialog)mapFilterDialog.addEventListener('click',e=>{if(e.target===mapFilterDialog)mapFilterDialog.close()});syncMapFilterUI();
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
 $('#countryInfoClose').onclick=closeCountryInfo;

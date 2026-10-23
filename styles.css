@@ -4812,6 +4812,8 @@ body.map-view .country.map-filter-bucket{fill:#e3bd4d!important}
 
 /* Bucket List map colour matches the Home page Bucket List key. */
 .map-filter-option.bucket .map-filter-dot{background:var(--bucket-sky)!important}
+.map-filter-option.territories .map-filter-dot{background:#087f77!important}
+.map-filter-option.territories[aria-pressed="false"]{background:#f6e8c7!important}
 body.map-view .country.map-filter-bucket{fill:var(--bucket-sky)!important}
 .wozza-extra-stat[data-stat="continents"]{cursor:pointer}
 
@@ -6627,11 +6629,6 @@ body > .highest-rated-row[data-drag-style]{border-radius:10px;overflow:hidden;bo
 #mapFilterDialog .map-filter-head h2{color:white!important;font-size:25px!important;padding:0!important}
 #mapFilterDialog .map-filter-head #mapFilterClose{display:none!important}
 #mapFilterDialog>p{padding-top:19px!important}
-#mapFilterDialog .ww-territory-section{padding:0 22px 16px}
-#mapFilterDialog .ww-territory-section h3{font-size:16px;margin:6px 0 8px;color:var(--navy)}
-#mapFilterDialog .ww-territory-section p{font-size:13px;line-height:1.45;color:var(--muted);margin:0 0 13px}
-#mapFilterDialog .ww-territory-choice{display:flex;align-items:flex-start;gap:10px;margin:10px 0;padding:13px;border-radius:16px;background:#f6e8c7;font-size:14px;font-weight:750;cursor:pointer}
-#mapFilterDialog .ww-territory-choice input{accent-color:#078f9d;width:18px;height:18px;flex:none;margin:1px 0 0}
 #mapFilterDialog .ww-map-close-footer{display:block;margin:0 22px 22px auto;border:0;border-radius:999px;background:#e9bf2e;color:#17213d;padding:13px 32px;font-weight:900;min-width:130px}
 #countrySheet .sheet-close:focus:not(:focus-visible){outline:none!important;box-shadow:none!important}
 #countrySheet .sheet-close:focus-visible{outline:2px solid #087f8b!important;outline-offset:3px!important}

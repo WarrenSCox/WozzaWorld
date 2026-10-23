@@ -49,13 +49,9 @@
     <button type="button" class="map-filter-option visited" data-map-filter="visited" aria-pressed="true"><span class="map-filter-dot"></span><span>Visited</span><span class="map-filter-check">✓</span></button>
     <button type="button" class="map-filter-option going" data-map-filter="going" aria-pressed="true"><span class="map-filter-dot"></span><span>Visiting</span><span class="map-filter-check">✓</span></button>
     <button type="button" class="map-filter-option bucket" data-map-filter="bucket" aria-pressed="false"><span class="map-filter-dot"></span><span>Bucket List</span><span class="map-filter-check">✓</span></button>
+    <button type="button" class="map-filter-option territories" data-map-filter="includeTerritories" aria-pressed="false"><span class="map-filter-dot"></span><span>Overseas territories</span><span class="map-filter-check">✓</span></button>
   </div>
-  <section class="ww-territory-section" aria-labelledby="wwTerritoryHeading">
-    <h3 id="wwTerritoryHeading">Geographic highlighting</h3>
-    <p>Should associated territories also be highlighted when you mark a country?</p>
-    <label class="ww-territory-choice"><input type="radio" name="wwTerritoryMode" value="exclude" checked><span>Exclude associated territories</span></label>
-    <label class="ww-territory-choice"><input type="radio" name="wwTerritoryMode" value="include"><span>Include associated territories</span></label>
-  </section>
+
   <button type="button" class="ww-map-close-footer" onclick="document.getElementById('mapFilterDialog').close()">Close</button>
 </dialog>
 <div id="app">
