@@ -1008,21 +1008,46 @@ async function leaveMapMode(){try{const m=d3.select('#worldMap');m.selectAll('.p
 // Home <-> World View morph. This deliberately does not alter either animation system:
 // the Home planes and World View clouds keep their existing markup, timing and styling.
 // The browser transitions the existing map card between its two layouts as one shared element.
+// Navigation updates must run exactly once. A rejected View Transition can mean
+// its animation failed AFTER the DOM update already ran; retrying it is unsafe.
+let wwNavigationSequence=0;
 async function withWorldMapMorph(update){
+ const sequence=++wwNavigationSequence;
+ let started=false;
+ const applyOnce=async()=>{if(started)return;started=true;await update()};
  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
- if(!document.startViewTransition||reduce){await update();return}
+ if(!document.startViewTransition||reduce){await applyOnce();wwEnsureActiveScreen(sequence);return}
  document.documentElement.classList.add('world-map-morphing');
  try{
-  const transition=document.startViewTransition(()=>update());
+  const transition=document.startViewTransition(applyOnce);
   await transition.finished;
- }catch(e){await update()}
- finally{document.documentElement.classList.remove('world-map-morphing')}
+ }catch(e){
+  // Only retry when the browser never invoked the update callback.
+  if(!started)await applyOnce();
+  console.warn('WozzaWorld navigation transition interrupted',e);
+ }finally{
+  document.documentElement.classList.remove('world-map-morphing');
+  wwEnsureActiveScreen(sequence);
+ }
+}
+function wwEnsureActiveScreen(sequence){
+ // Runs after a navigation update, never during a legitimate dialog close.
+ // Restore only the missing active-screen class; do not reset dialogs/overlays.
+ requestAnimationFrame(()=>{
+  if(sequence!==wwNavigationSequence)return;
+  const screens=$$('.screen');
+  if(!screens.length||screens.some(el=>el.classList.contains('active')))return;
+  const selected=document.body.classList.contains('map-view')?'home':
+   (document.querySelector('.header-nav-item.active')?.dataset.target||'home');
+  const screen=screens.find(el=>el.dataset.screen===selected)||screens.find(el=>el.dataset.screen==='home');
+  if(screen){screen.classList.add('active');console.warn('WozzaWorld restored missing active screen')}
+ });
 }
 async function showHome(){
  const fromMap=document.body.classList.contains('map-view');
  document.body.classList.remove('trips-view');
  const update=async()=>{await leaveMapMode();$$('.header-nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target==='home'));$$('.screen').forEach(x=>x.classList.toggle('active',x.dataset.screen==='home'));applyWorldViewName();countrySlide=0;renderCountryLists();resetMapZoom(false);window.scrollTo({top:0})};
- if(fromMap)await withWorldMapMorph(update);else await update();
+ if(fromMap)await withWorldMapMorph(update);else{const sequence=++wwNavigationSequence;await update();wwEnsureActiveScreen(sequence)}
  requestAnimationFrame(()=>requestAnimationFrame(()=>setCountrySlide(0,false)));
 }
 async function showMap(){
