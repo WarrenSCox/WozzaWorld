@@ -4967,7 +4967,7 @@ wwOpenQuickInfo=function(row,id){
     p.className='ww-activity-type-picker';
     p.innerHTML=`<div class="ww-type-picker-shell">
       <div class="ww-type-picker-head"><div><small>ACTIVITY TYPE</small><h3>Choose an icon</h3></div></div>
-      <div class="ww-type-picker-grid">${wwRankedTypes().map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""><span>${esc(name)}</span></button>`).join('')}</div>
+      <div class="ww-type-picker-grid">${wwRankedTypes().map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""${(name==='Music'||name==='Public Event')?' style="transform:scale(0.8)"':''}><span>${esc(name)}</span></button>`).join('')}</div>
       <div class="ww-type-picker-footer"><button type="button" class="ww-type-picker-close" aria-label="Close">Close</button></div>
     </div>`;
     document.body.appendChild(p);
