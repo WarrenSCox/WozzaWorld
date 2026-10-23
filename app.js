@@ -541,7 +541,7 @@ function renderMilestones(){
   grid.scrollLeft=previous===signature?previousScroll:0;
   grid.querySelectorAll('[data-milestone]').forEach(b=>b.addEventListener('click',()=>openMilestoneDialog(awards[Number(b.dataset.milestone)])));
 }
-function render(){ applyWorldViewName(); const passportName=$('#passportName');if(passportName&&document.activeElement!==passportName)passportName.value=(localStorage.getItem('wozzaworld-first-name')||'');$$('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');['visited','going'].forEach(s=>{if(mapFilterPrefs[s]&&countryHasStatus(p.dataset.country,s))p.classList.add(s)});if(mapFilterPrefs.bucket&&countryHasStatus(p.dataset.country,'bucket'))p.classList.add('map-filter-bucket')});const vals=allStatusCountries(),visited=new Set(allStatusCountries().filter(c=>countryHasStatus(c,'visited')));$('#visitedCount').textContent=visited.size;const vh=$('#visitedCountriesHeading'),wp=$('#worldExploredPercent');if(vh)vh.textContent='VISITED';if(wp)wp.textContent='CORNERS OF THE WORLD EXPLORED';const homeRing=$('#wwHomeExploreRing'),homePct=$('#wwHomeExplorePercent');if(homeRing)homeRing.style.setProperty('--ww-progress',String(visited.size/195*100));if(homePct)homePct.textContent=Math.round(visited.size/195*100)+'%';$('#goingCount').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#wishCount').textContent=vals.filter(c=>countryHasStatus(c,'bucket')).length;const meVisited=$('#meVisited');if(meVisited){const current=meVisited.querySelector('.visited-current');if(current)current.textContent=visited.size;else meVisited.textContent=visited.size;}$('#meCities').textContent=[...visited].reduce((n,c)=>n+uniqueCities(c),0);$('#meGoing').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#meTrips').textContent=state.trips.length;renderCompanionStats();renderMilestones();renderPassportCarouselStats();setPassportStatsSlide(passportStatsSlide);renderExtraStats();$('#tripList').innerHTML=renderMyTrips();setupTripTitleScroll();renderCountryLists();renderRecycleBin();renderDepartureBoard();attachTripRatingEvents();attachTripCardEvents();if(currentCountry)renderSheet()}
+function render(){ applyWorldViewName(); const passportName=$('#passportName');if(passportName&&document.activeElement!==passportName)passportName.value=(localStorage.getItem('wozzaworld-first-name')||'');$$('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');['visited','going'].forEach(s=>{if(mapFilterPrefs[s]&&wwMapStatus(p.dataset.country,s)&&!(p.dataset.wwAssociated==='true'&&!mapFilterPrefs.includeTerritories))p.classList.add(s)});if(mapFilterPrefs.bucket&&wwMapStatus(p.dataset.country,'bucket')&&!(p.dataset.wwAssociated==='true'&&!mapFilterPrefs.includeTerritories))p.classList.add('map-filter-bucket')});const vals=allStatusCountries(),visited=new Set(allStatusCountries().filter(c=>countryHasStatus(c,'visited')));$('#visitedCount').textContent=visited.size;const vh=$('#visitedCountriesHeading'),wp=$('#worldExploredPercent');if(vh)vh.textContent='VISITED';if(wp)wp.textContent='CORNERS OF THE WORLD EXPLORED';const homeRing=$('#wwHomeExploreRing'),homePct=$('#wwHomeExplorePercent');if(homeRing)homeRing.style.setProperty('--ww-progress',String(visited.size/195*100));if(homePct)homePct.textContent=Math.round(visited.size/195*100)+'%';$('#goingCount').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#wishCount').textContent=vals.filter(c=>countryHasStatus(c,'bucket')).length;const meVisited=$('#meVisited');if(meVisited){const current=meVisited.querySelector('.visited-current');if(current)current.textContent=visited.size;else meVisited.textContent=visited.size;}$('#meCities').textContent=[...visited].reduce((n,c)=>n+uniqueCities(c),0);$('#meGoing').textContent=vals.filter(c=>countryHasStatus(c,'going')).length;$('#meTrips').textContent=state.trips.length;renderCompanionStats();renderMilestones();renderPassportCarouselStats();setPassportStatsSlide(passportStatsSlide);renderExtraStats();$('#tripList').innerHTML=renderMyTrips();setupTripTitleScroll();renderCountryLists();renderRecycleBin();renderDepartureBoard();attachTripRatingEvents();attachTripCardEvents();if(currentCountry)renderSheet()}
 function showPeople(c){const p=countryCompanions(c);$('#peopleDialogTitle').textContent=`${c} — ${p.length+1} travellers`;$('#peopleDialogList').innerHTML=`<span class="you-chip">You</span>`+(p.length?p.map(n=>`<span>${esc(n)}</span>`).join(''):'');$('#peopleDialog').showModal()}function countryCityDisplay(c){const map=new Map();for(const x of state.cities[c]||[])map.set(String(x.name).trim().toLowerCase(),{name:x.name,type:x.type||'City',visits:[...(x.visits||[])]});for(const t of countryTrips(c)){for(const d of t.destinations||[]){if(!sameCountry(d.country||tripCountries(t)[0],c))continue;const k=String(d.name||'').trim().toLowerCase();if(!k)continue;const rec=map.get(k)||{name:d.name,type:d.type||'Other',visits:[]};const m=d.start?d.start.slice(0,7):(t.start?t.start.slice(0,7):'');if(m&&!rec.visits.includes(m))rec.visits.push(m);map.set(k,rec)}for(const [country,cities] of Object.entries(t.cities||{})){if(!sameCountry(country,c))continue;for(const name of cities||[]){const k=String(name).trim().toLowerCase();if(!k)continue;const rec=map.get(k)||{name,type:'City',visits:[]};const m=t.start?t.start.slice(0,7):'';if(m&&!rec.visits.includes(m))rec.visits.push(m);map.set(k,rec)}}}return [...map.values()]}
 function openRemoveDialog(c,status=null){pendingRemoveCountry=c;pendingRemoveStatus=status||state.statuses[c];status=pendingRemoveStatus;const label=status==='visited'?'Visited':status==='going'?'Visiting':'Bucket List',bodyLabel=status==='visited'?'visited countries':status==='going'?'visiting countries':'Bucket List';$('#removeDialogTitle').textContent=`Remove from ${label}?`;const dialog=$('#removeDialog'),copy=dialog?.querySelector('p'),confirm=$('#confirmRemove');if(copy)copy.textContent=`Do you want to remove ${c} from your ${bodyLabel}? You can always add it back later.`;if(confirm)confirm.textContent='Remove';dialog.showModal()}function removeCountry(c,status=pendingRemoveStatus||state.statuses[c]){if(!status||!countryHasStatus(c,status))return;const item={country:c,status,removedAt:Date.now()};state.recycleBin=state.recycleBin.filter(x=>!(x.country===c&&x.status===status));state.recycleBin.unshift(item);setCountryStatus(c,status,false);lastRemoved=item;save();toast(`${c} removed — tap to undo`,undoLastRemove)}function undoLastRemove(){if(!lastRemoved)return;setCountryStatus(lastRemoved.country,lastRemoved.status,true);state.recycleBin=state.recycleBin.filter(i=>!(i.country===lastRemoved.country&&i.status===lastRemoved.status));lastRemoved=null;save();toast('Country restored')}
 function permanentlyDeleteCountryAt(i){const x=state.recycleBin[i];if(!x)return;delete state.companions[x.country];delete state.memories[x.country];delete state.places[x.country];delete state.cities[x.country];state.trips=state.trips.map(t=>({...t,countries:tripCountries(t).filter(c=>!sameCountry(c,x.country))})).filter(t=>t.countries.length);state.recycleBin.splice(i,1)}
@@ -586,11 +586,20 @@ async function buildMap(){try{const world=await fetch('https://cdn.jsdelivr.net/
 'Republic of South Africa'
 ].includes(c))
 ])].sort();const svg=d3.select('#worldMap'),projection=d3.geoEqualEarth().fitExtent([[24,28],[976,492]],{type:'Sphere'}),path=d3.geoPath(projection);const sphereD=path({type:'Sphere'});svg.select('#sphere').attr('d',sphereD);let defs=svg.select('defs');if(defs.empty())defs=svg.insert('defs',':first-child');let globeClip=defs.select('#worldGlobeClip');if(globeClip.empty())globeClip=defs.append('clipPath').attr('id','worldGlobeClip');globeClip.selectAll('path').data([null]).join('path').attr('d',sphereD);svg.select('#countries').attr('clip-path','url(#worldGlobeClip)');const mapRegionFeatures=features.flatMap(f=>{
-  if(!['United States of America','United States','France'].includes(f.properties.name)||f.geometry?.type!=='MultiPolygon')return [f];
+  if(!['France','United Kingdom','Netherlands','Denmark','Australia','New Zealand','Norway','Portugal','Spain'].includes(f.properties.name)||f.geometry?.type!=='MultiPolygon')return [f];
   return f.geometry.coordinates.map(coords=>{
     const part={type:'Feature',properties:{...f.properties},geometry:{type:'Polygon',coordinates:coords}};
     const [lon,lat]=d3.geoCentroid(part);
-    part.properties.wwAssociatedRegion=f.properties.name==='France'?(lon < -20||lon > 15||lat < 40):((lon < -130)||(lon < -100&&lat < 25));
+    // Bounded geographic rules for overseas components sharing a parent's map feature.
+    // Non-contiguous constituent regions (e.g. Alaska, Hawaii, Canaries, Azores) are not dependencies.
+    const name=f.properties.name;
+    part.properties.wwAssociatedRegion=name==='France'?(lon < -20||lon > 15||lat < 40):
+      name==='United Kingdom'?(lat < 48||lon < -12||lon > 3):
+      name==='Netherlands'?(lat < 30||lon < -20):
+      name==='Denmark'?(lon < -10||lat < 53):
+      name==='Australia'?(lon < 110||lon > 156||lat > -9||lat < -45):
+      name==='New Zealand'?(lat > -28||lat < -54||lon < 160):
+      name==='Norway'?(lat < 55||lon < -15):false;
     return part;
   });
 });
@@ -1091,7 +1100,23 @@ function initTopPullSectionCycle(){
 initTopPullSectionCycle();
 
 function syncMapFilterUI(){document.querySelectorAll('[data-map-filter]').forEach(b=>b.setAttribute('aria-pressed',mapFilterPrefs[b.dataset.mapFilter]?'true':'false'));document.querySelectorAll('[name=wwTerritoryMode]').forEach(r=>r.checked=(r.value===(mapFilterPrefs.includeTerritories?'include':'exclude')))}
-function applyMapFilters(){document.querySelectorAll('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');if(p.dataset.wwAssociated==='true'&&!mapFilterPrefs.includeTerritories)return;if(mapFilterPrefs.visited&&countryHasStatus(p.dataset.country,'visited'))p.classList.add('visited');if(mapFilterPrefs.going&&countryHasStatus(p.dataset.country,'going'))p.classList.add('going');if(mapFilterPrefs.bucket&&countryHasStatus(p.dataset.country,'bucket'))p.classList.add('map-filter-bucket')});syncMapFilterUI()}
+const wwAssociatedParents={
+  'French Guiana':'France','French Polynesia':'France','New Caledonia':'France','Guadeloupe':'France','Martinique':'France','Mayotte':'France','Réunion':'France','Reunion':'France','Saint Pierre and Miquelon':'France','Saint Martin':'France','Saint Barthélemy':'France','Wallis and Futuna':'France',
+  'Greenland':'Denmark','Faroe Islands':'Denmark',
+  'Aruba':'Netherlands','Curaçao':'Netherlands','Curacao':'Netherlands','Sint Maarten':'Netherlands','Bonaire':'Netherlands',
+  'Bermuda':'United Kingdom','Cayman Islands':'United Kingdom','Falkland Islands':'United Kingdom','Gibraltar':'United Kingdom','Montserrat':'United Kingdom','Anguilla':'United Kingdom','Turks and Caicos Islands':'United Kingdom','British Virgin Islands':'United Kingdom','Virgin Islands, British':'United Kingdom','Saint Helena':'United Kingdom','Saint Helena, Ascension and Tristan da Cunha':'United Kingdom','Pitcairn Islands':'United Kingdom','South Georgia and the South Sandwich Islands':'United Kingdom',
+  'Puerto Rico':'United States of America','Guam':'United States of America','American Samoa':'United States of America','Northern Mariana Islands':'United States of America','United States Virgin Islands':'United States of America','Virgin Islands, U.S.':'United States of America','United States Minor Outlying Islands':'United States of America',
+  'Cook Islands':'New Zealand','Niue':'New Zealand','Tokelau':'New Zealand',
+  'Norfolk Island':'Australia','Christmas Island':'Australia','Cocos (Keeling) Islands':'Australia','Heard Island and McDonald Islands':'Australia',
+  'Bouvet Island':'Norway','Svalbard and Jan Mayen':'Norway'
+};
+function wwMapStatus(name,status){
+  if(countryHasStatus(name,status))return true;
+  if(!mapFilterPrefs.includeTerritories)return false;
+  const parent=wwAssociatedParents[name];
+  return !!parent&&countryHasStatus(parent,status);
+}
+function applyMapFilters(){document.querySelectorAll('.country').forEach(p=>{p.classList.remove('visited','going','bucket','map-filter-bucket');if(p.dataset.wwAssociated==='true'&&!mapFilterPrefs.includeTerritories)return;if(mapFilterPrefs.visited&&wwMapStatus(p.dataset.country,'visited'))p.classList.add('visited');if(mapFilterPrefs.going&&wwMapStatus(p.dataset.country,'going'))p.classList.add('going');if(mapFilterPrefs.bucket&&wwMapStatus(p.dataset.country,'bucket'))p.classList.add('map-filter-bucket')});syncMapFilterUI()}
 const mapFilterBtn=$('#mapFilterBtn'),mapFilterDialog=$('#mapFilterDialog'),mapFilterClose=$('#mapFilterClose');if(mapFilterBtn)mapFilterBtn.onclick=()=>{syncMapFilterUI();mapFilterDialog?.showModal()};if(mapFilterClose)mapFilterClose.onclick=()=>mapFilterDialog?.close();document.querySelectorAll('[data-map-filter]').forEach(b=>b.onclick=()=>{const key=b.dataset.mapFilter;mapFilterPrefs[key]=!mapFilterPrefs[key];localStorage.setItem('wozzaworld-map-filters',JSON.stringify(mapFilterPrefs));applyMapFilters()});if(mapFilterDialog)mapFilterDialog.addEventListener('click',e=>{if(e.target===mapFilterDialog)mapFilterDialog.close()});document.querySelectorAll('[name=wwTerritoryMode]').forEach(r=>r.addEventListener('change',()=>{if(!r.checked)return;mapFilterPrefs.includeTerritories=r.value==='include';localStorage.setItem('wozzaworld-map-filters',JSON.stringify(mapFilterPrefs));applyMapFilters()}));syncMapFilterUI();
 $$('.header-nav-item').forEach(b=>b.onclick=()=>showSection(b.dataset.target));$('#homeLogo').onclick=null;$('#mapClose').onclick=showHome;$('#mapStage').addEventListener('click',()=>{if(!document.body.classList.contains('map-view'))showMap()});$('#sheetClose').onclick=closeSheet;$('#sheetBackdrop').onclick=closeSheet;
 const countryInfoDialog=$('#countryInfoDialog');
@@ -4613,44 +4638,44 @@ wwOpenQuickInfo=function(row,id){
 /* === WozzaWorld hotfix — six activity types + traced WozzaWorld icons === */
 (()=>{
   const WW_ACTIVITY_TYPES=[
-    ['Food','activity-food.png'],
-    ['Drinks','activity-drinks.png'],
-    ['Explore','activity-explore.png'],
-    ['Travel','activity-travel.png'],
-    ['Accommodation','accommodation.png'],
-    ['Other','activity-see-do.png'],
-    ['Café','CAF.png'],
-    ['Taxi','taxi.png'],
-    ['Train','train.png'],
-    ['Boat Trip','boat-trip.png'],
-    ['Spa','vibe-spa-wellness.png'],
-    ['Theatre','theatre.png'],
-    ['Museum','museum.png'],
-    ['Gallery','museum-gallery.png'],
-    ['Gardens','gardens.png'],
-    ['Castle','castle.png'],
-    ['Cathedral','cathedral.png'],
-    ['Church','church.png'],
-    ['Theme Park','themepark.png'],
-    ['Football Ground','football-ground.png'],
-    ['Cycling','cycling.png'],
-    ['Canoeing','canoeing.png'],
-    ['Watersports','watersports.png'],
-    ['Swimming','swimming.png'],
-    ['Skiing','skiing.png'],
-    ['Ice Skating','ice-skating.png'],
-    ['Roller Skating','rollerskating.png'],
-    ['Recreation','recreation.png'],
-    ['Vineyard','vineyard.png'],
-    ['Library','LIBRARY.png'],
-    ['Zoo','zoo.png'],
-    ['Shopping','shopping.png'],
-    ['Cinema','cinema.svg'],
-    ['Music','music.svg'],
-    ['Party','party.svg'],
-    ['Public Event','public-event.svg']
+    ['Food', 'activity-food.png'],
+    ['Drinks', 'activity-drinks.png'],
+    ['Explore', 'activity-explore.png'],
+    ['Café', 'CAF.png'],
+    ['Travel', 'activity-travel.png'],
+    ['Accommodation', 'accommodation.png'],
+    ['Taxi', 'taxi.png'],
+    ['Shopping', 'shopping.png'],
+    ['Museum', 'museum.png'],
+    ['Boat Trip', 'boat-trip.png'],
+    ['Castle', 'castle.png'],
+    ['Spa', 'vibe-spa-wellness.png'],
+    ['Train', 'train.png'],
+    ['Gardens', 'gardens.png'],
+    ['Music', 'music.svg'],
+    ['Public Event', 'public-event.svg'],
+    ['Theatre', 'theatre.png'],
+    ['Cathedral', 'cathedral.png'],
+    ['Church', 'church.png'],
+    ['Gallery', 'museum-gallery.png'],
+    ['Theme Park', 'themepark.png'],
+    ['Zoo', 'zoo.png'],
+    ['Swimming', 'swimming.png'],
+    ['Party', 'party.svg'],
+    ['Cinema', 'cinema.svg'],
+    ['Cycling', 'cycling.png'],
+    ['Vineyard', 'vineyard.png'],
+    ['Watersports', 'watersports.png'],
+    ['Sports Ground', 'football-ground.png'],
+    ['Canoeing', 'canoeing.png'],
+    ['Recreation', 'recreation.png'],
+    ['Skiing', 'skiing.png'],
+    ['Ice Skating', 'ice-skating.png'],
+    ['Roller Skating', 'rollerskating.png'],
+    ['Library', 'LIBRARY.png'],
+    ['Other', 'activity-see-do.png']
   ];
-  const wwTypeNormalise=category=>category==='See & Do'?'Other':category==='Museum / Gallery'?'Gallery':category;
+  const wwTypeNormalise=category=>category==='See & Do'?'Other':category==='Museum / Gallery'?'Gallery':category==='Football Ground'?'Sports Ground':category;
   const wwTypeAsset=category=>WW_ACTIVITY_TYPES.find(x=>x[0]===wwTypeNormalise(category))?.[1]||'';
   const wwTypeIcon=category=>{const src=wwTypeAsset(category);return src?`<img class="ww-activity-type-asset" src="${src}" alt="" aria-hidden="true">`:'📍'};
 
@@ -4864,46 +4889,51 @@ wwOpenQuickInfo=function(row,id){
    Selection UI only. Deliberately does not touch itinerary rendering/reorder logic. */
 (()=>{
   const WW_PICKER_TYPES=[
-    ['Food','activity-food.png'],
-    ['Drinks','activity-drinks.png'],
-    ['Explore','activity-explore.png'],
-    ['Travel','activity-travel.png'],
-    ['Accommodation','accommodation.png'],
-    ['Other','activity-see-do.png'],
-    ['Café','CAF.png'],
-    ['Taxi','taxi.png'],
-    ['Train','train.png'],
-    ['Boat Trip','boat-trip.png'],
-    ['Spa','vibe-spa-wellness.png'],
-    ['Theatre','theatre.png'],
-    ['Museum','museum.png'],
-    ['Gallery','museum-gallery.png'],
-    ['Gardens','gardens.png'],
-    ['Castle','castle.png'],
-    ['Cathedral','cathedral.png'],
-    ['Church','church.png'],
-    ['Theme Park','themepark.png'],
-    ['Football Ground','football-ground.png'],
-    ['Cycling','cycling.png'],
-    ['Canoeing','canoeing.png'],
-    ['Watersports','watersports.png'],
-    ['Swimming','swimming.png'],
-    ['Skiing','skiing.png'],
-    ['Ice Skating','ice-skating.png'],
-    ['Roller Skating','rollerskating.png'],
-    ['Recreation','recreation.png'],
-    ['Vineyard','vineyard.png'],
-    ['Library','LIBRARY.png'],
-    ['Zoo','zoo.png'],
-    ['Shopping','shopping.png'],
-    ['Cinema','cinema.svg'],
-    ['Music','music.svg'],
-    ['Party','party.svg'],
-    ['Public Event','public-event.svg']
+    ['Food', 'activity-food.png'],
+    ['Drinks', 'activity-drinks.png'],
+    ['Explore', 'activity-explore.png'],
+    ['Café', 'CAF.png'],
+    ['Travel', 'activity-travel.png'],
+    ['Accommodation', 'accommodation.png'],
+    ['Taxi', 'taxi.png'],
+    ['Shopping', 'shopping.png'],
+    ['Museum', 'museum.png'],
+    ['Boat Trip', 'boat-trip.png'],
+    ['Castle', 'castle.png'],
+    ['Spa', 'vibe-spa-wellness.png'],
+    ['Train', 'train.png'],
+    ['Gardens', 'gardens.png'],
+    ['Music', 'music.svg'],
+    ['Public Event', 'public-event.svg'],
+    ['Theatre', 'theatre.png'],
+    ['Cathedral', 'cathedral.png'],
+    ['Church', 'church.png'],
+    ['Gallery', 'museum-gallery.png'],
+    ['Theme Park', 'themepark.png'],
+    ['Zoo', 'zoo.png'],
+    ['Swimming', 'swimming.png'],
+    ['Party', 'party.svg'],
+    ['Cinema', 'cinema.svg'],
+    ['Cycling', 'cycling.png'],
+    ['Vineyard', 'vineyard.png'],
+    ['Watersports', 'watersports.png'],
+    ['Sports Ground', 'football-ground.png'],
+    ['Canoeing', 'canoeing.png'],
+    ['Recreation', 'recreation.png'],
+    ['Skiing', 'skiing.png'],
+    ['Ice Skating', 'ice-skating.png'],
+    ['Roller Skating', 'rollerskating.png'],
+    ['Library', 'LIBRARY.png'],
+    ['Other', 'activity-see-do.png']
   ];
-  const typeNormalise=name=>name==='See & Do'?'Other':name==='Museum / Gallery'?'Gallery':name;
+  const typeNormalise=name=>name==='See & Do'?'Other':name==='Museum / Gallery'?'Gallery':name==='Football Ground'?'Sports Ground':name;
   const typeAsset=name=>WW_PICKER_TYPES.find(x=>x[0]===typeNormalise(name))?.[1]||'';
 
+  const WW_ACTIVITY_USAGE_KEY='wozzaworld-activity-usage';
+  function wwUsage(){try{const data=JSON.parse(localStorage.getItem(WW_ACTIVITY_USAGE_KEY)||'{}');return data&&typeof data==='object'&&!Array.isArray(data)?data:{}}catch{return {}}}
+  function wwRankedTypes(){const usage=wwUsage();return WW_PICKER_TYPES.map((type,index)=>({type,index,uses:Math.max(0,Number(usage[type[0]])||0)})).sort((a,b)=>a.type[0]==='Other'?1:b.type[0]==='Other'?-1:b.uses-a.uses||a.index-b.index).map(x=>x.type)}
+  function wwRecordType(name){try{const usage=wwUsage();usage[name]=Math.min(1000000,(Number(usage[name])||0)+1);localStorage.setItem(WW_ACTIVITY_USAGE_KEY,JSON.stringify(usage))}catch{}}
+  function wwRefreshPicker(p){const grid=p.querySelector('.ww-type-picker-grid');if(!grid)return;const byName=new Map([...grid.children].map(b=>[b.dataset.category,b]));wwRankedTypes().forEach(([name])=>{const button=byName.get(name);if(button)grid.appendChild(button)})}
   function pickerDialog(){
     let p=document.getElementById('wwActivityTypePicker');
     if(p)return p;
@@ -4912,7 +4942,7 @@ wwOpenQuickInfo=function(row,id){
     p.className='ww-activity-type-picker';
     p.innerHTML=`<div class="ww-type-picker-shell">
       <div class="ww-type-picker-head"><div><small>ACTIVITY TYPE</small><h3>Choose an icon</h3></div></div>
-      <div class="ww-type-picker-grid">${WW_PICKER_TYPES.map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""><span>${esc(name)}</span></button>`).join('')}</div>
+      <div class="ww-type-picker-grid">${wwRankedTypes().map(([name,src])=>`<button type="button" class="ww-type-picker-option" data-category="${esc(name)}"><img src="${src}" alt=""><span>${esc(name)}</span></button>`).join('')}</div>
       <div class="ww-type-picker-footer"><button type="button" class="ww-type-picker-close" aria-label="Close">Close</button></div>
     </div>`;
     document.body.appendChild(p);
@@ -4922,6 +4952,7 @@ wwOpenQuickInfo=function(row,id){
       const d=document.getElementById('stopItineraryDialog');
       if(!d)return p.close();
       d.dataset.category=b.dataset.category;
+      wwRecordType(b.dataset.category);
       paintChooser(d);
       p.close();
     });
@@ -4943,6 +4974,7 @@ wwOpenQuickInfo=function(row,id){
     field.innerHTML=`<legend>Type</legend><button type="button" id="wwActivityTypeChoose" class="ww-activity-type-choose"><span>Choose type of activity</span></button>`;
     field.querySelector('#wwActivityTypeChoose').onclick=()=>{
       const p=pickerDialog();
+      wwRefreshPicker(p);
       p.querySelectorAll('.ww-type-picker-option').forEach(o=>o.classList.toggle('selected',o.dataset.category===typeNormalise(d.dataset.category)));
       p.showModal();
     };

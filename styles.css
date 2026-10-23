@@ -4743,7 +4743,7 @@ body.map-view .country.map-filter-bucket{fill:#e3bd4d!important}
   max-width:min(92vw,420px)!important;
   border:0!important;
   border-radius:22px!important;
-  background:#f6e8c7!important;
+  background:#fff!important;
   color:var(--navy)!important;
   box-shadow:0 24px 70px rgba(0,0,0,.25)!important;
   overflow:hidden!important;
@@ -6630,8 +6630,11 @@ body > .highest-rated-row[data-drag-style]{border-radius:10px;overflow:hidden;bo
 #mapFilterDialog .ww-territory-section{padding:0 22px 16px}
 #mapFilterDialog .ww-territory-section h3{font-size:16px;margin:6px 0 8px;color:var(--navy)}
 #mapFilterDialog .ww-territory-section p{font-size:13px;line-height:1.45;color:var(--muted);margin:0 0 13px}
-#mapFilterDialog .ww-territory-choice{display:flex;align-items:flex-start;gap:10px;margin:10px 0;padding:13px;border-radius:16px;background:#fff;font-size:14px;font-weight:750;cursor:pointer}
+#mapFilterDialog .ww-territory-choice{display:flex;align-items:flex-start;gap:10px;margin:10px 0;padding:13px;border-radius:16px;background:#f6e8c7;font-size:14px;font-weight:750;cursor:pointer}
 #mapFilterDialog .ww-territory-choice input{accent-color:#078f9d;width:18px;height:18px;flex:none;margin:1px 0 0}
 #mapFilterDialog .ww-map-close-footer{display:block;margin:0 22px 22px auto;border:0;border-radius:999px;background:#e9bf2e;color:#17213d;padding:13px 32px;font-weight:900;min-width:130px}
 #countrySheet .sheet-close:focus:not(:focus-visible){outline:none!important;box-shadow:none!important}
 #countrySheet .sheet-close:focus-visible{outline:2px solid #087f8b!important;outline-offset:3px!important}
+
+/* Sports Ground: slightly smaller artwork, unchanged tile and label. */
+#wwActivityTypePicker .ww-type-picker-option[data-category="Sports Ground"] img{transform:scale(.85)!important}
