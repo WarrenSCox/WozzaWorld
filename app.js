@@ -13707,3 +13707,71 @@ function wwDicePhotoFor(name){
 })();
 
 
+
+
+/* Post-trip reflection — one gentle prompt per completed, unrated trip.
+   Reuses the Privacy dialog's existing styling and the trip's own rating/notes fields. */
+(()=>{
+  const style=document.createElement('style');
+  style.textContent=`
+    #wwTripReviewDialog .ww-trip-review-intro{font-weight:750;margin-bottom:9px}
+    #wwTripReviewDialog .ww-trip-review-stars{display:flex;justify-content:center;gap:7px;margin:10px 0 19px}
+    #wwTripReviewDialog .ww-trip-review-stars button{border:0;background:transparent;padding:4px;color:#b3b8b9;font-size:37px;line-height:1;cursor:pointer}
+    #wwTripReviewDialog .ww-trip-review-stars button.selected{color:#e3b328}
+    #wwTripReviewDialog .ww-trip-review-stars button:focus-visible{outline:2px solid #087c8e;border-radius:8px}
+    #wwTripReviewDialog .ww-trip-review-memory{font-weight:750;margin-bottom:4px}
+    #wwTripReviewDialog .ww-trip-review-notes{display:block;box-sizing:border-box;width:100%;min-height:100px;resize:vertical;border:1px solid #c4dfe0;border-radius:14px;padding:12px;font:inherit;font-size:14px;line-height:1.5;background:#fff;color:#193d4a}
+    #wwTripReviewDialog .ww-trip-review-note-help{font-size:13px;margin-bottom:10px}
+  `;
+  document.head.appendChild(style);
+  let activeTrip=null,chosenRating=0;
+  const todayIso=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+  function candidate(){
+    const today=todayIso();
+    return state.trips.filter(t=>{
+      const dates=orderedTripDates(t);
+      return dates.end&&/^\d{4}-\d{2}-\d{2}$/.test(dates.end)&&dates.end<today&&
+        !(Number(t.rating)>0)&&!t.wwPostTripPromptSeen;
+    }).sort((a,b)=>orderedTripDates(b).end.localeCompare(orderedTripDates(a).end))[0]||null;
+  }
+  function ensure(){
+    let dialog=document.getElementById('wwTripReviewDialog');
+    if(dialog)return dialog;
+    dialog=document.createElement('dialog');dialog.id='wwTripReviewDialog';dialog.className='ww-logo-placeholder';
+    dialog.setAttribute('aria-labelledby','wwTripReviewTitle');
+    dialog.innerHTML=`<div class="ww-logo-placeholder-top"><h2 id="wwTripReviewTitle">Rate Your Trip</h2></div>
+      <div class="ww-logo-placeholder-body"><p class="ww-trip-review-intro" id="wwTripReviewQuestion"></p>
+      <p>Give your trip a rating!</p>
+      <div class="ww-trip-review-stars" role="radiogroup" aria-label="Trip rating">${[1,2,3,4,5].map(n=>`<button type="button" data-ww-review-star="${n}" role="radio" aria-checked="false" aria-label="${n} star${n===1?'':'s'}">☆</button>`).join('')}</div>
+      <p class="ww-trip-review-memory">Any favourite memories?</p><p class="ww-trip-review-note-help">Jot them down below and we'll add them to your trip notes.</p>
+      <textarea class="ww-trip-review-notes" id="wwTripReviewNotes" placeholder="The best moments, funny stories, favourite places…"></textarea></div>
+      <button type="button" class="ww-logo-placeholder-close" id="wwTripReviewClose">Close</button>`;
+    document.body.appendChild(dialog);
+    const paint=()=>dialog.querySelectorAll('[data-ww-review-star]').forEach(btn=>{const n=Number(btn.dataset.wwReviewStar);btn.textContent=n<=chosenRating?'★':'☆';btn.classList.toggle('selected',n<=chosenRating);btn.setAttribute('aria-checked',String(n===chosenRating))});
+    dialog.querySelectorAll('[data-ww-review-star]').forEach(btn=>btn.addEventListener('click',()=>{chosenRating=Number(btn.dataset.wwReviewStar);paint()}));
+    // A native dialog's Escape and its Close button share one save path.
+    dialog.addEventListener('close',()=>{
+      if(!activeTrip)return;
+      const trip=activeTrip;activeTrip=null;
+      const notes=dialog.querySelector('#wwTripReviewNotes').value.trim();
+      if(chosenRating)trip.rating=chosenRating;
+      if(notes)trip.notes=[String(trip.notes||'').trimEnd(),notes].filter(Boolean).join('\n\n');
+      trip.wwPostTripPromptSeen=true;
+      save();
+    });
+    dialog.querySelector('#wwTripReviewClose').addEventListener('click',()=>dialog.close());
+    return dialog;
+  }
+  function offer(){
+    if(document.querySelector('dialog[open]')||document.querySelector('.sheet.open'))return;
+    const trip=candidate();if(!trip)return;
+    const dialog=ensure();activeTrip=trip;chosenRating=0;
+    dialog.querySelector('#wwTripReviewQuestion').textContent=`How was your ${trip.name||'recent'} trip?`;
+    dialog.querySelector('#wwTripReviewNotes').value='';
+    dialog.querySelectorAll('[data-ww-review-star]').forEach(btn=>{btn.textContent='☆';btn.classList.remove('selected');btn.setAttribute('aria-checked','false')});
+    try{dialog.showModal()}catch(e){activeTrip=null;console.warn('Trip review dialog unavailable',e)}
+  }
+  // Only at app launch, once per launch. Do not interrupt an already-open dialog.
+  if(document.readyState==='complete')setTimeout(offer,4100);
+  else window.addEventListener('load',()=>setTimeout(offer,4100),{once:true});
+})();
