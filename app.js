@@ -13715,10 +13715,10 @@ function wwDicePhotoFor(name){
   const style=document.createElement('style');
   style.textContent=`
     #wwTripReviewDialog .ww-trip-review-intro{font-weight:750;margin-bottom:9px}
-    #wwTripReviewDialog .ww-trip-review-stars{display:flex;justify-content:center;gap:7px;margin:10px 0 19px}
+    #wwTripReviewDialog .ww-trip-review-stars{display:flex;justify-content:flex-start;gap:7px;margin:10px 0 19px}
     #wwTripReviewDialog .ww-trip-review-stars button{border:0;background:transparent;padding:4px;color:#b3b8b9;font-size:37px;line-height:1;cursor:pointer}
     #wwTripReviewDialog .ww-trip-review-stars button.selected{color:#e3b328}
-    #wwTripReviewDialog .ww-trip-review-stars button:focus-visible{outline:2px solid #087c8e;border-radius:8px}
+    #wwTripReviewDialog .ww-trip-review-stars button:focus, #wwTripReviewDialog .ww-trip-review-stars button:focus-visible{outline:none;box-shadow:none}
     #wwTripReviewDialog .ww-trip-review-memory{font-weight:750;margin-bottom:4px}
     #wwTripReviewDialog .ww-trip-review-notes{display:block;box-sizing:border-box;width:100%;min-height:100px;resize:vertical;border:1px solid #c4dfe0;border-radius:14px;padding:12px;font:inherit;font-size:14px;line-height:1.5;background:#fff;color:#193d4a}
     #wwTripReviewDialog .ww-trip-review-note-help{font-size:13px;margin-bottom:10px}
@@ -13741,7 +13741,6 @@ function wwDicePhotoFor(name){
     dialog.setAttribute('aria-labelledby','wwTripReviewTitle');
     dialog.innerHTML=`<div class="ww-logo-placeholder-top"><h2 id="wwTripReviewTitle">Rate Your Trip</h2></div>
       <div class="ww-logo-placeholder-body"><p class="ww-trip-review-intro" id="wwTripReviewQuestion"></p>
-      <p>Give your trip a rating!</p>
       <div class="ww-trip-review-stars" role="radiogroup" aria-label="Trip rating">${[1,2,3,4,5].map(n=>`<button type="button" data-ww-review-star="${n}" role="radio" aria-checked="false" aria-label="${n} star${n===1?'':'s'}">☆</button>`).join('')}</div>
       <p class="ww-trip-review-memory">Any favourite memories?</p><p class="ww-trip-review-note-help">Jot them down below and we'll add them to your trip notes.</p>
       <textarea class="ww-trip-review-notes" id="wwTripReviewNotes" placeholder="The best moments, funny stories, favourite places…"></textarea></div>
@@ -13772,6 +13771,6 @@ function wwDicePhotoFor(name){
     try{dialog.showModal()}catch(e){activeTrip=null;console.warn('Trip review dialog unavailable',e)}
   }
   // Only at app launch, once per launch. Do not interrupt an already-open dialog.
-  if(document.readyState==='complete')setTimeout(offer,4100);
-  else window.addEventListener('load',()=>setTimeout(offer,4100),{once:true});
+  if(document.readyState==='complete')setTimeout(offer,2900);
+  else window.addEventListener('load',()=>setTimeout(offer,2900),{once:true});
 })();
